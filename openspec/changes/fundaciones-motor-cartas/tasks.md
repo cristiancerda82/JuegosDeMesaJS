@@ -22,14 +22,14 @@
 
 ## 4. Klondike (engine)
 
-- [ ] 4.1 Definir la configuración (robo 1/3, límite de vueltas), el estado y las acciones; implementar `crear` con el reparto en 7 columnas
-- [ ] 4.2 Implementar robar y reciclar el mazo, con el límite de vueltas
-- [ ] 4.3 Implementar los movimientos en las columnas (cartas sueltas y secuencias, rey a columna vacía) y el volteo automático
-- [ ] 4.4 Implementar los movimientos a y desde las fundaciones
-- [ ] 4.5 Implementar el historial de movimientos y la acción deshacer, incluidos volteos y reciclados
-- [ ] 4.6 Implementar la detección de autocompletar y la acción, la victoria y el contador de movimientos
-- [ ] 4.7 Implementar `vistaDe` (cartas boca abajo y mazo como números) y `resultado`
-- [ ] 4.8 Tests de todos los escenarios de `specs/juego-klondike` y pasar la suite genérica del contrato
+- [x] 4.1 Definir la configuración (robo 1/3, límite de vueltas), el estado y las acciones; implementar `crear` con el reparto en 7 columnas
+- [x] 4.2 Implementar robar y reciclar el mazo, con el límite de vueltas
+- [x] 4.3 Implementar los movimientos en las columnas (cartas sueltas y secuencias, rey a columna vacía) y el volteo automático
+- [x] 4.4 Implementar los movimientos a y desde las fundaciones
+- [x] 4.5 Implementar el historial de movimientos y la acción deshacer, incluidos volteos y reciclados
+- [x] 4.6 Implementar la detección de autocompletar y la acción, la victoria y el contador de movimientos
+- [x] 4.7 Implementar `vistaDe` (cartas boca abajo y mazo como números) y `resultado`
+- [x] 4.8 Tests de todos los escenarios de `specs/juego-klondike` y pasar la suite genérica del contrato
 
 ## 5. Brisca (engine)
 

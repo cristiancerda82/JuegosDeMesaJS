@@ -8,3 +8,4 @@ export * from './baraja/repartir';
 export * from './motor/contrato';
 export * from './motor/json';
 export * from './motor/aplicar';
+export * from './juegos/klondike';

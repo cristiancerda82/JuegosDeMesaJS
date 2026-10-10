@@ -14,6 +14,14 @@ export default tseslint.config(
     languageOptions: { globals: globals.node },
   },
   {
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },
+      ],
+    },
+  },
+  {
     files: ['packages/engine/src/**/*.ts'],
     rules: {
       'no-restricted-globals': [

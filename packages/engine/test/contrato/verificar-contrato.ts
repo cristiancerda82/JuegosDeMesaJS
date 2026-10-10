@@ -8,7 +8,7 @@ import { igualesJSON } from '../../src/motor/json';
  * Suite genérica de propiedades que todo juego de la suite debe cumplir (spec motor-reglas).
  * Juega partidas al azar con fast-check y verifica cada estado visitado.
  */
-export interface OpcionesContrato<C, E> {
+export interface OpcionesContrato<C, E, A = unknown> {
   /** Configuraciones a probar (se elige una por partida). */
   configs: readonly C[];
   /**
@@ -20,6 +20,11 @@ export interface OpcionesContrato<C, E> {
   pasosMaximos?: number;
   /** Partidas generadas por propiedad. Por defecto 60. */
   ejecuciones?: number;
+  /**
+   * Acciones que el juego al azar evita salvo que sean las únicas (p. ej. abandonar),
+   * para que las partidas generadas no terminen enseguida.
+   */
+  evitar?: (accion: A) => boolean;
 }
 
 export const PROPIEDADES = [
@@ -51,6 +56,7 @@ function jugar<C, E, A, V>(
   config: C,
   semilla: string,
   elecciones: readonly number[],
+  evitar: ((accion: A) => boolean) | undefined,
   alAplicar?: (antes: E, despues: E) => void,
 ): Partida<C, E, A> {
   const inicio = juego.crear(config, semilla);
@@ -64,7 +70,9 @@ function jugar<C, E, A, V>(
     );
     if (conAcciones.length === 0) break;
     const asiento = conAcciones[eleccion % conAcciones.length]!;
-    const legales = juego.accionesLegales(estado, asiento);
+    const todas = juego.accionesLegales(estado, asiento);
+    const preferidas = evitar ? todas.filter((a) => !evitar(a)) : todas;
+    const legales = preferidas.length > 0 ? preferidas : todas;
     const accion = legales[Math.floor(eleccion / conAcciones.length) % legales.length]!;
     const r = aplicar(juego, estado, asiento, accion);
     if (!r.ok) throw new Error(`Una acción legal fue rechazada: ${r.error}`);
@@ -89,9 +97,15 @@ function textos(valor: unknown, acumulado: Set<string> = new Set()): Set<string>
 /** Comprueba una propiedad y devuelve `null` si se cumple o el informe del contraejemplo. */
 export function verificarPropiedad<C, E, A, V>(
   juego: Juego<C, E, A, V>,
-  opciones: OpcionesContrato<C, E>,
+  opciones: OpcionesContrato<C, E, A>,
   propiedad: Propiedad,
 ): string | null {
+  const jugarCon = (
+    config: C,
+    semilla: string,
+    elecciones: readonly number[],
+    alAplicar?: (antes: E, despues: E) => void,
+  ) => jugar(juego, config, semilla, elecciones, opciones.evitar, alAplicar);
   const pasos = opciones.pasosMaximos ?? 200;
   const arbitrario = fc.record({
     config: fc.constantFrom(...opciones.configs),
@@ -104,8 +118,8 @@ export function verificarPropiedad<C, E, A, V>(
     (p: { config: C; semilla: string; elecciones: number[] }) => void
   > = {
     determinismo: ({ config, semilla, elecciones }) => {
-      const a = jugar(juego, config, semilla, elecciones);
-      const b = jugar(juego, config, semilla, elecciones);
+      const a = jugarCon(config, semilla, elecciones);
+      const b = jugarCon(config, semilla, elecciones);
       if (!igualesJSON(a.estados[0], b.estados[0])) throw new Error('crear no es determinista');
       const repetido = repetir(juego, { config, semilla, jugadas: a.jugadas });
       if (!repetido.ok) throw new Error(repetido.error);
@@ -116,7 +130,7 @@ export function verificarPropiedad<C, E, A, V>(
     inmutabilidad: ({ config, semilla, elecciones }) => {
       // Foto de cada estado en el momento en que se produce...
       const fotos: string[] = [];
-      const p = jugar(juego, config, semilla, elecciones, (antes, despues) => {
+      const p = jugarCon(config, semilla, elecciones, (antes, despues) => {
         if (fotos.length === 0) fotos.push(JSON.stringify(antes));
         fotos.push(JSON.stringify(despues));
       });
@@ -136,7 +150,7 @@ export function verificarPropiedad<C, E, A, V>(
       }
     },
     'accion-ilegal': ({ config, semilla, elecciones }) => {
-      const p = jugar(juego, config, semilla, elecciones);
+      const p = jugarCon(config, semilla, elecciones);
       for (const estado of p.estados) {
         const foto = JSON.stringify(estado);
         const asientos = asientosDe(juego, estado);
@@ -165,7 +179,7 @@ export function verificarPropiedad<C, E, A, V>(
       }
     },
     serializacion: ({ config, semilla, elecciones }) => {
-      const p = jugar(juego, config, semilla, elecciones);
+      const p = jugarCon(config, semilla, elecciones);
       for (const estado of p.estados) {
         const copia = JSON.parse(JSON.stringify(estado)) as E;
         if (!igualesJSON(copia, estado)) throw new Error('El estado no es JSON plano');
@@ -189,7 +203,7 @@ export function verificarPropiedad<C, E, A, V>(
       }
     },
     'fin-de-partida': ({ config, semilla, elecciones }) => {
-      const p = jugar(juego, config, semilla, elecciones);
+      const p = jugarCon(config, semilla, elecciones);
       for (const estado of p.estados) {
         const asientos = asientosDe(juego, estado);
         const conAcciones = asientos.filter((a) => juego.accionesLegales(estado, a).length > 0);
@@ -202,7 +216,7 @@ export function verificarPropiedad<C, E, A, V>(
       }
     },
     'vistas-sin-cartas-ocultas': ({ config, semilla, elecciones }) => {
-      const p = jugar(juego, config, semilla, elecciones);
+      const p = jugarCon(config, semilla, elecciones);
       for (const estado of p.estados) {
         for (const asiento of [...asientosDe(juego, estado), null]) {
           const vista = juego.vistaDe(estado, asiento);
@@ -237,7 +251,7 @@ export function verificarPropiedad<C, E, A, V>(
 /** Registra en Vitest un test por propiedad del contrato. */
 export function describirContrato<C, E, A, V>(
   juego: Juego<C, E, A, V>,
-  opciones: OpcionesContrato<C, E>,
+  opciones: OpcionesContrato<C, E, A>,
 ): void {
   describe(`contrato del motor: ${juego.id}`, () => {
     for (const propiedad of PROPIEDADES) {
