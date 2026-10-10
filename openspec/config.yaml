@@ -1,0 +1,65 @@
+schema: spec-driven
+
+context: |
+  Proyecto: JuegosDeMesaJS, suite de juegos de naipes 2D.
+  Idioma del producto y de la documentación: español.
+
+  Alcance inicial: Klondike (solitario, baraja francesa 52) y Brisca
+  (bazas, baraja española 40). Tute vendrá después como extensión del
+  motor de bazas de la Brisca. Soporta baraja española (40/48) y francesa (52).
+
+  Modos de juego: local contra IA (debe funcionar offline) y multijugador
+  en red. La v1 de red usa salas con código y reconexión, sin cuentas ni matchmaking.
+
+  Plataformas: navegador de escritorio y móvil, PWA, móvil nativo (Capacitor)
+  y escritorio (Tauri/Electron), todo desde una única base web.
+
+  Stack: monorepo TypeScript (pnpm workspaces) con paquetes engine / client
+  / server. Cliente con Svelte 5 + Vite como SPA estática, render con
+  DOM/CSS y cartas en SVG generadas por código. Tests con Vitest, fast-check
+  y Playwright. Servidor (pendiente, change de red): Node con WebSockets.
+
+  Principios de arquitectura:
+  - El motor de reglas es puro y determinista (estado + acción -> estado),
+    no depende de UI ni de red y se comparte entre cliente y servidor.
+  - El barajado usa una semilla, para que las partidas sean reproducibles y testeables.
+  - En red el servidor es la autoridad; cada cliente recibe solo su vista
+    (vistaDe), nunca las manos ajenas ni el orden del mazo.
+  - La IA juega con la misma vista que un humano (no hace trampa) y puede
+    ocupar asientos vacíos o reemplazar a jugadores desconectados.
+  - Las variantes regionales de cada juego son configuración, no código duplicado.
+
+  Fuentes de reglas: los libros de C:\Users\Criss\JuegosDeMesaJS_Docs son
+  capturas incompletas de Scribd; no son una fuente fiable. Las reglas se
+  redactan a partir del conocimiento de juegos clásicos y las valida el usuario.
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+# Example:
+#   context: |
+#     Tech stack: TypeScript, React, Node.js
+#     We use conventional commits
+#     Domain: e-commerce platform
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing

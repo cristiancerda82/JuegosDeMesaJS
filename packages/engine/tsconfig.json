@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // Sin DOM ni tipos de Node: el motor debe correr igual en navegador, servidor y tests.
+    "lib": ["ES2023"],
+    "types": []
+  },
+  "include": ["src", "test"]
+}
