@@ -15,10 +15,10 @@
 
 ## 3. Contrato del motor (engine)
 
-- [ ] 3.1 Definir los tipos `Resultado`, `Juego<Config, Estado, Accion, Vista>`, `Fin` y asiento/espectador
-- [ ] 3.2 Implementar una función común `aplicar` que valide contra `accionesLegales` antes de la transición propia de cada juego
-- [ ] 3.3 Implementar la utilidad de repetición: config + semilla + acciones → estado, con error si alguna acción falla
-- [ ] 3.4 Crear la suite genérica de propiedades (fast-check) para cualquier `Juego`: inmutabilidad, acción ilegal sin cambios, repetición determinista, serialización JSON de ida y vuelta, sin acciones legales al terminar y vistas sin cartas ocultas
+- [x] 3.1 Definir los tipos `Resultado`, `Juego<Config, Estado, Accion, Vista>`, `Fin` y asiento/espectador
+- [x] 3.2 Implementar una función común `aplicar` que valide contra `accionesLegales` antes de la transición propia de cada juego
+- [x] 3.3 Implementar la utilidad de repetición: config + semilla + acciones → estado, con error si alguna acción falla
+- [x] 3.4 Crear la suite genérica de propiedades (fast-check) para cualquier `Juego`: inmutabilidad, acción ilegal sin cambios, repetición determinista, serialización JSON de ida y vuelta, sin acciones legales al terminar y vistas sin cartas ocultas
 
 ## 4. Klondike (engine)
 

@@ -5,3 +5,6 @@ export * from './baraja/azar';
 export * from './baraja/cartas';
 export * from './baraja/barajar';
 export * from './baraja/repartir';
+export * from './motor/contrato';
+export * from './motor/json';
+export * from './motor/aplicar';
