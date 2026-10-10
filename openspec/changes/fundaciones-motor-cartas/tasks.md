@@ -8,10 +8,10 @@
 
 ## 2. Baraja y azar (engine)
 
-- [ ] 2.1 Implementar el hash cyrb128 de la semilla y el generador sfc32 con su estado serializable; tests de que la misma semilla da la misma secuencia
-- [ ] 2.2 Modelar cartas, palos y valores de la baraja española (40/48) y la francesa (52), con colores e identificadores serializables; tests de composición e ida y vuelta
-- [ ] 2.3 Implementar el barajado Fisher–Yates con el generador; tests de determinismo, conservación de cartas y ausencia de sesgo (frecuencia por posición)
-- [ ] 2.4 Implementar el reparto desde el mazo con error si faltan cartas, sin reparto parcial; tests
+- [x] 2.1 Implementar el hash cyrb128 de la semilla y el generador sfc32 con su estado serializable; tests de que la misma semilla da la misma secuencia
+- [x] 2.2 Modelar cartas, palos y valores de la baraja española (40/48) y la francesa (52), con colores e identificadores serializables; tests de composición e ida y vuelta
+- [x] 2.3 Implementar el barajado Fisher–Yates con el generador; tests de determinismo, conservación de cartas y ausencia de sesgo (frecuencia por posición)
+- [x] 2.4 Implementar el reparto desde el mazo con error si faltan cartas, sin reparto parcial; tests
 
 ## 3. Contrato del motor (engine)
 
