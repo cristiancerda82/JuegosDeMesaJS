@@ -1,4 +1,8 @@
-// Punto de entrada provisional; la app Svelte llega en la tarea 7.1.
-import { VERSION_MOTOR } from '@juegos/engine';
+import { mount } from 'svelte';
+import App from './App.svelte';
+import './estilos.css';
 
-export const versionMotor = VERSION_MOTOR;
+const destino = document.getElementById('app');
+if (destino === null) throw new Error('Falta el elemento #app');
+
+export default mount(App, { target: destino });

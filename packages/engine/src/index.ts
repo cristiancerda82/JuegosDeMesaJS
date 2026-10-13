@@ -9,3 +9,6 @@ export * from './motor/contrato';
 export * from './motor/json';
 export * from './motor/aplicar';
 export * from './juegos/klondike';
+export * from './juegos/brisca';
+export * from './ia/agente';
+export * from './ia/brisca-basica';

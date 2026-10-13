@@ -1,0 +1,141 @@
+:root {
+  --tapete: #0f5132;
+  --tapete-claro: #177245;
+  --tapete-oscuro: #0a3a24;
+  --texto: #f4f1e8;
+  --texto-suave: #c9d8cd;
+  --acento: #f2c14e;
+  --peligro: #e5675c;
+  --papel: #fffdf7;
+  --tinta: #1f2328;
+  --borde-carta: #b9b4a7;
+  --resalte: #ffe066;
+  --dorso: #1d4f91;
+  --dorso-claro: #3f74bd;
+  --radio: 10px;
+  --sombra: 0 1px 3px rgb(0 0 0 / 0.35);
+  --sombra-alta: 0 10px 24px rgb(0 0 0 / 0.45);
+  --duracion: 280ms;
+
+  /* Tamaño de carta: lo ajusta cada mesa según su espacio. Quien cambie el ancho debe
+     redefinir también el alto, porque una variable se calcula donde se declara. */
+  --ancho-carta: clamp(42px, 12vw, 96px);
+  --alto-carta: calc(var(--ancho-carta) * 1.4);
+
+  color-scheme: dark;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  color: var(--texto);
+  background: var(--tapete);
+  -webkit-text-size-adjust: 100%;
+}
+
+:root[data-dorso='rojo'] {
+  --dorso: #9b2226;
+  --dorso-claro: #c8553d;
+}
+
+:root[data-dorso='verde'] {
+  --dorso: #2d6a4f;
+  --dorso-claro: #52b788;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100dvh;
+  background: radial-gradient(
+    ellipse at 50% 30%,
+    var(--tapete-claro),
+    var(--tapete) 60%,
+    var(--tapete-oscuro)
+  );
+}
+
+button,
+select,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgb(255 255 255 / 0.25);
+  border-radius: var(--radio);
+  background: rgb(0 0 0 / 0.25);
+  transition: background 120ms;
+}
+
+button:hover:not(:disabled) {
+  background: rgb(0 0 0 / 0.4);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+button.principal {
+  background: var(--acento);
+  color: #2b2005;
+  border-color: transparent;
+  font-weight: 700;
+}
+
+button.principal:hover:not(:disabled) {
+  background: #f7d27a;
+}
+
+:focus-visible {
+  outline: 3px solid var(--resalte);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+.oculto-visual {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duracion: 0ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}

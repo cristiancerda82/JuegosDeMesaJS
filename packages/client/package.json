@@ -4,11 +4,21 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc -p .",
-    "dev": "tsc -p . --watch",
-    "test": "echo \"client: sin tests todavía\""
+    "dev": "vite",
+    "build": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings && vite build",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "preview": "vite preview",
+    "test": "echo \"client: los tests E2E se ejecutan con test:e2e\"",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@juegos/engine": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "svelte": "^5.57.2",
+    "svelte-check": "^4.7.6",
+    "vite": "^8.3.4"
   }
 }

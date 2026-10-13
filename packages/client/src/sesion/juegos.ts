@@ -1,0 +1,76 @@
+import {
+  brisca,
+  CONFIG_BRISCA_POR_DEFECTO,
+  CONFIG_KLONDIKE_POR_DEFECTO,
+  iaBriscaBasica,
+  klondike,
+  type AccionBrisca,
+  type AccionKlondike,
+  type Agente,
+  type ConfigBrisca,
+  type ConfigKlondike,
+  type EstadoBrisca,
+  type EstadoKlondike,
+  type Juego,
+  type VistaBrisca,
+  type VistaKlondike,
+} from '@juegos/engine';
+import { SEMILLA_FIJA } from '../ajustes';
+import { T } from '../textos';
+
+/** Cómo juega el cliente cada juego del motor. */
+export interface DefJuego<C, E, A, V> {
+  readonly id: IdJuego;
+  readonly nombre: string;
+  readonly juego: Juego<C, E, A, V>;
+  readonly configPorDefecto: C;
+  /** Agente para los asientos que no ocupa el humano; `null` en los solitarios. */
+  readonly ia: Agente<V, A> | null;
+  /**
+   * Pausa en milisegundos tras un cambio de la vista del humano, para que pueda seguirlo
+   * (p. ej. ver la baza completa antes de que se recoja). Durante la pausa no se juega.
+   */
+  pausaTras(antes: V, despues: V): number;
+}
+
+export type IdJuego = 'klondike' | 'brisca';
+
+export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
+export type DefBrisca = DefJuego<ConfigBrisca, EstadoBrisca, AccionBrisca, VistaBrisca>;
+
+export const DEF_KLONDIKE: DefKlondike = {
+  id: 'klondike',
+  nombre: T.menu.klondike,
+  juego: klondike,
+  configPorDefecto: CONFIG_KLONDIKE_POR_DEFECTO,
+  ia: null,
+  pausaTras: () => 0,
+};
+
+/** Tiempo para ver la baza completa antes de recogerla. */
+const PAUSA_BAZA_MS = 1100;
+/** Tiempo para leer el resultado de una mano antes de repartir la siguiente. */
+const PAUSA_MANO_MS = 2600;
+
+export const DEF_BRISCA: DefBrisca = {
+  id: 'brisca',
+  nombre: T.menu.brisca,
+  juego: brisca,
+  configPorDefecto: CONFIG_BRISCA_POR_DEFECTO,
+  ia: iaBriscaBasica,
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_MANO_MS;
+    const bazasAntes = antes.bazas.reduce((s, b) => s + b, 0);
+    const bazasDespues = despues.bazas.reduce((s, b) => s + b, 0);
+    return bazasDespues > bazasAntes ? PAUSA_BAZA_MS : 0;
+  },
+};
+
+export const JUEGOS = { klondike: DEF_KLONDIKE, brisca: DEF_BRISCA } as const;
+
+/** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */
+export function semillaNueva(): string {
+  if (SEMILLA_FIJA !== null) return SEMILLA_FIJA;
+  const n = crypto.getRandomValues(new Uint32Array(2));
+  return Array.from(n, (x) => x.toString(16).padStart(8, '0')).join('');
+}
