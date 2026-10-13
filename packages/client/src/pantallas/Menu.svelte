@@ -22,6 +22,7 @@
     { id: 'klondike', desc: T.menu.klondikeDesc, cartas: ['picas-1', 'corazones-13', 'diamantes-12'] },
     { id: 'brisca', desc: T.menu.briscaDesc, cartas: ['oros-1', 'copas-3', 'espadas-12'] },
     { id: 'tute', desc: T.menu.tuteDesc, cartas: ['bastos-12', 'oros-11', 'copas-12'] },
+    { id: 'escoba', desc: T.menu.escobaDesc, cartas: ['oros-7', 'copas-11', 'espadas-6'] },
   ] as const;
 </script>
 

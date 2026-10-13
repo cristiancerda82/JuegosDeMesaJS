@@ -11,6 +11,8 @@ export * from './motor/aplicar';
 export * from './juegos/klondike';
 export * from './juegos/brisca';
 export * from './juegos/tute';
+export * from './juegos/escoba';
 export * from './ia/agente';
 export * from './ia/brisca-basica';
 export * from './ia/tute-basica';
+export * from './ia/escoba-basica';

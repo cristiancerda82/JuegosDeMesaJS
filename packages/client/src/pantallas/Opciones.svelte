@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ConfigBrisca, ConfigKlondike, ConfigTute } from '@juegos/engine';
+  import type { ConfigBrisca, ConfigEscoba, ConfigKlondike, ConfigTute } from '@juegos/engine';
   import { JUEGOS, type IdJuego } from '../sesion/juegos';
   import type { ConfigJuego } from '../sesion/partida';
   import { T } from '../textos';
@@ -19,6 +19,7 @@
   let klondike: Editable<ConfigKlondike> = $state({ ...JUEGOS.klondike.configPorDefecto });
   let brisca: Editable<ConfigBrisca> = $state({ ...JUEGOS.brisca.configPorDefecto });
   let tute: Editable<ConfigTute> = $state({ ...JUEGOS.tute.configPorDefecto });
+  let escoba: Editable<ConfigEscoba> = $state({ ...JUEGOS.escoba.configPorDefecto });
 
   const VUELTAS: readonly (number | null)[] = [null, 3, 1, 0];
 
@@ -26,7 +27,7 @@
 
   function enviar(ev: SubmitEvent) {
     ev.preventDefault();
-    const configs = { klondike, brisca, tute };
+    const configs = { klondike, brisca, tute, escoba };
     empezar({ ...configs[juego] });
   }
 </script>
@@ -56,6 +57,32 @@
             {v === null ? T.opciones.ilimitadas : T.opciones.vueltasN(v)}
           </label>
         {/each}
+      </fieldset>
+    {:else if juego === 'escoba'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        <label><input type="radio" bind:group={escoba.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
+        <label><input type="radio" bind:group={escoba.jugadores} value={4} /> {T.opciones.cuatroJugadores}</label>
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.puntosPartida}</legend>
+        {#each [15, 21, 31] as p (p)}
+          <label><input type="radio" bind:group={escoba.puntosPartida} value={p} /> {T.opciones.puntosN(p)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.capturaObligatoria}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={escoba.capturaObligatoria} />
+          {T.opciones.capturaObligatoriaDesc}
+        </label>
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.escobaInicial}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={escoba.escobaInicial} />
+          {T.opciones.escobaInicialDesc}
+        </label>
       </fieldset>
     {:else if juego === 'tute'}
       <fieldset>

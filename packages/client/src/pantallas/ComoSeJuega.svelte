@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { puntosDe, type IdCarta } from '@juegos/engine';
+  import { puntosDe, valorEscoba, type IdCarta } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
   import type { IdJuego } from '../sesion/juegos';
   import { T } from '../textos';
@@ -19,6 +19,10 @@
   const VALORES: readonly IdCarta[] = ['oros-1', 'oros-3', 'oros-12', 'oros-11', 'oros-10'];
   /** Una pareja que se canta en el Tute: rey y caballo del mismo palo. */
   const CANTE: readonly IdCarta[] = ['copas-12', 'copas-11'];
+  /** Valores para sumar en la Escoba. */
+  const SUMAS: readonly IdCarta[] = ['bastos-1', 'bastos-5', 'bastos-7', 'bastos-10', 'bastos-11', 'bastos-12'];
+  /** Una captura de la Escoba: el caballo de la mano (9) con el 6 de la mesa. */
+  const CAPTURA: readonly IdCarta[] = ['oros-11', 'copas-6'];
 
   let dialogo: HTMLDialogElement | undefined = $state();
   $effect(() => {
@@ -65,6 +69,25 @@
               <li><div class="hueco"><Carta {id} /></div></li>
             {/each}
             <li class="resultado">= 20 / 40</li>
+          </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'sumas'}
+          <ul class="valores">
+            {#each SUMAS as id (id)}
+              <li>
+                <div class="hueco"><Carta {id} /></div>
+                <span>{valorEscoba(id)}</span>
+              </li>
+            {/each}
+          </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'captura'}
+          <ul class="valores">
+            {#each CAPTURA as id, k (id)}
+              <li>
+                <div class="hueco"><Carta {id} /></div>
+                <span>{k === 0 ? `${valorEscoba(id)} +` : valorEscoba(id)}</span>
+              </li>
+            {/each}
+            <li class="resultado">= 15</li>
           </ul>
         {/if}
       </section>

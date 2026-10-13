@@ -13,6 +13,8 @@ export const T = {
     briscaDesc: 'Bazas con baraja española, contra la máquina.',
     tute: 'Tute',
     tuteDesc: 'Bazas, cantes de 20 y 40 y el tute, con baraja española.',
+    escoba: 'Escoba',
+    escobaDesc: 'Recoge cartas de la mesa que sumen 15 y haz escobas.',
     jugar: 'Jugar',
     retomarTitulo: 'Tienes una partida a medias',
     retomar: (juego: string) => `Partida de ${juego} sin terminar.`,
@@ -50,6 +52,12 @@ export const T = {
     cambioSieteTrasBaza: 'Tras ganar una baza',
     montar: 'Montar sobre el compañero (4 jugadores)',
     montarDesc: 'Obliga a superar la baza aunque ya la vaya ganando tu compañero.',
+    puntosPartida: 'Partida',
+    puntosN: (n: number) => `A ${n} puntos`,
+    capturaObligatoria: 'Recoger es obligatorio',
+    capturaObligatoriaDesc: 'Si la carta que juegas puede sumar 15, tienes que recoger.',
+    escobaInicial: 'Escoba del que reparte',
+    escobaInicialDesc: 'Si las 4 cartas iniciales de la mesa suman 15, son escoba del que reparte.',
   },
 
   partida: {
@@ -105,6 +113,33 @@ export const T = {
     cartaTriunfo: 'Carta de triunfo',
   },
 
+  escoba: {
+    mesa: 'Mesa',
+    recoger: 'Recoger',
+    dejar: 'Dejar en la mesa',
+    cancelar: 'Cancelar',
+    suma: (n: number) => `${n} / 15`,
+    elegirCaptura: '¿Qué quieres hacer con esta carta?',
+    recogerCartas: (n: number) => (n === 1 ? 'Recoger 1 carta' : `Recoger ${n} cartas`),
+    escobaDe: (quien: string) => (quien === 'Tú' ? '¡Escoba!' : `¡Escoba de ${quien}!`),
+    recoge: (quien: string, n: number) =>
+      quien === 'Tú' ? `Recoges ${n} cartas` : `${quien} recoge ${n} cartas`,
+    montonCartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    montonEscobas: (n: number) => (n === 1 ? '1 escoba' : `${n} escobas`),
+    puntos: (tuyos: number, suyos: number, meta: number) =>
+      `Puntos: ${tuyos} – ${suyos} (a ${meta})`,
+    finMano: 'Fin de la mano',
+    siguienteMano: 'Siguiente mano',
+    concepto: 'Concepto',
+    escobas: 'Escobas',
+    cartas: 'Más cartas',
+    oros: 'Más oros',
+    sieteOros: '7 de oros',
+    sietes: 'Más sietes',
+    totalMano: 'Total de la mano',
+    totalPartida: 'Total de la partida',
+  },
+
   fin: {
     victoria: '¡Has ganado!',
     derrota: 'Has perdido',
@@ -154,6 +189,7 @@ export const T = {
       klondike: 'Cómo se juega al Klondike',
       brisca: 'Cómo se juega a la Brisca',
       tute: 'Cómo se juega al Tute',
+      escoba: 'Cómo se juega a la Escoba',
     },
     puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
 
@@ -330,6 +366,59 @@ export const T = {
           'No juegues el Rey ni el Caballo de una pareja que todavía puedes cantar.',
           'Ganar bazas no solo da puntos: también te da la oportunidad de cantar.',
           'Si no puedes ganar una baza, echa una carta que no valga nada.',
+        ],
+      },
+    ],
+
+    escoba: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja española de 40 cartas, contra la máquina: con 2 jugadores, o con 4 en parejas.',
+          'Al jugar una carta, intentas recoger cartas de la mesa que, junto con la tuya, sumen exactamente 15. Al final de cada mano se reparten puntos, y gana quien llega primero a los puntos de la partida (21 por defecto).',
+        ],
+      },
+      {
+        titulo: 'Lo que vale cada carta para sumar',
+        texto: [
+          'El As vale 1, del 2 al 7 lo que dice su número, la Sota 8, el Caballo 9 y el Rey 10.',
+        ],
+        ejemplo: 'sumas',
+      },
+      {
+        titulo: 'Cómo se juega',
+        texto: [
+          'Cada jugador recibe 3 cartas y se ponen 4 boca arriba en la mesa. Por turnos, cada uno juega una carta de su mano.',
+          'Si tu carta suma 15 con una o varias cartas de la mesa, te las llevas junto con la tuya. Si no puedes (o no quieres) recoger, tu carta se queda en la mesa.',
+          'Cuando todos se quedan sin cartas, se reparten 3 más, hasta que se acaba el mazo.',
+        ],
+        ejemplo: 'captura',
+      },
+      {
+        titulo: 'La escoba',
+        texto: [
+          'Si al recoger dejas la mesa vacía, haces escoba: vale 1 punto.',
+          'Al final de la mano, las cartas que queden en la mesa se las lleva el último que recogió (eso no es escoba).',
+        ],
+      },
+      {
+        titulo: 'Los puntos de cada mano',
+        texto: [
+          '1 punto por cada escoba, 1 para quien tenga más cartas, 1 para quien tenga más oros, 1 para quien tenga el 7 de oros y 1 para quien tenga más sietes. Si hay empate en cartas, oros o sietes, ese punto no es para nadie.',
+        ],
+      },
+      {
+        titulo: 'Cómo jugar una carta',
+        texto: [
+          'Toca una carta de tu mano: se iluminan las cartas de la mesa que puedes recoger con ella. Toca las que quieras llevarte (verás la suma) y pulsa Recoger, o pulsa Dejar en la mesa.',
+          'También puedes arrastrar la carta a la mesa o tocarla dos veces: si hay varias formas de recoger, te preguntará cuál prefieres.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Cuida el 7 de oros y los sietes: dan puntos por sí solos.',
+          'Si no recoges, intenta no dejar en la mesa una suma entre 5 y 14: al rival le bastaría una carta para hacer escoba.',
         ],
       },
     ],

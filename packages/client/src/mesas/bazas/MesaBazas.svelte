@@ -114,7 +114,7 @@
       {asiento}
       lado={lado(asiento, n)}
       nombre={nombre(asiento)}
-      bazas={vista.bazas[asiento] ?? 0}
+      detalle={T.brisca.bazas(vista.bazas[asiento] ?? 0)}
       cartas={vista.cartasEnMano[asiento] ?? 0}
       activo={activo(asiento)}
       visible={cartaVisible(asiento)}

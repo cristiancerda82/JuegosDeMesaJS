@@ -1,21 +1,21 @@
 <script lang="ts">
   import type { Asiento, IdCarta } from '@juegos/engine';
   import Carta from '../../cartas/Carta.svelte';
-  import { T } from '../../textos';
   import type { Lado } from './asientos';
 
   interface Props {
     asiento: Asiento;
     lado: Lado;
     nombre: string;
-    bazas: number;
+    /** Texto bajo el nombre (p. ej. las bazas ganadas). */
+    detalle: string;
     cartas: number;
     activo: boolean;
     /** Carta de la mano que todos ven (la carta de triunfo del repartidor en el Tute de 4). */
     visible?: IdCarta | null;
   }
 
-  let { asiento, lado, nombre, bazas, cartas, activo, visible = null }: Props = $props();
+  let { asiento, lado, nombre, detalle, cartas, activo, visible = null }: Props = $props();
 
   const dorsos = $derived(visible === null ? cartas : Math.max(0, cartas - 1));
 </script>
@@ -23,7 +23,7 @@
 <div class="asiento {lado}" class:activo data-testid="asiento-{asiento}">
   <div class="nombre">
     {nombre}
-    <small>{T.brisca.bazas(bazas)}</small>
+    <small>{detalle}</small>
   </div>
   <div class="mano-rival" data-zona="mano-{asiento}">
     {#if visible !== null}

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { HUMANO } from '../sesion/sesion.svelte';
   import type { Partida } from '../sesion/partida';
+  import DesgloseEscoba from '../mesas/DesgloseEscoba.svelte';
   import { formatoTiempo } from '../mesas/tiempo';
   import { T } from '../textos';
 
@@ -41,6 +42,16 @@
 
     {#if partida.id === 'klondike'}
       <p>{T.fin.resumenKlondike(partida.sesion.vista.movimientos, formatoTiempo(partida.sesion.tiempoMs()))}</p>
+    {:else if partida.id === 'escoba'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <DesgloseEscoba
+          resultado={ultima}
+          lados={[lados[0]!, lados[1]!]}
+          totales={vista.puntosPartida}
+        />
+      {/if}
     {:else}
       {@const vista = partida.sesion.vista}
       {#if vista.config.manos === 1}

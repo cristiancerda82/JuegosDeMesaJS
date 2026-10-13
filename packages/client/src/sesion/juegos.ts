@@ -2,24 +2,31 @@ import {
   brisca,
   CONFIG_BRISCA_POR_DEFECTO,
   CONFIG_KLONDIKE_POR_DEFECTO,
+  CONFIG_ESCOBA_POR_DEFECTO,
   CONFIG_TUTE_POR_DEFECTO,
   iaBriscaBasica,
+  iaEscobaBasica,
   iaTuteBasica,
   klondike,
   tute,
+  escoba,
   type AccionBrisca,
   type AccionKlondike,
+  type AccionEscoba,
   type AccionTute,
   type Agente,
   type ConfigBrisca,
   type ConfigKlondike,
+  type ConfigEscoba,
   type ConfigTute,
   type EstadoBrisca,
   type EstadoKlondike,
+  type EstadoEscoba,
   type EstadoTute,
   type Juego,
   type VistaBrisca,
   type VistaKlondike,
+  type VistaEscoba,
   type VistaTute,
 } from '@juegos/engine';
 import { SEMILLA_FIJA } from '../ajustes';
@@ -40,13 +47,14 @@ export interface DefJuego<C, E, A, V> {
   pausaTras(antes: V, despues: V): number;
 }
 
-export type IdJuego = 'klondike' | 'brisca' | 'tute';
+export type IdJuego = 'klondike' | 'brisca' | 'tute' | 'escoba';
 
-export const ID_JUEGOS: readonly IdJuego[] = ['klondike', 'brisca', 'tute'];
+export const ID_JUEGOS: readonly IdJuego[] = ['klondike', 'brisca', 'tute', 'escoba'];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
 export type DefBrisca = DefJuego<ConfigBrisca, EstadoBrisca, AccionBrisca, VistaBrisca>;
 export type DefTute = DefJuego<ConfigTute, EstadoTute, AccionTute, VistaTute>;
+export type DefEscoba = DefJuego<ConfigEscoba, EstadoEscoba, AccionEscoba, VistaEscoba>;
 
 export const DEF_KLONDIKE: DefKlondike = {
   id: 'klondike',
@@ -98,7 +106,31 @@ export const DEF_TUTE: DefTute = {
   },
 };
 
-export const JUEGOS = { klondike: DEF_KLONDIKE, brisca: DEF_BRISCA, tute: DEF_TUTE } as const;
+/** Tiempo para ver qué se jugó y qué se recogió; algo más si fue escoba. */
+const PAUSA_JUGADA_MS = 900;
+const PAUSA_ESCOBA_MS = 1600;
+
+export const DEF_ESCOBA: DefEscoba = {
+  id: 'escoba',
+  nombre: T.menu.escoba,
+  juego: escoba,
+  configPorDefecto: CONFIG_ESCOBA_POR_DEFECTO,
+  ia: iaEscobaBasica,
+  // El cierre de la mano lo detiene la propia mesa con el panel de desglose.
+  pausaTras(antes, despues) {
+    const jugada = despues.ultimaJugada;
+    if (jugada === null || jugada === antes.ultimaJugada) return 0;
+    if (jugada.escoba) return PAUSA_ESCOBA_MS;
+    return jugada.captura.length > 0 ? PAUSA_JUGADA_MS : 0;
+  },
+};
+
+export const JUEGOS = {
+  klondike: DEF_KLONDIKE,
+  brisca: DEF_BRISCA,
+  tute: DEF_TUTE,
+  escoba: DEF_ESCOBA,
+} as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */
 export function semillaNueva(): string {
