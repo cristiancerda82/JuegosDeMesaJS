@@ -4,6 +4,7 @@
   import MesaEscoba from '../mesas/MesaEscoba.svelte';
   import MesaGuinote from '../mesas/MesaGuinote.svelte';
   import MesaKlondike from '../mesas/MesaKlondike.svelte';
+  import MesaSieteYMedia from '../mesas/MesaSieteYMedia.svelte';
   import MesaTute from '../mesas/MesaTute.svelte';
   import type { Partida } from '../sesion/partida';
   import { T } from '../textos';
@@ -52,6 +53,8 @@
     <MesaTute sesion={partida.sesion} />
   {:else if partida.id === 'guinote'}
     <MesaGuinote sesion={partida.sesion} />
+  {:else if partida.id === 'sieteYMedia'}
+    <MesaSieteYMedia sesion={partida.sesion} />
   {:else}
     <MesaBrisca sesion={partida.sesion} />
   {/if}

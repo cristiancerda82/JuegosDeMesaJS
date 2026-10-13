@@ -2,6 +2,10 @@ import {
   repetir,
   type AccionChinchon,
   type AccionGuinote,
+  type AccionSieteYMedia,
+  type ConfigSieteYMedia,
+  type EstadoSieteYMedia,
+  type VistaSieteYMedia,
   type ConfigGuinote,
   type EstadoGuinote,
   type VistaGuinote,
@@ -32,6 +36,7 @@ import {
   DEF_BRISCA,
   DEF_CHINCHON,
   DEF_GUINOTE,
+  DEF_SIETE_Y_MEDIA,
   DEF_KLONDIKE,
   DEF_ESCOBA,
   DEF_TUTE,
@@ -47,6 +52,12 @@ export type SesionTute = Sesion<ConfigTute, EstadoTute, AccionTute, VistaTute>;
 export type SesionEscoba = Sesion<ConfigEscoba, EstadoEscoba, AccionEscoba, VistaEscoba>;
 export type SesionChinchon = Sesion<ConfigChinchon, EstadoChinchon, AccionChinchon, VistaChinchon>;
 export type SesionGuinote = Sesion<ConfigGuinote, EstadoGuinote, AccionGuinote, VistaGuinote>;
+export type SesionSieteYMedia = Sesion<
+  ConfigSieteYMedia,
+  EstadoSieteYMedia,
+  AccionSieteYMedia,
+  VistaSieteYMedia
+>;
 
 /** Partida en curso, etiquetada por juego para que cada mesa reciba su tipo de sesión. */
 export type Partida =
@@ -55,10 +66,17 @@ export type Partida =
   | { readonly id: 'tute'; readonly sesion: SesionTute }
   | { readonly id: 'escoba'; readonly sesion: SesionEscoba }
   | { readonly id: 'chinchon'; readonly sesion: SesionChinchon }
-  | { readonly id: 'guinote'; readonly sesion: SesionGuinote };
+  | { readonly id: 'guinote'; readonly sesion: SesionGuinote }
+  | { readonly id: 'sieteYMedia'; readonly sesion: SesionSieteYMedia };
 
 export type ConfigJuego =
-  ConfigKlondike | ConfigBrisca | ConfigTute | ConfigEscoba | ConfigChinchon | ConfigGuinote;
+  | ConfigKlondike
+  | ConfigBrisca
+  | ConfigTute
+  | ConfigEscoba
+  | ConfigChinchon
+  | ConfigGuinote
+  | ConfigSieteYMedia;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -79,6 +97,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_CHINCHON);
     case 'guinote':
       return hacer(DEF_GUINOTE);
+    case 'sieteYMedia':
+      return hacer(DEF_SIETE_Y_MEDIA);
   }
 }
 

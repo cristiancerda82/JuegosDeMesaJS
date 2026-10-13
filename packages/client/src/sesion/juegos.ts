@@ -11,6 +11,13 @@ import {
   CONFIG_KLONDIKE_POR_DEFECTO,
   CONFIG_ESCOBA_POR_DEFECTO,
   CONFIG_TUTE_POR_DEFECTO,
+  CONFIG_SIETE_Y_MEDIA_POR_DEFECTO,
+  iaSieteYMediaBasica,
+  sieteYMedia,
+  type AccionSieteYMedia,
+  type ConfigSieteYMedia,
+  type EstadoSieteYMedia,
+  type VistaSieteYMedia,
   CONFIG_GUINOTE_POR_DEFECTO,
   guinote,
   iaGuinoteBasica,
@@ -61,7 +68,8 @@ export interface DefJuego<C, E, A, V> {
   pausaTras(antes: V, despues: V): number;
 }
 
-export type IdJuego = 'klondike' | 'brisca' | 'tute' | 'escoba' | 'chinchon' | 'guinote';
+export type IdJuego =
+  'klondike' | 'brisca' | 'tute' | 'escoba' | 'chinchon' | 'guinote' | 'sieteYMedia';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -70,6 +78,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'escoba',
   'chinchon',
   'guinote',
+  'sieteYMedia',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -78,6 +87,12 @@ export type DefTute = DefJuego<ConfigTute, EstadoTute, AccionTute, VistaTute>;
 export type DefEscoba = DefJuego<ConfigEscoba, EstadoEscoba, AccionEscoba, VistaEscoba>;
 export type DefChinchon = DefJuego<ConfigChinchon, EstadoChinchon, AccionChinchon, VistaChinchon>;
 export type DefGuinote = DefJuego<ConfigGuinote, EstadoGuinote, AccionGuinote, VistaGuinote>;
+export type DefSieteYMedia = DefJuego<
+  ConfigSieteYMedia,
+  EstadoSieteYMedia,
+  AccionSieteYMedia,
+  VistaSieteYMedia
+>;
 
 export const DEF_KLONDIKE: DefKlondike = {
   id: 'klondike',
@@ -179,6 +194,25 @@ export const DEF_CHINCHON: DefChinchon = {
   },
 };
 
+/** Tiempo para ver qué pide, si se planta o si se pasa cada jugador; algo más al pasarse. */
+const PAUSA_SYM_MS = 700;
+const PAUSA_PASADO_MS = 1300;
+
+export const DEF_SIETE_Y_MEDIA: DefSieteYMedia = {
+  id: 'sieteYMedia',
+  nombre: T.menu.sieteYMedia,
+  juego: sieteYMedia,
+  configPorDefecto: CONFIG_SIETE_Y_MEDIA_POR_DEFECTO,
+  ia: iaSieteYMediaBasica,
+  // El cierre de la mano lo detiene la propia mesa con el panel de resultado.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    if (accion.tipo === 'pedir' && accion.pasado) return PAUSA_PASADO_MS;
+    return accion.asiento !== despues.asiento ? PAUSA_SYM_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -186,6 +220,7 @@ export const JUEGOS = {
   escoba: DEF_ESCOBA,
   chinchon: DEF_CHINCHON,
   guinote: DEF_GUINOTE,
+  sieteYMedia: DEF_SIETE_Y_MEDIA,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

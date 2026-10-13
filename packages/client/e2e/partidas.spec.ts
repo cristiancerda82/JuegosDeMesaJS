@@ -248,7 +248,15 @@ test.describe('pantalla de 360 × 640', () => {
 
 // ── Cómo se juega ────────────────────────────────────────────────────────────
 
-for (const juego of ['klondike', 'brisca', 'tute', 'escoba', 'chinchon', 'guinote'] as const) {
+for (const juego of [
+  'klondike',
+  'brisca',
+  'tute',
+  'escoba',
+  'chinchon',
+  'guinote',
+  'sieteYMedia',
+] as const) {
   test(`la guía de ${juego} se abre desde las opciones y desde la partida`, async ({ page }) => {
     await abrirJuego(page, juego);
     await page.getByTestId('ver-ayuda').click();

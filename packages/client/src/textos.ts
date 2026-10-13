@@ -1,3 +1,8 @@
+/** Un valor de la Siete y media en medios puntos, con coma decimal: 15 → «7,5». */
+function formatoValor(medios: number): string {
+  return medios % 2 === 0 ? `${medios / 2}` : `${(medios - 1) / 2},5`;
+}
+
 /**
  * Todos los textos visibles del cliente, en español. Centralizados aquí por si hace falta
  * traducir más adelante (design: no hay sistema de traducción todavía).
@@ -19,6 +24,8 @@ export const T = {
     chinchonDesc: 'Roba, descarta y liga escaleras y tríos para cerrar antes que nadie.',
     guinote: 'Guiñote',
     guinoteDesc: 'Bazas, cantes con rey y sota y arrastre, en partidas a 101.',
+    sieteYMedia: 'Siete y media',
+    sieteYMediaDesc: 'Pide cartas contra la banca y acércate a 7,5 sin pasarte.',
     jugar: 'Jugar',
     retomarTitulo: 'Tienes una partida a medias',
     retomar: (juego: string) => `Partida de ${juego} sin terminar.`,
@@ -57,6 +64,17 @@ export const T = {
     montar: 'Montar sobre el compañero (4 jugadores)',
     montarDesc: 'Obliga a superar la baza aunque ya la vaya ganando tu compañero.',
     cambioSieteGuinote: 'Cambio del 7 de triunfo',
+    manosPartida: 'Duración',
+    manosPartidaN: (n: number) => `${n} manos`,
+    fichasIniciales: 'Fichas de cada jugador',
+    fichasN: (n: number) => `${n} fichas`,
+    apuestaMaxima: 'Apuesta máxima',
+    apuestaN: (n: number) => `Hasta ${n} fichas`,
+    pagoDoble: 'Siete y media natural',
+    pagoDobleDesc: 'Un 7 y una figura en las dos primeras cartas cobran el doble.',
+    cambioBanca: 'La banca',
+    bancaRotar: 'Pasa al siguiente cada mano',
+    bancaSieteYMedia: 'Pasa a quien le gana con siete y media',
     montarArrastreDesc:
       'En el arrastre, obliga a superar la baza aunque ya la vaya ganando tu compañero.',
     puntosPartida: 'Partida',
@@ -208,6 +226,36 @@ export const T = {
     siguienteMano: 'Siguiente mano',
   },
 
+  sieteYMedia: {
+    banca: 'Banca',
+    fichas: (n: number) => (n === 1 ? '1 ficha' : `${n} fichas`),
+    apuesta: (n: number) => `apuesta ${n}`,
+    valor: (medios: number) => formatoValor(medios),
+    tuApuesta: 'Tu apuesta',
+    menos: 'Menos',
+    mas: 'Más',
+    apostar: (n: number) => `Apostar ${n}`,
+    pedir: 'Pedir carta',
+    plantarse: 'Plantarse',
+    faseApostar: 'Haz tu apuesta',
+    faseJugar: 'Pide carta o plántate',
+    eresBanca: 'Eres la banca: juegas la última',
+    esperaApuestas: 'Los puntos están apostando',
+    apuesta1: (quien: string, n: number) =>
+      quien === 'Tú' ? `Apuestas ${n}` : `${quien} apuesta ${n}`,
+    pide: (quien: string) => (quien === 'Tú' ? 'Pides carta' : `${quien} pide carta`),
+    planta: (quien: string) => (quien === 'Tú' ? 'Te plantas' : `${quien} se planta`),
+    sePasa: (quien: string) => (quien === 'Tú' ? '¡Te has pasado!' : `${quien} se pasa`),
+    pasado: 'Pasado',
+    plantado: 'Plantado',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    bancaEs: (quien: string) => (quien === 'Tú' ? 'Tú eras la banca' : `Banca: ${quien}`),
+    variacion: (n: number) => (n > 0 ? `+${n}` : `${n}`),
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Fichas finales',
+    mazo: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+  },
+
   fin: {
     victoria: '¡Has ganado!',
     derrota: 'Has perdido',
@@ -263,6 +311,7 @@ export const T = {
       escoba: 'Cómo se juega a la Escoba',
       chinchon: 'Cómo se juega al Chinchón',
       guinote: 'Cómo se juega al Guiñote',
+      sieteYMedia: 'Cómo se juega a la Siete y media',
     },
     puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
 
@@ -615,6 +664,59 @@ export const T = {
           'No gastes un triunfo en una baza que no tiene puntos.',
           'Guarda el Rey y la Sota de un palo hasta que puedas cantarlos.',
           'En el arrastre cuenta los triunfos que han salido: el que tenga el último manda.',
+        ],
+      },
+    ],
+
+    sieteYMedia: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja española de 40 cartas, contra la máquina, de 2 a 4 jugadores. Uno hace de banca y los demás juegan contra ella.',
+          'Hay que acercarse lo más posible a 7 y medio sin pasarse. Al final de la partida gana quien tiene más fichas.',
+        ],
+      },
+      {
+        titulo: 'Lo que vale cada carta',
+        texto: [
+          'Del As al 7, cada carta vale su número. La Sota, el Caballo y el Rey valen medio punto.',
+        ],
+        ejemplo: 'valoresSyM',
+      },
+      {
+        titulo: 'Cómo se juega una mano',
+        texto: [
+          'Primero, cada jugador que no es la banca apuesta unas fichas. Después todos reciben una carta boca abajo, que solo ve su dueño.',
+          'Por turnos, cada uno pide cartas (llegan boca arriba, todos las ven) o se planta. Si pasas de 7 y medio, te has pasado y pierdes tu apuesta en el acto.',
+          'La banca juega la última, viendo las cartas boca arriba de los demás (pero no su carta tapada).',
+        ],
+      },
+      {
+        titulo: 'Quién gana',
+        texto: [
+          'Al final se destapan las cartas. Si tienes más que la banca, o la banca se pasa, la banca te paga tu apuesta. Si tienes lo mismo o menos, la cobra la banca: los empates son para la banca.',
+          'Si consigues siete y media con tus dos primeras cartas (un 7 y una figura), cobras el doble.',
+        ],
+        ejemplo: 'sieteYMedia',
+      },
+      {
+        titulo: 'La banca y el final',
+        texto: [
+          'La banca pasa al siguiente jugador en cada mano (o, si lo eliges en las opciones, a quien le gana con siete y media).',
+          'La partida termina al acabar las manos elegidas o cuando alguien se queda sin fichas.',
+        ],
+      },
+      {
+        titulo: 'En la mesa',
+        texto: [
+          'Elige tu apuesta con los botones − y + y pulsa «Apostar». En tu turno, pulsa «Pedir carta» o «Plantarse». Junto a tus cartas verás cuánto sumas.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Con 5 o más, lo normal es plantarse: hay muchas cartas que te harían pasarte.',
+          'Fíjate en lo que enseñan los demás: su carta tapada suele ser alta si se plantan pronto.',
         ],
       },
     ],

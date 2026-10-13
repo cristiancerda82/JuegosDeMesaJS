@@ -4,6 +4,7 @@
   import DesgloseEscoba from '../mesas/DesgloseEscoba.svelte';
   import ResultadoChinchon from '../mesas/ResultadoChinchon.svelte';
   import ResumenGuinote from '../mesas/ResumenGuinote.svelte';
+  import ResultadoSieteYMedia from '../mesas/ResultadoSieteYMedia.svelte';
   import { formatoTiempo } from '../mesas/tiempo';
   import { T } from '../textos';
 
@@ -25,10 +26,11 @@
     return fin.ganadores.includes(HUMANO) ? T.fin.victoria : T.fin.derrota;
   });
 
-  // En el Chinchón cada uno juega por su cuenta: no hay parejas.
+  // En el Chinchón y la Siete y media cada uno juega por su cuenta: no hay parejas.
   const parejas = $derived(
     partida.id !== 'klondike' &&
       partida.id !== 'chinchon' &&
+      partida.id !== 'sieteYMedia' &&
       partida.sesion.vista.config.jugadores === 4,
   );
 
@@ -71,6 +73,24 @@
       <p class="nota" data-testid="fin-guinote">
         {T.fin.manosJugadas(partida.sesion.vista.resultadosManos.length)}
       </p>
+    {:else if partida.id === 'sieteYMedia'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResultadoSieteYMedia resultado={ultima} nombre={(a) => nombreChinchon(a, n)} />
+      {/if}
+      <table>
+        <caption>{T.sieteYMedia.clasificacion}</caption>
+        <tbody>
+          {#each Array.from({ length: n }, (_, a) => a).sort((a, b) => vista.fichas[b]! - vista.fichas[a]!) as a (a)}
+            <tr>
+              <th scope="row">{nombreChinchon(a, n)}</th>
+              <td data-testid="fichas-{a}">{T.sieteYMedia.fichas(vista.fichas[a]!)}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
     {:else if partida.id === 'chinchon'}
       {@const vista = partida.sesion.vista}
       {@const n = vista.config.jugadores}

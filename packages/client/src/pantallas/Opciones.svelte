@@ -5,6 +5,7 @@
     ConfigEscoba,
     ConfigGuinote,
     ConfigKlondike,
+    ConfigSieteYMedia,
     ConfigTute,
   } from '@juegos/engine';
   import { JUEGOS, type IdJuego } from '../sesion/juegos';
@@ -29,6 +30,7 @@
   let escoba: Editable<ConfigEscoba> = $state({ ...JUEGOS.escoba.configPorDefecto });
   let chinchon: Editable<ConfigChinchon> = $state({ ...JUEGOS.chinchon.configPorDefecto });
   let guinote: Editable<ConfigGuinote> = $state({ ...JUEGOS.guinote.configPorDefecto });
+  let sieteYMedia: Editable<ConfigSieteYMedia> = $state({ ...JUEGOS.sieteYMedia.configPorDefecto });
 
   const VUELTAS: readonly (number | null)[] = [null, 3, 1, 0];
 
@@ -36,7 +38,7 @@
 
   function enviar(ev: SubmitEvent) {
     ev.preventDefault();
-    const configs = { klondike, brisca, tute, escoba, chinchon, guinote };
+    const configs = { klondike, brisca, tute, escoba, chinchon, guinote, sieteYMedia };
     empezar({ ...configs[juego] });
   }
 </script>
@@ -122,6 +124,43 @@
         <label class="casilla">
           <input type="checkbox" bind:checked={escoba.escobaInicial} />
           {T.opciones.escobaInicialDesc}
+        </label>
+      </fieldset>
+    {:else if juego === 'sieteYMedia'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [2, 3, 4] as n (n)}
+          <label><input type="radio" bind:group={sieteYMedia.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.manosPartida}</legend>
+        {#each [10, 5, 20] as m (m)}
+          <label><input type="radio" bind:group={sieteYMedia.manos} value={m} /> {T.opciones.manosPartidaN(m)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.fichasIniciales}</legend>
+        {#each [50, 20, 100] as f (f)}
+          <label><input type="radio" bind:group={sieteYMedia.fichasIniciales} value={f} /> {T.opciones.fichasN(f)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.apuestaMaxima}</legend>
+        {#each [10, 5, 20] as a (a)}
+          <label><input type="radio" bind:group={sieteYMedia.apuestaMaxima} value={a} /> {T.opciones.apuestaN(a)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.cambioBanca}</legend>
+        <label><input type="radio" bind:group={sieteYMedia.cambioBanca} value="rotar" /> {T.opciones.bancaRotar}</label>
+        <label><input type="radio" bind:group={sieteYMedia.cambioBanca} value="sieteYMedia" /> {T.opciones.bancaSieteYMedia}</label>
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.pagoDoble}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={sieteYMedia.pagoDoble} />
+          {T.opciones.pagoDobleDesc}
         </label>
       </fieldset>
     {:else if juego === 'guinote'}

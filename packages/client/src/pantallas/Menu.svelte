@@ -25,6 +25,7 @@
     { id: 'guinote', desc: T.menu.guinoteDesc, cartas: ['espadas-12', 'espadas-10', 'oros-7'] },
     { id: 'escoba', desc: T.menu.escobaDesc, cartas: ['oros-7', 'copas-11', 'espadas-6'] },
     { id: 'chinchon', desc: T.menu.chinchonDesc, cartas: ['copas-5', 'copas-6', 'comodin-1'] },
+    { id: 'sieteYMedia', desc: T.menu.sieteYMediaDesc, cartas: ['oros-7', 'bastos-12', 'copas-1'] },
   ] as const;
 </script>
 

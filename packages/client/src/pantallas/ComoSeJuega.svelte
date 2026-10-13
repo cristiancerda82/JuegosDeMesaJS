@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { puntosDe, valorEscoba, VALORES_GUINOTE, type IdCarta } from '@juegos/engine';
+  import {
+    puntosDe,
+    valorCarta,
+    valorEscoba,
+    VALORES_GUINOTE,
+    type IdCarta,
+  } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
   import type { IdJuego } from '../sesion/juegos';
   import { T } from '../textos';
@@ -29,6 +35,9 @@
   /** Las cartas que dan puntos en el Guiñote (la sota por encima del caballo) y su cante. */
   const VALORES_G: readonly IdCarta[] = ['oros-1', 'oros-3', 'oros-12', 'oros-10', 'oros-11'];
   const CANTE_G: readonly IdCarta[] = ['copas-12', 'copas-10'];
+  /** Valores de la Siete y media y una siete y media natural. */
+  const VALORES_SYM: readonly IdCarta[] = ['espadas-1', 'espadas-4', 'espadas-7', 'espadas-10', 'espadas-12'];
+  const SIETE_Y_MEDIA_NATURAL: readonly IdCarta[] = ['oros-7', 'copas-11'];
 
   let dialogo: HTMLDialogElement | undefined = $state();
   $effect(() => {
@@ -77,6 +86,22 @@
                 <span>{T.ayuda.puntos(puntosDe(id, VALORES_GUINOTE))}</span>
               </li>
             {/each}
+          </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'valoresSyM'}
+          <ul class="valores">
+            {#each VALORES_SYM as id (id)}
+              <li>
+                <div class="hueco"><Carta {id} /></div>
+                <span>{T.sieteYMedia.valor(valorCarta(id))}</span>
+              </li>
+            {/each}
+          </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'sieteYMedia'}
+          <ul class="valores">
+            {#each SIETE_Y_MEDIA_NATURAL as id (id)}
+              <li><div class="hueco"><Carta {id} /></div></li>
+            {/each}
+            <li class="resultado">= 7,5</li>
           </ul>
         {:else if 'ejemplo' in seccion && seccion.ejemplo === 'canteGuinote'}
           <ul class="valores">
