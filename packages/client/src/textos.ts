@@ -26,6 +26,8 @@ export const T = {
     chinchonDesc: 'Roba, descarta y liga escaleras y tríos para cerrar antes que nadie.',
     guinote: 'Guiñote',
     guinoteDesc: 'Bazas, cantes con rey y sota y arrastre, en partidas a 101.',
+    cinquillo: 'Cinquillo',
+    cinquilloDesc: 'Coloca tus cartas en escalera a partir de los cincos y quédate sin ninguna.',
     sieteYMedia: 'Siete y media',
     sieteYMediaDesc: 'Pide cartas contra la banca y acércate a 7,5 sin pasarte.',
     jugar: 'Jugar',
@@ -75,7 +77,7 @@ export const T = {
     autoFundacion: 'Ayuda',
     autoFundacionDesc: 'Llevar solas a las fundaciones las cartas que ya no hacen falta.',
     manosPartida: 'Duración',
-    manosPartidaN: (n: number) => `${n} manos`,
+    manosPartidaN: (n: number) => (n === 1 ? '1 mano' : `${n} manos`),
     fichasIniciales: 'Fichas de cada jugador',
     fichasN: (n: number) => `${n} fichas`,
     apuestaMaxima: 'Apuesta máxima',
@@ -240,6 +242,26 @@ export const T = {
     siguienteMano: 'Siguiente mano',
   },
 
+  cinquillo: {
+    mesa: 'Mesa',
+    paso: 'Paso',
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
+    juega: (quien: string, carta: string) =>
+      quien === 'Tú' ? `Juegas ${carta}` : `${quien} juega ${carta}`,
+    pasa: (quien: string) => (quien === 'Tú' ? 'Pasas' : `${quien} pasa`),
+    tuTurno: 'Tu turno: juega una carta',
+    sinJugada: 'No tienes jugada: pasa',
+    salidaOros: 'Sale el 5 de oros',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    ganaMano: (quien: string) =>
+      quien === 'Tú' ? '¡Te has quedado sin cartas!' : `Gana la mano: ${quien}`,
+    quedan: 'Le quedan',
+    totalPartida: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos (menos es mejor)',
+  },
+
   sieteYMedia: {
     banca: 'Banca',
     fichas: (n: number) => (n === 1 ? '1 ficha' : `${n} fichas`),
@@ -329,6 +351,7 @@ export const T = {
       guinote: 'Cómo se juega al Guiñote',
       sieteYMedia: 'Cómo se juega a la Siete y media',
       freecell: 'Cómo se juega al FreeCell',
+      cinquillo: 'Cómo se juega al Cinquillo',
     },
     puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
 
@@ -778,6 +801,49 @@ export const T = {
           'Busca pronto los Ases y los 2: suelen estar enterrados.',
           'Una columna vacía vale más que una celda: te deja mover el doble de cartas.',
           'Antes de llenar la última celda, piensa si podrás vaciarla.',
+        ],
+      },
+    ],
+
+    cinquillo: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja española de 40 cartas, contra la máquina, de 2 a 4 jugadores. Se reparten todas las cartas.',
+          'Gana la mano el primero que se queda sin cartas. Los demás se apuntan un punto por cada carta que les quede. Al final de la partida gana quien tiene menos puntos.',
+        ],
+      },
+      {
+        titulo: 'Cómo se empieza',
+        texto: [
+          'Empieza quien tiene el 5 de oros, y tiene que jugarlo: es la primera carta de la mesa.',
+        ],
+      },
+      {
+        titulo: 'Las escaleras',
+        texto: [
+          'En la mesa se forma una escalera por palo, que empieza siempre por el 5. En tu turno puedes poner el 5 de un palo que aún no esté en la mesa, o alargar una escalera por uno de sus extremos.',
+          'Por arriba va el 6, el 7, la Sota, el Caballo y el Rey; por abajo, el 4, el 3, el 2 y el As. Siempre la carta justo siguiente: sin saltarse ninguna.',
+        ],
+        ejemplo: 'escaleraCinquillo',
+      },
+      {
+        titulo: 'Jugar o pasar',
+        texto: [
+          'Si tienes alguna carta que se pueda poner, estás obligado a jugarla. Si no tienes ninguna, pasas y le toca al siguiente.',
+        ],
+      },
+      {
+        titulo: 'En la mesa',
+        texto: [
+          'Tus cartas jugables se iluminan. Arrastra una a la mesa, o tócala y toca la mesa; con un doble toque también se juega. Cuando no tengas jugada, pulsa «Paso».',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Juega primero las cartas que te abren camino a ti: si tienes el 6 y el 7 de un palo, el 6 te deja jugar luego el 7.',
+          'Retén los cincos y las cartas que abrirían camino a los demás si no te hacen falta.',
         ],
       },
     ],

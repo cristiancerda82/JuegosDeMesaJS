@@ -1,6 +1,7 @@
 <script lang="ts">
   import MesaBrisca from '../mesas/MesaBrisca.svelte';
   import MesaChinchon from '../mesas/MesaChinchon.svelte';
+  import MesaCinquillo from '../mesas/MesaCinquillo.svelte';
   import MesaEscoba from '../mesas/MesaEscoba.svelte';
   import MesaFreeCell from '../mesas/MesaFreeCell.svelte';
   import MesaGuinote from '../mesas/MesaGuinote.svelte';
@@ -48,6 +49,8 @@
     <MesaKlondike sesion={partida.sesion} />
   {:else if partida.id === 'freecell'}
     <MesaFreeCell sesion={partida.sesion} />
+  {:else if partida.id === 'cinquillo'}
+    <MesaCinquillo sesion={partida.sesion} />
   {:else if partida.id === 'chinchon'}
     <MesaChinchon sesion={partida.sesion} />
   {:else if partida.id === 'escoba'}

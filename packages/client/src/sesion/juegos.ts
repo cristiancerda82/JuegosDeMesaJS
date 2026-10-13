@@ -17,6 +17,13 @@ import {
   type VistaFreeCell,
   CONFIG_ESCOBA_POR_DEFECTO,
   CONFIG_TUTE_POR_DEFECTO,
+  CONFIG_CINQUILLO_POR_DEFECTO,
+  cinquillo,
+  iaCinquilloBasica,
+  type AccionCinquillo,
+  type ConfigCinquillo,
+  type EstadoCinquillo,
+  type VistaCinquillo,
   CONFIG_SIETE_Y_MEDIA_POR_DEFECTO,
   iaSieteYMediaBasica,
   sieteYMedia,
@@ -75,7 +82,15 @@ export interface DefJuego<C, E, A, V> {
 }
 
 export type IdJuego =
-  'klondike' | 'brisca' | 'tute' | 'escoba' | 'chinchon' | 'guinote' | 'sieteYMedia' | 'freecell';
+  | 'klondike'
+  | 'brisca'
+  | 'tute'
+  | 'escoba'
+  | 'chinchon'
+  | 'guinote'
+  | 'sieteYMedia'
+  | 'freecell'
+  | 'cinquillo';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -86,6 +101,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'guinote',
   'sieteYMedia',
   'freecell',
+  'cinquillo',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -231,6 +247,30 @@ export const DEF_SIETE_Y_MEDIA: DefSieteYMedia = {
   },
 };
 
+export type DefCinquillo = DefJuego<
+  ConfigCinquillo,
+  EstadoCinquillo,
+  AccionCinquillo,
+  VistaCinquillo
+>;
+
+/** Tiempo para ver qué juega o si pasa cada rival. */
+const PAUSA_CINQUILLO_MS = 650;
+
+export const DEF_CINQUILLO: DefCinquillo = {
+  id: 'cinquillo',
+  nombre: T.menu.cinquillo,
+  juego: cinquillo,
+  configPorDefecto: CONFIG_CINQUILLO_POR_DEFECTO,
+  ia: iaCinquilloBasica,
+  // El cierre de la mano lo detiene la propia mesa con el panel de resultado.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    return accion.asiento !== despues.asiento ? PAUSA_CINQUILLO_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -240,6 +280,7 @@ export const JUEGOS = {
   guinote: DEF_GUINOTE,
   sieteYMedia: DEF_SIETE_Y_MEDIA,
   freecell: DEF_FREECELL,
+  cinquillo: DEF_CINQUILLO,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

@@ -5,6 +5,10 @@ import {
   type AccionSieteYMedia,
   type ConfigSieteYMedia,
   type AccionFreeCell,
+  type AccionCinquillo,
+  type ConfigCinquillo,
+  type EstadoCinquillo,
+  type VistaCinquillo,
   type ConfigFreeCell,
   type EstadoFreeCell,
   type VistaFreeCell,
@@ -42,6 +46,7 @@ import {
   DEF_GUINOTE,
   DEF_SIETE_Y_MEDIA,
   DEF_FREECELL,
+  DEF_CINQUILLO,
   DEF_KLONDIKE,
   DEF_ESCOBA,
   DEF_TUTE,
@@ -57,6 +62,12 @@ export type SesionTute = Sesion<ConfigTute, EstadoTute, AccionTute, VistaTute>;
 export type SesionEscoba = Sesion<ConfigEscoba, EstadoEscoba, AccionEscoba, VistaEscoba>;
 export type SesionChinchon = Sesion<ConfigChinchon, EstadoChinchon, AccionChinchon, VistaChinchon>;
 export type SesionGuinote = Sesion<ConfigGuinote, EstadoGuinote, AccionGuinote, VistaGuinote>;
+export type SesionCinquillo = Sesion<
+  ConfigCinquillo,
+  EstadoCinquillo,
+  AccionCinquillo,
+  VistaCinquillo
+>;
 export type SesionFreeCell = Sesion<ConfigFreeCell, EstadoFreeCell, AccionFreeCell, VistaFreeCell>;
 export type SesionSieteYMedia = Sesion<
   ConfigSieteYMedia,
@@ -74,7 +85,8 @@ export type Partida =
   | { readonly id: 'chinchon'; readonly sesion: SesionChinchon }
   | { readonly id: 'guinote'; readonly sesion: SesionGuinote }
   | { readonly id: 'sieteYMedia'; readonly sesion: SesionSieteYMedia }
-  | { readonly id: 'freecell'; readonly sesion: SesionFreeCell };
+  | { readonly id: 'freecell'; readonly sesion: SesionFreeCell }
+  | { readonly id: 'cinquillo'; readonly sesion: SesionCinquillo };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -84,7 +96,8 @@ export type ConfigJuego =
   | ConfigChinchon
   | ConfigGuinote
   | ConfigSieteYMedia
-  | ConfigFreeCell;
+  | ConfigFreeCell
+  | ConfigCinquillo;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -109,6 +122,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_SIETE_Y_MEDIA);
     case 'freecell':
       return hacer(DEF_FREECELL);
+    case 'cinquillo':
+      return hacer(DEF_CINQUILLO);
   }
 }
 

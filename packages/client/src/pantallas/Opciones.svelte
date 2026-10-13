@@ -2,6 +2,7 @@
   import type {
     ConfigBrisca,
     ConfigChinchon,
+    ConfigCinquillo,
     ConfigEscoba,
     ConfigFreeCell,
     ConfigGuinote,
@@ -33,6 +34,7 @@
   let guinote: Editable<ConfigGuinote> = $state({ ...JUEGOS.guinote.configPorDefecto });
   let sieteYMedia: Editable<ConfigSieteYMedia> = $state({ ...JUEGOS.sieteYMedia.configPorDefecto });
   let freecell: Editable<ConfigFreeCell> = $state({ ...JUEGOS.freecell.configPorDefecto });
+  let cinquillo: Editable<ConfigCinquillo> = $state({ ...JUEGOS.cinquillo.configPorDefecto });
   let freecellModo: 'azar' | 'numero' = $state('azar');
   let freecellNumero = $state(1);
 
@@ -52,6 +54,7 @@
       guinote,
       sieteYMedia,
       freecell: { ...freecell, partida },
+      cinquillo,
     };
     empezar({ ...configs[juego] });
   }
@@ -139,6 +142,19 @@
           <input type="checkbox" bind:checked={escoba.escobaInicial} />
           {T.opciones.escobaInicialDesc}
         </label>
+      </fieldset>
+    {:else if juego === 'cinquillo'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [4, 3, 2] as n (n)}
+          <label><input type="radio" bind:group={cinquillo.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.manosPartida}</legend>
+        {#each [3, 1, 5] as m (m)}
+          <label><input type="radio" bind:group={cinquillo.manos} value={m} /> {T.opciones.manosPartidaN(m)}</label>
+        {/each}
       </fieldset>
     {:else if juego === 'freecell'}
       <fieldset>
