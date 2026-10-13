@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { cartaDeId, colorDe, crearBaraja, idCarta, type Palo } from '../../src/baraja/cartas';
+import {
+  cartaDeId,
+  colorDe,
+  COMODINES,
+  crearBaraja,
+  esComodin,
+  idCarta,
+  type Palo,
+} from '../../src/baraja/cartas';
 
 function porPalo(ids: string[]): Map<Palo, number[]> {
   const mapa = new Map<Palo, number[]>();
@@ -76,5 +84,32 @@ describe('identidad de las cartas', () => {
     ]) {
       expect(cartaDeId(id)).toBeNull();
     }
+  });
+});
+
+describe('comodines', () => {
+  it('una baraja española de 40 con comodines tiene 42 cartas distintas', () => {
+    const baraja = crearBaraja('espanola40', { comodines: true });
+    expect(baraja).toHaveLength(42);
+    expect(new Set(baraja).size).toBe(42);
+    expect(baraja.filter(esComodin)).toEqual([...COMODINES]);
+  });
+
+  it('sin la opción, las barajas no cambian', () => {
+    expect(crearBaraja('espanola40')).toHaveLength(40);
+    expect(crearBaraja('espanola48')).toHaveLength(48);
+    expect(crearBaraja('espanola40').some(esComodin)).toBe(false);
+  });
+
+  it('solo los dos identificadores de comodín son comodines', () => {
+    expect(COMODINES.every(esComodin)).toBe(true);
+    expect(esComodin('oros-1')).toBe(false);
+    expect(esComodin('comodin-3')).toBe(false);
+    // Un comodín no tiene palo ni valor.
+    expect(cartaDeId('comodin-1')).toBeNull();
+  });
+
+  it('la baraja francesa no admite comodines', () => {
+    expect(() => crearBaraja('francesa52', { comodines: true })).toThrow();
   });
 });

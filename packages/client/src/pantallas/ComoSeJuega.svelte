@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { puntosDe, valorEscoba, type IdCarta } from '@juegos/engine';
+  import { puntosDe, valorEscoba, VALORES_GUINOTE, type IdCarta } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
   import type { IdJuego } from '../sesion/juegos';
   import { T } from '../textos';
@@ -23,6 +23,12 @@
   const SUMAS: readonly IdCarta[] = ['bastos-1', 'bastos-5', 'bastos-7', 'bastos-10', 'bastos-11', 'bastos-12'];
   /** Una captura de la Escoba: el caballo de la mano (9) con el 6 de la mesa. */
   const CAPTURA: readonly IdCarta[] = ['oros-11', 'copas-6'];
+  /** Escalera del Chinchón que cruza del 7 a la sota, y un trío con comodín. */
+  const ESCALERA_ESPANOLA: readonly IdCarta[] = ['copas-6', 'copas-7', 'copas-10', 'copas-11'];
+  const TRIO_COMODIN: readonly IdCarta[] = ['oros-4', 'bastos-4', 'comodin-1'];
+  /** Las cartas que dan puntos en el Guiñote (la sota por encima del caballo) y su cante. */
+  const VALORES_G: readonly IdCarta[] = ['oros-1', 'oros-3', 'oros-12', 'oros-10', 'oros-11'];
+  const CANTE_G: readonly IdCarta[] = ['copas-12', 'copas-10'];
 
   let dialogo: HTMLDialogElement | undefined = $state();
   $effect(() => {
@@ -63,6 +69,22 @@
               </li>
             {/each}
           </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'valoresGuinote'}
+          <ul class="valores">
+            {#each VALORES_G as id (id)}
+              <li>
+                <div class="hueco"><Carta {id} /></div>
+                <span>{T.ayuda.puntos(puntosDe(id, VALORES_GUINOTE))}</span>
+              </li>
+            {/each}
+          </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'canteGuinote'}
+          <ul class="valores">
+            {#each CANTE_G as id (id)}
+              <li><div class="hueco"><Carta {id} /></div></li>
+            {/each}
+            <li class="resultado">= 20 / 40</li>
+          </ul>
         {:else if 'ejemplo' in seccion && seccion.ejemplo === 'cante'}
           <ul class="valores">
             {#each CANTE as id (id)}
@@ -88,6 +110,18 @@
               </li>
             {/each}
             <li class="resultado">= 15</li>
+          </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'escaleraEspanola'}
+          <ul class="valores">
+            {#each ESCALERA_ESPANOLA as id (id)}
+              <li><div class="hueco"><Carta {id} /></div></li>
+            {/each}
+          </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'trioComodin'}
+          <ul class="valores">
+            {#each TRIO_COMODIN as id (id)}
+              <li><div class="hueco"><Carta {id} /></div></li>
+            {/each}
           </ul>
         {/if}
       </section>

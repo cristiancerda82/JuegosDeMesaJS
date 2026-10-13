@@ -15,6 +15,10 @@ export const T = {
     tuteDesc: 'Bazas, cantes de 20 y 40 y el tute, con baraja española.',
     escoba: 'Escoba',
     escobaDesc: 'Recoge cartas de la mesa que sumen 15 y haz escobas.',
+    chinchon: 'Chinchón',
+    chinchonDesc: 'Roba, descarta y liga escaleras y tríos para cerrar antes que nadie.',
+    guinote: 'Guiñote',
+    guinoteDesc: 'Bazas, cantes con rey y sota y arrastre, en partidas a 101.',
     jugar: 'Jugar',
     retomarTitulo: 'Tienes una partida a medias',
     retomar: (juego: string) => `Partida de ${juego} sin terminar.`,
@@ -52,12 +56,26 @@ export const T = {
     cambioSieteTrasBaza: 'Tras ganar una baza',
     montar: 'Montar sobre el compañero (4 jugadores)',
     montarDesc: 'Obliga a superar la baza aunque ya la vaya ganando tu compañero.',
+    cambioSieteGuinote: 'Cambio del 7 de triunfo',
+    montarArrastreDesc:
+      'En el arrastre, obliga a superar la baza aunque ya la vaya ganando tu compañero.',
     puntosPartida: 'Partida',
     puntosN: (n: number) => `A ${n} puntos`,
     capturaObligatoria: 'Recoger es obligatorio',
     capturaObligatoriaDesc: 'Si la carta que juegas puede sumar 15, tienes que recoger.',
     escobaInicial: 'Escoba del que reparte',
     escobaInicialDesc: 'Si las 4 cartas iniciales de la mesa suman 15, son escoba del que reparte.',
+    jugadoresN: (n: number) => `${n} jugadores`,
+    baraja: 'Baraja',
+    baraja40: 'Española de 40 cartas',
+    baraja48: 'Española de 48 cartas (con 8 y 9)',
+    comodines: 'Comodines',
+    comodinesDesc: 'Jugar con 2 comodines, que sustituyen a cualquier carta.',
+    limite: 'Eliminación',
+    limiteN: (n: number) => `Al pasar de ${n} puntos`,
+    cierreMaximo: 'Para cerrar',
+    cierreN: (n: number) =>
+      n === 0 ? 'Solo con todo ligado' : `Con una carta suelta de ${n} o menos`,
   },
 
   partida: {
@@ -140,6 +158,56 @@ export const T = {
     totalPartida: 'Total de la partida',
   },
 
+  chinchon: {
+    mazo: 'Mazo',
+    descarte: 'Descarte',
+    robarMazo: 'Robar del mazo',
+    robarDescarte: (carta: string) => `Robar del descarte: ${carta}`,
+    faseRobar: 'Roba una carta del mazo o del descarte',
+    faseDescartar: 'Descarta una carta o cierra',
+    descartar: 'Descartar',
+    cerrar: 'Cerrar',
+    ordenar: 'Ordenar',
+    porCombinaciones: 'Por combinaciones',
+    porPalo: 'Por palo',
+    porValor: 'Por valor',
+    sueltas: (n: number) => (n === 0 ? 'Todo ligado' : `Sin ligar: ${n} puntos`),
+    puntos: (n: number) => `${n} puntos`,
+    eliminado: 'Eliminado',
+    robaDe: (quien: string, desde: 'mazo' | 'descarte') =>
+      `${quien} roba del ${desde === 'mazo' ? 'mazo' : 'descarte'}`,
+    descarta: (quien: string, carta: string) => `${quien} descarta ${carta}`,
+    finMano: 'Fin de la mano',
+    cierra: (quien: string) => (quien === 'Tú' ? 'Has cerrado tú' : `Ha cerrado ${quien}`),
+    chinchon: (quien: string) => (quien === 'Tú' ? '¡Chinchón!' : `¡Chinchón de ${quien}!`),
+    puntosMano: 'Mano',
+    total: 'Total',
+    quedaEliminado: 'Queda eliminado',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Clasificación',
+  },
+
+  guinote: {
+    marcador: (nuestros: number, suyos: number, meta: number) =>
+      `${nuestros} – ${suyos} (a ${meta})`,
+    puntos: 'Puntos',
+    arrastre: 'Arrastre',
+    arrastreDesc: 'Se acabó el mazo: hay que seguir el palo y superar.',
+    canta: (quien: string, puntos: number, palo: string) =>
+      quien === 'Tú'
+        ? `Cantas las ${puntos} en ${palo}`
+        : `${quien} canta las ${puntos} en ${palo}`,
+    finMano: (n: number) => (n === 1 ? 'Fin de la primera mano' : `Fin de la mano ${n}`),
+    concepto: 'Concepto',
+    bazas: 'Bazas',
+    cantes: 'Cantes',
+    ultimas: '10 de últimas',
+    totalMano: 'Total de la mano',
+    totalPartida: 'Total de la partida',
+    deVueltas: (meta: number) => `Nadie llega a ${meta}: se juega de vueltas.`,
+    siguienteMano: 'Siguiente mano',
+  },
+
   fin: {
     victoria: '¡Has ganado!',
     derrota: 'Has perdido',
@@ -154,12 +222,15 @@ export const T = {
     porTute: (quien: string) =>
       quien === 'Tú' ? 'La mano terminó con tu tute.' : `La mano terminó con el tute de ${quien}.`,
     detallePuntos: 'Incluye los cantes y los 10 de últimas.',
+    manosJugadas: (n: number) =>
+      n === 1 ? 'Partida resuelta en una mano.' : `Partida resuelta en ${n} manos (de vueltas).`,
   },
 
   cartas: {
     figurasEspanolas: { 10: 'Sota', 11: 'Caballo', 12: 'Rey' } as Record<number, string>,
     figurasFrancesas: { 1: 'As', 11: 'Jota', 12: 'Reina', 13: 'Rey' } as Record<number, string>,
     as: 'As',
+    comodin: 'Comodín',
     palos: {
       oros: 'oros',
       copas: 'copas',
@@ -190,6 +261,8 @@ export const T = {
       brisca: 'Cómo se juega a la Brisca',
       tute: 'Cómo se juega al Tute',
       escoba: 'Cómo se juega a la Escoba',
+      chinchon: 'Cómo se juega al Chinchón',
+      guinote: 'Cómo se juega al Guiñote',
     },
     puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
 
@@ -419,6 +492,129 @@ export const T = {
         texto: [
           'Cuida el 7 de oros y los sietes: dan puntos por sí solos.',
           'Si no recoges, intenta no dejar en la mesa una suma entre 5 y 14: al rival le bastaría una carta para hacer escoba.',
+        ],
+      },
+    ],
+
+    chinchon: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja española, contra la máquina, de 2 a 4 jugadores, cada uno por su cuenta.',
+          'Intentas ligar tus 7 cartas en combinaciones para cerrar la mano antes que los demás. Las cartas que te queden sin ligar suman puntos en tu contra: quien pasa de 100 queda eliminado, y gana el último que queda.',
+        ],
+      },
+      {
+        titulo: 'Las combinaciones',
+        texto: [
+          'Escalera: 3 o más cartas seguidas del mismo palo (en la baraja de 40, después del 7 va la Sota). Trío o cuarteto: 3 o 4 cartas del mismo número.',
+          'El comodín sustituye a cualquier carta, pero cada combinación puede llevar uno como mucho.',
+        ],
+        ejemplo: 'escaleraEspanola',
+      },
+      {
+        titulo: '',
+        texto: [],
+        ejemplo: 'trioComodin',
+      },
+      {
+        titulo: 'Cómo se juega un turno',
+        texto: [
+          'Primero robas una carta: la de arriba del mazo (boca abajo) o la de arriba del descarte (boca arriba). Después descartas una carta, para volver a tener 7.',
+          'Si robas del descarte, no puedes devolver esa misma carta en el mismo turno.',
+        ],
+      },
+      {
+        titulo: 'Cerrar',
+        texto: [
+          'En vez de solo descartar, puedes cerrar si, tras el descarte, todas tus cartas quedan ligadas o te queda solo una suelta pequeña (de 3 o menos, por defecto). Al cerrar termina la mano.',
+          'Si cierras con todo ligado, te restas 10 puntos. Si cierras con las 7 cartas en escalera del mismo palo y sin comodín, haces chinchón y ganas la partida.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'Al cerrar alguien, el resto suma lo que valen sus cartas sin ligar: el As 1, del 2 al 9 su número, las figuras 10 y el comodín 25. La mesa agrupa tus cartas de la mejor forma posible: no tienes que declarar nada.',
+        ],
+      },
+      {
+        titulo: 'En la mesa',
+        texto: [
+          'Toca el mazo o el descarte para robar (o arrastra la carta a tu mano). Para descartar, arrastra una carta al descarte, tócala dos veces, o elígela y pulsa Descartar o Cerrar.',
+          'Tus combinaciones se marcan con colores y verás cuántos puntos te quedan sin ligar. Con «Ordenar» puedes agrupar la mano por combinaciones, por palo o por valor.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Deshazte pronto de las figuras sueltas: son las que más puntos suman.',
+          'Fíjate en lo que descartan los rivales: te dice qué cartas no necesitan.',
+        ],
+      },
+    ],
+
+    guinote: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja española de 40 cartas contra la máquina: con 2 jugadores, o con 4 en parejas (tu compañero es el de enfrente y vuestros puntos se suman).',
+          'Gana la partida el primero que llega a 101 puntos. Si al acabar una mano nadie llega, se juega otra «de vueltas» y los puntos se siguen sumando.',
+        ],
+      },
+      {
+        titulo: 'Lo que vale cada carta',
+        texto: [
+          'De la más fuerte a la más débil: el As, el Tres, el Rey (12), la Sota (10) y el Caballo (11) dan puntos; el 7, 6, 5, 4 y 2 no valen nada. Ojo: a diferencia del Tute, la Sota gana al Caballo.',
+          'Quien gana la última baza suma 10 puntos más (los «10 de últimas»). En total, cada mano reparte 130 puntos más los cantes.',
+        ],
+        ejemplo: 'valoresGuinote',
+      },
+      {
+        titulo: 'El triunfo',
+        texto: [
+          'Cada jugador recibe 6 cartas y la siguiente se pone boca arriba debajo del mazo: es la muestra, y su palo es el triunfo. Una carta de triunfo, aunque sea un 2, gana a cualquier carta de otro palo.',
+        ],
+      },
+      {
+        titulo: 'Cómo se juega una baza',
+        texto: [
+          'Por turnos, cada jugador pone una carta en la mesa. Gana el triunfo más alto o, si nadie echó triunfo, la carta más fuerte del palo que salió primero. Quien gana se lleva la baza y sale en la siguiente.',
+          'Después de cada baza se roba del mazo, primero el que ganó. Mientras queda mazo puedes echar la carta que quieras.',
+        ],
+      },
+      {
+        titulo: 'El arrastre',
+        texto: [
+          'Cuando se acaba el mazo empieza el arrastre: hay que seguir el palo que salió y ganar la baza si se puede. Si no tienes ese palo, tienes que echar triunfo, y superar el triunfo que haya en la mesa si puedes.',
+          'Con 4 jugadores, si la baza ya es de tu compañero no hace falta superarla (salvo que actives esa opción). La mesa solo te deja jugar las cartas permitidas.',
+        ],
+      },
+      {
+        titulo: 'Los cantes',
+        texto: [
+          'Si tienes el Rey y la Sota del mismo palo, puedes cantarlos justo después de ganar una baza, antes de salir: valen 20 puntos, o 40 si son del palo de triunfo (las «cuarenta»).',
+          'Solo se canta mientras queda mazo, una vez por cada baza ganada y cada palo una vez por mano. Cuando puedas cantar, aparecerá un botón.',
+        ],
+        ejemplo: 'canteGuinote',
+      },
+      {
+        titulo: 'Cambiar la muestra',
+        texto: [
+          'Si tienes el 7 de triunfo puedes cambiarlo por la muestra mientras queda mazo (por defecto, después de que tu bando haya ganado alguna baza). Si la muestra es un 7 o menos, se cambia con el 2.',
+        ],
+      },
+      {
+        titulo: 'Cómo jugar una carta',
+        texto: [
+          'Arrastra la carta a la mesa, o tócala y toca la mesa. Con un doble toque también se juega.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'No gastes un triunfo en una baza que no tiene puntos.',
+          'Guarda el Rey y la Sota de un palo hasta que puedas cantarlos.',
+          'En el arrastre cuenta los triunfos que han salido: el que tenga el último manda.',
         ],
       },
     ],

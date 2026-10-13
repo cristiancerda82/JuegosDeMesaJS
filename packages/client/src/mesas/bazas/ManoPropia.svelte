@@ -7,9 +7,15 @@
     cartas: readonly IdCarta[];
     jugable: (carta: IdCarta) => boolean;
     interaccion: Interaccion;
+    /** Combinación a la que pertenece cada carta (se marca con un color), o `null`. */
+    grupo?: (carta: IdCarta) => number | null;
+    /** Zona de destino de la mano (p. ej. para soltar ahí la carta robada). */
+    destino?: string | undefined;
   }
 
-  let { cartas, jugable, interaccion }: Props = $props();
+  let { cartas, jugable, interaccion, grupo = () => null, destino }: Props = $props();
+
+  const COLORES_GRUPO = ['#f2c14e', '#52b788', '#6aa9ff', '#ff8fab'];
 </script>
 
 <!--
@@ -17,13 +23,22 @@
   la carta); la carta dentro conserva su tamaño y la siguiente la tapa en parte. Así la mano
   cabe entera, sin scroll horizontal, tenga 3 o 10 cartas.
 -->
-<div class="mano" data-testid="mano">
+<div
+  class="mano"
+  class:legal={destino !== undefined && interaccion.resaltados.has(destino)}
+  data-testid="mano"
+  data-destino={destino}
+>
   {#each cartas as id (id)}
+    {@const g = grupo(id)}
     <div class="ranura">
       <div
         class="carta-mano"
         class:jugable={jugable(id)}
         class:seleccionada={interaccion.seleccion === id}
+        class:en-grupo={g !== null}
+        style:--color-grupo={g === null ? null : COLORES_GRUPO[g % COLORES_GRUPO.length]}
+        data-grupo={g}
         data-carta={id}
         data-desde="mazo"
         data-testid="mano-{id}"
@@ -77,6 +92,24 @@
   .carta-mano.seleccionada {
     outline: 3px solid var(--resalte);
     z-index: 2;
+  }
+
+  .mano.legal {
+    border-radius: 12px;
+    outline: 3px solid var(--resalte);
+    outline-offset: 2px;
+  }
+
+  /* Barra de color bajo las cartas de una misma combinación. */
+  .carta-mano.en-grupo::after {
+    content: '';
+    position: absolute;
+    left: 6%;
+    right: 6%;
+    bottom: -7px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--color-grupo);
   }
 
   :global(.carta-mano.arrastrando) {

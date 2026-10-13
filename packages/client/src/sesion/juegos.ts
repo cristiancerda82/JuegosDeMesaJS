@@ -1,9 +1,23 @@
 import {
   brisca,
+  chinchon,
+  CONFIG_CHINCHON_POR_DEFECTO,
+  iaChinchonBasica,
+  type AccionChinchon,
+  type ConfigChinchon,
+  type EstadoChinchon,
+  type VistaChinchon,
   CONFIG_BRISCA_POR_DEFECTO,
   CONFIG_KLONDIKE_POR_DEFECTO,
   CONFIG_ESCOBA_POR_DEFECTO,
   CONFIG_TUTE_POR_DEFECTO,
+  CONFIG_GUINOTE_POR_DEFECTO,
+  guinote,
+  iaGuinoteBasica,
+  type AccionGuinote,
+  type ConfigGuinote,
+  type EstadoGuinote,
+  type VistaGuinote,
   iaBriscaBasica,
   iaEscobaBasica,
   iaTuteBasica,
@@ -47,14 +61,23 @@ export interface DefJuego<C, E, A, V> {
   pausaTras(antes: V, despues: V): number;
 }
 
-export type IdJuego = 'klondike' | 'brisca' | 'tute' | 'escoba';
+export type IdJuego = 'klondike' | 'brisca' | 'tute' | 'escoba' | 'chinchon' | 'guinote';
 
-export const ID_JUEGOS: readonly IdJuego[] = ['klondike', 'brisca', 'tute', 'escoba'];
+export const ID_JUEGOS: readonly IdJuego[] = [
+  'klondike',
+  'brisca',
+  'tute',
+  'escoba',
+  'chinchon',
+  'guinote',
+];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
 export type DefBrisca = DefJuego<ConfigBrisca, EstadoBrisca, AccionBrisca, VistaBrisca>;
 export type DefTute = DefJuego<ConfigTute, EstadoTute, AccionTute, VistaTute>;
 export type DefEscoba = DefJuego<ConfigEscoba, EstadoEscoba, AccionEscoba, VistaEscoba>;
+export type DefChinchon = DefJuego<ConfigChinchon, EstadoChinchon, AccionChinchon, VistaChinchon>;
+export type DefGuinote = DefJuego<ConfigGuinote, EstadoGuinote, AccionGuinote, VistaGuinote>;
 
 export const DEF_KLONDIKE: DefKlondike = {
   id: 'klondike',
@@ -106,6 +129,20 @@ export const DEF_TUTE: DefTute = {
   },
 };
 
+export const DEF_GUINOTE: DefGuinote = {
+  id: 'guinote',
+  nombre: T.menu.guinote,
+  juego: guinote,
+  configPorDefecto: CONFIG_GUINOTE_POR_DEFECTO,
+  ia: iaGuinoteBasica,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, la última baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const cante = despues.cantes.length > antes.cantes.length ? PAUSA_CANTE_MS : 0;
+    return Math.max(cante, pausaBazas(antes, despues));
+  },
+};
+
 /** Tiempo para ver qué se jugó y qué se recogió; algo más si fue escoba. */
 const PAUSA_JUGADA_MS = 900;
 const PAUSA_ESCOBA_MS = 1600;
@@ -125,11 +162,30 @@ export const DEF_ESCOBA: DefEscoba = {
   },
 };
 
+/** Tiempo para ver qué roba o descarta un rival. */
+const PAUSA_RIVAL_MS = 600;
+
+export const DEF_CHINCHON: DefChinchon = {
+  id: 'chinchon',
+  nombre: T.menu.chinchon,
+  juego: chinchon,
+  configPorDefecto: CONFIG_CHINCHON_POR_DEFECTO,
+  ia: iaChinchonBasica,
+  // El cierre de la mano lo detiene la propia mesa con el panel de resultados.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    return accion.asiento !== despues.asiento ? PAUSA_RIVAL_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
   tute: DEF_TUTE,
   escoba: DEF_ESCOBA,
+  chinchon: DEF_CHINCHON,
+  guinote: DEF_GUINOTE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

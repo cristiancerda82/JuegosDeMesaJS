@@ -17,9 +17,9 @@ export function nombreAsiento(asiento: Asiento, jugadores: number): string {
   return asiento === 2 ? T.brisca.companero : T.brisca.rivalN(asiento === 1 ? 1 : 2);
 }
 
-/** Lo que la mesa de bazas necesita de la vista; lo cumplen la Brisca y el Tute. */
+/** Lo que la mesa de bazas necesita de la vista; lo cumplen la Brisca, el Tute y el Guiñote. */
 export interface VistaBazas {
-  readonly config: { readonly jugadores: 2 | 4; readonly manos: number };
+  readonly config: { readonly jugadores: 2 | 4 };
   readonly miMano: readonly IdCarta[] | null;
   readonly cartasEnMano: readonly number[];
   readonly mazo: number;

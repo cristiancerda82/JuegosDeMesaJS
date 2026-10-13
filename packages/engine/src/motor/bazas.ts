@@ -14,22 +14,46 @@ export interface CartaJugada {
 
 // ── Valores de las cartas ────────────────────────────────────────────────────
 
-/** De mayor a menor: as, tres, rey, caballo, sota, 7, 6, 5, 4, 2. */
-const ORDEN = [1, 3, 12, 11, 10, 7, 6, 5, 4, 2];
-const PUNTOS: Readonly<Record<number, number>> = { 1: 11, 3: 10, 12: 4, 11: 3, 10: 2 };
+/** Orden de las cartas de un palo (de mayor a menor) y puntos de cada valor. */
+export interface ValoresBazas {
+  readonly orden: readonly number[];
+  readonly puntos: Readonly<Record<number, number>>;
+}
+
+/** Brisca y Tute: as, tres, rey, caballo, sota, 7, 6, 5, 4, 2. */
+export const VALORES_BRISCA: ValoresBazas = {
+  orden: [1, 3, 12, 11, 10, 7, 6, 5, 4, 2],
+  puntos: { 1: 11, 3: 10, 12: 4, 11: 3, 10: 2 },
+};
+
+/** Guiñote: as, tres, rey, sota, caballo, 7, 6, 5, 4, 2; la sota vale 3 y el caballo 2. */
+export const VALORES_GUINOTE: ValoresBazas = {
+  orden: [1, 3, 12, 10, 11, 7, 6, 5, 4, 2],
+  puntos: { 1: 11, 3: 10, 12: 4, 10: 3, 11: 2 },
+};
 
 export const paloDe = (id: IdCarta) => cartaDeId(id)!.palo as PaloEspanol;
 export const valorDe = (id: IdCarta) => cartaDeId(id)!.valor;
 /** Fuerza para comparar cartas del mismo palo: mayor es mejor. */
-export const fuerza = (id: IdCarta) => ORDEN.length - ORDEN.indexOf(valorDe(id));
-export const puntosDe = (id: IdCarta) => PUNTOS[valorDe(id)] ?? 0;
+export const fuerza = (id: IdCarta, valores: ValoresBazas = VALORES_BRISCA) =>
+  valores.orden.length - valores.orden.indexOf(valorDe(id));
+export const puntosDe = (id: IdCarta, valores: ValoresBazas = VALORES_BRISCA) =>
+  valores.puntos[valorDe(id)] ?? 0;
 
 /** Carta que gana la baza: el triunfo más alto, o la más alta del palo de salida. */
-export function cartaGanadora(mesa: readonly CartaJugada[], triunfo: PaloEspanol): CartaJugada {
+export function cartaGanadora(
+  mesa: readonly CartaJugada[],
+  triunfo: PaloEspanol,
+  valores: ValoresBazas = VALORES_BRISCA,
+): CartaJugada {
   let mejor = mesa[0]!;
   for (const jugada of mesa.slice(1)) {
     const mismoPalo = paloDe(jugada.carta) === paloDe(mejor.carta);
-    if (mismoPalo ? fuerza(jugada.carta) > fuerza(mejor.carta) : paloDe(jugada.carta) === triunfo) {
+    if (
+      mismoPalo
+        ? fuerza(jugada.carta, valores) > fuerza(mejor.carta, valores)
+        : paloDe(jugada.carta) === triunfo
+    ) {
       mejor = jugada;
     }
   }
@@ -37,8 +61,8 @@ export function cartaGanadora(mesa: readonly CartaJugada[], triunfo: PaloEspanol
 }
 
 /** Carta de la mano con la que se cambia la muestra: el 7 de triunfo, o el 2 si la muestra es baja. */
-export function cartaDeCambio(muestra: IdCarta): IdCarta {
-  const baja = fuerza(muestra) <= fuerza(`${paloDe(muestra)}-7`);
+export function cartaDeCambio(muestra: IdCarta, valores: ValoresBazas = VALORES_BRISCA): IdCarta {
+  const baja = fuerza(muestra, valores) <= fuerza(`${paloDe(muestra)}-7`, valores);
   return `${paloDe(muestra)}-${baja ? 2 : 7}`;
 }
 
@@ -92,6 +116,8 @@ export interface OpcionesObligadas {
   readonly asiento: Asiento;
   /** Si es `false` y la baza la va ganando el compañero, no hay que superarla ni fallar. */
   readonly montarSobreCompanero: boolean;
+  /** Orden de las cartas; por defecto, el de la Brisca y el Tute. */
+  readonly valores?: ValoresBazas;
 }
 
 /**
@@ -106,8 +132,9 @@ export function cartasObligadas(
   opciones: OpcionesObligadas,
 ): readonly IdCarta[] {
   if (mesa.length === 0) return mano;
+  const valores = opciones.valores ?? VALORES_BRISCA;
   const salida = paloDe(mesa[0]!.carta);
-  const ganadora = cartaGanadora(mesa, triunfo);
+  const ganadora = cartaGanadora(mesa, triunfo, valores);
   const delCompanero =
     !opciones.montarSobreCompanero &&
     ganadora.asiento !== opciones.asiento &&
@@ -115,7 +142,9 @@ export function cartasObligadas(
   const superanA = (cartas: readonly IdCarta[]) => {
     if (delCompanero) return cartas;
     const superan = cartas.filter(
-      (c) => paloDe(c) === paloDe(ganadora.carta) && fuerza(c) > fuerza(ganadora.carta),
+      (c) =>
+        paloDe(c) === paloDe(ganadora.carta) &&
+        fuerza(c, valores) > fuerza(ganadora.carta, valores),
     );
     return superan.length > 0 ? superan : cartas;
   };

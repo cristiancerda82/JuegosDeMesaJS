@@ -1,5 +1,12 @@
 <script lang="ts">
-  import type { ConfigBrisca, ConfigEscoba, ConfigKlondike, ConfigTute } from '@juegos/engine';
+  import type {
+    ConfigBrisca,
+    ConfigChinchon,
+    ConfigEscoba,
+    ConfigGuinote,
+    ConfigKlondike,
+    ConfigTute,
+  } from '@juegos/engine';
   import { JUEGOS, type IdJuego } from '../sesion/juegos';
   import type { ConfigJuego } from '../sesion/partida';
   import { T } from '../textos';
@@ -20,6 +27,8 @@
   let brisca: Editable<ConfigBrisca> = $state({ ...JUEGOS.brisca.configPorDefecto });
   let tute: Editable<ConfigTute> = $state({ ...JUEGOS.tute.configPorDefecto });
   let escoba: Editable<ConfigEscoba> = $state({ ...JUEGOS.escoba.configPorDefecto });
+  let chinchon: Editable<ConfigChinchon> = $state({ ...JUEGOS.chinchon.configPorDefecto });
+  let guinote: Editable<ConfigGuinote> = $state({ ...JUEGOS.guinote.configPorDefecto });
 
   const VUELTAS: readonly (number | null)[] = [null, 3, 1, 0];
 
@@ -27,7 +36,7 @@
 
   function enviar(ev: SubmitEvent) {
     ev.preventDefault();
-    const configs = { klondike, brisca, tute, escoba };
+    const configs = { klondike, brisca, tute, escoba, chinchon, guinote };
     empezar({ ...configs[juego] });
   }
 </script>
@@ -58,6 +67,37 @@
           </label>
         {/each}
       </fieldset>
+    {:else if juego === 'chinchon'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [2, 3, 4] as n (n)}
+          <label><input type="radio" bind:group={chinchon.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.baraja}</legend>
+        <label><input type="radio" bind:group={chinchon.baraja} value="espanola40" /> {T.opciones.baraja40}</label>
+        <label><input type="radio" bind:group={chinchon.baraja} value="espanola48" /> {T.opciones.baraja48}</label>
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.comodines}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={chinchon.comodines} />
+          {T.opciones.comodinesDesc}
+        </label>
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.limite}</legend>
+        {#each [100, 50] as l (l)}
+          <label><input type="radio" bind:group={chinchon.limite} value={l} /> {T.opciones.limiteN(l)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.cierreMaximo}</legend>
+        {#each [3, 5, 0] as m (m)}
+          <label><input type="radio" bind:group={chinchon.cierreMaximo} value={m} /> {T.opciones.cierreN(m)}</label>
+        {/each}
+      </fieldset>
     {:else if juego === 'escoba'}
       <fieldset>
         <legend>{T.opciones.jugadores}</legend>
@@ -82,6 +122,31 @@
         <label class="casilla">
           <input type="checkbox" bind:checked={escoba.escobaInicial} />
           {T.opciones.escobaInicialDesc}
+        </label>
+      </fieldset>
+    {:else if juego === 'guinote'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        <label><input type="radio" bind:group={guinote.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
+        <label><input type="radio" bind:group={guinote.jugadores} value={4} /> {T.opciones.cuatroJugadores}</label>
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.puntosPartida}</legend>
+        {#each [101, 51, 151] as p (p)}
+          <label><input type="radio" bind:group={guinote.meta} value={p} /> {T.opciones.puntosN(p)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.cambioSieteGuinote}</legend>
+        <label><input type="radio" bind:group={guinote.cambioSiete} value="trasGanarBaza" /> {T.opciones.cambioSieteTrasBaza}</label>
+        <label><input type="radio" bind:group={guinote.cambioSiete} value="libre" /> {T.opciones.cambioSieteLibre}</label>
+        <label><input type="radio" bind:group={guinote.cambioSiete} value="no" /> {T.opciones.cambioNo}</label>
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.montar}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={guinote.montarSobreCompanero} />
+          {T.opciones.montarArrastreDesc}
         </label>
       </fieldset>
     {:else if juego === 'tute'}

@@ -2,6 +2,8 @@
   import { HUMANO } from '../sesion/sesion.svelte';
   import type { Partida } from '../sesion/partida';
   import DesgloseEscoba from '../mesas/DesgloseEscoba.svelte';
+  import ResultadoChinchon from '../mesas/ResultadoChinchon.svelte';
+  import ResumenGuinote from '../mesas/ResumenGuinote.svelte';
   import { formatoTiempo } from '../mesas/tiempo';
   import { T } from '../textos';
 
@@ -23,7 +25,16 @@
     return fin.ganadores.includes(HUMANO) ? T.fin.victoria : T.fin.derrota;
   });
 
-  const parejas = $derived(partida.id !== 'klondike' && partida.sesion.vista.config.jugadores === 4);
+  // En el Chinchón cada uno juega por su cuenta: no hay parejas.
+  const parejas = $derived(
+    partida.id !== 'klondike' &&
+      partida.id !== 'chinchon' &&
+      partida.sesion.vista.config.jugadores === 4,
+  );
+
+  /** En el Chinchón: nombres por asiento y clasificación por puntos. */
+  const nombreChinchon = (asiento: number, jugadores: number) =>
+    asiento === HUMANO ? T.brisca.tu : jugadores === 2 ? T.brisca.rival : T.brisca.rivalN(asiento);
   const lados = $derived(
     parejas ? [T.brisca.nosotros, T.brisca.ellos] : [T.brisca.tu, T.brisca.rival],
   );
@@ -52,6 +63,38 @@
           totales={vista.puntosPartida}
         />
       {/if}
+    {:else if partida.id === 'guinote'}
+      {@const ultima = partida.sesion.vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenGuinote resultado={ultima} lados={[lados[0]!, lados[1]!]} />
+      {/if}
+      <p class="nota" data-testid="fin-guinote">
+        {T.fin.manosJugadas(partida.sesion.vista.resultadosManos.length)}
+      </p>
+    {:else if partida.id === 'chinchon'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResultadoChinchon
+          resultado={ultima}
+          nombre={(a) => nombreChinchon(a, n)}
+          eliminadosAntes={vista.resultadosManos.at(-2)?.eliminadosTras ?? new Array<boolean>(n).fill(false)}
+        />
+      {/if}
+      <table>
+        <caption>{T.chinchon.clasificacion}</caption>
+        <tbody>
+          {#each Array.from({ length: n }, (_, a) => a).sort((a, b) => vista.puntos[a]! - vista.puntos[b]!) as a (a)}
+            <tr>
+              <th scope="row">{nombreChinchon(a, n)}</th>
+              <td data-testid="clasificacion-{a}">
+                {vista.eliminados[a] ? T.chinchon.eliminado : T.chinchon.puntos(vista.puntos[a]!)}
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
     {:else}
       {@const vista = partida.sesion.vista}
       {#if vista.config.manos === 1}

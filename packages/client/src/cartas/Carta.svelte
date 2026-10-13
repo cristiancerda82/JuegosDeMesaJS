@@ -1,8 +1,11 @@
 <script lang="ts">
-  import { cartaDeId, type IdCarta } from '@juegos/engine';
+  import { cartaDeId, esComodin, type IdCarta } from '@juegos/engine';
   import { T } from '../textos';
   import {
     colocar,
+    COLOR_COMODIN,
+    COMODIN,
+    ESTRELLA,
     colorTinta,
     type DibujoPalo,
     figuraDe,
@@ -33,7 +36,25 @@
   role="img"
   aria-label={id === null ? T.cartas.dorso : nombreCarta(id)}
 >
-  {#if carta === null || palo === null}
+  {#if id !== null && esComodin(id)}
+    <rect x="1" y="1" width="98" height="138" rx="8" fill="var(--papel)" stroke="var(--borde-carta)" stroke-width="1.5" />
+    {#each [0, 1] as k (k)}
+      <g transform={k === 0 ? '' : 'rotate(180 50 70)'}>
+        <path d={ESTRELLA} fill={COLOR_COMODIN} transform={colocar(12, 16, 18)} />
+      </g>
+    {/each}
+    <rect x="18" y="22" width="64" height="96" rx="6" fill={COLOR_COMODIN} fill-opacity="0.08" stroke={COLOR_COMODIN} stroke-width="2" />
+    {#each COMODIN as capa, i (i)}
+      <path
+        d={capa.d}
+        fill={capa.relleno === 'papel' ? 'var(--papel)' : capa.relleno === 'oro' ? '#d4a017' : COLOR_COMODIN}
+        transform={colocar(50, 62, 54)}
+      />
+    {/each}
+    <text x="50" y="108" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="1" fill={COLOR_COMODIN}>
+      {T.cartas.comodin.toUpperCase()}
+    </text>
+  {:else if carta === null || palo === null}
     <defs>
       <pattern id="trama-dorso" width="12" height="12" patternUnits="userSpaceOnUse">
         <path d="M6 0L12 6L6 12L0 6Z" fill="var(--dorso-claro)" opacity="0.55" />

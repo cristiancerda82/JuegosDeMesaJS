@@ -136,3 +136,60 @@ La mesa de la Escoba MUST anunciar cada escoba, propia o de la IA, y mostrar dur
 #### Scenario: Fin de una mano de Escoba
 - **WHEN** termina una mano de Escoba
 - **THEN** el jugador ve el desglose de puntos de cada bando y el total de la partida antes de que se reparta la siguiente mano
+
+### Requirement: Chinchón en la suite
+El menú MUST incluir el Chinchón junto al resto de juegos. Sus opciones MUST permitir elegir el número de jugadores (2, 3 o 4), la baraja (40 o 48 cartas), si hay comodines, el límite de eliminación y el valor máximo de la carta suelta para cerrar, antes de empezar.
+
+#### Scenario: Empezar una partida de Chinchón
+- **WHEN** el jugador elige el Chinchón en el menú, ajusta las opciones y empieza
+- **THEN** se abre la mesa del Chinchón con la configuración elegida
+
+### Requirement: Robar, descartar y cerrar en la mesa
+En la mesa del Chinchón el jugador MUST poder robar tocando o arrastrando desde el mazo o desde la carta de arriba del descarte, y descartar arrastrando una carta al descarte o eligiéndola y pulsando "Descartar". Cuando cerrar sea legal con la carta elegida, MUST poder hacerlo con un botón "Cerrar". La mesa MUST indicar en qué fase está el jugador (robar o descartar) y de quién es el turno, y mostrar qué carta roba y descarta cada rival.
+
+#### Scenario: Turno completo desde la mesa
+- **WHEN** el jugador toca el mazo y después arrastra una carta de su mano al descarte
+- **THEN** roba una carta, la descartada queda arriba del descarte y el turno pasa al siguiente
+
+#### Scenario: Cerrar desde la mesa
+- **WHEN** el jugador elige una carta con la que puede cerrar
+- **THEN** el botón "Cerrar" está disponible y, al pulsarlo, termina la mano
+
+### Requirement: Ordenar la mano y ver sus combinaciones
+La mano propia del Chinchón MUST mostrar marcadas sus combinaciones según la mejor agrupación y las cartas sin ligar, con los puntos que sumarían. El jugador MUST poder ordenar la mano por combinaciones, por palo o por valor.
+
+#### Scenario: Ver combinaciones
+- **WHEN** el jugador tiene en la mano un trío y una escalera
+- **THEN** la mesa los muestra agrupados y marcados, y separa las cartas sin ligar con sus puntos
+
+### Requirement: Resultado de la mano de Chinchón
+Al terminar cada mano del Chinchón, la mesa MUST mostrar quién cerró, las manos destapadas de todos los jugadores con sus combinaciones y sus cartas sin ligar, los puntos de la mano y los acumulados de cada jugador, y quién queda eliminado, antes de que se reparta la siguiente mano.
+
+#### Scenario: Fin de una mano de Chinchón
+- **WHEN** un rival cierra la mano
+- **THEN** el jugador ve las manos de todos agrupadas, los puntos de cada uno y los totales, y la partida espera a que pulse "Siguiente mano"
+
+### Requirement: Guiñote en la suite
+El menú MUST incluir el Guiñote junto al resto de juegos. Antes de empezar, sus opciones MUST permitir elegir el número de jugadores (2, o 4 en parejas), el cambio del 7 de triunfo, si hay que montar sobre el compañero y los puntos de la partida.
+
+#### Scenario: Empezar una partida de Guiñote
+- **WHEN** el jugador elige el Guiñote en el menú, ajusta las opciones y empieza
+- **THEN** se abre la mesa del Guiñote con la configuración elegida
+
+### Requirement: Mesa del Guiñote
+La mesa del Guiñote MUST reutilizar la mesa de bazas: mano propia, asientos rivales, mazo con la muestra y baza en curso. Cuando cantar o cambiar el 7 sea una acción legal, la mesa MUST ofrecerlo con un control que diga qué se hace (por ejemplo, "Cantar las 40 en oros"). Cada cante, propio o de la IA, MUST anunciarse mostrando quién canta, qué palo, cuántos puntos y el rey y la sota de ese palo. La mesa MUST mantener visibles la lista de cantes de la mano, los puntos acumulados de cada bando con la meta de la partida, y un aviso de que se está en el arrastre cuando se agota el mazo.
+
+#### Scenario: Cante de la IA
+- **WHEN** la IA canta las 20 en espadas
+- **THEN** la mesa muestra un aviso con el cante y el rey y la sota de espadas, y el cante queda en la lista de cantes de la mano
+
+#### Scenario: Empieza el arrastre
+- **WHEN** se roba la muestra y se agota el mazo
+- **THEN** la mesa indica que se está en el arrastre y solo deja jugar las cartas que obligan las reglas
+
+### Requirement: Resumen de la mano de Guiñote
+Al terminar cada mano del Guiñote, la mesa MUST mostrar los puntos de cada bando en bazas, cantes y 10 de últimas, el total de la mano y los acumulados de la partida. Si la partida sigue, MUST indicar que se juega de vueltas y esperar a que el jugador pulse "Siguiente mano" antes de repartir.
+
+#### Scenario: Ir de vueltas
+- **WHEN** termina la primera mano y ningún bando llega a 101
+- **THEN** el jugador ve el resumen de la mano con los acumulados y el aviso de que se juega de vueltas, y la partida espera a que pulse "Siguiente mano"

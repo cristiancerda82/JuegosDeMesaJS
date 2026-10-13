@@ -10,7 +10,7 @@
   let { volver }: Props = $props();
 
   const barajas = [
-    { titulo: T.cartas.barajaEspanola, cartas: crearBaraja('espanola48') },
+    { titulo: T.cartas.barajaEspanola, cartas: crearBaraja('espanola48', { comodines: true }) },
     { titulo: T.cartas.barajaFrancesa, cartas: crearBaraja('francesa52') },
   ];
 </script>

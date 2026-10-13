@@ -1,6 +1,7 @@
 import {
   cartaDeId,
   colorDe,
+  esComodin,
   PALOS_FRANCESES,
   type IdCarta,
   type Palo,
@@ -161,6 +162,34 @@ export const FIGURAS: Readonly<Record<Figura, readonly CapaIcono[]>> = {
   ],
 };
 
+// ── Comodín ──────────────────────────────────────────────────────────────────
+
+export const COLOR_COMODIN = '#6a1b9a';
+
+/** Estrella de cinco puntas para las esquinas del comodín (caja de 100 × 100). */
+export const ESTRELLA = 'M50 4L61 38H97L68 59L79 94L50 72L21 94L32 59L3 38H39Z';
+
+/** Gorro de bufón con tres puntas y cascabeles, con la banda en dorado. */
+export const COMODIN: readonly {
+  readonly d: string;
+  readonly relleno: 'tinta' | 'oro' | 'papel';
+}[] = [
+  {
+    relleno: 'tinta',
+    d:
+      'M18 74C20 58 16 50 6 44C22 36 32 44 38 54C40 36 44 22 50 10C56 22 60 36 62 54' +
+      'C68 44 78 36 94 44C84 50 80 58 82 74Z',
+  },
+  {
+    relleno: 'oro',
+    d: `M8 74H92V88H8Z${circulo(6, 44, 7)}${circulo(50, 7, 7)}${circulo(94, 44, 7)}`,
+  },
+  {
+    relleno: 'papel',
+    d: `${circulo(26, 81, 3.5)}${circulo(50, 81, 3.5)}${circulo(74, 81, 3.5)}`,
+  },
+];
+
 /** Figura que lleva la carta, o `null` si no es figura. */
 export function figuraDe(palo: Palo, valor: number): Figura | null {
   const figuras: Record<number, Figura> = esFrancesa(palo)
@@ -177,7 +206,7 @@ export function colorTinta(palo: Palo): string {
 /** Nombre accesible de la carta, p. ej. "Caballo de copas" o "7 de picas". */
 export function nombreCarta(id: IdCarta): string {
   const carta = cartaDeId(id);
-  if (carta === null) return id;
+  if (carta === null) return esComodin(id) ? T.cartas.comodin : id;
   const figuras = esFrancesa(carta.palo) ? T.cartas.figurasFrancesas : T.cartas.figurasEspanolas;
   const valor = figuras[carta.valor] ?? (carta.valor === 1 ? T.cartas.as : String(carta.valor));
   return T.cartas.nombre(valor, T.cartas.palos[carta.palo] ?? carta.palo);

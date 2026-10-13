@@ -9,6 +9,7 @@ import {
   puntosDe,
   robar,
   siguiente,
+  VALORES_GUINOTE,
   type CartaJugada,
 } from '../../src/motor/bazas';
 
@@ -154,5 +155,44 @@ describe('cartasObligadas', () => {
     expect(cartasObligadas(['espadas-2', 'espadas-3'], mesa, 'copas', montando(2))).toEqual([
       'espadas-3',
     ]);
+  });
+});
+
+describe('valores del Guiñote', () => {
+  const G = VALORES_GUINOTE;
+
+  it('la baraja de 40 suma 120 puntos', () => {
+    expect(crearBaraja('espanola40').reduce((s, c) => s + puntosDe(c, G), 0)).toBe(120);
+  });
+
+  it('orden: as, tres, rey, sota, caballo, 7, 6, 5, 4, 2; la sota vale 3 y el caballo 2', () => {
+    const orden = [1, 3, 12, 10, 11, 7, 6, 5, 4, 2].map((v) => `oros-${v}` as IdCarta);
+    expect([...orden].sort((a, b) => fuerza(b, G) - fuerza(a, G))).toEqual(orden);
+    expect(puntosDe('oros-10', G)).toBe(3);
+    expect(puntosDe('oros-11', G)).toBe(2);
+  });
+
+  it('la sota gana al caballo', () => {
+    const mesa = jugadas([0, 'oros-11'], [1, 'oros-10']);
+    expect(cartaGanadora(mesa, 'copas', G).asiento).toBe(1);
+    expect(cartaGanadora(mesa, 'copas').asiento).toBe(0);
+  });
+
+  it('obligaciones con el orden del Guiñote: montar con la sota sobre el caballo', () => {
+    const mano: IdCarta[] = ['espadas-2', 'espadas-10', 'oros-1'];
+    const mesa = jugadas([0, 'espadas-11']);
+    expect(
+      cartasObligadas(mano, mesa, 'copas', {
+        asiento: 1,
+        montarSobreCompanero: false,
+        valores: G,
+      }),
+    ).toEqual(['espadas-10']);
+  });
+
+  it('cambio: el 7, o el 2 si la muestra es un 7 o menor', () => {
+    expect(cartaDeCambio('bastos-10', G)).toBe('bastos-7');
+    expect(cartaDeCambio('bastos-11', G)).toBe('bastos-7');
+    expect(cartaDeCambio('bastos-6', G)).toBe('bastos-2');
   });
 });

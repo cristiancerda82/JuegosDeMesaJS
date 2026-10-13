@@ -12,6 +12,11 @@ export interface ReglasInteraccion {
   mover(origen: string, destino: string): void;
   /** Elementos que se arrastran con el origen (en Klondike, la secuencia que tiene encima). */
   elementos(origen: string, el: HTMLElement): HTMLElement[];
+  /**
+   * Toque simple sobre un origen. Si devuelve `true`, el toque queda resuelto y no se elige nada
+   * (p. ej. tocar el mazo para robar).
+   */
+  alTocar?(origen: string): boolean;
 }
 
 /** Distancia mínima, en píxeles, para que un toque se convierta en arrastre. */
@@ -149,6 +154,11 @@ export class Interaccion {
   }
 
   #tocar(origen: string, nodo: HTMLElement): void {
+    if (this.#reglas.alTocar?.(origen)) {
+      this.seleccion = null;
+      this.#ultimoToque = null;
+      return;
+    }
     const ahora = Date.now();
     const doble =
       this.#ultimoToque?.origen === origen && ahora - this.#ultimoToque.t < DOBLE_TOQUE_MS;

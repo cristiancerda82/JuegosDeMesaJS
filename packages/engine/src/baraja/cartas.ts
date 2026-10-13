@@ -14,8 +14,16 @@ export interface Carta {
   readonly valor: number;
 }
 
-/** Identificador serializable y estable de una carta, p. ej. "oros-1" o "picas-13". */
-export type IdCarta = `${Palo}-${number}`;
+/** Los dos comodines: no tienen palo ni valor. */
+export const COMODINES = ['comodin-1', 'comodin-2'] as const;
+export type IdComodin = (typeof COMODINES)[number];
+
+/** Identificador serializable y estable de una carta, p. ej. "oros-1", "picas-13" o "comodin-1". */
+export type IdCarta = `${Palo}-${number}` | IdComodin;
+
+export function esComodin(id: string): id is IdComodin {
+  return (COMODINES as readonly string[]).includes(id);
+}
 
 export type TipoBaraja = 'espanola40' | 'espanola48' | 'francesa52';
 
@@ -49,9 +57,22 @@ export function cartaDeId(id: string): Carta | null {
   return { palo, valor };
 }
 
-/** Crea una baraja completa en orden canónico (palo por palo, valores ascendentes). */
-export function crearBaraja(tipo: TipoBaraja): IdCarta[] {
-  return PALOS[tipo].flatMap((palo) => VALORES[tipo].map((valor) => idCarta({ palo, valor })));
+/**
+ * Crea una baraja completa en orden canónico (palo por palo, valores ascendentes).
+ * Las españolas pueden llevar los 2 comodines al final.
+ */
+export function crearBaraja(
+  tipo: TipoBaraja,
+  opciones: { readonly comodines?: boolean } = {},
+): IdCarta[] {
+  const cartas: IdCarta[] = PALOS[tipo].flatMap((palo) =>
+    VALORES[tipo].map((valor) => idCarta({ palo, valor })),
+  );
+  if (opciones.comodines) {
+    if (tipo === 'francesa52') throw new Error('Los comodines solo se usan con la baraja española');
+    cartas.push(...COMODINES);
+  }
+  return cartas;
 }
 
 export function colorDe(palo: PaloFrances): 'rojo' | 'negro' {

@@ -1,5 +1,13 @@
 import {
   repetir,
+  type AccionChinchon,
+  type AccionGuinote,
+  type ConfigGuinote,
+  type EstadoGuinote,
+  type VistaGuinote,
+  type ConfigChinchon,
+  type EstadoChinchon,
+  type VistaChinchon,
   type AccionBrisca,
   type AccionKlondike,
   type AccionEscoba,
@@ -22,6 +30,8 @@ import {
 import type { Guardado } from './guardado';
 import {
   DEF_BRISCA,
+  DEF_CHINCHON,
+  DEF_GUINOTE,
   DEF_KLONDIKE,
   DEF_ESCOBA,
   DEF_TUTE,
@@ -35,15 +45,20 @@ export type SesionKlondike = Sesion<ConfigKlondike, EstadoKlondike, AccionKlondi
 export type SesionBrisca = Sesion<ConfigBrisca, EstadoBrisca, AccionBrisca, VistaBrisca>;
 export type SesionTute = Sesion<ConfigTute, EstadoTute, AccionTute, VistaTute>;
 export type SesionEscoba = Sesion<ConfigEscoba, EstadoEscoba, AccionEscoba, VistaEscoba>;
+export type SesionChinchon = Sesion<ConfigChinchon, EstadoChinchon, AccionChinchon, VistaChinchon>;
+export type SesionGuinote = Sesion<ConfigGuinote, EstadoGuinote, AccionGuinote, VistaGuinote>;
 
 /** Partida en curso, etiquetada por juego para que cada mesa reciba su tipo de sesión. */
 export type Partida =
   | { readonly id: 'klondike'; readonly sesion: SesionKlondike }
   | { readonly id: 'brisca'; readonly sesion: SesionBrisca }
   | { readonly id: 'tute'; readonly sesion: SesionTute }
-  | { readonly id: 'escoba'; readonly sesion: SesionEscoba };
+  | { readonly id: 'escoba'; readonly sesion: SesionEscoba }
+  | { readonly id: 'chinchon'; readonly sesion: SesionChinchon }
+  | { readonly id: 'guinote'; readonly sesion: SesionGuinote };
 
-export type ConfigJuego = ConfigKlondike | ConfigBrisca | ConfigTute | ConfigEscoba;
+export type ConfigJuego =
+  ConfigKlondike | ConfigBrisca | ConfigTute | ConfigEscoba | ConfigChinchon | ConfigGuinote;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -60,6 +75,10 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_TUTE);
     case 'escoba':
       return hacer(DEF_ESCOBA);
+    case 'chinchon':
+      return hacer(DEF_CHINCHON);
+    case 'guinote':
+      return hacer(DEF_GUINOTE);
   }
 }
 
