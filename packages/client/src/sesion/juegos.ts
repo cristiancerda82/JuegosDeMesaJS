@@ -9,6 +9,12 @@ import {
   type VistaChinchon,
   CONFIG_BRISCA_POR_DEFECTO,
   CONFIG_KLONDIKE_POR_DEFECTO,
+  CONFIG_FREECELL_POR_DEFECTO,
+  freecell,
+  type AccionFreeCell,
+  type ConfigFreeCell,
+  type EstadoFreeCell,
+  type VistaFreeCell,
   CONFIG_ESCOBA_POR_DEFECTO,
   CONFIG_TUTE_POR_DEFECTO,
   CONFIG_SIETE_Y_MEDIA_POR_DEFECTO,
@@ -69,7 +75,7 @@ export interface DefJuego<C, E, A, V> {
 }
 
 export type IdJuego =
-  'klondike' | 'brisca' | 'tute' | 'escoba' | 'chinchon' | 'guinote' | 'sieteYMedia';
+  'klondike' | 'brisca' | 'tute' | 'escoba' | 'chinchon' | 'guinote' | 'sieteYMedia' | 'freecell';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -79,6 +85,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'chinchon',
   'guinote',
   'sieteYMedia',
+  'freecell',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -93,6 +100,17 @@ export type DefSieteYMedia = DefJuego<
   AccionSieteYMedia,
   VistaSieteYMedia
 >;
+
+export type DefFreeCell = DefJuego<ConfigFreeCell, EstadoFreeCell, AccionFreeCell, VistaFreeCell>;
+
+export const DEF_FREECELL: DefFreeCell = {
+  id: 'freecell',
+  nombre: T.menu.freecell,
+  juego: freecell,
+  configPorDefecto: CONFIG_FREECELL_POR_DEFECTO,
+  ia: null,
+  pausaTras: () => 0,
+};
 
 export const DEF_KLONDIKE: DefKlondike = {
   id: 'klondike',
@@ -221,6 +239,7 @@ export const JUEGOS = {
   chinchon: DEF_CHINCHON,
   guinote: DEF_GUINOTE,
   sieteYMedia: DEF_SIETE_Y_MEDIA,
+  freecell: DEF_FREECELL,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

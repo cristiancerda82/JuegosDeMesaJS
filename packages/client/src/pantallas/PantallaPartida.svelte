@@ -2,6 +2,7 @@
   import MesaBrisca from '../mesas/MesaBrisca.svelte';
   import MesaChinchon from '../mesas/MesaChinchon.svelte';
   import MesaEscoba from '../mesas/MesaEscoba.svelte';
+  import MesaFreeCell from '../mesas/MesaFreeCell.svelte';
   import MesaGuinote from '../mesas/MesaGuinote.svelte';
   import MesaKlondike from '../mesas/MesaKlondike.svelte';
   import MesaSieteYMedia from '../mesas/MesaSieteYMedia.svelte';
@@ -45,6 +46,8 @@
 
   {#if partida.id === 'klondike'}
     <MesaKlondike sesion={partida.sesion} />
+  {:else if partida.id === 'freecell'}
+    <MesaFreeCell sesion={partida.sesion} />
   {:else if partida.id === 'chinchon'}
     <MesaChinchon sesion={partida.sesion} />
   {:else if partida.id === 'escoba'}

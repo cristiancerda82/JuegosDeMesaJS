@@ -19,7 +19,7 @@
   const fin = $derived(partida.sesion.fin!);
 
   const titulo = $derived.by(() => {
-    if (partida.id === 'klondike') {
+    if (partida.id === 'klondike' || partida.id === 'freecell') {
       return partida.sesion.vista.situacion === 'victoria' ? T.fin.solitarioGanado : T.fin.abandono;
     }
     if (fin.empate) return T.fin.empate;
@@ -29,6 +29,7 @@
   // En el Chinchón y la Siete y media cada uno juega por su cuenta: no hay parejas.
   const parejas = $derived(
     partida.id !== 'klondike' &&
+      partida.id !== 'freecell' &&
       partida.id !== 'chinchon' &&
       partida.id !== 'sieteYMedia' &&
       partida.sesion.vista.config.jugadores === 4,
@@ -55,6 +56,11 @@
 
     {#if partida.id === 'klondike'}
       <p>{T.fin.resumenKlondike(partida.sesion.vista.movimientos, formatoTiempo(partida.sesion.tiempoMs()))}</p>
+    {:else if partida.id === 'freecell'}
+      {@const vista = partida.sesion.vista}
+      <p data-testid="resumen-freecell">
+        {T.fin.resumenFreeCell(vista.numero, vista.movimientos, formatoTiempo(partida.sesion.tiempoMs()))}
+      </p>
     {:else if partida.id === 'escoba'}
       {@const vista = partida.sesion.vista}
       {@const ultima = vista.resultadosManos.at(-1)}

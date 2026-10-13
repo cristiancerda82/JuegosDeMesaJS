@@ -15,6 +15,7 @@ export * from './juegos/escoba';
 export * from './juegos/chinchon';
 export * from './juegos/guinote';
 export * from './juegos/siete-y-media';
+export * from './juegos/freecell';
 export * from './ia/agente';
 export * from './ia/brisca-basica';
 export * from './ia/tute-basica';

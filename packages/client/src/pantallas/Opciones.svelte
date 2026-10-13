@@ -3,6 +3,7 @@
     ConfigBrisca,
     ConfigChinchon,
     ConfigEscoba,
+    ConfigFreeCell,
     ConfigGuinote,
     ConfigKlondike,
     ConfigSieteYMedia,
@@ -31,6 +32,9 @@
   let chinchon: Editable<ConfigChinchon> = $state({ ...JUEGOS.chinchon.configPorDefecto });
   let guinote: Editable<ConfigGuinote> = $state({ ...JUEGOS.guinote.configPorDefecto });
   let sieteYMedia: Editable<ConfigSieteYMedia> = $state({ ...JUEGOS.sieteYMedia.configPorDefecto });
+  let freecell: Editable<ConfigFreeCell> = $state({ ...JUEGOS.freecell.configPorDefecto });
+  let freecellModo: 'azar' | 'numero' = $state('azar');
+  let freecellNumero = $state(1);
 
   const VUELTAS: readonly (number | null)[] = [null, 3, 1, 0];
 
@@ -38,7 +42,17 @@
 
   function enviar(ev: SubmitEvent) {
     ev.preventDefault();
-    const configs = { klondike, brisca, tute, escoba, chinchon, guinote, sieteYMedia };
+    const partida = freecellModo === 'numero' ? freecellNumero : null;
+    const configs = {
+      klondike,
+      brisca,
+      tute,
+      escoba,
+      chinchon,
+      guinote,
+      sieteYMedia,
+      freecell: { ...freecell, partida },
+    };
     empezar({ ...configs[juego] });
   }
 </script>
@@ -124,6 +138,39 @@
         <label class="casilla">
           <input type="checkbox" bind:checked={escoba.escobaInicial} />
           {T.opciones.escobaInicialDesc}
+        </label>
+      </fieldset>
+    {:else if juego === 'freecell'}
+      <fieldset>
+        <legend>{T.opciones.partidaFreeCell}</legend>
+        <label><input type="radio" bind:group={freecellModo} value="azar" /> {T.opciones.partidaAzar}</label>
+        <label><input type="radio" bind:group={freecellModo} value="numero" /> {T.opciones.partidaNumero}</label>
+        {#if freecellModo === 'numero'}
+          <label class="numero">
+            {T.opciones.numeroPartida}
+            <input
+              type="number"
+              min="1"
+              max="32000"
+              step="1"
+              required
+              bind:value={freecellNumero}
+              data-testid="numero-partida"
+            />
+          </label>
+        {/if}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.celdas}</legend>
+        {#each [4, 3, 2, 1] as c (c)}
+          <label><input type="radio" bind:group={freecell.celdas} value={c} /> {T.opciones.celdasN(c)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.autoFundacion}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={freecell.autoFundacion} />
+          {T.opciones.autoFundacionDesc}
         </label>
       </fieldset>
     {:else if juego === 'sieteYMedia'}

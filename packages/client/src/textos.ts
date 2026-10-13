@@ -14,6 +14,8 @@ export const T = {
     elegir: 'Elige un juego',
     klondike: 'Klondike',
     klondikeDesc: 'El solitario clásico con baraja francesa.',
+    freecell: 'FreeCell',
+    freecellDesc: 'Solitario con 4 celdas libres y todas las cartas a la vista.',
     brisca: 'Brisca',
     briscaDesc: 'Bazas con baraja española, contra la máquina.',
     tute: 'Tute',
@@ -64,6 +66,14 @@ export const T = {
     montar: 'Montar sobre el compañero (4 jugadores)',
     montarDesc: 'Obliga a superar la baza aunque ya la vaya ganando tu compañero.',
     cambioSieteGuinote: 'Cambio del 7 de triunfo',
+    partidaFreeCell: 'Partida',
+    partidaAzar: 'Al azar',
+    partidaNumero: 'Por número',
+    numeroPartida: 'Número de partida (1 a 32.000)',
+    celdas: 'Celdas libres',
+    celdasN: (n: number) => (n === 1 ? '1 celda' : `${n} celdas`),
+    autoFundacion: 'Ayuda',
+    autoFundacionDesc: 'Llevar solas a las fundaciones las cartas que ya no hacen falta.',
     manosPartida: 'Duración',
     manosPartidaN: (n: number) => `${n} manos`,
     fichasIniciales: 'Fichas de cada jugador',
@@ -111,6 +121,10 @@ export const T = {
     vueltasRestantes: (n: number) => (n === 1 ? 'Queda 1 vuelta' : `Quedan ${n} vueltas`),
     columna: (n: number) => `Columna ${n}`,
     fundacion: (n: number) => `Fundación ${n}`,
+    celda: (n: number) => `Celda ${n}`,
+    partidaN: 'Partida',
+    maxMovible: 'Puedes mover',
+    cartasN: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
     descarte: 'Descarte',
   },
 
@@ -267,6 +281,8 @@ export const T = {
     revancha: 'Jugar otra vez',
     menu: 'Volver al menú',
     resumenKlondike: (movs: number, tiempo: string) => `${movs} movimientos en ${tiempo}`,
+    resumenFreeCell: (numero: number, movs: number, tiempo: string) =>
+      `Partida nº ${numero}: ${movs} movimientos en ${tiempo}`,
     porTute: (quien: string) =>
       quien === 'Tú' ? 'La mano terminó con tu tute.' : `La mano terminó con el tute de ${quien}.`,
     detallePuntos: 'Incluye los cantes y los 10 de últimas.',
@@ -312,6 +328,7 @@ export const T = {
       chinchon: 'Cómo se juega al Chinchón',
       guinote: 'Cómo se juega al Guiñote',
       sieteYMedia: 'Cómo se juega a la Siete y media',
+      freecell: 'Cómo se juega al FreeCell',
     },
     puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
 
@@ -717,6 +734,50 @@ export const T = {
         texto: [
           'Con 5 o más, lo normal es plantarse: hay muchas cartas que te harían pasarte.',
           'Fíjate en lo que enseñan los demás: su carta tapada suele ser alta si se plantan pronto.',
+        ],
+      },
+    ],
+
+    freecell: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Es un solitario con la baraja francesa de 52 cartas. Ganas cuando llevas todas las cartas a las 4 fundaciones de arriba a la derecha, cada una de un palo y en orden: As, 2, 3… hasta el Rey (K).',
+          'Todas las cartas están boca arriba desde el principio, así que no depende de la suerte: casi todas las partidas tienen solución. Cada partida tiene un número, por si quieres repetirla o compartirla.',
+        ],
+      },
+      {
+        titulo: 'Las columnas',
+        texto: [
+          'Abajo hay 8 columnas. Solo se mueve la última carta de cada una. Puedes ponerla sobre otra carta que sea justo un valor más alta y de color contrario: un 9 negro sobre un 10 rojo. En una columna vacía puedes poner cualquier carta.',
+        ],
+        ejemplo: 'escalera',
+      },
+      {
+        titulo: 'Las celdas libres',
+        texto: [
+          'Arriba a la izquierda hay 4 celdas. En cada una cabe una carta cualquiera, para apartarla un momento. Úsalas con cuidado: si se llenan, te quedas sin espacio para maniobrar.',
+        ],
+      },
+      {
+        titulo: 'Mover varias cartas',
+        texto: [
+          'Si al final de una columna hay una escalera ordenada y de colores alternos, puedes moverla entera de una vez. Cuantas más celdas libres y columnas vacías tengas, más cartas puedes mover: la mesa te dice cuántas.',
+        ],
+      },
+      {
+        titulo: 'En la mesa',
+        texto: [
+          'Arrastra una carta (o una escalera) a su destino, o tócala y toca el destino: se iluminan los sitios donde puede ir. Con un doble toque, la carta va a su fundación o, si no puede, a una celda libre.',
+          'Las cartas que ya no hacen falta suben solas a las fundaciones (puedes quitarlo en las opciones). También puedes deshacer, y cuando todo esté ordenado aparecerá «Autocompletar».',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Busca pronto los Ases y los 2: suelen estar enterrados.',
+          'Una columna vacía vale más que una celda: te deja mover el doble de cartas.',
+          'Antes de llenar la última celda, piensa si podrás vaciarla.',
         ],
       },
     ],

@@ -4,6 +4,10 @@ import {
   type AccionGuinote,
   type AccionSieteYMedia,
   type ConfigSieteYMedia,
+  type AccionFreeCell,
+  type ConfigFreeCell,
+  type EstadoFreeCell,
+  type VistaFreeCell,
   type EstadoSieteYMedia,
   type VistaSieteYMedia,
   type ConfigGuinote,
@@ -37,6 +41,7 @@ import {
   DEF_CHINCHON,
   DEF_GUINOTE,
   DEF_SIETE_Y_MEDIA,
+  DEF_FREECELL,
   DEF_KLONDIKE,
   DEF_ESCOBA,
   DEF_TUTE,
@@ -52,6 +57,7 @@ export type SesionTute = Sesion<ConfigTute, EstadoTute, AccionTute, VistaTute>;
 export type SesionEscoba = Sesion<ConfigEscoba, EstadoEscoba, AccionEscoba, VistaEscoba>;
 export type SesionChinchon = Sesion<ConfigChinchon, EstadoChinchon, AccionChinchon, VistaChinchon>;
 export type SesionGuinote = Sesion<ConfigGuinote, EstadoGuinote, AccionGuinote, VistaGuinote>;
+export type SesionFreeCell = Sesion<ConfigFreeCell, EstadoFreeCell, AccionFreeCell, VistaFreeCell>;
 export type SesionSieteYMedia = Sesion<
   ConfigSieteYMedia,
   EstadoSieteYMedia,
@@ -67,7 +73,8 @@ export type Partida =
   | { readonly id: 'escoba'; readonly sesion: SesionEscoba }
   | { readonly id: 'chinchon'; readonly sesion: SesionChinchon }
   | { readonly id: 'guinote'; readonly sesion: SesionGuinote }
-  | { readonly id: 'sieteYMedia'; readonly sesion: SesionSieteYMedia };
+  | { readonly id: 'sieteYMedia'; readonly sesion: SesionSieteYMedia }
+  | { readonly id: 'freecell'; readonly sesion: SesionFreeCell };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -76,7 +83,8 @@ export type ConfigJuego =
   | ConfigEscoba
   | ConfigChinchon
   | ConfigGuinote
-  | ConfigSieteYMedia;
+  | ConfigSieteYMedia
+  | ConfigFreeCell;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -99,6 +107,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_GUINOTE);
     case 'sieteYMedia':
       return hacer(DEF_SIETE_Y_MEDIA);
+    case 'freecell':
+      return hacer(DEF_FREECELL);
   }
 }
 
