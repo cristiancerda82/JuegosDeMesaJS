@@ -2,18 +2,25 @@ import {
   brisca,
   CONFIG_BRISCA_POR_DEFECTO,
   CONFIG_KLONDIKE_POR_DEFECTO,
+  CONFIG_TUTE_POR_DEFECTO,
   iaBriscaBasica,
+  iaTuteBasica,
   klondike,
+  tute,
   type AccionBrisca,
   type AccionKlondike,
+  type AccionTute,
   type Agente,
   type ConfigBrisca,
   type ConfigKlondike,
+  type ConfigTute,
   type EstadoBrisca,
   type EstadoKlondike,
+  type EstadoTute,
   type Juego,
   type VistaBrisca,
   type VistaKlondike,
+  type VistaTute,
 } from '@juegos/engine';
 import { SEMILLA_FIJA } from '../ajustes';
 import { T } from '../textos';
@@ -33,10 +40,13 @@ export interface DefJuego<C, E, A, V> {
   pausaTras(antes: V, despues: V): number;
 }
 
-export type IdJuego = 'klondike' | 'brisca';
+export type IdJuego = 'klondike' | 'brisca' | 'tute';
+
+export const ID_JUEGOS: readonly IdJuego[] = ['klondike', 'brisca', 'tute'];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
 export type DefBrisca = DefJuego<ConfigBrisca, EstadoBrisca, AccionBrisca, VistaBrisca>;
+export type DefTute = DefJuego<ConfigTute, EstadoTute, AccionTute, VistaTute>;
 
 export const DEF_KLONDIKE: DefKlondike = {
   id: 'klondike',
@@ -51,6 +61,21 @@ export const DEF_KLONDIKE: DefKlondike = {
 const PAUSA_BAZA_MS = 1100;
 /** Tiempo para leer el resultado de una mano antes de repartir la siguiente. */
 const PAUSA_MANO_MS = 2600;
+/** Tiempo para leer un cante y ver sus cartas. */
+const PAUSA_CANTE_MS = 1800;
+
+interface VistaConBazas {
+  readonly bazas: readonly number[];
+  readonly resultadosManos: readonly unknown[];
+}
+
+/** Pausa común de los juegos de bazas: al cerrar una mano o una baza. */
+function pausaBazas(antes: VistaConBazas, despues: VistaConBazas): number {
+  if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_MANO_MS;
+  const bazasAntes = antes.bazas.reduce((s, b) => s + b, 0);
+  const bazasDespues = despues.bazas.reduce((s, b) => s + b, 0);
+  return bazasDespues > bazasAntes ? PAUSA_BAZA_MS : 0;
+}
 
 export const DEF_BRISCA: DefBrisca = {
   id: 'brisca',
@@ -58,15 +83,22 @@ export const DEF_BRISCA: DefBrisca = {
   juego: brisca,
   configPorDefecto: CONFIG_BRISCA_POR_DEFECTO,
   ia: iaBriscaBasica,
+  pausaTras: pausaBazas,
+};
+
+export const DEF_TUTE: DefTute = {
+  id: 'tute',
+  nombre: T.menu.tute,
+  juego: tute,
+  configPorDefecto: CONFIG_TUTE_POR_DEFECTO,
+  ia: iaTuteBasica,
   pausaTras(antes, despues) {
-    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_MANO_MS;
-    const bazasAntes = antes.bazas.reduce((s, b) => s + b, 0);
-    const bazasDespues = despues.bazas.reduce((s, b) => s + b, 0);
-    return bazasDespues > bazasAntes ? PAUSA_BAZA_MS : 0;
+    const cante = despues.cantes.length > antes.cantes.length ? PAUSA_CANTE_MS : 0;
+    return Math.max(cante, pausaBazas(antes, despues));
   },
 };
 
-export const JUEGOS = { klondike: DEF_KLONDIKE, brisca: DEF_BRISCA } as const;
+export const JUEGOS = { klondike: DEF_KLONDIKE, brisca: DEF_BRISCA, tute: DEF_TUTE } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */
 export function semillaNueva(): string {

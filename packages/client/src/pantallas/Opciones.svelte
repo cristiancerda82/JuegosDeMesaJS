@@ -1,12 +1,13 @@
 <script lang="ts">
-  import type { ConfigBrisca, ConfigKlondike } from '@juegos/engine';
+  import type { ConfigBrisca, ConfigKlondike, ConfigTute } from '@juegos/engine';
   import { JUEGOS, type IdJuego } from '../sesion/juegos';
+  import type { ConfigJuego } from '../sesion/partida';
   import { T } from '../textos';
   import ComoSeJuega from './ComoSeJuega.svelte';
 
   interface Props {
     juego: IdJuego;
-    empezar: (config: ConfigKlondike | ConfigBrisca) => void;
+    empezar: (config: ConfigJuego) => void;
     volver: () => void;
   }
 
@@ -17,6 +18,7 @@
   // Copias editables de las configuraciones por defecto.
   let klondike: Editable<ConfigKlondike> = $state({ ...JUEGOS.klondike.configPorDefecto });
   let brisca: Editable<ConfigBrisca> = $state({ ...JUEGOS.brisca.configPorDefecto });
+  let tute: Editable<ConfigTute> = $state({ ...JUEGOS.tute.configPorDefecto });
 
   const VUELTAS: readonly (number | null)[] = [null, 3, 1, 0];
 
@@ -24,7 +26,8 @@
 
   function enviar(ev: SubmitEvent) {
     ev.preventDefault();
-    empezar(juego === 'klondike' ? { ...klondike } : { ...brisca });
+    const configs = { klondike, brisca, tute };
+    empezar({ ...configs[juego] });
   }
 </script>
 
@@ -53,6 +56,31 @@
             {v === null ? T.opciones.ilimitadas : T.opciones.vueltasN(v)}
           </label>
         {/each}
+      </fieldset>
+    {:else if juego === 'tute'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        <label><input type="radio" bind:group={tute.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
+        <label><input type="radio" bind:group={tute.jugadores} value={4} /> {T.opciones.cuatroJugadores}</label>
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.cambioSiete}</legend>
+        <label><input type="radio" bind:group={tute.cambioSiete} value="trasGanarBaza" /> {T.opciones.cambioSieteTrasBaza}</label>
+        <label><input type="radio" bind:group={tute.cambioSiete} value="libre" /> {T.opciones.cambioSieteLibre}</label>
+        <label><input type="radio" bind:group={tute.cambioSiete} value="no" /> {T.opciones.cambioNo}</label>
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.manos}</legend>
+        {#each [1, 3, 5] as m (m)}
+          <label><input type="radio" bind:group={tute.manos} value={m} /> {T.opciones.manosN(m)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.montar}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={tute.montarSobreCompanero} />
+          {T.opciones.montarDesc}
+        </label>
       </fieldset>
     {:else}
       <fieldset>

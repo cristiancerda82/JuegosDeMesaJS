@@ -1,9 +1,32 @@
 import { crearAzar, type EstadoAzar } from '../baraja/azar';
 import { barajar } from '../baraja/barajar';
-import { cartaDeId, crearBaraja, type IdCarta, type PaloEspanol } from '../baraja/cartas';
+import { crearBaraja, type IdCarta, type PaloEspanol } from '../baraja/cartas';
 import { repartir } from '../baraja/repartir';
+import {
+  bandoDe,
+  cartaDeCambio,
+  cartaGanadora,
+  cartasObligadas,
+  paloDe,
+  puntosDe,
+  robar,
+  siguiente as siguienteAsiento,
+  type CartaJugada,
+} from '../motor/bazas';
 import type { Asiento, Fin, Juego } from '../motor/contrato';
 import { error, ok } from '../resultado';
+
+// El modelo de bazas vive en el motor común; se reexporta para quien ya lo usaba desde aquí.
+export {
+  bandoDe,
+  cartaDeCambio,
+  cartaGanadora,
+  fuerza,
+  paloDe,
+  puntosDe,
+  valorDe,
+  type CartaJugada,
+} from '../motor/bazas';
 
 // ── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -24,11 +47,6 @@ export const CONFIG_BRISCA_POR_DEFECTO: ConfigBrisca = {
   arrastreFinal: false,
   manos: 1,
 };
-
-export interface CartaJugada {
-  readonly asiento: Asiento;
-  readonly carta: IdCarta;
-}
 
 export interface ResultadoMano {
   /** Puntos de cada bando (en 2 jugadores, bando = asiento; en parejas, asiento % 2). */
@@ -82,41 +100,9 @@ export interface VistaBrisca {
   readonly manosGanadas: readonly [number, number];
 }
 
-// ── Valores de las cartas ────────────────────────────────────────────────────
-
-/** De mayor a menor: as, tres, rey, caballo, sota, 7, 6, 5, 4, 2. */
-const ORDEN = [1, 3, 12, 11, 10, 7, 6, 5, 4, 2];
-const PUNTOS: Readonly<Record<number, number>> = { 1: 11, 3: 10, 12: 4, 11: 3, 10: 2 };
-
-export const paloDe = (id: IdCarta) => cartaDeId(id)!.palo as PaloEspanol;
-export const valorDe = (id: IdCarta) => cartaDeId(id)!.valor;
-/** Fuerza para comparar cartas del mismo palo: mayor es mejor. */
-export const fuerza = (id: IdCarta) => ORDEN.length - ORDEN.indexOf(valorDe(id));
-export const puntosDe = (id: IdCarta) => PUNTOS[valorDe(id)] ?? 0;
-
-/** Carta que gana la baza: el triunfo más alto, o la más alta del palo de salida. */
-export function cartaGanadora(mesa: readonly CartaJugada[], triunfo: PaloEspanol): CartaJugada {
-  let mejor = mesa[0]!;
-  for (const jugada of mesa.slice(1)) {
-    const mismoPalo = paloDe(jugada.carta) === paloDe(mejor.carta);
-    if (mismoPalo ? fuerza(jugada.carta) > fuerza(mejor.carta) : paloDe(jugada.carta) === triunfo) {
-      mejor = jugada;
-    }
-  }
-  return mejor;
-}
-
-/** Carta de la mano con la que se cambia la muestra: el 7 de triunfo, o el 2 si la muestra es baja. */
-export function cartaDeCambio(muestra: IdCarta): IdCarta {
-  const baja = fuerza(muestra) <= fuerza(`${paloDe(muestra)}-7`);
-  return `${paloDe(muestra)}-${baja ? 2 : 7}`;
-}
-
-export const bandoDe = (asiento: Asiento): 0 | 1 => (asiento % 2) as 0 | 1;
-
 // ── Reglas ───────────────────────────────────────────────────────────────────
 
-const siguiente = (e: EstadoBrisca, a: Asiento) => (a + 1) % e.config.jugadores;
+const siguiente = (e: EstadoBrisca, a: Asiento) => siguienteAsiento(a, e.config.jugadores);
 const mazoAgotado = (e: EstadoBrisca) => e.mazo.length === 0 && e.muestra === null;
 
 function manosNecesarias(config: ConfigBrisca): number {
@@ -138,20 +124,8 @@ function partidaTerminada(e: EstadoBrisca): boolean {
 /** Cartas que el asiento puede jugar, aplicando el arrastre si corresponde. */
 function cartasJugables(e: EstadoBrisca, asiento: Asiento): readonly IdCarta[] {
   const mano = e.manos[asiento]!;
-  if (!e.config.arrastreFinal || !mazoAgotado(e) || e.mesa.length === 0) return mano;
-  const salida = paloDe(e.mesa[0]!.carta);
-  const ganadora = cartaGanadora(e.mesa, e.triunfo).carta;
-  const superanA = (cartas: readonly IdCarta[]) => {
-    const superan = cartas.filter(
-      (c) => paloDe(c) === paloDe(ganadora) && fuerza(c) > fuerza(ganadora),
-    );
-    return superan.length > 0 ? superan : cartas;
-  };
-  const delPalo = mano.filter((c) => paloDe(c) === salida);
-  if (delPalo.length > 0) return superanA(delPalo);
-  const triunfos = mano.filter((c) => paloDe(c) === e.triunfo);
-  if (triunfos.length > 0) return superanA(triunfos);
-  return mano;
+  if (!e.config.arrastreFinal || !mazoAgotado(e)) return mano;
+  return cartasObligadas(mano, e.mesa, e.triunfo, { asiento, montarSobreCompanero: true });
 }
 
 function puedeCambiarMuestra(e: EstadoBrisca, asiento: Asiento): boolean {
@@ -209,20 +183,7 @@ function cerrarMano(e: EstadoBrisca): EstadoBrisca {
 function resolverBaza(e: EstadoBrisca): EstadoBrisca {
   const ganador = cartaGanadora(e.mesa, e.triunfo).asiento;
   const valor = e.mesa.reduce((suma, j) => suma + puntosDe(j.carta), 0);
-  const manos = e.manos.map((m) => [...m]);
-  let mazo = [...e.mazo];
-  let muestra = e.muestra;
-  if (mazo.length > 0 || muestra !== null) {
-    for (let i = 0, a = ganador; i < e.config.jugadores; i++, a = siguiente(e, a)) {
-      if (mazo.length > 0) {
-        manos[a]!.push(mazo.at(-1)!);
-        mazo = mazo.slice(0, -1);
-      } else {
-        manos[a]!.push(muestra!);
-        muestra = null;
-      }
-    }
-  }
+  const { manos, mazo, muestra } = robar(e.manos, e.mazo, e.muestra, ganador);
   const resuelto: EstadoBrisca = {
     ...e,
     manos,

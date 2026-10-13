@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { ConfigBrisca, ConfigKlondike } from '@juegos/engine';
   import { onMount } from 'svelte';
   import Muestrario from './cartas/Muestrario.svelte';
   import Menu from './pantallas/Menu.svelte';
@@ -11,6 +10,7 @@
     guardadoRepetible,
     nuevaPartida,
     partidaGuardada,
+    type ConfigJuego,
     type Partida,
   } from './sesion/partida';
   import { T } from './textos';
@@ -50,7 +50,7 @@
     pantalla = { tipo: 'menu' };
   }
 
-  function empezar(juego: IdJuego, config: ConfigKlondike | ConfigBrisca) {
+  function empezar(juego: IdJuego, config: ConfigJuego) {
     cerrarPartida();
     const r = nuevaPartida(juego, config);
     if (r.ok) {

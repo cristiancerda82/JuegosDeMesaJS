@@ -48,6 +48,9 @@ export class Sesion<C, E, A, V> {
   #desde = Date.now();
   #temporizador: ReturnType<typeof setTimeout> | null = null;
   #cerrada = false;
+  #pausada = false;
+  /** Al pausar quedó una pausa o un turno de la IA por ejecutar. */
+  #pendiente = false;
 
   private constructor(
     def: DefJuego<C, E, A, V>,
@@ -118,6 +121,27 @@ export class Sesion<C, E, A, V> {
     if (!this.#cerrada) this.#guardar();
   }
 
+  /** Detiene los turnos de la IA (p. ej. mientras se consulta la guía). No cambia el juego. */
+  pausar(): void {
+    if (this.#pausada || this.#cerrada) return;
+    this.#pausada = true;
+    if (this.#temporizador !== null) {
+      clearTimeout(this.#temporizador);
+      this.#temporizador = null;
+      this.#pendiente = true;
+    }
+  }
+
+  /** Reanuda lo que hubiera quedado pendiente al pausar. */
+  reanudar(): void {
+    if (!this.#pausada) return;
+    this.#pausada = false;
+    if (this.#pendiente) {
+      this.#pendiente = false;
+      this.#continuar();
+    }
+  }
+
   #aplicar(asiento: Asiento, accion: A): boolean {
     const antes = this.vista;
     const r = aplicar(this.def.juego, this.#estado, asiento, accion);
@@ -179,6 +203,10 @@ export class Sesion<C, E, A, V> {
 
   #programar(ms: number, accion: () => void): void {
     if (this.#temporizador !== null) clearTimeout(this.#temporizador);
+    if (this.#pausada) {
+      this.#pendiente = true;
+      return;
+    }
     this.#temporizador = setTimeout(() => {
       this.#temporizador = null;
       if (!this.#cerrada) accion();

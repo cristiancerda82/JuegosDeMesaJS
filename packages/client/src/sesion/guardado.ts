@@ -1,5 +1,5 @@
 import { VERSION_MOTOR, type Jugada } from '@juegos/engine';
-import type { IdJuego } from './juegos';
+import { ID_JUEGOS, type IdJuego } from './juegos';
 
 /**
  * Partida guardada como registro repetible (design, decisión 12): con la configuración, la
@@ -66,7 +66,7 @@ export function leerGuardado(): Lectura {
     const valido =
       g.version === VERSION_GUARDADO &&
       g.motor === VERSION_MOTOR &&
-      (g.juego === 'klondike' || g.juego === 'brisca') &&
+      ID_JUEGOS.includes(g.juego as IdJuego) &&
       typeof g.semilla === 'string' &&
       Array.isArray(g.jugadas) &&
       typeof g.tiempoMs === 'number' &&

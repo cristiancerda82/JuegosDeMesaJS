@@ -1,6 +1,7 @@
 <script lang="ts">
   import MesaBrisca from '../mesas/MesaBrisca.svelte';
   import MesaKlondike from '../mesas/MesaKlondike.svelte';
+  import MesaTute from '../mesas/MesaTute.svelte';
   import type { Partida } from '../sesion/partida';
   import { T } from '../textos';
   import ComoSeJuega from './ComoSeJuega.svelte';
@@ -15,6 +16,14 @@
   let { partida, menu, revancha }: Props = $props();
 
   let verAyuda = $state(false);
+
+  // Mientras se consulta la guía, la IA espera: la partida sigue en el mismo punto al cerrarla.
+  $effect(() => {
+    if (!verAyuda) return;
+    const sesion = partida.sesion;
+    sesion.pausar();
+    return () => sesion.reanudar();
+  });
 </script>
 
 <div class="partida">
@@ -32,6 +41,8 @@
 
   {#if partida.id === 'klondike'}
     <MesaKlondike sesion={partida.sesion} />
+  {:else if partida.id === 'tute'}
+    <MesaTute sesion={partida.sesion} />
   {:else}
     <MesaBrisca sesion={partida.sesion} />
   {/if}

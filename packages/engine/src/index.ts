@@ -10,5 +10,7 @@ export * from './motor/json';
 export * from './motor/aplicar';
 export * from './juegos/klondike';
 export * from './juegos/brisca';
+export * from './juegos/tute';
 export * from './ia/agente';
 export * from './ia/brisca-basica';
+export * from './ia/tute-basica';

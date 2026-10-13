@@ -17,6 +17,8 @@
   const ESCALERA: readonly IdCarta[] = ['corazones-13', 'picas-12', 'diamantes-11', 'treboles-10'];
   /** Las cartas que dan puntos en la Brisca, de mayor a menor. */
   const VALORES: readonly IdCarta[] = ['oros-1', 'oros-3', 'oros-12', 'oros-11', 'oros-10'];
+  /** Una pareja que se canta en el Tute: rey y caballo del mismo palo. */
+  const CANTE: readonly IdCarta[] = ['copas-12', 'copas-11'];
 
   let dialogo: HTMLDialogElement | undefined = $state();
   $effect(() => {
@@ -56,6 +58,13 @@
                 <span>{T.ayuda.puntos(puntosDe(id))}</span>
               </li>
             {/each}
+          </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'cante'}
+          <ul class="valores">
+            {#each CANTE as id (id)}
+              <li><div class="hueco"><Carta {id} /></div></li>
+            {/each}
+            <li class="resultado">= 20 / 40</li>
           </ul>
         {/if}
       </section>
@@ -142,6 +151,12 @@
     gap: 4px;
     font-size: 0.8rem;
     font-weight: 700;
+  }
+
+  .valores .resultado {
+    align-self: center;
+    font-size: 1.05rem;
+    color: var(--acento);
   }
 
   .pie {

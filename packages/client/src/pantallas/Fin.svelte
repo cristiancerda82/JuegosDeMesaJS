@@ -22,10 +22,17 @@
     return fin.ganadores.includes(HUMANO) ? T.fin.victoria : T.fin.derrota;
   });
 
-  const parejas = $derived(partida.id === 'brisca' && partida.sesion.vista.config.jugadores === 4);
+  const parejas = $derived(partida.id !== 'klondike' && partida.sesion.vista.config.jugadores === 4);
   const lados = $derived(
     parejas ? [T.brisca.nosotros, T.brisca.ellos] : [T.brisca.tu, T.brisca.rival],
   );
+
+  /** En el Tute, la mano que terminó por tute y el bando que lo cantó. */
+  const tuteFinal = $derived.by(() => {
+    if (partida.id !== 'tute') return null;
+    const ultima = partida.sesion.vista.resultadosManos.at(-1);
+    return ultima?.tute && ultima.ganador !== null ? lados[ultima.ganador]! : null;
+  });
 </script>
 
 <div class="velo">
@@ -60,6 +67,13 @@
             <li>{r.puntos[0]} – {r.puntos[1]}</li>
           {/each}
         </ol>
+      {/if}
+      {#if partida.id === 'tute'}
+        {#if tuteFinal}
+          <p class="nota" data-testid="fin-tute">{T.fin.porTute(tuteFinal)}</p>
+        {:else}
+          <p class="nota">{T.fin.detallePuntos}</p>
+        {/if}
       {/if}
     {/if}
 
@@ -128,6 +142,12 @@
     margin: 0 auto 6px;
     padding: 0;
     list-style-position: inside;
+    color: var(--texto-suave);
+  }
+
+  .nota {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
     color: var(--texto-suave);
   }
 
