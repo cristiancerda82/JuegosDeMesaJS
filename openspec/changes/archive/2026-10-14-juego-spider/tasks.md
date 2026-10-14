@@ -18,4 +18,4 @@
 - [x] 3.1 E2E: mover una carta y una escalera, repartir del mazo, deshacer, y abandonar
 - [x] 3.2 E2E: completar una escalera en una partida buscada con el motor y ver que se retira
 - [x] 3.3 E2E: la mesa en 360 × 640 sin scroll horizontal, y añadir el Spider al recorrido de las guías
-- [ ] 3.4 Ejecutar todos los tests (motor y E2E), la comprobación de tipos, el lint, el formato y `openspec validate --strict`
+- [x] 3.4 Ejecutar todos los tests (motor y E2E), la comprobación de tipos, el lint, el formato y `openspec validate --strict`
