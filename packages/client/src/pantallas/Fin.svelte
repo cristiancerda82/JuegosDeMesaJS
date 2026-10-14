@@ -2,6 +2,7 @@
   import { HUMANO } from '../sesion/sesion.svelte';
   import type { Partida } from '../sesion/partida';
   import DesgloseEscoba from '../mesas/DesgloseEscoba.svelte';
+  import ConteoMus from '../mesas/ConteoMus.svelte';
   import ResultadoChinchon from '../mesas/ResultadoChinchon.svelte';
   import ResumenGuinote from '../mesas/ResumenGuinote.svelte';
   import ResultadoSieteYMedia from '../mesas/ResultadoSieteYMedia.svelte';
@@ -34,6 +35,7 @@
       partida.id !== 'sieteYMedia' &&
       partida.id !== 'cinquillo' &&
       partida.id !== 'pocha' &&
+      partida.id !== 'mus' &&
       partida.sesion.vista.config.jugadores === 4,
   );
 
@@ -81,6 +83,19 @@
       <p class="nota" data-testid="fin-guinote">
         {T.fin.manosJugadas(partida.sesion.vista.resultadosManos.length)}
       </p>
+    {:else if partida.id === 'mus'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ConteoMus resultado={ultima} config={vista.config} conCartas={false} />
+      {/if}
+      <table>
+        <caption>{T.mus.clasificacion}</caption>
+        <tbody>
+          <tr><th scope="row">{T.mus.nosotros}</th><td data-testid="juegos-0">{vista.juegos[0]}</td></tr>
+          <tr><th scope="row">{T.mus.ellos}</th><td data-testid="juegos-1">{vista.juegos[1]}</td></tr>
+        </tbody>
+      </table>
     {:else if partida.id === 'pocha'}
       {@const vista = partida.sesion.vista}
       {@const n = vista.config.jugadores}

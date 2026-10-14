@@ -7,6 +7,7 @@
     ConfigFreeCell,
     ConfigGuinote,
     ConfigKlondike,
+    ConfigMus,
     ConfigPocha,
     ConfigSieteYMedia,
     ConfigTute,
@@ -37,6 +38,7 @@
   let freecell: Editable<ConfigFreeCell> = $state({ ...JUEGOS.freecell.configPorDefecto });
   let cinquillo: Editable<ConfigCinquillo> = $state({ ...JUEGOS.cinquillo.configPorDefecto });
   let pocha: Editable<ConfigPocha> = $state({ ...JUEGOS.pocha.configPorDefecto });
+  let musConfig: Editable<ConfigMus> = $state({ ...JUEGOS.mus.configPorDefecto });
   let freecellModo: 'azar' | 'numero' = $state('azar');
   let freecellNumero = $state(1);
 
@@ -58,6 +60,7 @@
       freecell: { ...freecell, partida },
       cinquillo,
       pocha,
+      mus: musConfig,
     };
     empezar({ ...configs[juego] });
   }
@@ -145,6 +148,24 @@
           <input type="checkbox" bind:checked={escoba.escobaInicial} />
           {T.opciones.escobaInicialDesc}
         </label>
+      </fieldset>
+    {:else if juego === 'mus'}
+      <fieldset>
+        <legend>{T.opciones.reyesMus}</legend>
+        <label><input type="radio" bind:group={musConfig.reyes} value={8} /> {T.opciones.ochoReyes}</label>
+        <label><input type="radio" bind:group={musConfig.reyes} value={4} /> {T.opciones.cuatroReyes}</label>
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.puntosJuegoMus}</legend>
+        {#each [40, 30] as p (p)}
+          <label><input type="radio" bind:group={musConfig.puntos} value={p} /> {T.opciones.piedrasN(p)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.juegosMus}</legend>
+        {#each [3, 1, 5] as j (j)}
+          <label><input type="radio" bind:group={musConfig.juegos} value={j} /> {T.opciones.juegosN(j)}</label>
+        {/each}
       </fieldset>
     {:else if juego === 'pocha'}
       <fieldset>

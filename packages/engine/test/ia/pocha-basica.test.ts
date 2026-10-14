@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { crearAzar, type EstadoAzar } from '../../src/baraja/azar';
+import type { IdCarta } from '../../src/baraja/cartas';
 import { aleatorio, type Agente } from '../../src/ia/agente';
 import { estimarBazas, iaPochaBasica } from '../../src/ia/pocha-basica';
 import {
@@ -67,7 +68,7 @@ function vista(parcial: Partial<VistaPocha> & Pick<VistaPocha, 'miMano'>): Vista
 
 const decide = (v: VistaPocha, acciones: AccionPocha[]) =>
   iaPochaBasica.decidir(v, acciones, crearAzar('x')).accion;
-const jugadas = (cartas: readonly string[]): AccionPocha[] =>
+const jugadas = (cartas: readonly IdCarta[]): AccionPocha[] =>
   cartas.map((carta) => ({ tipo: 'jugar', carta }));
 const apuestas = (bazas: readonly number[]): AccionPocha[] =>
   bazas.map((b) => ({ tipo: 'apostar', bazas: b }));

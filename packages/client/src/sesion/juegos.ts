@@ -24,6 +24,13 @@ import {
   type ConfigCinquillo,
   type EstadoCinquillo,
   type VistaCinquillo,
+  CONFIG_MUS_POR_DEFECTO,
+  iaMusBasica,
+  mus,
+  type AccionMus,
+  type ConfigMus,
+  type EstadoMus,
+  type VistaMus,
   CONFIG_POCHA_POR_DEFECTO,
   iaPochaBasica,
   pocha,
@@ -98,7 +105,8 @@ export type IdJuego =
   | 'sieteYMedia'
   | 'freecell'
   | 'cinquillo'
-  | 'pocha';
+  | 'pocha'
+  | 'mus';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -111,6 +119,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'freecell',
   'cinquillo',
   'pocha',
+  'mus',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -302,6 +311,26 @@ export const DEF_POCHA: DefPocha = {
   },
 };
 
+export type DefMus = DefJuego<ConfigMus, EstadoMus, AccionMus, VistaMus>;
+
+/** Tiempo para leer lo que dice cada jugador de la IA. */
+const PAUSA_MUS_MS = 900;
+
+export const DEF_MUS: DefMus = {
+  id: 'mus',
+  nombre: T.menu.mus,
+  juego: mus,
+  configPorDefecto: CONFIG_MUS_POR_DEFECTO,
+  ia: iaMusBasica,
+  // El cierre de la mano lo detiene la propia mesa con el panel de conteo.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return 0;
+    const accion = despues.ultimaAccion;
+    if (accion === null || JSON.stringify(accion) === JSON.stringify(antes.ultimaAccion)) return 0;
+    return accion.asiento !== despues.asiento ? PAUSA_MUS_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -313,6 +342,7 @@ export const JUEGOS = {
   freecell: DEF_FREECELL,
   cinquillo: DEF_CINQUILLO,
   pocha: DEF_POCHA,
+  mus: DEF_MUS,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

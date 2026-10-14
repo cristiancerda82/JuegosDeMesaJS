@@ -6,6 +6,7 @@
   import MesaFreeCell from '../mesas/MesaFreeCell.svelte';
   import MesaGuinote from '../mesas/MesaGuinote.svelte';
   import MesaKlondike from '../mesas/MesaKlondike.svelte';
+  import MesaMus from '../mesas/MesaMus.svelte';
   import MesaPocha from '../mesas/MesaPocha.svelte';
   import MesaSieteYMedia from '../mesas/MesaSieteYMedia.svelte';
   import MesaTute from '../mesas/MesaTute.svelte';
@@ -52,6 +53,8 @@
     <MesaFreeCell sesion={partida.sesion} />
   {:else if partida.id === 'cinquillo'}
     <MesaCinquillo sesion={partida.sesion} />
+  {:else if partida.id === 'mus'}
+    <MesaMus sesion={partida.sesion} />
   {:else if partida.id === 'pocha'}
     <MesaPocha sesion={partida.sesion} />
   {:else if partida.id === 'chinchon'}

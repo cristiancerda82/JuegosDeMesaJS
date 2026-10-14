@@ -49,6 +49,10 @@
     [1, 3],
   ];
 
+  /** Jugadas del Mus: una 31 y unos duples. */
+  const MUS_31: readonly IdCarta[] = ['oros-12', 'copas-11', 'espadas-10', 'bastos-1'];
+  const MUS_DUPLES: readonly IdCarta[] = ['oros-12', 'copas-3', 'espadas-5', 'bastos-5'];
+
   let dialogo: HTMLDialogElement | undefined = $state();
   $effect(() => {
     dialogo?.showModal();
@@ -118,6 +122,19 @@
               <li><div class="hueco"><Carta {id} /></div></li>
             {/each}
             <li class="resultado">= 7,5</li>
+          </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'jugadasMus'}
+          <ul class="valores" data-testid="ejemplo-mus">
+            {#each MUS_31 as id (id)}
+              <li><div class="hueco"><Carta {id} /></div></li>
+            {/each}
+            <li class="resultado">= 31</li>
+          </ul>
+          <ul class="valores">
+            {#each MUS_DUPLES as id (id)}
+              <li><div class="hueco"><Carta {id} /></div></li>
+            {/each}
+            <li class="resultado">= duples</li>
           </ul>
         {:else if 'ejemplo' in seccion && seccion.ejemplo === 'puntosPocha'}
           <table class="puntos-pocha" data-testid="ejemplo-pocha">

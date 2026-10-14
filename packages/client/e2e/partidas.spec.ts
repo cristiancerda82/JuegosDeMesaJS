@@ -259,6 +259,7 @@ for (const juego of [
   'freecell',
   'cinquillo',
   'pocha',
+  'mus',
 ] as const) {
   test(`la guía de ${juego} se abre desde las opciones y desde la partida`, async ({ page }) => {
     await abrirJuego(page, juego);

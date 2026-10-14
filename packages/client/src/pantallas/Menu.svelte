@@ -27,6 +27,7 @@
     { id: 'guinote', desc: T.menu.guinoteDesc, cartas: ['espadas-12', 'espadas-10', 'oros-7'] },
     { id: 'escoba', desc: T.menu.escobaDesc, cartas: ['oros-7', 'copas-11', 'espadas-6'] },
     { id: 'chinchon', desc: T.menu.chinchonDesc, cartas: ['copas-5', 'copas-6', 'comodin-1'] },
+    { id: 'mus', desc: T.menu.musDesc, cartas: ['oros-12', 'copas-3', 'espadas-1'] },
     { id: 'pocha', desc: T.menu.pochaDesc, cartas: ['copas-1', 'oros-3', 'bastos-12'] },
     { id: 'cinquillo', desc: T.menu.cinquilloDesc, cartas: ['oros-5', 'oros-6', 'copas-5'] },
     { id: 'sieteYMedia', desc: T.menu.sieteYMediaDesc, cartas: ['oros-7', 'bastos-12', 'copas-1'] },

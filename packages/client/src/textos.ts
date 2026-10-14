@@ -38,6 +38,8 @@ export const T = {
     guinoteDesc: 'Bazas, cantes con rey y sota y arrastre, en partidas a 101.',
     cinquillo: 'Cinquillo',
     cinquilloDesc: 'Coloca tus cartas en escalera a partir de los cincos y quédate sin ninguna.',
+    mus: 'Mus',
+    musDesc: 'En parejas: grande, chica, pares y juego, con envites y órdagos.',
     pocha: 'Pocha',
     pochaDesc: 'Apuesta cuántas bazas harás en cada mano y acierta exactamente.',
     sieteYMedia: 'Siete y media',
@@ -121,6 +123,13 @@ export const T = {
     restriccionRepartidor: 'Apuesta del que reparte',
     restriccionRepartidorDesc:
       'El que reparte no puede apostar lo que haría que las apuestas sumen tantas bazas como cartas.',
+    reyesMus: 'Reyes',
+    ochoReyes: 'Ocho reyes (los treses son reyes y los doses ases)',
+    cuatroReyes: 'Cuatro reyes',
+    puntosJuegoMus: 'Cada juego',
+    piedrasN: (n: number) => `A ${n} piedras`,
+    juegosMus: 'Partida',
+    juegosN: (n: number) => (n === 1 ? 'A un juego' : `Al mejor de ${n} juegos`),
     cierreMaximo: 'Para cerrar',
     cierreN: (n: number) =>
       n === 0 ? 'Solo con todo ligado' : `Con una carta suelta de ${n} o menos`,
@@ -258,6 +267,60 @@ export const T = {
     totalPartida: 'Total de la partida',
     deVueltas: (meta: number) => `Nadie llega a ${meta}: se juega de vueltas.`,
     siguienteMano: 'Siguiente mano',
+  },
+
+  mus: {
+    nosotros: 'Tu pareja',
+    ellos: 'Rivales',
+    /** Las parejas dentro de una frase. */
+    nosotrosEn: 'tu pareja',
+    ellosEn: 'los rivales',
+    marcador: (nuestras: number, suyas: number, puntos: number) =>
+      `${nuestras} – ${suyas} (a ${puntos})`,
+    juegos: (nuestros: number, suyos: number) => `Juegos ${nuestros} – ${suyos}`,
+    mano: 'Mano',
+    lances: { grande: 'Grande', chica: 'Chica', pares: 'Pares', juego: 'Juego', punto: 'Punto' },
+    faseMus: '¿Mus o se corta?',
+    faseDescarte: 'Descartes',
+    pideMus: 'Mus',
+    corta: 'Corta',
+    descarta: (n: number) => `Descarta ${n}`,
+    paso: 'Paso',
+    envida: (n: number) => `Envida ${n}`,
+    sube: (n: number) => `Sube ${n}`,
+    ordago: '¡Órdago!',
+    quiero: 'Quiero',
+    noQuiero: 'No quiero',
+    botonMus: 'Mus',
+    botonCortar: 'Corto',
+    botonDescartar: (n: number) => (n === 0 ? 'Elige cartas' : `Descartar ${n}`),
+    eligeDescarte: 'Toca las cartas que quieres cambiar',
+    botonEnvidar: (n: number) => `Envido ${n}`,
+    botonSubir: (n: number) => `Subo ${n}`,
+    botonOrdago: 'Órdago',
+    botonPaso: 'Paso',
+    estadoLance: {
+      paso: 'En paso',
+      querido: (n: number) => `${n} queridas`,
+      noQuerido: (n: number, quien: string) => `No quiso: ${n} para ${quien}`,
+      ordago: 'Órdago querido',
+      sinApuesta: (quien: string) => `Solo ${quien}`,
+      noSeJuega: 'Nadie tiene',
+    },
+    envite: (quien: string, n: number) => `Envite de ${quien}: ${n}`,
+    enviteOrdago: (quien: string) => `Órdago de ${quien}`,
+    tienen: (quienes: string) => `Tienen: ${quienes}`,
+    nadie: 'nadie',
+    dice: (quien: string, que: string) => (quien === 'Tú' ? `Dices: ${que}` : `${quien}: ${que}`),
+    conteo: (n: number) => `Conteo de la mano ${n}`,
+    porOrdago: (lance: string) => `La mano terminó con un órdago a ${lance}.`,
+    lance: 'Lance',
+    gana: 'Gana',
+    ganaJuego: (quien: string) =>
+      quien === 'Tu pareja' ? '¡Tu pareja gana el juego!' : 'Los rivales ganan el juego',
+    siguienteMano: 'Siguiente mano',
+    total: 'Total',
+    clasificacion: 'Juegos ganados',
   },
 
   pocha: {
@@ -401,6 +464,7 @@ export const T = {
       freecell: 'Cómo se juega al FreeCell',
       cinquillo: 'Cómo se juega al Cinquillo',
       pocha: 'Cómo se juega a la Pocha',
+      mus: 'Cómo se juega al Mus',
     },
     puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
 
@@ -893,6 +957,67 @@ export const T = {
         texto: [
           'Juega primero las cartas que te abren camino a ti: si tienes el 6 y el 7 de un palo, el 6 te deja jugar luego el 7.',
           'Retén los cincos y las cartas que abrirían camino a los demás si no te hacen falta.',
+        ],
+      },
+    ],
+
+    mus: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja española de 40 cartas, cuatro jugadores en dos parejas: tu compañero es el de enfrente. Cada uno recibe 4 cartas.',
+          'Las parejas ganan piedras apostando en cuatro lances. La primera que llega a 40 piedras gana el juego, y la partida es al mejor de 3 juegos (se puede cambiar en las opciones).',
+        ],
+      },
+      {
+        titulo: 'La mano y el mus',
+        texto: [
+          'La «mano» es el jugador siguiente al que reparte: habla siempre el primero y gana todos los empates.',
+          'Antes de apostar, cada uno dice «mus» si quiere cambiar cartas o «corto» si no. Si los cuatro dicen mus, cada uno descarta de 1 a 4 cartas y recibe otras tantas, y se vuelve a preguntar. En cuanto alguien corta, empiezan los lances.',
+        ],
+      },
+      {
+        titulo: 'Los ocho reyes',
+        texto: [
+          'Normalmente se juega con ocho reyes: los treses cuentan como reyes y los doses como ases. De más alta a más baja: Rey, Caballo, Sota, 7, 6, 5, 4 y As.',
+        ],
+      },
+      {
+        titulo: 'Los cuatro lances',
+        texto: [
+          'Grande: gana quien tiene las cartas más altas (se compara la más alta, luego la siguiente…). Chica: gana quien tiene las más bajas.',
+          'Pares: una pareja (dos iguales), unas medias (tres iguales) o unos duples (dos parejas o cuatro iguales). Los duples ganan a las medias y las medias a la pareja.',
+          'Juego: se suman las cartas (figuras 10, As 1, el resto su número). Hay juego con 31 o más, y el mejor es la 31, luego la 32, la 40, la 37, 36, 35, 34 y 33. Si nadie tiene juego se juega al Punto: gana la suma más alta.',
+        ],
+        ejemplo: 'jugadasMus',
+      },
+      {
+        titulo: 'Las apuestas',
+        texto: [
+          'En cada lance, por turnos desde la mano, se puede pasar, envidar 2 o 5 piedras o echar un órdago. Ante un envite contesta primero el rival siguiente y, si no lo quiere, su compañero: puede querer, no querer, subir o echar un órdago.',
+          'Si se quiere, lo cobra al final la pareja con la mejor jugada. Si no se quiere, la pareja que envidó cobra lo que ya estaba aceptado, o 1 piedra. Un órdago querido se resuelve en el acto: quien gana ese lance gana el juego entero.',
+          'En Pares y Juego solo apuestan los que tienen la jugada; al llegar a esos lances se ve quién tiene.',
+        ],
+      },
+      {
+        titulo: 'El conteo',
+        texto: [
+          'Al final se enseñan las cartas y se cuentan los lances en orden. Grande y Chica en paso valen 1 piedra. En Pares, la pareja que gana cobra además 1 por pareja, 2 por medias y 3 por duples de cada uno; en Juego, 3 por la 31 y 2 por otro juego; el Punto vale 1.',
+          'En cuanto una pareja llega a 40 gana el juego, aunque queden lances por contar.',
+        ],
+      },
+      {
+        titulo: 'En la mesa',
+        texto: [
+          'Pulsa «Mus» o «Corto». Para descartar, toca las cartas que quieres cambiar y pulsa «Descartar». En los lances, los botones muestran solo lo que puedes decir. En el centro verás cómo va cada lance y junto a cada jugador lo último que ha dicho.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Ser mano es una gran ventaja: con jugadas iguales, ganas tú.',
+          'No quieras envites grandes con jugadas regulares: cada piedra cuenta.',
+          'Un órdago de farol solo funciona si el rival no tiene buena jugada.',
         ],
       },
     ],
