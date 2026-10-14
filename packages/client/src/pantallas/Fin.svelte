@@ -33,6 +33,7 @@
       partida.id !== 'chinchon' &&
       partida.id !== 'sieteYMedia' &&
       partida.id !== 'cinquillo' &&
+      partida.id !== 'pocha' &&
       partida.sesion.vista.config.jugadores === 4,
   );
 
@@ -80,6 +81,20 @@
       <p class="nota" data-testid="fin-guinote">
         {T.fin.manosJugadas(partida.sesion.vista.resultadosManos.length)}
       </p>
+    {:else if partida.id === 'pocha'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      <table>
+        <caption>{T.pocha.clasificacion}</caption>
+        <tbody>
+          {#each Array.from({ length: n }, (_, a) => a).sort((a, b) => vista.totales[b]! - vista.totales[a]!) as a (a)}
+            <tr>
+              <th scope="row">{nombreChinchon(a, n)}</th>
+              <td data-testid="total-{a}">{vista.totales[a]}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
     {:else if partida.id === 'cinquillo'}
       {@const vista = partida.sesion.vista}
       {@const n = vista.config.jugadores}

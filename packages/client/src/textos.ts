@@ -38,6 +38,8 @@ export const T = {
     guinoteDesc: 'Bazas, cantes con rey y sota y arrastre, en partidas a 101.',
     cinquillo: 'Cinquillo',
     cinquilloDesc: 'Coloca tus cartas en escalera a partir de los cincos y quédate sin ninguna.',
+    pocha: 'Pocha',
+    pochaDesc: 'Apuesta cuántas bazas harás en cada mano y acierta exactamente.',
     sieteYMedia: 'Siete y media',
     sieteYMediaDesc: 'Pide cartas contra la banca y acércate a 7,5 sin pasarte.',
     jugar: 'Jugar',
@@ -113,6 +115,12 @@ export const T = {
     comodinesDesc: 'Jugar con 2 comodines, que sustituyen a cualquier carta.',
     limite: 'Eliminación',
     limiteN: (n: number) => `Al pasar de ${n} puntos`,
+    duracionPocha: 'Duración',
+    duracionCorta: 'Corta: de 1 a 5 cartas y vuelta (9 manos)',
+    duracionCompleta: 'Completa: hasta repartir toda la baraja y vuelta',
+    restriccionRepartidor: 'Apuesta del que reparte',
+    restriccionRepartidorDesc:
+      'El que reparte no puede apostar lo que haría que las apuestas sumen tantas bazas como cartas.',
     cierreMaximo: 'Para cerrar',
     cierreN: (n: number) =>
       n === 0 ? 'Solo con todo ligado' : `Con una carta suelta de ${n} o menos`,
@@ -252,6 +260,36 @@ export const T = {
     siguienteMano: 'Siguiente mano',
   },
 
+  pocha: {
+    rivalN: (n: number) => `Rival ${n}`,
+    mano: (n: number, total: number, cartas: number) =>
+      `Mano ${n} de ${total} · ${cartas === 1 ? '1 carta' : `${cartas} cartas`}`,
+    detalle: (apuesta: number | null, bazas: number, puntos: number) =>
+      apuesta === null ? `${puntos} pts` : `apuesta ${apuesta} · bazas ${bazas} · ${puntos} pts`,
+    apuestaTitulo: '¿Cuántas bazas harás?',
+    apostar: (n: number) => (n === 1 ? '1 baza' : `${n} bazas`),
+    noPuedes: (n: number) => `Repartes tú: no puedes apostar ${n}`,
+    apuesta: (quien: string, n: number) => {
+      const bazas = n === 1 ? '1 baza' : `${n} bazas`;
+      return quien === 'Tú' ? `Apuestas ${bazas}` : `${quien} apuesta ${bazas}`;
+    },
+    apostando: 'Apuestas',
+    sumaApuestas: (suma: number, cartas: number) => `Apostadas ${suma} de ${cartas}`,
+    reparte: 'reparte',
+    finMano: (n: number, total: number) => `Fin de la mano ${n} de ${total}`,
+    jugador: 'Jugador',
+    apuestaCol: 'Apuesta',
+    bazasCol: 'Bazas',
+    puntosCol: 'Mano',
+    totalCol: 'Total',
+    acierto: 'Acierta',
+    fallo: 'Falla',
+    puntos: (n: number) => (n > 0 ? `+${n}` : `${n}`),
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
+    ejemplo: 'Apuesta / bazas hechas → puntos',
+  },
+
   cinquillo: {
     mesa: 'Mesa',
     paso: 'Paso',
@@ -362,6 +400,7 @@ export const T = {
       sieteYMedia: 'Cómo se juega a la Siete y media',
       freecell: 'Cómo se juega al FreeCell',
       cinquillo: 'Cómo se juega al Cinquillo',
+      pocha: 'Cómo se juega a la Pocha',
     },
     puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
 
@@ -854,6 +893,65 @@ export const T = {
         texto: [
           'Juega primero las cartas que te abren camino a ti: si tienes el 6 y el 7 de un palo, el 6 te deja jugar luego el 7.',
           'Retén los cincos y las cartas que abrirían camino a los demás si no te hacen falta.',
+        ],
+      },
+    ],
+
+    pocha: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja española de 40 cartas, contra la máquina, con 3 o 4 jugadores. Cada uno juega por su cuenta.',
+          'En cada mano tienes que adivinar cuántas bazas vas a ganar, ni una más ni una menos. Al final de la partida gana quien tiene más puntos.',
+        ],
+      },
+      {
+        titulo: 'Las manos',
+        texto: [
+          'En la primera mano se reparte 1 carta a cada uno, en la segunda 2, y así hasta el máximo; después se vuelve a bajar hasta 1. En la partida corta el máximo es 5 (9 manos); en la completa se llega a repartir toda la baraja.',
+          'Cada mano reparte el siguiente jugador.',
+        ],
+      },
+      {
+        titulo: 'El triunfo',
+        texto: [
+          'Después de repartir se pone boca arriba la siguiente carta del mazo: su palo es el triunfo. Si se reparte toda la baraja, el triunfo lo marca la última carta del que reparte, que todos pueden ver.',
+        ],
+      },
+      {
+        titulo: 'Las apuestas',
+        texto: [
+          'Antes de jugar, cada uno dice cuántas bazas hará, empezando por el siguiente al que reparte. Se puede apostar desde 0 hasta el número de cartas de la mano.',
+          'El que reparte apuesta el último y no puede elegir el número que haría que las apuestas sumen tantas bazas como cartas hay: así siempre falla alguien. Esta regla se puede quitar en las opciones.',
+        ],
+      },
+      {
+        titulo: 'Cómo se juega una baza',
+        texto: [
+          'Sale el siguiente al que reparte. Hay que seguir el palo que salió y, si puedes, ganar la baza. Si no tienes ese palo, tienes que echar triunfo y superar el triunfo de la mesa si puedes. Si no tienes ni palo ni triunfo, echas cualquier carta.',
+          'Gana el triunfo más alto o, si no hay, la carta más fuerte del palo que salió. De más fuerte a menos: As, 3, Rey, Caballo, Sota, 7, 6, 5, 4 y 2. Quien gana sale en la siguiente.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'Si haces justo las bazas que apostaste, sumas 10 puntos más 5 por cada baza apostada. Si fallas, restas 5 puntos por cada baza de diferencia, por arriba o por abajo.',
+        ],
+        ejemplo: 'puntosPocha',
+      },
+      {
+        titulo: 'En la mesa',
+        texto: [
+          'Para apostar, pulsa el botón con el número de bazas. Junto a cada jugador verás su apuesta, las bazas que lleva y sus puntos.',
+          'Para jugar, arrastra la carta a la mesa, o tócala y toca la mesa; con un doble toque también se juega. Solo se iluminan las cartas que puedes jugar.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Los Ases y los triunfos altos suelen ganar baza; lo demás, casi nunca.',
+          'Apostar 0 también vale 10 puntos: con una mano floja, intenta no ganar ninguna.',
+          'Cuando ya tengas tus bazas, deshazte de las cartas altas en bazas que gane otro.',
         ],
       },
     ],

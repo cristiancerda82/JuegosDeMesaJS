@@ -24,6 +24,13 @@ import {
   type ConfigCinquillo,
   type EstadoCinquillo,
   type VistaCinquillo,
+  CONFIG_POCHA_POR_DEFECTO,
+  iaPochaBasica,
+  pocha,
+  type AccionPocha,
+  type ConfigPocha,
+  type EstadoPocha,
+  type VistaPocha,
   CONFIG_SIETE_Y_MEDIA_POR_DEFECTO,
   iaSieteYMediaBasica,
   sieteYMedia,
@@ -90,7 +97,8 @@ export type IdJuego =
   | 'guinote'
   | 'sieteYMedia'
   | 'freecell'
-  | 'cinquillo';
+  | 'cinquillo'
+  | 'pocha';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -102,6 +110,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'sieteYMedia',
   'freecell',
   'cinquillo',
+  'pocha',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -271,6 +280,28 @@ export const DEF_CINQUILLO: DefCinquillo = {
   },
 };
 
+export type DefPocha = DefJuego<ConfigPocha, EstadoPocha, AccionPocha, VistaPocha>;
+
+/** Tiempo para ver la apuesta de cada rival. */
+const PAUSA_APUESTA_MS = 700;
+
+export const DEF_POCHA: DefPocha = {
+  id: 'pocha',
+  nombre: T.menu.pocha,
+  juego: pocha,
+  configPorDefecto: CONFIG_POCHA_POR_DEFECTO,
+  ia: iaPochaBasica,
+  // El cierre de la mano lo detiene la propia mesa con el resultado; aquí, la última baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const apostador = despues.apuestas.findIndex(
+      (a, i) => a !== null && antes.apuestas[i] === null,
+    );
+    if (apostador !== -1 && apostador !== despues.asiento) return PAUSA_APUESTA_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -281,6 +312,7 @@ export const JUEGOS = {
   sieteYMedia: DEF_SIETE_Y_MEDIA,
   freecell: DEF_FREECELL,
   cinquillo: DEF_CINQUILLO,
+  pocha: DEF_POCHA,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

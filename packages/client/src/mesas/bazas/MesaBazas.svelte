@@ -29,6 +29,10 @@
     info: Snippet;
     /** Botones de acción junto a la mano propia; reciben cómo cancelar la selección. */
     acciones?: Snippet<[() => void]>;
+    /** Nombre de cada asiento; por defecto, «Tú», «Rival», «Compañero»… */
+    nombre?: (asiento: Asiento) => string;
+    /** Texto junto al nombre de cada asiento; por defecto, las bazas ganadas. */
+    detalle?: (asiento: Asiento) => string;
   }
 
   let {
@@ -41,11 +45,12 @@
     detalleAviso,
     info,
     acciones,
+    nombre = (asiento: Asiento) => nombreAsiento(asiento, vista.config.jugadores),
+    detalle = (asiento: Asiento) => T.brisca.bazas(vista.bazas[asiento] ?? 0),
   }: Props = $props();
 
   const n = $derived(vista.config.jugadores);
   const rivales = $derived(Array.from({ length: n - 1 }, (_, i) => i + 1));
-  const nombre = (asiento: Asiento) => nombreAsiento(asiento, n);
   const activo = (asiento: Asiento) => vista.turno === asiento && sesion.fin === null;
 
   // ── Baza en curso y avisos ─────────────────────────────────────────────────
@@ -106,7 +111,7 @@
   });
 </script>
 
-<div class="mesa-bazas" class:cuatro={n === 4} bind:this={raiz}>
+<div class="mesa-bazas" class:cuatro={n >= 3} bind:this={raiz}>
   <div class="info">{@render info()}</div>
 
   {#each rivales as asiento (asiento)}
@@ -114,7 +119,7 @@
       {asiento}
       lado={lado(asiento, n)}
       nombre={nombre(asiento)}
-      detalle={T.brisca.bazas(vista.bazas[asiento] ?? 0)}
+      detalle={detalle(asiento)}
       cartas={vista.cartasEnMano[asiento] ?? 0}
       activo={activo(asiento)}
       visible={cartaVisible(asiento)}
@@ -137,7 +142,7 @@
   <div class="propio" class:activo={activo(HUMANO)}>
     <div class="estado">
       <span class="nombre">
-        {T.brisca.tu} <small>{T.brisca.bazas(vista.bazas[HUMANO] ?? 0)}</small>
+        {nombre(HUMANO)} <small data-testid="detalle-propio">{detalle(HUMANO)}</small>
       </span>
       <span class="turno" role="status" data-testid="turno">{turno}</span>
       {@render acciones?.(() => interaccion.cancelar())}
@@ -169,7 +174,7 @@
     -webkit-user-select: none;
   }
 
-  /* Con 4 jugadores la mesa central comparte el ancho con dos rivales laterales. */
+  /* Con 3 y 4 jugadores la mesa central comparte el ancho con dos rivales laterales. */
   .mesa-bazas.cuatro {
     --ancho-carta: min(16vw, 11dvh, 96px);
     --ancho-rival: min(9vw, 6dvh, 48px);

@@ -6,6 +6,10 @@ import {
   type ConfigSieteYMedia,
   type AccionFreeCell,
   type AccionCinquillo,
+  type AccionPocha,
+  type ConfigPocha,
+  type EstadoPocha,
+  type VistaPocha,
   type ConfigCinquillo,
   type EstadoCinquillo,
   type VistaCinquillo,
@@ -47,6 +51,7 @@ import {
   DEF_SIETE_Y_MEDIA,
   DEF_FREECELL,
   DEF_CINQUILLO,
+  DEF_POCHA,
   DEF_KLONDIKE,
   DEF_ESCOBA,
   DEF_TUTE,
@@ -68,6 +73,7 @@ export type SesionCinquillo = Sesion<
   AccionCinquillo,
   VistaCinquillo
 >;
+export type SesionPocha = Sesion<ConfigPocha, EstadoPocha, AccionPocha, VistaPocha>;
 export type SesionFreeCell = Sesion<ConfigFreeCell, EstadoFreeCell, AccionFreeCell, VistaFreeCell>;
 export type SesionSieteYMedia = Sesion<
   ConfigSieteYMedia,
@@ -86,7 +92,8 @@ export type Partida =
   | { readonly id: 'guinote'; readonly sesion: SesionGuinote }
   | { readonly id: 'sieteYMedia'; readonly sesion: SesionSieteYMedia }
   | { readonly id: 'freecell'; readonly sesion: SesionFreeCell }
-  | { readonly id: 'cinquillo'; readonly sesion: SesionCinquillo };
+  | { readonly id: 'cinquillo'; readonly sesion: SesionCinquillo }
+  | { readonly id: 'pocha'; readonly sesion: SesionPocha };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -97,7 +104,8 @@ export type ConfigJuego =
   | ConfigGuinote
   | ConfigSieteYMedia
   | ConfigFreeCell
-  | ConfigCinquillo;
+  | ConfigCinquillo
+  | ConfigPocha;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -124,6 +132,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_FREECELL);
     case 'cinquillo':
       return hacer(DEF_CINQUILLO);
+    case 'pocha':
+      return hacer(DEF_POCHA);
   }
 }
 

@@ -7,6 +7,7 @@
     ConfigFreeCell,
     ConfigGuinote,
     ConfigKlondike,
+    ConfigPocha,
     ConfigSieteYMedia,
     ConfigTute,
   } from '@juegos/engine';
@@ -35,6 +36,7 @@
   let sieteYMedia: Editable<ConfigSieteYMedia> = $state({ ...JUEGOS.sieteYMedia.configPorDefecto });
   let freecell: Editable<ConfigFreeCell> = $state({ ...JUEGOS.freecell.configPorDefecto });
   let cinquillo: Editable<ConfigCinquillo> = $state({ ...JUEGOS.cinquillo.configPorDefecto });
+  let pocha: Editable<ConfigPocha> = $state({ ...JUEGOS.pocha.configPorDefecto });
   let freecellModo: 'azar' | 'numero' = $state('azar');
   let freecellNumero = $state(1);
 
@@ -55,6 +57,7 @@
       sieteYMedia,
       freecell: { ...freecell, partida },
       cinquillo,
+      pocha,
     };
     empezar({ ...configs[juego] });
   }
@@ -141,6 +144,25 @@
         <label class="casilla">
           <input type="checkbox" bind:checked={escoba.escobaInicial} />
           {T.opciones.escobaInicialDesc}
+        </label>
+      </fieldset>
+    {:else if juego === 'pocha'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [4, 3] as n (n)}
+          <label><input type="radio" bind:group={pocha.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.duracionPocha}</legend>
+        <label><input type="radio" bind:group={pocha.duracion} value="corta" /> {T.opciones.duracionCorta}</label>
+        <label><input type="radio" bind:group={pocha.duracion} value="completa" /> {T.opciones.duracionCompleta}</label>
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.restriccionRepartidor}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={pocha.restriccionRepartidor} data-testid="restriccion-repartidor" />
+          {T.opciones.restriccionRepartidorDesc}
         </label>
       </fieldset>
     {:else if juego === 'cinquillo'}

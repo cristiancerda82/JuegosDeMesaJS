@@ -1,6 +1,7 @@
 <script lang="ts">
   import {
     puntosDe,
+    puntosPocha,
     valorCarta,
     valorEscoba,
     VALORES_GUINOTE,
@@ -40,6 +41,13 @@
   /** Valores de la Siete y media y una siete y media natural. */
   const VALORES_SYM: readonly IdCarta[] = ['espadas-1', 'espadas-4', 'espadas-7', 'espadas-10', 'espadas-12'];
   const SIETE_Y_MEDIA_NATURAL: readonly IdCarta[] = ['oros-7', 'copas-11'];
+
+  /** Ejemplos de puntuación de la Pocha: apuesta y bazas hechas. */
+  const PUNTOS_POCHA: readonly (readonly [number, number])[] = [
+    [2, 2],
+    [0, 0],
+    [1, 3],
+  ];
 
   let dialogo: HTMLDialogElement | undefined = $state();
   $effect(() => {
@@ -111,6 +119,19 @@
             {/each}
             <li class="resultado">= 7,5</li>
           </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'puntosPocha'}
+          <table class="puntos-pocha" data-testid="ejemplo-pocha">
+            <caption>{T.pocha.ejemplo}</caption>
+            <tbody>
+              {#each PUNTOS_POCHA as [apuesta, bazas] (apuesta)}
+                <tr>
+                  <td>{apuesta} / {bazas}</td>
+                  <td>→</td>
+                  <td class="puntos">{T.pocha.puntos(puntosPocha(apuesta, bazas))}</td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
         {:else if 'ejemplo' in seccion && seccion.ejemplo === 'canteGuinote'}
           <ul class="valores">
             {#each CANTE_G as id (id)}
@@ -254,5 +275,24 @@
     justify-content: flex-end;
     padding: 12px 20px 16px;
     border-top: 1px solid rgb(255 255 255 / 0.12);
+  }
+
+  .puntos-pocha {
+    margin: 4px auto 8px;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .puntos-pocha caption {
+    font-size: 0.85rem;
+    color: var(--texto-suave);
+  }
+
+  .puntos-pocha td {
+    padding: 2px 8px;
+  }
+
+  .puntos-pocha .puntos {
+    font-weight: 800;
   }
 </style>

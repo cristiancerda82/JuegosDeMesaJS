@@ -5,9 +5,13 @@ import { T } from '../../textos';
 /** Lado de la mesa donde se dibuja cada asiento. */
 export type Lado = 'abajo' | 'derecha' | 'arriba' | 'izquierda';
 
-/** El humano abajo; con 4, el turno avanza en sentido antihorario: derecha, arriba, izquierda. */
+/**
+ * El humano abajo; con 3 y 4, el turno avanza en sentido antihorario: derecha, (arriba,)
+ * izquierda.
+ */
 export function lado(asiento: Asiento, jugadores: number): Lado {
   if (jugadores === 2) return asiento === HUMANO ? 'abajo' : 'arriba';
+  if (jugadores === 3) return (['abajo', 'derecha', 'izquierda'] as const)[asiento]!;
   return (['abajo', 'derecha', 'arriba', 'izquierda'] as const)[asiento]!;
 }
 
@@ -19,7 +23,7 @@ export function nombreAsiento(asiento: Asiento, jugadores: number): string {
 
 /** Lo que la mesa de bazas necesita de la vista; lo cumplen la Brisca, el Tute y el Guiñote. */
 export interface VistaBazas {
-  readonly config: { readonly jugadores: 2 | 4 };
+  readonly config: { readonly jugadores: number };
   readonly miMano: readonly IdCarta[] | null;
   readonly cartasEnMano: readonly number[];
   readonly mazo: number;
