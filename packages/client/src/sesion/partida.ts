@@ -8,6 +8,10 @@ import {
   type AccionCinquillo,
   type AccionPocha,
   type AccionMus,
+  type AccionSpider,
+  type ConfigSpider,
+  type EstadoSpider,
+  type VistaSpider,
   type ConfigMus,
   type EstadoMus,
   type VistaMus,
@@ -57,6 +61,7 @@ import {
   DEF_CINQUILLO,
   DEF_POCHA,
   DEF_MUS,
+  DEF_SPIDER,
   DEF_KLONDIKE,
   DEF_ESCOBA,
   DEF_TUTE,
@@ -80,6 +85,7 @@ export type SesionCinquillo = Sesion<
 >;
 export type SesionPocha = Sesion<ConfigPocha, EstadoPocha, AccionPocha, VistaPocha>;
 export type SesionMus = Sesion<ConfigMus, EstadoMus, AccionMus, VistaMus>;
+export type SesionSpider = Sesion<ConfigSpider, EstadoSpider, AccionSpider, VistaSpider>;
 export type SesionFreeCell = Sesion<ConfigFreeCell, EstadoFreeCell, AccionFreeCell, VistaFreeCell>;
 export type SesionSieteYMedia = Sesion<
   ConfigSieteYMedia,
@@ -100,7 +106,8 @@ export type Partida =
   | { readonly id: 'freecell'; readonly sesion: SesionFreeCell }
   | { readonly id: 'cinquillo'; readonly sesion: SesionCinquillo }
   | { readonly id: 'pocha'; readonly sesion: SesionPocha }
-  | { readonly id: 'mus'; readonly sesion: SesionMus };
+  | { readonly id: 'mus'; readonly sesion: SesionMus }
+  | { readonly id: 'spider'; readonly sesion: SesionSpider };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -113,7 +120,8 @@ export type ConfigJuego =
   | ConfigFreeCell
   | ConfigCinquillo
   | ConfigPocha
-  | ConfigMus;
+  | ConfigMus
+  | ConfigSpider;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -144,6 +152,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_POCHA);
     case 'mus':
       return hacer(DEF_MUS);
+    case 'spider':
+      return hacer(DEF_SPIDER);
   }
 }
 

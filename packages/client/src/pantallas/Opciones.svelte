@@ -9,6 +9,7 @@
     ConfigKlondike,
     ConfigMus,
     ConfigPocha,
+    ConfigSpider,
     ConfigSieteYMedia,
     ConfigTute,
   } from '@juegos/engine';
@@ -39,6 +40,7 @@
   let cinquillo: Editable<ConfigCinquillo> = $state({ ...JUEGOS.cinquillo.configPorDefecto });
   let pocha: Editable<ConfigPocha> = $state({ ...JUEGOS.pocha.configPorDefecto });
   let musConfig: Editable<ConfigMus> = $state({ ...JUEGOS.mus.configPorDefecto });
+  let spider: Editable<ConfigSpider> = $state({ ...JUEGOS.spider.configPorDefecto });
   let freecellModo: 'azar' | 'numero' = $state('azar');
   let freecellNumero = $state(1);
 
@@ -61,6 +63,7 @@
       cinquillo,
       pocha,
       mus: musConfig,
+      spider,
     };
     empezar({ ...configs[juego] });
   }
@@ -147,6 +150,20 @@
         <label class="casilla">
           <input type="checkbox" bind:checked={escoba.escobaInicial} />
           {T.opciones.escobaInicialDesc}
+        </label>
+      </fieldset>
+    {:else if juego === 'spider'}
+      <fieldset>
+        <legend>{T.opciones.palosSpider}</legend>
+        {#each [1, 2, 4] as p (p)}
+          <label><input type="radio" bind:group={spider.palos} value={p} /> {T.opciones.palosN(p)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.repartirConVacias}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={spider.repartirConVacias} />
+          {T.opciones.repartirConVaciasDesc}
         </label>
       </fieldset>
     {:else if juego === 'mus'}

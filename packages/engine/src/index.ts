@@ -19,6 +19,7 @@ export * from './juegos/freecell';
 export * from './juegos/cinquillo';
 export * from './juegos/pocha';
 export * from './juegos/mus';
+export * from './juegos/spider';
 export * from './ia/agente';
 export * from './ia/brisca-basica';
 export * from './ia/tute-basica';

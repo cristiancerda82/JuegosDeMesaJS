@@ -22,6 +22,7 @@
   const juegos = [
     { id: 'klondike', desc: T.menu.klondikeDesc, cartas: ['picas-1', 'corazones-13', 'diamantes-12'] },
     { id: 'freecell', desc: T.menu.freecellDesc, cartas: ['treboles-1', 'corazones-2', 'picas-13'] },
+    { id: 'spider', desc: T.menu.spiderDesc, cartas: ['picas-13', 'picas-12', 'picas-11'] },
     { id: 'brisca', desc: T.menu.briscaDesc, cartas: ['oros-1', 'copas-3', 'espadas-12'] },
     { id: 'tute', desc: T.menu.tuteDesc, cartas: ['bastos-12', 'oros-11', 'copas-12'] },
     { id: 'guinote', desc: T.menu.guinoteDesc, cartas: ['espadas-12', 'espadas-10', 'oros-7'] },

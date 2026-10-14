@@ -26,6 +26,8 @@ export const T = {
     klondikeDesc: 'El solitario clásico con baraja francesa.',
     freecell: 'FreeCell',
     freecellDesc: 'Solitario con 4 celdas libres y todas las cartas a la vista.',
+    spider: 'Spider',
+    spiderDesc: 'Solitario de dos barajas: ordena escaleras del Rey al As del mismo palo.',
     brisca: 'Brisca',
     briscaDesc: 'Bazas con baraja española, contra la máquina.',
     tute: 'Tute',
@@ -82,6 +84,11 @@ export const T = {
     montar: 'Montar sobre el compañero (4 jugadores)',
     montarDesc: 'Obliga a superar la baza aunque ya la vaya ganando tu compañero.',
     cambioSieteGuinote: 'Cambio del 7 de triunfo',
+    palosSpider: 'Dificultad',
+    palosN: (n: number) =>
+      n === 1 ? '1 palo (fácil)' : n === 2 ? '2 palos (media)' : '4 palos (difícil)',
+    repartirConVacias: 'Repartir con columnas vacías',
+    repartirConVaciasDesc: 'Permitir repartir del mazo aunque haya alguna columna vacía.',
     partidaFreeCell: 'Partida',
     partidaAzar: 'Al azar',
     partidaNumero: 'Por número',
@@ -153,6 +160,9 @@ export const T = {
     celda: (n: number) => `Celda ${n}`,
     partidaN: 'Partida',
     maxMovible: 'Puedes mover',
+    repartos: (n: number) => (n === 1 ? 'Queda 1 reparto' : `Quedan ${n} repartos`),
+    repartir: 'Repartir una carta en cada columna',
+    escaleras: 'Escaleras',
     cartasN: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
     descarte: 'Descarte',
   },
@@ -414,6 +424,8 @@ export const T = {
     revancha: 'Jugar otra vez',
     menu: 'Volver al menú',
     resumenKlondike: (movs: number, tiempo: string) => `${movs} movimientos en ${tiempo}`,
+    resumenSpider: (escaleras: number, movs: number, tiempo: string) =>
+      `${escaleras} de 8 escaleras, ${movs} movimientos en ${tiempo}`,
     resumenFreeCell: (numero: number, movs: number, tiempo: string) =>
       `Partida nº ${numero}: ${movs} movimientos en ${tiempo}`,
     porTute: (quien: string) =>
@@ -463,6 +475,7 @@ export const T = {
       sieteYMedia: 'Cómo se juega a la Siete y media',
       freecell: 'Cómo se juega al FreeCell',
       cinquillo: 'Cómo se juega al Cinquillo',
+      spider: 'Cómo se juega al Spider',
       pocha: 'Cómo se juega a la Pocha',
       mus: 'Cómo se juega al Mus',
     },
@@ -957,6 +970,51 @@ export const T = {
         texto: [
           'Juega primero las cartas que te abren camino a ti: si tienes el 6 y el 7 de un palo, el 6 te deja jugar luego el 7.',
           'Retén los cincos y las cartas que abrirían camino a los demás si no te hacen falta.',
+        ],
+      },
+    ],
+
+    spider: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Es un solitario con dos barajas francesas: 104 cartas. Ganas cuando formas 8 escaleras del Rey al As, cada una de un solo palo: al completarse, se retiran solas de la mesa.',
+          'Con 1 palo todas las cartas son picas y es bastante asequible; con 2 o 4 palos es mucho más difícil.',
+        ],
+      },
+      {
+        titulo: 'Las columnas',
+        texto: [
+          'Hay 10 columnas con cartas boca abajo y solo la última a la vista. Puedes poner una carta sobre otra que valga justo uno más, sea del palo que sea: un 7 sobre cualquier 8. En una columna vacía puedes poner cualquier carta.',
+          'Cuando una carta boca abajo queda al final de su columna, se da la vuelta sola.',
+        ],
+        ejemplo: 'escaleraSpider',
+      },
+      {
+        titulo: 'Mover escaleras',
+        texto: [
+          'Varias cartas se pueden mover juntas solo si forman una escalera descendente del mismo palo, como 9, 8 y 7 de picas. Si se mezclan palos, solo se mueve la parte del final que es de un mismo palo.',
+        ],
+      },
+      {
+        titulo: 'El mazo',
+        texto: [
+          'Arriba está el mazo con las cartas que quedan. Al tocarlo, se reparte una carta boca arriba al final de cada columna (hay 5 repartos). No se puede repartir si hay alguna columna vacía, salvo que lo permitas en las opciones.',
+        ],
+      },
+      {
+        titulo: 'En la mesa',
+        texto: [
+          'Arrastra una carta (o una escalera) a su destino, o tócala y toca el destino: se iluminan los sitios donde puede ir. Con un doble toque va al mejor sitio posible.',
+          'Puedes deshacer todos los movimientos que quieras, también los repartos.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Intenta vaciar una columna: es el mejor sitio para reorganizar.',
+          'Antes de repartir, coloca todo lo que puedas: el reparto tapará tus escaleras.',
+          'Cuando puedas elegir, pon las cartas sobre otras de su mismo palo.',
         ],
       },
     ],

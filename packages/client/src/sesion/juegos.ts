@@ -10,6 +10,12 @@ import {
   CONFIG_BRISCA_POR_DEFECTO,
   CONFIG_KLONDIKE_POR_DEFECTO,
   CONFIG_FREECELL_POR_DEFECTO,
+  CONFIG_SPIDER_POR_DEFECTO,
+  spider,
+  type AccionSpider,
+  type ConfigSpider,
+  type EstadoSpider,
+  type VistaSpider,
   freecell,
   type AccionFreeCell,
   type ConfigFreeCell,
@@ -106,7 +112,8 @@ export type IdJuego =
   | 'freecell'
   | 'cinquillo'
   | 'pocha'
-  | 'mus';
+  | 'mus'
+  | 'spider';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -120,6 +127,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'cinquillo',
   'pocha',
   'mus',
+  'spider',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -142,6 +150,17 @@ export const DEF_FREECELL: DefFreeCell = {
   nombre: T.menu.freecell,
   juego: freecell,
   configPorDefecto: CONFIG_FREECELL_POR_DEFECTO,
+  ia: null,
+  pausaTras: () => 0,
+};
+
+export type DefSpider = DefJuego<ConfigSpider, EstadoSpider, AccionSpider, VistaSpider>;
+
+export const DEF_SPIDER: DefSpider = {
+  id: 'spider',
+  nombre: T.menu.spider,
+  juego: spider,
+  configPorDefecto: CONFIG_SPIDER_POR_DEFECTO,
   ia: null,
   pausaTras: () => 0,
 };
@@ -343,6 +362,7 @@ export const JUEGOS = {
   cinquillo: DEF_CINQUILLO,
   pocha: DEF_POCHA,
   mus: DEF_MUS,
+  spider: DEF_SPIDER,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

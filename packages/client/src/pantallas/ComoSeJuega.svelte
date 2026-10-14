@@ -53,6 +53,9 @@
   const MUS_31: readonly IdCarta[] = ['oros-12', 'copas-11', 'espadas-10', 'bastos-1'];
   const MUS_DUPLES: readonly IdCarta[] = ['oros-12', 'copas-3', 'espadas-5', 'bastos-5'];
 
+  /** Una escalera del Spider: del mismo palo, se mueve entera. */
+  const ESCALERA_SPIDER: readonly IdCarta[] = ['picas-9', 'picas-8', 'picas-7', 'picas-6'];
+
   let dialogo: HTMLDialogElement | undefined = $state();
   $effect(() => {
     dialogo?.showModal();
@@ -122,6 +125,12 @@
               <li><div class="hueco"><Carta {id} /></div></li>
             {/each}
             <li class="resultado">= 7,5</li>
+          </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'escaleraSpider'}
+          <ul class="valores" data-testid="ejemplo-spider">
+            {#each ESCALERA_SPIDER as id (id)}
+              <li><div class="hueco"><Carta {id} /></div></li>
+            {/each}
           </ul>
         {:else if 'ejemplo' in seccion && seccion.ejemplo === 'jugadasMus'}
           <ul class="valores" data-testid="ejemplo-mus">

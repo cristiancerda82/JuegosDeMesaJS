@@ -20,7 +20,7 @@
   const fin = $derived(partida.sesion.fin!);
 
   const titulo = $derived.by(() => {
-    if (partida.id === 'klondike' || partida.id === 'freecell') {
+    if (partida.id === 'klondike' || partida.id === 'freecell' || partida.id === 'spider') {
       return partida.sesion.vista.situacion === 'victoria' ? T.fin.solitarioGanado : T.fin.abandono;
     }
     if (fin.empate) return T.fin.empate;
@@ -31,6 +31,7 @@
   const parejas = $derived(
     partida.id !== 'klondike' &&
       partida.id !== 'freecell' &&
+      partida.id !== 'spider' &&
       partida.id !== 'chinchon' &&
       partida.id !== 'sieteYMedia' &&
       partida.id !== 'cinquillo' &&
@@ -60,6 +61,11 @@
 
     {#if partida.id === 'klondike'}
       <p>{T.fin.resumenKlondike(partida.sesion.vista.movimientos, formatoTiempo(partida.sesion.tiempoMs()))}</p>
+    {:else if partida.id === 'spider'}
+      {@const vista = partida.sesion.vista}
+      <p data-testid="resumen-spider">
+        {T.fin.resumenSpider(vista.completadas.length, vista.movimientos, formatoTiempo(partida.sesion.tiempoMs()))}
+      </p>
     {:else if partida.id === 'freecell'}
       {@const vista = partida.sesion.vista}
       <p data-testid="resumen-freecell">
