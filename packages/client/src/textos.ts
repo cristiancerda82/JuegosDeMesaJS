@@ -10,6 +10,16 @@ function formatoValor(medios: number): string {
 export const T = {
   app: { titulo: 'Juegos de mesa', subtitulo: 'Naipes para jugar en cualquier parte' },
 
+  pwa: {
+    versionNueva: 'Hay una versión nueva',
+    actualizar: 'Actualizar',
+    instalar: 'Instalar',
+    instalarDesc:
+      'Instala la aplicación para abrirla desde tu pantalla de inicio, también sin conexión.',
+    instalarIOS:
+      'Para instalarla en el iPhone o el iPad: pulsa Compartir y después «Añadir a pantalla de inicio».',
+  },
+
   menu: {
     elegir: 'Elige un juego',
     klondike: 'Klondike',

@@ -1,5 +1,6 @@
 <script lang="ts">
   import Carta from '../cartas/Carta.svelte';
+  import { pwa } from '../pwa/registro.svelte';
   import type { Guardado } from '../sesion/guardado';
   import { JUEGOS, type IdJuego } from '../sesion/juegos';
   import { T } from '../textos';
@@ -81,6 +82,19 @@
     </label>
     <button class="enlace" onclick={verCartas}>{T.menu.verCartas}</button>
   </footer>
+
+  {#if !pwa.instalada}
+    {#if pwa.puedeInstalar}
+      <section class="instalar" data-testid="instalar">
+        <p>{T.pwa.instalarDesc}</p>
+        <button class="principal" onclick={() => pwa.instalar()}>{T.pwa.instalar}</button>
+      </section>
+    {:else if pwa.esIOS}
+      <section class="instalar" data-testid="instalar-ios">
+        <p>{T.pwa.instalarIOS}</p>
+      </section>
+    {/if}
+  {/if}
 </main>
 
 <style>
@@ -211,6 +225,24 @@
     align-items: center;
     gap: 12px;
     margin-top: 28px;
+    color: var(--texto-suave);
+  }
+
+  .instalar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    margin-top: 18px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgb(0 0 0 / 0.2);
+  }
+
+  .instalar p {
+    margin: 0;
+    flex: 1 1 220px;
     color: var(--texto-suave);
   }
 

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Icono de la aplicación: un as de oros sobre el tapete. El contenido queda dentro del
+       80 % central para que también sirva como icono «maskable». -->
+  <defs>
+    <radialGradient id="tapete" cx="50%" cy="40%" r="75%">
+      <stop offset="0" stop-color="#1a7a4c" />
+      <stop offset="1" stop-color="#0b3d26" />
+    </radialGradient>
+    <radialGradient id="oro" cx="40%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#ffe9a3" />
+      <stop offset="0.55" stop-color="#e2a92b" />
+      <stop offset="1" stop-color="#a86d0c" />
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#tapete)" />
+  <!-- Carta de atrás, ligeramente girada -->
+  <g transform="rotate(-12 256 256)">
+    <rect x="150" y="104" width="196" height="284" rx="22" fill="#2b5fae" stroke="#fff" stroke-width="8" />
+    <rect x="168" y="122" width="160" height="248" rx="12" fill="none" stroke="#9cc0ff" stroke-width="4" stroke-dasharray="10 8" />
+  </g>
+  <!-- As de oros -->
+  <g transform="rotate(8 256 256)">
+    <rect x="166" y="112" width="196" height="284" rx="22" fill="#fffdf6" stroke="#d9cfb8" stroke-width="4" />
+    <text x="186" y="164" font-family="Georgia, serif" font-size="44" font-weight="700" fill="#b77b0e">1</text>
+    <circle cx="264" cy="264" r="62" fill="url(#oro)" stroke="#8a5806" stroke-width="6" />
+    <circle cx="264" cy="264" r="40" fill="none" stroke="#8a5806" stroke-width="4" />
+    <circle cx="264" cy="264" r="12" fill="#8a5806" />
+  </g>
+</svg>

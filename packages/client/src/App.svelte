@@ -4,6 +4,7 @@
   import Menu from './pantallas/Menu.svelte';
   import Opciones from './pantallas/Opciones.svelte';
   import PantallaPartida from './pantallas/PantallaPartida.svelte';
+  import { pwa } from './pwa/registro.svelte';
   import { borrarGuardado, leerGuardado, type Guardado } from './sesion/guardado';
   import type { IdJuego } from './sesion/juegos';
   import {
@@ -150,3 +151,38 @@
 {:else}
   <Muestrario volver={irAlMenu} />
 {/if}
+
+{#if pwa.hayActualizacion}
+  <div class="actualizacion" role="status" data-testid="actualizacion">
+    <span>{T.pwa.versionNueva}</span>
+    <button
+      class="principal"
+      data-testid="actualizar"
+      onclick={() => {
+        // La partida en curso se guarda antes de recargar con la versión nueva.
+        if (pantalla.tipo === 'partida') pantalla.partida.sesion.guardarAhora();
+        pwa.actualizar();
+      }}>{T.pwa.actualizar}</button
+    >
+  </div>
+{/if}
+
+<style>
+  .actualizacion {
+    position: fixed;
+    left: 50%;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    translate: -50% 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: max-content;
+    max-width: calc(100vw - 32px);
+    padding: 8px 8px 8px 16px;
+    border-radius: 14px;
+    background: var(--tapete-oscuro);
+    border: 1px solid rgb(255 255 255 / 0.25);
+    box-shadow: var(--sombra-alta);
+  }
+</style>
