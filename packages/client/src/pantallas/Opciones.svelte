@@ -2,6 +2,7 @@
   import type {
     ConfigBrisca,
     ConfigChinchon,
+    ConfigCorazones,
     ConfigCinquillo,
     ConfigEscoba,
     ConfigFreeCell,
@@ -41,6 +42,7 @@
   let pocha: Editable<ConfigPocha> = $state({ ...JUEGOS.pocha.configPorDefecto });
   let musConfig: Editable<ConfigMus> = $state({ ...JUEGOS.mus.configPorDefecto });
   let spider: Editable<ConfigSpider> = $state({ ...JUEGOS.spider.configPorDefecto });
+  let corazones: Editable<ConfigCorazones> = $state({ ...JUEGOS.corazones.configPorDefecto });
   let freecellModo: 'azar' | 'numero' = $state('azar');
   let freecellNumero = $state(1);
 
@@ -64,6 +66,7 @@
       pocha,
       mus: musConfig,
       spider,
+      corazones,
     };
     empezar({ ...configs[juego] });
   }
@@ -151,6 +154,20 @@
           <input type="checkbox" bind:checked={escoba.escobaInicial} />
           {T.opciones.escobaInicialDesc}
         </label>
+      </fieldset>
+    {:else if juego === 'corazones'}
+      <fieldset>
+        <legend>{T.opciones.paseCorazones}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={corazones.pase} />
+          {T.opciones.paseCorazonesDesc}
+        </label>
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.puntosPartida}</legend>
+        {#each [100, 50] as p (p)}
+          <label><input type="radio" bind:group={corazones.fin} value={p} /> {T.opciones.puntosN(p)}</label>
+        {/each}
       </fieldset>
     {:else if juego === 'spider'}
       <fieldset>

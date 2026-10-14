@@ -56,6 +56,13 @@
   /** Una escalera del Spider: del mismo palo, se mueve entera. */
   const ESCALERA_SPIDER: readonly IdCarta[] = ['picas-9', 'picas-8', 'picas-7', 'picas-6'];
 
+  /** Las cartas que puntúan en los Corazones. */
+  const PUNTOS_CORAZONES: readonly [IdCarta, number][] = [
+    ['corazones-1', 1],
+    ['corazones-7', 1],
+    ['picas-12', 13],
+  ];
+
   let dialogo: HTMLDialogElement | undefined = $state();
   $effect(() => {
     dialogo?.showModal();
@@ -125,6 +132,15 @@
               <li><div class="hueco"><Carta {id} /></div></li>
             {/each}
             <li class="resultado">= 7,5</li>
+          </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'puntosCorazones'}
+          <ul class="valores" data-testid="ejemplo-corazones">
+            {#each PUNTOS_CORAZONES as [id, puntos] (id)}
+              <li>
+                <div class="hueco"><Carta {id} /></div>
+                <span>{T.ayuda.puntos(puntos)}</span>
+              </li>
+            {/each}
           </ul>
         {:else if 'ejemplo' in seccion && seccion.ejemplo === 'escaleraSpider'}
           <ul class="valores" data-testid="ejemplo-spider">

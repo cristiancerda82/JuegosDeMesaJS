@@ -37,6 +37,7 @@
       partida.id !== 'cinquillo' &&
       partida.id !== 'pocha' &&
       partida.id !== 'mus' &&
+      partida.id !== 'corazones' &&
       partida.sesion.vista.config.jugadores === 4,
   );
 
@@ -111,6 +112,19 @@
           {#each Array.from({ length: n }, (_, a) => a).sort((a, b) => vista.totales[b]! - vista.totales[a]!) as a (a)}
             <tr>
               <th scope="row">{nombreChinchon(a, n)}</th>
+              <td data-testid="total-{a}">{vista.totales[a]}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'corazones'}
+      {@const vista = partida.sesion.vista}
+      <table>
+        <caption>{T.corazones.clasificacion}</caption>
+        <tbody>
+          {#each [0, 1, 2, 3].sort((a, b) => vista.totales[a]! - vista.totales[b]!) as a (a)}
+            <tr>
+              <th scope="row">{nombreChinchon(a, 4)}</th>
               <td data-testid="total-{a}">{vista.totales[a]}</td>
             </tr>
           {/each}

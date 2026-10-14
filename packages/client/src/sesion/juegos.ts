@@ -30,6 +30,13 @@ import {
   type ConfigCinquillo,
   type EstadoCinquillo,
   type VistaCinquillo,
+  CONFIG_CORAZONES_POR_DEFECTO,
+  corazones,
+  iaCorazonesBasica,
+  type AccionCorazones,
+  type ConfigCorazones,
+  type EstadoCorazones,
+  type VistaCorazones,
   CONFIG_MUS_POR_DEFECTO,
   iaMusBasica,
   mus,
@@ -113,7 +120,8 @@ export type IdJuego =
   | 'cinquillo'
   | 'pocha'
   | 'mus'
-  | 'spider';
+  | 'spider'
+  | 'corazones';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -128,6 +136,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'pocha',
   'mus',
   'spider',
+  'corazones',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -350,6 +359,26 @@ export const DEF_MUS: DefMus = {
   },
 };
 
+export type DefCorazones = DefJuego<
+  ConfigCorazones,
+  EstadoCorazones,
+  AccionCorazones,
+  VistaCorazones
+>;
+
+export const DEF_CORAZONES: DefCorazones = {
+  id: 'corazones',
+  nombre: T.menu.corazones,
+  juego: corazones,
+  configPorDefecto: CONFIG_CORAZONES_POR_DEFECTO,
+  ia: iaCorazonesBasica,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    return despues.bazasJugadas > antes.bazasJugadas ? PAUSA_BAZA_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -363,6 +392,7 @@ export const JUEGOS = {
   pocha: DEF_POCHA,
   mus: DEF_MUS,
   spider: DEF_SPIDER,
+  corazones: DEF_CORAZONES,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

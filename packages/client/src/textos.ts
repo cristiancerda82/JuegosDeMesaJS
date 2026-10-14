@@ -38,6 +38,8 @@ export const T = {
     chinchonDesc: 'Roba, descarta y liga escaleras y tríos para cerrar antes que nadie.',
     guinote: 'Guiñote',
     guinoteDesc: 'Bazas, cantes con rey y sota y arrastre, en partidas a 101.',
+    corazones: 'Corazones',
+    corazonesDesc: 'Bazas con baraja francesa: evita los corazones y la Q de picas.',
     cinquillo: 'Cinquillo',
     cinquilloDesc: 'Coloca tus cartas en escalera a partir de los cincos y quédate sin ninguna.',
     mus: 'Mus',
@@ -84,6 +86,8 @@ export const T = {
     montar: 'Montar sobre el compañero (4 jugadores)',
     montarDesc: 'Obliga a superar la baza aunque ya la vaya ganando tu compañero.',
     cambioSieteGuinote: 'Cambio del 7 de triunfo',
+    paseCorazones: 'Pase de cartas',
+    paseCorazonesDesc: 'Pasar 3 cartas antes de cada mano (una de cada cuatro manos no hay pase).',
     palosSpider: 'Dificultad',
     palosN: (n: number) =>
       n === 1 ? '1 palo (fácil)' : n === 2 ? '2 palos (media)' : '4 palos (difícil)',
@@ -363,6 +367,30 @@ export const T = {
     ejemplo: 'Apuesta / bazas hechas → puntos',
   },
 
+  corazones: {
+    rivalN: (n: number) => `Rival ${n}`,
+    detalle: (mano: number, total: number) => `${mano} pts · total ${total}`,
+    mano: (n: number) => `Mano ${n}`,
+    pasasA: (quien: string) => `Pasas a ${quien}`,
+    sinPase: 'Sin pase',
+    rotos: 'Corazones rotos',
+    elige: (quien: string) => `Elige 3 cartas para pasar a ${quien}`,
+    pasar: (n: number, quien: string) => (n === 3 ? `Pasar a ${quien}` : `Elige ${3 - n} más`),
+    esperando: 'Esperando a que pasen los demás…',
+    recibes: (quien: string) => `Recibes de ${quien}:`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    jugador: 'Jugador',
+    puntosMano: 'Mano',
+    total: 'Total',
+    luna: (quien: string) =>
+      quien === 'Tú'
+        ? '¡Has tirado la luna! Los demás suman 26.'
+        : `${quien} ha tirado la luna: los demás suman 26.`,
+    finPartida: (n: number) => `La partida termina al llegar a ${n} puntos.`,
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos (menos es mejor)',
+  },
+
   cinquillo: {
     mesa: 'Mesa',
     paso: 'Paso',
@@ -476,6 +504,7 @@ export const T = {
       freecell: 'Cómo se juega al FreeCell',
       cinquillo: 'Cómo se juega al Cinquillo',
       spider: 'Cómo se juega al Spider',
+      corazones: 'Cómo se juega a los Corazones',
       pocha: 'Cómo se juega a la Pocha',
       mus: 'Cómo se juega al Mus',
     },
@@ -970,6 +999,57 @@ export const T = {
         texto: [
           'Juega primero las cartas que te abren camino a ti: si tienes el 6 y el 7 de un palo, el 6 te deja jugar luego el 7.',
           'Retén los cincos y las cartas que abrirían camino a los demás si no te hacen falta.',
+        ],
+      },
+    ],
+
+    corazones: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja francesa de 52 cartas, cuatro jugadores cada uno por su cuenta, contra la máquina. Cada uno recibe 13 cartas.',
+          'Aquí no interesa ganar bazas con puntos: cada corazón que te llevas suma 1 punto y la Q de picas 13. Cuando alguien llega a 100 puntos, termina la partida y gana quien tiene menos.',
+        ],
+        ejemplo: 'puntosCorazones',
+      },
+      {
+        titulo: 'El pase',
+        texto: [
+          'Antes de jugar, cada uno elige 3 cartas para pasárselas a otro jugador: en la primera mano, al siguiente en el turno; en la segunda, al anterior; en la tercera, al de enfrente; y en la cuarta no se pasa. Aprovecha para librarte de las cartas peligrosas.',
+        ],
+      },
+      {
+        titulo: 'Cómo se juega una baza',
+        texto: [
+          'Empieza quien tiene el 2 de tréboles, que tiene que jugarlo. Por turnos, cada uno echa una carta y hay que seguir el palo de salida si se tiene. Gana la carta más alta de ese palo (el As es la más alta) y no hay triunfo. Quien gana sale en la siguiente.',
+          'Si no tienes el palo, puedes echar cualquier carta: es el momento de soltar la Q de picas o tus corazones.',
+        ],
+      },
+      {
+        titulo: 'Restricciones',
+        texto: [
+          'En la primera baza no se pueden echar corazones ni la Q de picas, salvo que no tengas otra cosa.',
+          'No se puede salir con corazones hasta que alguien haya echado uno (los corazones están «rotos»), salvo que solo te queden corazones.',
+        ],
+      },
+      {
+        titulo: 'Tirar la luna',
+        texto: [
+          'Si un jugador se lleva todos los corazones y la Q de picas (los 26 puntos), ha «tirado la luna»: él no suma nada y cada uno de los demás suma 26.',
+        ],
+      },
+      {
+        titulo: 'En la mesa',
+        texto: [
+          'Para pasar, toca 3 cartas y pulsa «Pasar». Para jugar, arrastra la carta a la mesa, o tócala y toca la mesa; con un doble toque también se juega. Solo se iluminan las cartas que puedes jugar.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Pasa la Q de picas, y el As y el Rey de picas si tienes pocas picas: con ellos te puede caer la Q.',
+          'Quedarte sin un palo pronto te deja soltar cartas peligrosas.',
+          'Vigila si alguien se está llevando todos los corazones: ¡puede ir a por la luna!',
         ],
       },
     ],
