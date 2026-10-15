@@ -1,6 +1,12 @@
 import { crearAzar, type EstadoAzar } from '../baraja/azar';
 import { barajar } from '../baraja/barajar';
-import { crearBaraja, PALOS_ESPANOLES, type IdCarta, type PaloEspanol } from '../baraja/cartas';
+import {
+  cartasFuera,
+  crearBaraja,
+  PALOS_ESPANOLES,
+  type IdCarta,
+  type PaloEspanol,
+} from '../baraja/cartas';
 import { repartir } from '../baraja/repartir';
 import {
   bandoDe,
@@ -99,8 +105,14 @@ export interface VistaTute {
   readonly turno: Asiento | null;
   readonly repartidor: Asiento;
   readonly bazas: readonly number[];
+  /** Puntos de las bazas de cada asiento en la mano: los ha visto ganar todo el mundo. */
+  readonly puntos: readonly number[];
+  /** Cartas ya jugadas en bazas de la mano, a la vista de todos cuando se jugaron. */
+  readonly jugadas: readonly IdCarta[];
   readonly ultimaBaza: EstadoTute['ultimaBaza'];
   readonly cantes: readonly Cante[];
+  /** Quien ganó la última baza y aún puede cantar. */
+  readonly puedeCantar: Asiento | null;
   readonly resultadosManos: readonly ResultadoManoTute[];
   readonly manosGanadas: readonly [number, number];
 }
@@ -347,8 +359,17 @@ export const tute: Juego<ConfigTute, EstadoTute, AccionTute, VistaTute> = {
       turno: partidaTerminada(e) ? null : e.turno,
       repartidor: e.repartidor,
       bazas: [...e.bazas],
+      puntos: [...e.puntos],
+      jugadas: cartasFuera(
+        crearBaraja('espanola40'),
+        ...e.manos,
+        e.mazo,
+        e.muestra === null ? [] : [e.muestra],
+        e.mesa.map((j) => j.carta),
+      ),
       ultimaBaza: e.ultimaBaza,
       cantes: [...e.cantes],
+      puedeCantar: e.puedeCantar,
       resultadosManos: [...e.resultadosManos],
       manosGanadas: manosGanadas(e),
     };

@@ -2,14 +2,12 @@ import {
   brisca,
   burro,
   CONFIG_BURRO_POR_DEFECTO,
-  iaBurroBasica,
   type AccionBurro,
   type ConfigBurro,
   type EstadoBurro,
   type VistaBurro,
   chinchon,
   CONFIG_CHINCHON_POR_DEFECTO,
-  iaChinchonBasica,
   type AccionChinchon,
   type ConfigChinchon,
   type EstadoChinchon,
@@ -32,34 +30,29 @@ import {
   CONFIG_TUTE_POR_DEFECTO,
   CONFIG_CINQUILLO_POR_DEFECTO,
   cinquillo,
-  iaCinquilloBasica,
   type AccionCinquillo,
   type ConfigCinquillo,
   type EstadoCinquillo,
   type VistaCinquillo,
   CONFIG_CORAZONES_POR_DEFECTO,
   corazones,
-  iaCorazonesBasica,
   type AccionCorazones,
   type ConfigCorazones,
   type EstadoCorazones,
   type VistaCorazones,
   CONFIG_MUS_POR_DEFECTO,
-  iaMusBasica,
   mus,
   type AccionMus,
   type ConfigMus,
   type EstadoMus,
   type VistaMus,
   CONFIG_POCHA_POR_DEFECTO,
-  iaPochaBasica,
   pocha,
   type AccionPocha,
   type ConfigPocha,
   type EstadoPocha,
   type VistaPocha,
   CONFIG_SIETE_Y_MEDIA_POR_DEFECTO,
-  iaSieteYMediaBasica,
   sieteYMedia,
   type AccionSieteYMedia,
   type ConfigSieteYMedia,
@@ -67,14 +60,10 @@ import {
   type VistaSieteYMedia,
   CONFIG_GUINOTE_POR_DEFECTO,
   guinote,
-  iaGuinoteBasica,
   type AccionGuinote,
   type ConfigGuinote,
   type EstadoGuinote,
   type VistaGuinote,
-  iaBriscaBasica,
-  iaEscobaBasica,
-  iaTuteBasica,
   klondike,
   tute,
   escoba,
@@ -82,8 +71,10 @@ import {
   type AccionKlondike,
   type AccionEscoba,
   type AccionTute,
+  IAS,
   type Agente,
   type Generador,
+  type NivelIA,
   type ConfigBrisca,
   type ConfigKlondike,
   type ConfigEscoba,
@@ -107,8 +98,8 @@ export interface DefJuego<C, E, A, V> {
   readonly nombre: string;
   readonly juego: Juego<C, E, A, V>;
   readonly configPorDefecto: C;
-  /** Agente para los asientos que no ocupa el humano; `null` en los solitarios. */
-  readonly ia: Agente<V, A> | null;
+  /** Agentes por nivel para los asientos que no ocupa el humano; `null` en los solitarios. */
+  readonly ia: Readonly<Record<NivelIA, Agente<V, A>>> | null;
   /**
    * Pausa en milisegundos tras un cambio de la vista del humano, para que pueda seguirlo
    * (p. ej. ver la baza completa antes de que se recoja). Durante la pausa no se juega.
@@ -120,7 +111,7 @@ export interface DefJuego<C, E, A, V> {
    * que va a hacer (antes de aplicar `FACTOR_PAUSAS`).
    */
   readonly simultaneo?: {
-    esperaIA(vista: V, accion: A, g: Generador): number;
+    esperaIA(vista: V, accion: A, g: Generador, nivel: NivelIA): number;
   };
 }
 
@@ -226,7 +217,7 @@ export const DEF_BRISCA: DefBrisca = {
   nombre: T.menu.brisca,
   juego: brisca,
   configPorDefecto: CONFIG_BRISCA_POR_DEFECTO,
-  ia: iaBriscaBasica,
+  ia: IAS.brisca,
   pausaTras: pausaBazas,
 };
 
@@ -235,7 +226,7 @@ export const DEF_TUTE: DefTute = {
   nombre: T.menu.tute,
   juego: tute,
   configPorDefecto: CONFIG_TUTE_POR_DEFECTO,
-  ia: iaTuteBasica,
+  ia: IAS.tute,
   pausaTras(antes, despues) {
     const cante = despues.cantes.length > antes.cantes.length ? PAUSA_CANTE_MS : 0;
     return Math.max(cante, pausaBazas(antes, despues));
@@ -247,7 +238,7 @@ export const DEF_GUINOTE: DefGuinote = {
   nombre: T.menu.guinote,
   juego: guinote,
   configPorDefecto: CONFIG_GUINOTE_POR_DEFECTO,
-  ia: iaGuinoteBasica,
+  ia: IAS.guinote,
   // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, la última baza.
   pausaTras(antes, despues) {
     if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
@@ -265,7 +256,7 @@ export const DEF_ESCOBA: DefEscoba = {
   nombre: T.menu.escoba,
   juego: escoba,
   configPorDefecto: CONFIG_ESCOBA_POR_DEFECTO,
-  ia: iaEscobaBasica,
+  ia: IAS.escoba,
   // El cierre de la mano lo detiene la propia mesa con el panel de desglose.
   pausaTras(antes, despues) {
     const jugada = despues.ultimaJugada;
@@ -283,7 +274,7 @@ export const DEF_CHINCHON: DefChinchon = {
   nombre: T.menu.chinchon,
   juego: chinchon,
   configPorDefecto: CONFIG_CHINCHON_POR_DEFECTO,
-  ia: iaChinchonBasica,
+  ia: IAS.chinchon,
   // El cierre de la mano lo detiene la propia mesa con el panel de resultados.
   pausaTras(antes, despues) {
     const accion = despues.ultimaAccion;
@@ -301,7 +292,7 @@ export const DEF_SIETE_Y_MEDIA: DefSieteYMedia = {
   nombre: T.menu.sieteYMedia,
   juego: sieteYMedia,
   configPorDefecto: CONFIG_SIETE_Y_MEDIA_POR_DEFECTO,
-  ia: iaSieteYMediaBasica,
+  ia: IAS.sieteYMedia,
   // El cierre de la mano lo detiene la propia mesa con el panel de resultado.
   pausaTras(antes, despues) {
     const accion = despues.ultimaAccion;
@@ -326,7 +317,7 @@ export const DEF_CINQUILLO: DefCinquillo = {
   nombre: T.menu.cinquillo,
   juego: cinquillo,
   configPorDefecto: CONFIG_CINQUILLO_POR_DEFECTO,
-  ia: iaCinquilloBasica,
+  ia: IAS.cinquillo,
   // El cierre de la mano lo detiene la propia mesa con el panel de resultado.
   pausaTras(antes, despues) {
     const accion = despues.ultimaAccion;
@@ -345,7 +336,7 @@ export const DEF_POCHA: DefPocha = {
   nombre: T.menu.pocha,
   juego: pocha,
   configPorDefecto: CONFIG_POCHA_POR_DEFECTO,
-  ia: iaPochaBasica,
+  ia: IAS.pocha,
   // El cierre de la mano lo detiene la propia mesa con el resultado; aquí, la última baza.
   pausaTras(antes, despues) {
     if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
@@ -367,7 +358,7 @@ export const DEF_MUS: DefMus = {
   nombre: T.menu.mus,
   juego: mus,
   configPorDefecto: CONFIG_MUS_POR_DEFECTO,
-  ia: iaMusBasica,
+  ia: IAS.mus,
   // El cierre de la mano lo detiene la propia mesa con el panel de conteo.
   pausaTras(antes, despues) {
     if (despues.resultadosManos.length > antes.resultadosManos.length) return 0;
@@ -389,7 +380,7 @@ export const DEF_CORAZONES: DefCorazones = {
   nombre: T.menu.corazones,
   juego: corazones,
   configPorDefecto: CONFIG_CORAZONES_POR_DEFECTO,
-  ia: iaCorazonesBasica,
+  ia: IAS.corazones,
   // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada baza.
   pausaTras(antes, despues) {
     if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
@@ -408,21 +399,41 @@ const PAUSA_FIN_MANO_BURRO_MS = 600;
 const entre = (g: Generador, desde: number, hasta: number) =>
   desde + g.enteroHasta(hasta - desde + 1);
 
+/** Retrasos para plantarse en el Burro (ms): el primero, con 4 iguales, y como reacción. */
+const REACCION_BURRO: Readonly<
+  Record<NivelIA, readonly [readonly [number, number], readonly [number, number]]>
+> = {
+  facil: [
+    [2500, 5000],
+    [2000, 5000],
+  ],
+  normal: [
+    [1500, 4000],
+    [1000, 3500],
+  ],
+  dificil: [
+    [900, 2500],
+    [600, 2000],
+  ],
+};
+
 export const DEF_BURRO: DefBurro = {
   id: 'burro',
   nombre: T.menu.burro,
   juego: burro,
   configPorDefecto: CONFIG_BURRO_POR_DEFECTO,
-  ia: iaBurroBasica,
+  ia: IAS.burro,
   pausaTras(antes, despues) {
     if (despues.numeroMano > antes.numeroMano) return PAUSA_FIN_MANO_BURRO_MS;
     return despues.intercambios > antes.intercambios ? PAUSA_INTERCAMBIO_MS : 0;
   },
-  // Pasar es rápido; plantarse lleva el tiempo de darse cuenta, como una persona.
+  // Pasar es rápido; plantarse lleva el tiempo de darse cuenta, como una persona, y depende
+  // del nivel (spec mesa-cliente).
   simultaneo: {
-    esperaIA(vista, accion, g) {
+    esperaIA(vista, accion, g, nivel) {
       if (accion.tipo === 'pasar') return entre(g, 400, 1200);
-      return vista.plantados.length === 0 ? entre(g, 1500, 4000) : entre(g, 1000, 3500);
+      const [desde, hasta] = REACCION_BURRO[nivel][vista.plantados.length === 0 ? 0 : 1];
+      return entre(g, desde, hasta);
     },
   },
 };

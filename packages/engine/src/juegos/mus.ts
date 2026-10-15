@@ -147,9 +147,13 @@ export interface VistaMus {
   readonly musPedido: readonly boolean[];
   readonly descartados: readonly (number | null)[];
   readonly lance: LanceMus | null;
+  /** Quién ya ha pasado en el lance en curso, sin que haya envite. */
+  readonly hablados: readonly Asiento[];
   readonly envite: EnviteMus | null;
   readonly lances: readonly RegistroLanceMus[];
   readonly declaraciones: DeclaracionesMus;
+  /** Cuántas cartas hay en el montón de descartes (cuáles, no se ve). */
+  readonly cartasDescartadas: number;
   readonly piedras: readonly [number, number];
   readonly juegos: readonly [number, number];
   readonly resultadosManos: readonly ResultadoManoMus[];
@@ -573,9 +577,11 @@ export const mus: Juego<ConfigMus, EstadoMus, AccionMus, VistaMus> = {
       musPedido: [...e.musPedido],
       descartados: [...e.descartados],
       lance: e.lance,
+      hablados: [...e.hablados],
       envite: e.envite,
       lances: [...e.lances],
       declaraciones: e.declaraciones,
+      cartasDescartadas: e.descartes.length,
       piedras: e.piedras,
       juegos: e.juegos,
       resultadosManos: [...e.resultadosManos],

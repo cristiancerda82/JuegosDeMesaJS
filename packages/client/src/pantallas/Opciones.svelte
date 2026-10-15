@@ -1,4 +1,8 @@
 <script lang="ts">
+  import {
+    NIVELES_IA,
+    type NivelIA,
+  } from '@juegos/engine';
   import type {
     ConfigBrisca,
     ConfigBurro,
@@ -19,10 +23,11 @@
   import type { ConfigJuego } from '../sesion/partida';
   import { T } from '../textos';
   import ComoSeJuega from './ComoSeJuega.svelte';
+  import { guardarNivel, leerNivel } from './nivel';
 
   interface Props {
     juego: IdJuego;
-    empezar: (config: ConfigJuego) => void;
+    empezar: (config: ConfigJuego, nivel: NivelIA) => void;
     volver: () => void;
   }
 
@@ -48,6 +53,12 @@
   let freecellModo: 'azar' | 'numero' = $state('azar');
   let freecellNumero = $state(1);
 
+  /** Nivel de la IA, recordado por juego; los solitarios no tienen. */
+  const conIA = $derived(JUEGOS[juego].ia !== null);
+  // Basta con el valor inicial: las opciones se montan de nuevo al elegir otro juego.
+  // svelte-ignore state_referenced_locally
+  let nivel: NivelIA = $state(leerNivel(juego));
+
   const VUELTAS: readonly (number | null)[] = [null, 3, 1, 0];
 
   let verAyuda = $state(false);
@@ -71,7 +82,8 @@
       corazones,
       burro,
     };
-    empezar({ ...configs[juego] });
+    if (conIA) guardarNivel(juego, nivel);
+    empezar({ ...configs[juego] }, nivel);
   }
 </script>
 
@@ -86,6 +98,17 @@
   {/if}
 
   <form onsubmit={enviar}>
+    {#if conIA}
+      <fieldset data-testid="nivel-ia">
+        <legend>{T.opciones.nivelIA}</legend>
+        {#each NIVELES_IA as n (n)}
+          <label>
+            <input type="radio" bind:group={nivel} value={n} />
+            <span><b>{T.opciones.nivel[n]}</b> · {T.opciones.nivelDesc[n]}</span>
+          </label>
+        {/each}
+      </fieldset>
+    {/if}
     {#if juego === 'klondike'}
       <fieldset>
         <legend>{T.opciones.robo}</legend>

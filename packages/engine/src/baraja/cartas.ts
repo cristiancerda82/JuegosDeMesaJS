@@ -75,6 +75,15 @@ export function crearBaraja(
   return cartas;
 }
 
+/** Las cartas de `baraja` que no están en ninguno de los grupos, en el orden de la baraja. */
+export function cartasFuera(
+  baraja: readonly IdCarta[],
+  ...grupos: readonly (readonly IdCarta[])[]
+): IdCarta[] {
+  const dentro = new Set(grupos.flat());
+  return baraja.filter((c) => !dentro.has(c));
+}
+
 export function colorDe(palo: PaloFrances): 'rojo' | 'negro' {
   return palo === 'corazones' || palo === 'diamantes' ? 'rojo' : 'negro';
 }

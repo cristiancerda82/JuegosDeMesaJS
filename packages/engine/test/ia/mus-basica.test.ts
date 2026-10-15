@@ -52,6 +52,8 @@ function vista(parcial: Partial<VistaMus> & Pick<VistaMus, 'miMano'>): VistaMus 
     musPedido: [false, false, false, false],
     descartados: [null, null, null, null],
     lance: 'grande',
+    hablados: [],
+    cartasDescartadas: 0,
     envite: null,
     lances: [],
     declaraciones: { pares: null, juego: null },

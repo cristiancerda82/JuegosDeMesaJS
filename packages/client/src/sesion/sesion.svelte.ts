@@ -10,6 +10,7 @@ import {
   type EstadoAzar,
   type Fin,
   type Jugada,
+  type NivelIA,
   type Resultado,
 } from '@juegos/engine';
 import { FACTOR_PAUSAS } from '../ajustes';
@@ -32,6 +33,8 @@ export class Sesion<C, E, A, V> {
   readonly def: DefJuego<C, E, A, V>;
   readonly config: C;
   readonly semilla: string;
+  /** Nivel de los asientos de la IA. */
+  readonly nivel: NivelIA;
 
   #estado: E = $state.raw() as E;
   /** La IA está pensando o hay una pausa para seguir la jugada: el humano no puede jugar. */
@@ -71,10 +74,12 @@ export class Sesion<C, E, A, V> {
     estado: E,
     jugadas: Jugada<A>[],
     tiempoMs: number,
+    nivel: NivelIA,
   ) {
     this.def = def;
     this.config = config;
     this.semilla = semilla;
+    this.nivel = nivel;
     this.#estado = estado;
     this.#jugadas = jugadas;
     this.#tiempoPrevio = tiempoMs;
@@ -87,10 +92,11 @@ export class Sesion<C, E, A, V> {
     def: DefJuego<C, E, A, V>,
     config: C,
     semilla: string,
+    nivel: NivelIA = 'normal',
   ): Resultado<Sesion<C, E, A, V>> {
     const r = def.juego.crear(config, semilla);
     if (!r.ok) return r;
-    return ok(new Sesion(def, config, semilla, r.valor, [], 0));
+    return ok(new Sesion(def, config, semilla, r.valor, [], 0, nivel));
   }
 
   static desdeGuardado<C, E, A, V>(
@@ -106,7 +112,16 @@ export class Sesion<C, E, A, V> {
     if (!r.ok) return r;
     if (def.juego.resultado(r.valor) !== null) return error('La partida guardada ya terminó');
     return ok(
-      new Sesion(def, registro.config, g.semilla, r.valor, [...registro.jugadas], g.tiempoMs),
+      new Sesion(
+        def,
+        registro.config,
+        g.semilla,
+        r.valor,
+        [...registro.jugadas],
+        g.tiempoMs,
+        // Las partidas guardadas antes de los niveles se retoman en Normal.
+        g.nivel ?? 'normal',
+      ),
     );
   }
 
@@ -234,10 +249,15 @@ export class Sesion<C, E, A, V> {
         continue;
       }
       const vista = juego.vistaDe(this.#estado, asiento);
-      const decision = this.def.ia!.decidir(vista, legales, this.#azarDe(asiento));
+      const decision = this.def.ia![this.nivel].decidir(vista, legales, this.#azarDe(asiento));
       if (prevista && igualesJSON(prevista.accion, decision.accion)) continue;
       if (prevista) this.#cancelarEspera(asiento);
-      const ms = this.def.simultaneo!.esperaIA(vista, decision.accion, this.#azarEsperas);
+      const ms = this.def.simultaneo!.esperaIA(
+        vista,
+        decision.accion,
+        this.#azarEsperas,
+        this.nivel,
+      );
       const temporizador = setTimeout(() => {
         this.#esperas.delete(asiento);
         if (this.#cerrada) return;
@@ -268,7 +288,7 @@ export class Sesion<C, E, A, V> {
   #jugarIA(asiento: Asiento): void {
     const juego = this.def.juego;
     const azar = this.#azarDe(asiento);
-    const decision = this.def.ia!.decidir(
+    const decision = this.def.ia![this.nivel].decidir(
       juego.vistaDe(this.#estado, asiento),
       juego.accionesLegales(this.#estado, asiento),
       azar,
@@ -314,6 +334,7 @@ export class Sesion<C, E, A, V> {
       semilla: this.semilla,
       jugadas: this.#jugadas,
       tiempoMs: this.tiempoMs(),
+      nivel: this.nivel,
     });
   }
 }

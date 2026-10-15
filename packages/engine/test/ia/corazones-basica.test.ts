@@ -53,6 +53,7 @@ function vista(parcial: Partial<VistaCorazones> & Pick<VistaCorazones, 'miMano'>
     turno: 1,
     mesa: [],
     ultimaBaza: null,
+    jugadas: [],
     bazasJugadas: 3,
     rotos: false,
     puntosMano: [0, 0, 0, 0],

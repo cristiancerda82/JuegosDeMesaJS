@@ -1,6 +1,6 @@
 import { crearAzar, type EstadoAzar } from '../baraja/azar';
 import { barajar } from '../baraja/barajar';
-import { crearBaraja, type IdCarta, type PaloEspanol } from '../baraja/cartas';
+import { cartasFuera, crearBaraja, type IdCarta, type PaloEspanol } from '../baraja/cartas';
 import { repartir } from '../baraja/repartir';
 import {
   bandoDe,
@@ -95,6 +95,10 @@ export interface VistaBrisca {
   readonly turno: Asiento | null;
   readonly repartidor: Asiento;
   readonly bazas: readonly number[];
+  /** Puntos de las bazas de cada asiento en la mano: los ha visto ganar todo el mundo. */
+  readonly puntos: readonly number[];
+  /** Cartas ya jugadas en bazas de la mano, a la vista de todos cuando se jugaron. */
+  readonly jugadas: readonly IdCarta[];
   readonly ultimaBaza: EstadoBrisca['ultimaBaza'];
   readonly resultadosManos: readonly ResultadoMano[];
   readonly manosGanadas: readonly [number, number];
@@ -265,6 +269,14 @@ export const brisca: Juego<ConfigBrisca, EstadoBrisca, AccionBrisca, VistaBrisca
       turno: partidaTerminada(e) ? null : e.turno,
       repartidor: e.repartidor,
       bazas: [...e.bazas],
+      puntos: [...e.puntos],
+      jugadas: cartasFuera(
+        crearBaraja('espanola40'),
+        ...e.manos,
+        e.mazo,
+        e.muestra === null ? [] : [e.muestra],
+        e.mesa.map((j) => j.carta),
+      ),
       ultimaBaza: e.ultimaBaza,
       resultadosManos: [...e.resultadosManos],
       manosGanadas: manosGanadas(e),

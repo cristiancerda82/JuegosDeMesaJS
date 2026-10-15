@@ -64,6 +64,13 @@ export const T = {
 
   opciones: {
     titulo: (juego: string) => `Opciones de ${juego}`,
+    nivelIA: 'Nivel de la IA',
+    nivel: { facil: 'Fácil', normal: 'Normal', dificil: 'Difícil' },
+    nivelDesc: {
+      facil: 'se equivoca a menudo',
+      normal: 'juega con sentido',
+      dificil: 'piensa cada jugada',
+    },
     empezar: 'Empezar partida',
     volver: 'Volver',
     robo: 'Robo',

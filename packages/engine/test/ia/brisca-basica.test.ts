@@ -67,6 +67,8 @@ function vista(parcial: Partial<VistaBrisca> & Pick<VistaBrisca, 'miMano'>): Vis
     repartidor: 0,
     bazas: new Array<number>(n).fill(0),
     ultimaBaza: null,
+    puntos: [0, 0],
+    jugadas: [],
     resultadosManos: [],
     manosGanadas: [0, 0],
     ...parcial,

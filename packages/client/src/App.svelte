@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { NivelIA } from '@juegos/engine';
   import { onMount } from 'svelte';
   import Muestrario from './cartas/Muestrario.svelte';
   import Estadisticas from './pantallas/Estadisticas.svelte';
@@ -53,9 +54,9 @@
     pantalla = { tipo: 'menu' };
   }
 
-  function empezar(juego: IdJuego, config: ConfigJuego) {
+  function empezar(juego: IdJuego, config: ConfigJuego, nivel: NivelIA) {
     cerrarPartida();
-    const r = nuevaPartida(juego, config);
+    const r = nuevaPartida(juego, config, nivel);
     if (r.ok) {
       aviso = null;
       pantalla = { tipo: 'partida', partida: r.valor };
@@ -85,7 +86,7 @@
   function revancha() {
     if (pantalla.tipo !== 'partida') return;
     const { partida } = pantalla;
-    empezar(partida.id, partida.sesion.config);
+    empezar(partida.id, partida.sesion.config, partida.sesion.nivel);
   }
 
   // ── Dorso elegido (preferencia local, no imprescindible) ─────────────────────
@@ -146,7 +147,7 @@
   />
 {:else if pantalla.tipo === 'opciones'}
   {@const juego = pantalla.juego}
-  <Opciones {juego} empezar={(config) => empezar(juego, config)} volver={irAlMenu} />
+  <Opciones {juego} empezar={(config, nivel) => empezar(juego, config, nivel)} volver={irAlMenu} />
 {:else if pantalla.tipo === 'partida'}
   {#key pantalla.partida}
     <PantallaPartida partida={pantalla.partida} menu={irAlMenu} {revancha} />

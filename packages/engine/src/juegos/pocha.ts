@@ -1,6 +1,6 @@
 import { crearAzar, type EstadoAzar } from '../baraja/azar';
 import { barajar } from '../baraja/barajar';
-import { crearBaraja, type IdCarta, type PaloEspanol } from '../baraja/cartas';
+import { cartasFuera, crearBaraja, type IdCarta, type PaloEspanol } from '../baraja/cartas';
 import { repartir } from '../baraja/repartir';
 import {
   cartaGanadora,
@@ -88,6 +88,8 @@ export interface VistaPocha {
   readonly repartidor: Asiento;
   readonly bazas: readonly number[];
   readonly ultimaBaza: EstadoPocha['ultimaBaza'];
+  /** Cartas ya jugadas en bazas de la mano, a la vista de todos cuando se jugaron. */
+  readonly jugadas: readonly IdCarta[];
   /** Cartas de cada jugador en la mano en curso. */
   readonly cartasMano: number;
   /** Posición de la mano en curso (desde 0) y número total de manos. */
@@ -313,6 +315,13 @@ export const pocha: Juego<ConfigPocha, EstadoPocha, AccionPocha, VistaPocha> = {
       repartidor: e.repartidor,
       bazas: [...e.bazas],
       ultimaBaza: e.ultimaBaza,
+      jugadas: cartasFuera(
+        crearBaraja('espanola40'),
+        ...e.manos,
+        e.mazo,
+        e.muestra === null ? [] : [e.muestra],
+        e.mesa.map((j) => j.carta),
+      ),
       cartasMano: e.secuencia[e.indiceMano]!,
       indiceMano: e.indiceMano,
       totalManos: e.secuencia.length,

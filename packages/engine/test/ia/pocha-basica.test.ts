@@ -57,6 +57,7 @@ function vista(parcial: Partial<VistaPocha> & Pick<VistaPocha, 'miMano'>): Vista
     repartidor: 3,
     bazas: [0, 0, 0, 0],
     ultimaBaza: null,
+    jugadas: [],
     cartasMano: 3,
     indiceMano: 2,
     totalManos: 9,

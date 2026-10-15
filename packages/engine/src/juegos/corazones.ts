@@ -1,6 +1,12 @@
 import { crearAzar, type EstadoAzar } from '../baraja/azar';
 import { barajar } from '../baraja/barajar';
-import { cartaDeId, crearBaraja, type IdCarta, type PaloFrances } from '../baraja/cartas';
+import {
+  cartaDeId,
+  cartasFuera,
+  crearBaraja,
+  type IdCarta,
+  type PaloFrances,
+} from '../baraja/cartas';
 import { repartir } from '../baraja/repartir';
 import type { CartaJugada } from '../motor/bazas';
 import type { Asiento, Fin, Juego } from '../motor/contrato';
@@ -73,6 +79,8 @@ export interface VistaCorazones {
   readonly mesa: readonly CartaJugada[];
   readonly ultimaBaza: EstadoCorazones['ultimaBaza'];
   readonly bazasJugadas: number;
+  /** Cartas ya jugadas en bazas de la mano, a la vista de todos cuando se jugaron. */
+  readonly jugadas: readonly IdCarta[];
   readonly rotos: boolean;
   readonly puntosMano: readonly number[];
   readonly numeroMano: number;
@@ -288,6 +296,11 @@ export const corazones: Juego<ConfigCorazones, EstadoCorazones, AccionCorazones,
       mesa: [...e.mesa],
       ultimaBaza: e.ultimaBaza,
       bazasJugadas: e.bazasJugadas,
+      jugadas: cartasFuera(
+        crearBaraja('francesa52'),
+        ...e.manos,
+        e.mesa.map((j) => j.carta),
+      ),
       rotos: e.rotos,
       puntosMano: [...e.puntosMano],
       numeroMano: e.numeroMano,

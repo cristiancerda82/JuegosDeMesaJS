@@ -1,4 +1,4 @@
-import { VERSION_MOTOR, type Jugada } from '@juegos/engine';
+import { NIVELES_IA, VERSION_MOTOR, type Jugada, type NivelIA } from '@juegos/engine';
 import { ID_JUEGOS, type IdJuego } from './juegos';
 
 /**
@@ -14,6 +14,8 @@ export interface Guardado {
   readonly jugadas: readonly Jugada<unknown>[];
   /** Tiempo jugado, medido por el cliente (el motor no lee la hora). */
   readonly tiempoMs: number;
+  /** Nivel de la IA; falta en las partidas guardadas antes de los niveles (se toman en Normal). */
+  readonly nivel?: NivelIA;
 }
 
 export const VERSION_GUARDADO = 1;
@@ -71,7 +73,8 @@ export function leerGuardado(): Lectura {
       Array.isArray(g.jugadas) &&
       typeof g.tiempoMs === 'number' &&
       typeof g.config === 'object' &&
-      g.config !== null;
+      g.config !== null &&
+      (g.nivel === undefined || NIVELES_IA.includes(g.nivel));
     return valido ? { tipo: 'valido', guardado: g as Guardado } : { tipo: 'invalido' };
   } catch {
     return { tipo: 'invalido' };

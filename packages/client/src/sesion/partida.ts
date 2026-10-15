@@ -1,5 +1,6 @@
 import {
   repetir,
+  type NivelIA,
   type AccionBurro,
   type ConfigBurro,
   type EstadoBurro,
@@ -182,9 +183,13 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
   }
 }
 
-export function nuevaPartida(id: IdJuego, config: ConfigJuego): Resultado<Partida> {
+export function nuevaPartida(
+  id: IdJuego,
+  config: ConfigJuego,
+  nivel: NivelIA = 'normal',
+): Resultado<Partida> {
   const semilla = semillaNueva();
-  return conDef(id, (def) => etiquetar(id, Sesion.nueva(def, config as never, semilla)));
+  return conDef(id, (def) => etiquetar(id, Sesion.nueva(def, config as never, semilla, nivel)));
 }
 
 /** Comprueba sin crear sesión (ni turnos de la IA) que el guardado se repite y sigue en juego. */
