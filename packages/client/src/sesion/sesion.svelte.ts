@@ -11,6 +11,7 @@ import {
   type Resultado,
 } from '@juegos/engine';
 import { FACTOR_PAUSAS } from '../ajustes';
+import { registrarPartida, resultadoDe, type Novedades } from '../estadisticas/estadisticas';
 import { borrarGuardado, guardar, type Guardado } from './guardado';
 import type { DefJuego } from './juegos';
 
@@ -35,6 +36,8 @@ export class Sesion<C, E, A, V> {
   bloqueada = $state(false);
   /** Asiento de la IA que está por jugar, si hay alguno. */
   pensando = $state<Asiento | null>(null);
+  /** Lo que la partida cambió en las estadísticas, cuando termina. */
+  novedades = $state<Novedades | null>(null);
 
   readonly vista: V = $derived.by(() => this.def.juego.vistaDe(this.#estado, HUMANO));
   readonly fin: Fin | null = $derived.by(() => this.def.juego.resultado(this.#estado));
@@ -151,6 +154,7 @@ export class Sesion<C, E, A, V> {
     if (this.fin !== null) {
       this.#tiempoPrevio += Date.now() - this.#desde;
       borrarGuardado();
+      this.#registrarFin(this.fin);
     } else {
       this.#guardar();
     }
@@ -211,6 +215,19 @@ export class Sesion<C, E, A, V> {
       this.#temporizador = null;
       if (!this.#cerrada) accion();
     }, ms);
+  }
+
+  /** Suma la partida a las estadísticas: solo ocurre una vez, al pasar a terminada. */
+  #registrarFin(fin: Fin): void {
+    // Los solitarios (sin IA) también guardan el tiempo y los movimientos como récords.
+    const vista = this.vista as { movimientos?: unknown };
+    const movimientos =
+      this.def.ia === null && typeof vista.movimientos === 'number' ? vista.movimientos : null;
+    this.novedades = registrarPartida(this.def.id, {
+      resultado: resultadoDe(fin, HUMANO),
+      tiempoMs: this.tiempoMs(),
+      movimientos,
+    });
   }
 
   #guardar(): void {

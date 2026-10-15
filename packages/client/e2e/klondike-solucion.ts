@@ -1,3 +1,4 @@
+import { expect, type Page } from '@playwright/test';
 import {
   aplicar,
   klondike,
@@ -89,4 +90,42 @@ export function estadosDe(semilla: string, acciones: readonly AccionKlondike[]):
     estados.push(s.valor);
   }
   return estados;
+}
+
+// ── Jugar desde la mesa ──────────────────────────────────────────────────────
+
+/** Carta que se toca para hacer un movimiento (la base de la secuencia que se mueve). */
+function cartaOrigen(e: EstadoKlondike, a: Extract<AccionKlondike, { tipo: 'mover' }>): string {
+  if (a.desde === 'descarte') return e.descarte.at(-1)!;
+  const i = Number(a.desde.slice(1));
+  if (a.desde.startsWith('f')) return e.fundaciones[i]!.at(-1)!;
+  const visibles = e.columnas[i]!.visibles;
+  return visibles[visibles.length - a.cantidad]!;
+}
+
+/** Toca la esquina superior izquierda, que siempre queda a la vista aunque haya cartas encima. */
+const ESQUINA = { position: { x: 8, y: 8 } };
+
+/** Juega por la UI las acciones de una solución, comprobando el contador de movimientos. */
+export async function jugarKlondike(
+  page: Page,
+  semilla: string,
+  acciones: readonly AccionKlondike[],
+) {
+  const estados = estadosDe(semilla, acciones);
+  for (const [i, a] of acciones.entries()) {
+    const e = estados[i]!;
+    await page.waitForFunction(() => document.getAnimations().length === 0);
+    if (a.tipo === 'robar' || a.tipo === 'reciclar') {
+      await page.getByTestId('mazo').click();
+    } else if (a.tipo === 'autocompletar') {
+      await page.getByRole('button', { name: 'Autocompletar' }).click();
+    } else if (a.tipo === 'mover') {
+      await page.locator(`[data-carta="${cartaOrigen(e, a)}"]`).click(ESQUINA);
+      await page.getByTestId(a.hasta).click(ESQUINA);
+    }
+    if (a.tipo !== 'autocompletar') {
+      await expect(page.getByTestId('movimientos')).toHaveText(String(estados[i + 1]!.movimientos));
+    }
+  }
 }

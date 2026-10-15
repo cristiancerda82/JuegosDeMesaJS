@@ -222,6 +222,18 @@
       {/if}
     {/if}
 
+    {#if partida.sesion.novedades}
+      {@const n = partida.sesion.novedades}
+      {#if n.racha >= 2 || n.mejorRacha || n.mejorTiempo || n.menosMovimientos}
+        <ul class="novedades" data-testid="novedades">
+          {#if n.racha >= 2}<li data-testid="racha-en-curso">{T.estadisticas.rachaEnCurso(n.racha)}</li>{/if}
+          {#if n.mejorRacha}<li>{T.estadisticas.nuevaMejorRacha}</li>{/if}
+          {#if n.mejorTiempo}<li data-testid="record-tiempo">{T.estadisticas.recordTiempo}</li>{/if}
+          {#if n.menosMovimientos}<li data-testid="record-movimientos">{T.estadisticas.recordMovimientos}</li>{/if}
+        </ul>
+      {/if}
+    {/if}
+
     <div class="botones">
       <button class="principal" onclick={revancha} data-testid="revancha">{T.fin.revancha}</button>
       <button onclick={menu}>{T.fin.menu}</button>
@@ -294,6 +306,14 @@
     margin: 4px 0 0;
     font-size: 0.85rem;
     color: var(--texto-suave);
+  }
+
+  .novedades {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    font-weight: 700;
+    color: var(--acento);
   }
 
   .botones {

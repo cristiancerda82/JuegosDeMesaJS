@@ -8,7 +8,7 @@
     "build": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings && vite build",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "preview": "vite preview",
-    "test": "echo \"client: los tests E2E se ejecutan con test:e2e\"",
+    "test": "vitest run",
     "test:e2e": "playwright test"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
     "@types/node": "^24.19.2",
     "svelte": "^5.57.2",
     "svelte-check": "^4.7.6",
-    "vite": "^8.3.4"
+    "vite": "^8.3.4",
+    "vitest": "5.0.3"
   }
 }

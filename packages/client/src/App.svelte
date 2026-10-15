@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Muestrario from './cartas/Muestrario.svelte';
+  import Estadisticas from './pantallas/Estadisticas.svelte';
   import Menu from './pantallas/Menu.svelte';
   import Opciones from './pantallas/Opciones.svelte';
   import PantallaPartida from './pantallas/PantallaPartida.svelte';
@@ -21,7 +22,8 @@
     | { readonly tipo: 'menu' }
     | { readonly tipo: 'opciones'; readonly juego: IdJuego }
     | { readonly tipo: 'partida'; readonly partida: Partida }
-    | { readonly tipo: 'muestrario' };
+    | { readonly tipo: 'muestrario' }
+    | { readonly tipo: 'estadisticas' };
 
   let pantalla: Pantalla = $state.raw({ tipo: 'menu' });
   let guardado: Guardado | null = $state(null);
@@ -140,6 +142,7 @@
     {descartar}
     {cambiarDorso}
     verCartas={() => (pantalla = { tipo: 'muestrario' })}
+    verEstadisticas={() => (pantalla = { tipo: 'estadisticas' })}
   />
 {:else if pantalla.tipo === 'opciones'}
   {@const juego = pantalla.juego}
@@ -148,6 +151,8 @@
   {#key pantalla.partida}
     <PantallaPartida partida={pantalla.partida} menu={irAlMenu} {revancha} />
   {/key}
+{:else if pantalla.tipo === 'estadisticas'}
+  <Estadisticas volver={irAlMenu} />
 {:else}
   <Muestrario volver={irAlMenu} />
 {/if}

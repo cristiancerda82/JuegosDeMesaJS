@@ -14,9 +14,10 @@
     descartar: () => void;
     cambiarDorso: (dorso: string) => void;
     verCartas: () => void;
+    verEstadisticas: () => void;
   }
 
-  let { guardado, aviso, dorso, elegir, continuar, descartar, cambiarDorso, verCartas }: Props =
+  let { guardado, aviso, dorso, elegir, continuar, descartar, cambiarDorso, verCartas, verEstadisticas }: Props =
     $props();
 
   const juegos = [
@@ -84,6 +85,7 @@
         {/each}
       </select>
     </label>
+    <button class="enlace" onclick={verEstadisticas} data-testid="ver-estadisticas">{T.menu.estadisticas}</button>
     <button class="enlace" onclick={verCartas}>{T.menu.verCartas}</button>
   </footer>
 

@@ -57,6 +57,7 @@ export const T = {
       'No se pudo recuperar la partida guardada (es de otra versión o está dañada) y se descartó.',
     dorso: 'Dorso de las cartas',
     verCartas: 'Ver todas las cartas',
+    estadisticas: 'Estadísticas',
   },
 
   opciones: {
@@ -439,6 +440,28 @@ export const T = {
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Fichas finales',
     mazo: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+  },
+
+  estadisticas: {
+    titulo: 'Estadísticas',
+    vacio: 'Aún no has terminado ninguna partida. ¡Juega una y aquí verás cómo te va!',
+    total: (jugadas: number, ganadas: number, porcentaje: number) =>
+      `${jugadas} ${jugadas === 1 ? 'partida terminada' : 'partidas terminadas'}, ${ganadas} ${ganadas === 1 ? 'ganada' : 'ganadas'} (${porcentaje} %)`,
+    jugadas: 'Jugadas',
+    ganadas: 'Ganadas',
+    empatadas: 'Empatadas',
+    perdidas: 'Perdidas',
+    victorias: 'Victorias',
+    racha: 'Racha',
+    mejorRacha: 'Mejor racha',
+    mejorTiempo: 'Mejor tiempo',
+    menosMovimientos: 'Menos movimientos',
+    borrar: 'Borrar estadísticas',
+    confirmarBorrar: '¿Seguro que quieres borrar todas las estadísticas? No se puede deshacer.',
+    rachaEnCurso: (n: number) => `Llevas ${n} victorias seguidas`,
+    nuevaMejorRacha: '¡Tu mejor racha!',
+    recordTiempo: '¡Nuevo récord de tiempo!',
+    recordMovimientos: '¡Nuevo récord de movimientos!',
   },
 
   fin: {
