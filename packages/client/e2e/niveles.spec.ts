@@ -14,7 +14,8 @@ async function jugarBrisca(page: Page) {
 
 const partidaGuardada = (page: Page) =>
   page.evaluate(
-    () => JSON.parse(localStorage.getItem('juegos-de-mesa/partida') ?? 'null') as { nivel?: string },
+    () =>
+      JSON.parse(localStorage.getItem('juegos-de-mesa/partida') ?? 'null') as { nivel?: string },
   );
 
 test('Brisca en Difícil: partida completa, y el nivel se recuerda', async ({ page }) => {
