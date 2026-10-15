@@ -32,6 +32,7 @@
     { id: 'chinchon', desc: T.menu.chinchonDesc, cartas: ['copas-5', 'copas-6', 'comodin-1'] },
     { id: 'mus', desc: T.menu.musDesc, cartas: ['oros-12', 'copas-3', 'espadas-1'] },
     { id: 'pocha', desc: T.menu.pochaDesc, cartas: ['copas-1', 'oros-3', 'bastos-12'] },
+    { id: 'burro', desc: T.menu.burroDesc, cartas: ['oros-12', 'copas-12', 'espadas-12'] },
     { id: 'cinquillo', desc: T.menu.cinquilloDesc, cartas: ['oros-5', 'oros-6', 'copas-5'] },
     { id: 'sieteYMedia', desc: T.menu.sieteYMediaDesc, cartas: ['oros-7', 'bastos-12', 'copas-1'] },
   ] as const;

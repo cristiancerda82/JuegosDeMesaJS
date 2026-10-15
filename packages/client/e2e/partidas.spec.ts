@@ -236,6 +236,7 @@ for (const juego of [
   'mus',
   'spider',
   'corazones',
+  'burro',
 ] as const) {
   test(`la guía de ${juego} se abre desde las opciones y desde la partida`, async ({ page }) => {
     await abrirJuego(page, juego);

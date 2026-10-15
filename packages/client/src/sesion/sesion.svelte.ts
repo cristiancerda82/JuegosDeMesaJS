@@ -2,6 +2,8 @@ import {
   aplicar,
   crearAzar,
   error,
+  Generador,
+  igualesJSON,
   ok,
   repetir,
   type Asiento,
@@ -50,6 +52,13 @@ export class Sesion<C, E, A, V> {
   #tiempoPrevio: number;
   #desde = Date.now();
   #temporizador: ReturnType<typeof setTimeout> | null = null;
+  /** En los juegos simultáneos, la acción que tiene prevista cada IA y su temporizador. */
+  #esperas = new Map<
+    Asiento,
+    { readonly accion: A; readonly temporizador: ReturnType<typeof setTimeout> }
+  >();
+  /** Azar de los retrasos de la IA en los juegos simultáneos. */
+  #azarEsperas: Generador;
   #cerrada = false;
   #pausada = false;
   /** Al pausar quedó una pausa o un turno de la IA por ejecutar. */
@@ -69,6 +78,7 @@ export class Sesion<C, E, A, V> {
     this.#estado = estado;
     this.#jugadas = jugadas;
     this.#tiempoPrevio = tiempoMs;
+    this.#azarEsperas = new Generador(crearAzar(`${semilla}/esperas/${jugadas.length}`));
     this.#guardar();
     this.#continuar();
   }
@@ -117,6 +127,7 @@ export class Sesion<C, E, A, V> {
     this.#guardar();
     this.#cerrada = true;
     if (this.#temporizador !== null) clearTimeout(this.#temporizador);
+    this.#cancelarEsperas();
   }
 
   /** Guarda el progreso (p. ej. al ocultar la página). */
@@ -131,6 +142,10 @@ export class Sesion<C, E, A, V> {
     if (this.#temporizador !== null) {
       clearTimeout(this.#temporizador);
       this.#temporizador = null;
+      this.#pendiente = true;
+    }
+    if (this.#esperas.size > 0) {
+      this.#cancelarEsperas();
       this.#pendiente = true;
     }
   }
@@ -161,6 +176,8 @@ export class Sesion<C, E, A, V> {
     const pausa = this.def.pausaTras(antes, this.vista) * FACTOR_PAUSAS;
     if (pausa > 0) {
       this.bloqueada = true;
+      // La pausa detiene a todos, también a las IAs que esperaban para actuar.
+      this.#cancelarEsperas();
       this.#programar(pausa, () => this.#continuar());
     } else {
       this.#continuar();
@@ -171,6 +188,10 @@ export class Sesion<C, E, A, V> {
   /** Si le toca a un asiento de la IA, programa su jugada; si no, desbloquea al humano. */
   #continuar(): void {
     if (this.#cerrada) return;
+    if (this.def.simultaneo && this.def.ia !== null) {
+      this.#continuarSimultaneo();
+      return;
+    }
     const juego = this.def.juego;
     const asientos = Array.from({ length: juego.asientos(this.#estado) }, (_, a) => a);
     const turnoIA =
@@ -187,11 +208,66 @@ export class Sesion<C, E, A, V> {
     this.#programar(PAUSA_IA_MS, () => this.#jugarIA(turnoIA));
   }
 
+  /**
+   * Juegos simultáneos: el humano nunca espera a la IA. Cada IA con acciones tiene un
+   * temporizador con la acción que tiene prevista; si la acción no cambia se mantiene (para que
+   * las jugadas ajenas no reinicien su reloj) y si cambia se programa de nuevo.
+   */
+  #continuarSimultaneo(): void {
+    this.pensando = null;
+    this.bloqueada = false;
+    if (this.fin !== null) {
+      this.#cancelarEsperas();
+      return;
+    }
+    if (this.#pausada) {
+      this.#pendiente = true;
+      return;
+    }
+    const juego = this.def.juego;
+    for (let asiento = 0; asiento < juego.asientos(this.#estado); asiento++) {
+      if (asiento === HUMANO) continue;
+      const legales = juego.accionesLegales(this.#estado, asiento);
+      const prevista = this.#esperas.get(asiento);
+      if (legales.length === 0) {
+        if (prevista) this.#cancelarEspera(asiento);
+        continue;
+      }
+      const vista = juego.vistaDe(this.#estado, asiento);
+      const decision = this.def.ia!.decidir(vista, legales, this.#azarDe(asiento));
+      if (prevista && igualesJSON(prevista.accion, decision.accion)) continue;
+      if (prevista) this.#cancelarEspera(asiento);
+      const ms = this.def.simultaneo!.esperaIA(vista, decision.accion, this.#azarEsperas);
+      const temporizador = setTimeout(() => {
+        this.#esperas.delete(asiento);
+        if (this.#cerrada) return;
+        this.#azares.set(asiento, decision.azar);
+        // Si ya no es legal (la partida cambió justo antes), se vuelve a decidir.
+        if (!this.#aplicar(asiento, decision.accion)) this.#continuar();
+      }, ms * FACTOR_PAUSAS);
+      this.#esperas.set(asiento, { accion: decision.accion, temporizador });
+    }
+  }
+
+  #cancelarEspera(asiento: Asiento): void {
+    const prevista = this.#esperas.get(asiento);
+    if (prevista) clearTimeout(prevista.temporizador);
+    this.#esperas.delete(asiento);
+  }
+
+  #cancelarEsperas(): void {
+    for (const asiento of [...this.#esperas.keys()]) this.#cancelarEspera(asiento);
+  }
+
+  #azarDe(asiento: Asiento): EstadoAzar {
+    return (
+      this.#azares.get(asiento) ?? crearAzar(`${this.semilla}/ia${asiento}/${this.#jugadas.length}`)
+    );
+  }
+
   #jugarIA(asiento: Asiento): void {
     const juego = this.def.juego;
-    const azar =
-      this.#azares.get(asiento) ??
-      crearAzar(`${this.semilla}/ia${asiento}/${this.#jugadas.length}`);
+    const azar = this.#azarDe(asiento);
     const decision = this.def.ia!.decidir(
       juego.vistaDe(this.#estado, asiento),
       juego.accionesLegales(this.#estado, asiento),

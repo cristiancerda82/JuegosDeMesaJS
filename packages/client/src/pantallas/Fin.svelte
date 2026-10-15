@@ -23,6 +23,9 @@
     if (partida.id === 'klondike' || partida.id === 'freecell' || partida.id === 'spider') {
       return partida.sesion.vista.situacion === 'victoria' ? T.fin.solitarioGanado : T.fin.abandono;
     }
+    if (partida.id === 'burro') {
+      return fin.ganadores.includes(HUMANO) ? T.burro.librado : T.burro.eresBurro;
+    }
     if (fin.empate) return T.fin.empate;
     return fin.ganadores.includes(HUMANO) ? T.fin.victoria : T.fin.derrota;
   });
@@ -38,6 +41,7 @@
       partida.id !== 'pocha' &&
       partida.id !== 'mus' &&
       partida.id !== 'corazones' &&
+      partida.id !== 'burro' &&
       partida.sesion.vista.config.jugadores === 4,
   );
 
@@ -126,6 +130,24 @@
             <tr>
               <th scope="row">{nombreChinchon(a, 4)}</th>
               <td data-testid="total-{a}">{vista.totales[a]}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'burro'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      {@const burro = vista.letras.findIndex((l) => l >= T.burro.palabra.length)}
+      {#if burro !== -1 && burro !== HUMANO}
+        <p data-testid="quien-burro">{T.burro.esBurro(nombreChinchon(burro, n))}</p>
+      {/if}
+      <table>
+        <caption>{T.burro.letrasCol}</caption>
+        <tbody>
+          {#each Array.from({ length: n }, (_, a) => a).sort((a, b) => vista.letras[a]! - vista.letras[b]!) as a (a)}
+            <tr>
+              <th scope="row">{nombreChinchon(a, n)}</th>
+              <td class="letras" data-testid="letras-{a}">{T.burro.letras(vista.letras[a]!)}</td>
             </tr>
           {/each}
         </tbody>
@@ -293,6 +315,11 @@
   td {
     font-weight: 800;
     font-variant-numeric: tabular-nums;
+  }
+
+  .letras {
+    font-family: ui-monospace, monospace;
+    letter-spacing: 0.15em;
   }
 
   .manos {

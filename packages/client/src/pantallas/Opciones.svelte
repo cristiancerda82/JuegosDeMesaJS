@@ -1,6 +1,7 @@
 <script lang="ts">
   import type {
     ConfigBrisca,
+    ConfigBurro,
     ConfigChinchon,
     ConfigCorazones,
     ConfigCinquillo,
@@ -43,6 +44,7 @@
   let musConfig: Editable<ConfigMus> = $state({ ...JUEGOS.mus.configPorDefecto });
   let spider: Editable<ConfigSpider> = $state({ ...JUEGOS.spider.configPorDefecto });
   let corazones: Editable<ConfigCorazones> = $state({ ...JUEGOS.corazones.configPorDefecto });
+  let burro: Editable<ConfigBurro> = $state({ ...JUEGOS.burro.configPorDefecto });
   let freecellModo: 'azar' | 'numero' = $state('azar');
   let freecellNumero = $state(1);
 
@@ -67,6 +69,7 @@
       mus: musConfig,
       spider,
       corazones,
+      burro,
     };
     empezar({ ...configs[juego] });
   }
@@ -167,6 +170,13 @@
         <legend>{T.opciones.puntosPartida}</legend>
         {#each [100, 50] as p (p)}
           <label><input type="radio" bind:group={corazones.fin} value={p} /> {T.opciones.puntosN(p)}</label>
+        {/each}
+      </fieldset>
+    {:else if juego === 'burro'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [3, 4, 5] as n (n)}
+          <label><input type="radio" bind:group={burro.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
         {/each}
       </fieldset>
     {:else if juego === 'spider'}

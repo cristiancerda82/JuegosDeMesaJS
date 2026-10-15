@@ -1,5 +1,9 @@
 import {
   repetir,
+  type AccionBurro,
+  type ConfigBurro,
+  type EstadoBurro,
+  type VistaBurro,
   type AccionChinchon,
   type AccionGuinote,
   type AccionSieteYMedia,
@@ -66,6 +70,7 @@ import {
   DEF_POCHA,
   DEF_MUS,
   DEF_CORAZONES,
+  DEF_BURRO,
   DEF_SPIDER,
   DEF_KLONDIKE,
   DEF_ESCOBA,
@@ -97,6 +102,7 @@ export type SesionCorazones = Sesion<
   AccionCorazones,
   VistaCorazones
 >;
+export type SesionBurro = Sesion<ConfigBurro, EstadoBurro, AccionBurro, VistaBurro>;
 export type SesionFreeCell = Sesion<ConfigFreeCell, EstadoFreeCell, AccionFreeCell, VistaFreeCell>;
 export type SesionSieteYMedia = Sesion<
   ConfigSieteYMedia,
@@ -119,7 +125,8 @@ export type Partida =
   | { readonly id: 'pocha'; readonly sesion: SesionPocha }
   | { readonly id: 'mus'; readonly sesion: SesionMus }
   | { readonly id: 'spider'; readonly sesion: SesionSpider }
-  | { readonly id: 'corazones'; readonly sesion: SesionCorazones };
+  | { readonly id: 'corazones'; readonly sesion: SesionCorazones }
+  | { readonly id: 'burro'; readonly sesion: SesionBurro };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -134,7 +141,8 @@ export type ConfigJuego =
   | ConfigPocha
   | ConfigMus
   | ConfigSpider
-  | ConfigCorazones;
+  | ConfigCorazones
+  | ConfigBurro;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -169,6 +177,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_SPIDER);
     case 'corazones':
       return hacer(DEF_CORAZONES);
+    case 'burro':
+      return hacer(DEF_BURRO);
   }
 }
 

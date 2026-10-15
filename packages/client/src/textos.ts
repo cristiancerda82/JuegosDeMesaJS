@@ -40,6 +40,8 @@ export const T = {
     guinoteDesc: 'Bazas, cantes con rey y sota y arrastre, en partidas a 101.',
     corazones: 'Corazones',
     corazonesDesc: 'Bazas con baraja francesa: evita los corazones y la Q de picas.',
+    burro: 'Burro',
+    burroDesc: 'Junta cuatro iguales pasando cartas y que no te pillen el último en plantarte.',
     cinquillo: 'Cinquillo',
     cinquilloDesc: 'Coloca tus cartas en escalera a partir de los cincos y quédate sin ninguna.',
     mus: 'Mus',
@@ -392,6 +394,33 @@ export const T = {
     clasificacion: 'Puntos (menos es mejor)',
   },
 
+  burro: {
+    palabra: 'BURRO',
+    /** Las letras que lleva, con puntos en las que faltan: 2 → «BU···». */
+    letras: (n: number) => [...'BURRO'].map((l, i) => (i < n ? l : '·')).join(''),
+    letrasDe: (n: number) => (n === 0 ? 'sin letras' : n === 1 ? '1 letra' : `${n} letras`),
+    mano: (n: number) => `Mano ${n}`,
+    pasasA: (quien: string) => `Pasas a ${quien}`,
+    eligeCarta: (quien: string) => `Toca una carta para pasársela a ${quien}`,
+    esperando: 'Esperando a los demás…',
+    mePlanto: '¡Me planto!',
+    plantado: 'Plantado',
+    teHasPlantado: 'Te has plantado: espera a los demás',
+    recibida: 'Recibida',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    nula: 'Mano nula: nadie se plantó en 50 intercambios. No hay letras.',
+    primero: (quien: string) =>
+      quien === 'Tú' ? 'Te plantaste el primero con:' : `${quien} se plantó el primero con:`,
+    orden: 'Orden en que se plantaron',
+    llevaLetra: (quien: string) =>
+      quien === 'Tú' ? 'Eres el último: llevas letra' : `${quien} es el último y lleva letra`,
+    letrasCol: 'Letras',
+    siguienteMano: 'Siguiente mano',
+    librado: '¡Te has librado!',
+    eresBurro: '¡Eres el burro!',
+    esBurro: (quien: string) => `${quien} es el burro.`,
+  },
+
   cinquillo: {
     mesa: 'Mesa',
     paso: 'Paso',
@@ -530,6 +559,7 @@ export const T = {
       corazones: 'Cómo se juega a los Corazones',
       pocha: 'Cómo se juega a la Pocha',
       mus: 'Cómo se juega al Mus',
+      burro: 'Cómo se juega al Burro',
     },
     puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
 
@@ -1073,6 +1103,50 @@ export const T = {
           'Pasa la Q de picas, y el As y el Rey de picas si tienes pocas picas: con ellos te puede caer la Q.',
           'Quedarte sin un palo pronto te deja soltar cartas peligrosas.',
           'Vigila si alguien se está llevando todos los corazones: ¡puede ir a por la luna!',
+        ],
+      },
+    ],
+
+    burro: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja española, de 3 a 5 jugadores, contra la máquina. Cada uno recibe 4 cartas, y entre todas hay exactamente 4 de cada número en juego (por ejemplo, los cuatro reyes, los cuatro sietes…).',
+          'Hay que juntar las 4 cartas de un mismo número. Pero lo importante es no ser el último en darse cuenta de que alguien lo ha conseguido.',
+        ],
+      },
+      {
+        titulo: 'Pasar cartas',
+        texto: [
+          'Todos a la vez eligen una carta de su mano y, cuando todos han elegido, cada uno se la pasa al siguiente jugador y recibe la del anterior. Se repite una y otra vez, sin turnos: elige rápido.',
+        ],
+      },
+      {
+        titulo: 'Plantarse',
+        texto: [
+          'Cuando juntas 4 cartas iguales, plántate pulsando «¡Me planto!». Lo hace en silencio: en la mesa solo se ve que tus cartas quedan tumbadas.',
+          'En cuanto alguien se planta, todos los demás tienen que plantarse también, cuanto antes. El último en hacerlo pierde la mano y lleva una letra.',
+          'Vigila las manos de los rivales: si ves unas cartas tumbadas, ¡plántate ya!',
+        ],
+      },
+      {
+        titulo: 'El burro',
+        texto: [
+          'Cada mano perdida suma una letra de B-U-R-R-O. Quien completa la palabra es el burro y pierde la partida; todos los demás ganan.',
+          'Si en 50 intercambios nadie consigue plantarse, la mano se anula sin letras y se reparte otra.',
+        ],
+      },
+      {
+        titulo: 'En la mesa',
+        texto: [
+          'Toca la carta que quieras pasar. La que recibes se ve resaltada un momento. El botón «¡Me planto!» está siempre a la vista: si lo pulsas cuando no puedes plantarte, no pasa nada.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Quédate con el número del que más cartas tienes y pasa las sueltas.',
+          'No te quedes mirando solo tu mano: el peligro está en las manos ajenas.',
         ],
       },
     ],

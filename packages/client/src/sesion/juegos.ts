@@ -1,5 +1,12 @@
 import {
   brisca,
+  burro,
+  CONFIG_BURRO_POR_DEFECTO,
+  iaBurroBasica,
+  type AccionBurro,
+  type ConfigBurro,
+  type EstadoBurro,
+  type VistaBurro,
   chinchon,
   CONFIG_CHINCHON_POR_DEFECTO,
   iaChinchonBasica,
@@ -76,6 +83,7 @@ import {
   type AccionEscoba,
   type AccionTute,
   type Agente,
+  type Generador,
   type ConfigBrisca,
   type ConfigKlondike,
   type ConfigEscoba,
@@ -106,6 +114,14 @@ export interface DefJuego<C, E, A, V> {
    * (p. ej. ver la baza completa antes de que se recoja). Durante la pausa no se juega.
    */
   pausaTras(antes: V, despues: V): number;
+  /**
+   * Juegos en los que varios jugadores actúan a la vez en tiempo real: el humano no espera a la
+   * IA y cada IA actúa tras el retraso en milisegundos que devuelve `esperaIA` para la acción
+   * que va a hacer (antes de aplicar `FACTOR_PAUSAS`).
+   */
+  readonly simultaneo?: {
+    esperaIA(vista: V, accion: A, g: Generador): number;
+  };
 }
 
 export type IdJuego =
@@ -121,7 +137,8 @@ export type IdJuego =
   | 'pocha'
   | 'mus'
   | 'spider'
-  | 'corazones';
+  | 'corazones'
+  | 'burro';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -137,6 +154,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'mus',
   'spider',
   'corazones',
+  'burro',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -379,6 +397,36 @@ export const DEF_CORAZONES: DefCorazones = {
   },
 };
 
+export type DefBurro = DefJuego<ConfigBurro, EstadoBurro, AccionBurro, VistaBurro>;
+
+/** Pausa tras cada intercambio del Burro, para ver llegar la carta recibida. */
+const PAUSA_INTERCAMBIO_MS = 450;
+/** Pausa al terminar una mano del Burro, mientras la mesa abre el resumen. */
+const PAUSA_FIN_MANO_BURRO_MS = 600;
+
+/** Retraso al azar entre `desde` y `hasta` milisegundos. */
+const entre = (g: Generador, desde: number, hasta: number) =>
+  desde + g.enteroHasta(hasta - desde + 1);
+
+export const DEF_BURRO: DefBurro = {
+  id: 'burro',
+  nombre: T.menu.burro,
+  juego: burro,
+  configPorDefecto: CONFIG_BURRO_POR_DEFECTO,
+  ia: iaBurroBasica,
+  pausaTras(antes, despues) {
+    if (despues.numeroMano > antes.numeroMano) return PAUSA_FIN_MANO_BURRO_MS;
+    return despues.intercambios > antes.intercambios ? PAUSA_INTERCAMBIO_MS : 0;
+  },
+  // Pasar es rápido; plantarse lleva el tiempo de darse cuenta, como una persona.
+  simultaneo: {
+    esperaIA(vista, accion, g) {
+      if (accion.tipo === 'pasar') return entre(g, 400, 1200);
+      return vista.plantados.length === 0 ? entre(g, 1500, 4000) : entre(g, 1000, 3500);
+    },
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -393,6 +441,7 @@ export const JUEGOS = {
   mus: DEF_MUS,
   spider: DEF_SPIDER,
   corazones: DEF_CORAZONES,
+  burro: DEF_BURRO,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

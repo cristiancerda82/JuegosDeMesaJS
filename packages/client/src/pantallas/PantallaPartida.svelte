@@ -1,5 +1,6 @@
 <script lang="ts">
   import MesaBrisca from '../mesas/MesaBrisca.svelte';
+  import MesaBurro from '../mesas/MesaBurro.svelte';
   import MesaChinchon from '../mesas/MesaChinchon.svelte';
   import MesaCinquillo from '../mesas/MesaCinquillo.svelte';
   import MesaCorazones from '../mesas/MesaCorazones.svelte';
@@ -59,6 +60,8 @@
     <MesaCinquillo sesion={partida.sesion} />
   {:else if partida.id === 'corazones'}
     <MesaCorazones sesion={partida.sesion} />
+  {:else if partida.id === 'burro'}
+    <MesaBurro sesion={partida.sesion} />
   {:else if partida.id === 'mus'}
     <MesaMus sesion={partida.sesion} />
   {:else if partida.id === 'pocha'}
