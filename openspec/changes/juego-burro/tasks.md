@@ -13,7 +13,7 @@
 ## 3. Cliente: sesión simultánea
 
 - [x] 3.1 Añadir `simultaneo` a `DefJuego` y el modo simultáneo de la `Sesion`: temporizadores por asiento, mantenidos si la acción prevista no cambia, humano nunca bloqueado por la IA, pausar y reanudar
-- [ ] 3.2 Comprobar que el resto de juegos no cambia (E2E de las partidas por turnos)
+- [x] 3.2 Comprobar que el resto de juegos no cambia (E2E de las partidas por turnos)
 
 ## 4. Cliente: Burro
 
@@ -28,4 +28,4 @@
 - [x] 5.1 E2E: partida completa contra la IA pasando cartas, plantándose y cerrando el panel de cada mano
 - [x] 5.2 E2E: con una semilla en la que el jugador recibe 4 iguales, plantarse el primero y no llevar letra; pulsar «¡Me planto!» sin poder no cambia nada
 - [x] 5.3 E2E: retomar una partida de Burro guardada, la mesa de 5 jugadores en 360 × 640 sin scroll horizontal, y el Burro en el recorrido de las guías
-- [ ] 5.4 Ejecutar todos los tests (motor, cliente y E2E), la comprobación de tipos, el lint, el formato y `openspec validate --strict`
+- [x] 5.4 Ejecutar todos los tests (motor, cliente y E2E), la comprobación de tipos, el lint, el formato y `openspec validate --strict`

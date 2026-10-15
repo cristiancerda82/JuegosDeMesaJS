@@ -4,7 +4,7 @@ import { jugarKlondike, solucionarKlondike } from './klondike-solucion';
 
 // ── Utilidades ───────────────────────────────────────────────────────────────
 
-async function abrirJuego(page: Page, juego: 'klondike' | 'brisca', query = '') {
+async function abrirJuego(page: Page, juego: string, query = '') {
   await page.goto(`./?rapido${query}`);
   await page.getByTestId(`juego-${juego}`).click();
 }
@@ -239,7 +239,9 @@ for (const juego of [
   'burro',
 ] as const) {
   test(`la guía de ${juego} se abre desde las opciones y desde la partida`, async ({ page }) => {
-    await abrirJuego(page, juego);
+    // Semilla fija: con alguna al azar, la primera mano de la Siete y media termina sola y su
+    // resumen tapa el botón de la guía.
+    await abrirJuego(page, juego, '&semilla=guia');
     await page.getByTestId('ver-ayuda').click();
     const guia = page.getByTestId('como-se-juega');
     await expect(guia).toBeVisible();
