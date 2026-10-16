@@ -36,3 +36,4 @@ export * from './ia/mus-basica';
 export * from './ia/corazones-basica';
 export * from './ia/burro-basica';
 export * from './ia/ias';
+export * from './ia/pistas';

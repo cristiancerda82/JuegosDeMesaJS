@@ -11,6 +11,8 @@
   import { Interaccion } from '../interaccion/interaccion.svelte';
   import type { Sesion } from '../sesion/sesion.svelte';
   import { T } from '../textos';
+  import AvisoAtasco from './AvisoAtasco.svelte';
+  import BotonPista, { type Resalte } from './BotonPista.svelte';
   import { formatoTiempo } from './tiempo';
 
   interface Props {
@@ -98,6 +100,16 @@
     if (confirm(T.partida.confirmarAbandono)) sesion.jugar({ tipo: 'abandonar' });
   }
 
+  /** Qué resaltar para una pista: las cartas que se moverían y su destino. */
+  function resalte(pista: AccionFreeCell): Resalte {
+    if (pista.tipo !== 'mover') return { cartas: [], pilas: [] };
+    const i = Number(pista.desde.slice(1));
+    const cartas = pista.desde.startsWith('l')
+      ? [vista.celdas[i]!]
+      : vista.columnas[i]!.slice(-pista.cantidad);
+    return { cartas, pilas: [pista.hasta] };
+  }
+
   // ── Tiempo ─────────────────────────────────────────────────────────────────
 
   let tiempo = $state('');
@@ -132,6 +144,7 @@
     <span class="dato"><span class="etiqueta">{T.partida.tiempo}</span> <b>{tiempo}</b></span>
     <span class="dato"><span class="etiqueta">{T.partida.maxMovible}</span> <b data-testid="max-movible">{T.partida.cartasN(vista.maxMovible)}</b></span>
     <span class="acciones">
+      <BotonPista {sesion} {raiz} {resalte} />
       <button onclick={() => accion('deshacer')} disabled={!puede('deshacer')} data-testid="deshacer">{T.partida.deshacer}</button>
       {#if puede('autocompletar')}
         <button class="principal" onclick={() => accion('autocompletar')} data-testid="autocompletar">{T.partida.autocompletar}</button>
@@ -229,6 +242,13 @@
     </div>
   </div>
 </div>
+
+<AvisoAtasco
+  {legales}
+  terminada={sesion.fin !== null}
+  deshacer={() => accion('deshacer')}
+  abandonar={() => sesion.jugar({ tipo: 'abandonar' })}
+/>
 
 <style>
   .freecell {

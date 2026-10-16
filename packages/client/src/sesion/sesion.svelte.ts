@@ -43,6 +43,8 @@ export class Sesion<C, E, A, V> {
   pensando = $state<Asiento | null>(null);
   /** Lo que la partida cambió en las estadísticas, cuando termina. */
   novedades = $state<Novedades | null>(null);
+  /** Pistas pedidas en la partida (solitarios). */
+  pistas = $state(0);
 
   readonly vista: V = $derived.by(() => this.def.juego.vistaDe(this.#estado, HUMANO));
   readonly fin: Fin | null = $derived.by(() => this.def.juego.resultado(this.#estado));
@@ -75,7 +77,9 @@ export class Sesion<C, E, A, V> {
     jugadas: Jugada<A>[],
     tiempoMs: number,
     nivel: NivelIA,
+    pistas = 0,
   ) {
+    this.pistas = pistas;
     this.def = def;
     this.config = config;
     this.semilla = semilla;
@@ -121,6 +125,7 @@ export class Sesion<C, E, A, V> {
         g.tiempoMs,
         // Las partidas guardadas antes de los niveles se retoman en Normal.
         g.nivel ?? 'normal',
+        g.pistas ?? 0,
       ),
     );
   }
@@ -134,6 +139,20 @@ export class Sesion<C, E, A, V> {
   jugar(accion: A): boolean {
     if (this.bloqueada || this.#cerrada) return false;
     return this.#aplicar(HUMANO, accion);
+  }
+
+  /**
+   * Pista para el jugador (solitarios): un movimiento útil, o `null` si no ve ninguno. Cada
+   * pista dada cuenta como usada. No mueve nada.
+   */
+  pedirPista(): A | null {
+    if (!this.def.pista || this.#cerrada || this.fin !== null) return null;
+    const pista = this.def.pista(this.vista, this.legales);
+    if (pista !== null) {
+      this.pistas++;
+      this.#guardar();
+    }
+    return pista;
   }
 
   /** Guarda el tiempo y detiene la IA. La sesión deja de responder. */
@@ -335,6 +354,7 @@ export class Sesion<C, E, A, V> {
       jugadas: this.#jugadas,
       tiempoMs: this.tiempoMs(),
       nivel: this.nivel,
+      pistas: this.pistas,
     });
   }
 }

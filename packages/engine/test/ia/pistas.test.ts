@@ -1,0 +1,253 @@
+import { describe, expect, it } from 'vitest';
+import { crearAzar, Generador } from '../../src/baraja/azar';
+import type { IdCarta } from '../../src/baraja/cartas';
+import { atascado, pistaFreeCell, pistaKlondike, pistaSpider } from '../../src/ia/pistas';
+import {
+  CONFIG_FREECELL_POR_DEFECTO,
+  freecell,
+  type EstadoFreeCell,
+} from '../../src/juegos/freecell';
+import {
+  CONFIG_KLONDIKE_POR_DEFECTO,
+  klondike,
+  type EstadoKlondike,
+} from '../../src/juegos/klondike';
+import {
+  CONFIG_SPIDER_POR_DEFECTO,
+  spider,
+  type CartaSpider,
+  type EstadoSpider,
+} from '../../src/juegos/spider';
+import type { Juego } from '../../src/motor/contrato';
+import { igualesJSON } from '../../src/motor/json';
+
+// ── Estados a mano ───────────────────────────────────────────────────────────
+
+function mesaKlondike(
+  columnas: { ocultas?: IdCarta[]; visibles: IdCarta[] }[],
+  resto: Partial<EstadoKlondike> = {},
+): EstadoKlondike {
+  const cols = Array.from({ length: 7 }, (_, i) => ({
+    ocultas: columnas[i]?.ocultas ?? [],
+    visibles: columnas[i]?.visibles ?? [],
+  }));
+  return {
+    config: CONFIG_KLONDIKE_POR_DEFECTO,
+    mazo: [],
+    descarte: [],
+    columnas: cols,
+    fundaciones: [[], [], [], []],
+    reciclajesUsados: 0,
+    movimientos: 0,
+    historial: [],
+    abandonada: false,
+    ...resto,
+  };
+}
+
+const pistaK = (e: EstadoKlondike) =>
+  pistaKlondike(klondike.vistaDe(e, 0), klondike.accionesLegales(e, 0));
+
+function mesaFreeCell(
+  columnas: IdCarta[][],
+  celdas: (IdCarta | null)[] = [null, null, null, null],
+  fundaciones: IdCarta[][] = [[], [], [], []],
+): EstadoFreeCell {
+  return {
+    config: { ...CONFIG_FREECELL_POR_DEFECTO, autoFundacion: false },
+    numero: 1,
+    movimientos: 0,
+    historial: [],
+    abandonada: false,
+    celdas,
+    fundaciones,
+    columnas: Array.from({ length: 8 }, (_, i) => columnas[i] ?? []),
+  };
+}
+
+const pistaF = (e: EstadoFreeCell) =>
+  pistaFreeCell(freecell.vistaDe(e, 0), freecell.accionesLegales(e, 0));
+
+const s = (c: IdCarta, copia = 0): CartaSpider => `${c}#${copia}`;
+
+/** Las columnas que no se indican llevan un Rey que no interviene (así no hay columnas vacías). */
+function mesaSpider(
+  columnas: { ocultas?: CartaSpider[]; visibles: CartaSpider[] }[],
+  mazo: CartaSpider[] = [],
+): EstadoSpider {
+  return {
+    config: { palos: 4, repartirConVacias: true },
+    columnas: Array.from({ length: 10 }, (_, i) => ({
+      ocultas: columnas[i]?.ocultas ?? [],
+      visibles: columnas[i]?.visibles ?? [s('treboles-13', i)],
+    })),
+    mazo,
+    completadas: [],
+    movimientos: 0,
+    historial: [],
+    abandonada: false,
+  };
+}
+
+const pistaS = (e: EstadoSpider) => pistaSpider(spider.vistaDe(e, 0), spider.accionesLegales(e, 0));
+
+// ── Klondike ─────────────────────────────────────────────────────────────────
+
+describe('pista del Klondike', () => {
+  it('prefiere subir el As a la fundación', () => {
+    const e = mesaKlondike([
+      { visibles: ['corazones-1'] },
+      { visibles: ['picas-6'] },
+      { visibles: ['corazones-5'] },
+    ]);
+    expect(pistaK(e)).toMatchObject({ tipo: 'mover', desde: 'c0', hasta: 'f0' });
+  });
+
+  it('sugiere el movimiento que descubre una carta', () => {
+    const e = mesaKlondike([
+      { visibles: ['picas-6'] },
+      { ocultas: ['treboles-9'], visibles: ['corazones-5'] },
+      { visibles: ['diamantes-8'] },
+    ]);
+    expect(pistaK(e)).toEqual({ tipo: 'mover', desde: 'c1', hasta: 'c0', cantidad: 1 });
+  });
+
+  it('no sugiere pasar una escalera de una columna a otra sin descubrir nada', () => {
+    // El 5 rojo podría ir y volver entre los dos 6 negros: no cambia nada.
+    const e = mesaKlondike([
+      { ocultas: ['treboles-9'], visibles: ['picas-6', 'corazones-5'] },
+      { ocultas: ['diamantes-9'], visibles: ['treboles-6'] },
+    ]);
+    expect(pistaK(e)).toBeNull();
+  });
+
+  it('roba cuando no hay nada mejor', () => {
+    const e = mesaKlondike([{ ocultas: ['treboles-9'], visibles: ['picas-6'] }], {
+      mazo: ['diamantes-2'],
+    });
+    expect(pistaK(e)).toEqual({ tipo: 'robar' });
+  });
+
+  it('saca la carta del descarte a una columna', () => {
+    const e = mesaKlondike([{ ocultas: ['treboles-9'], visibles: ['picas-6'] }], {
+      descarte: ['corazones-5'],
+    });
+    expect(pistaK(e)).toEqual({ tipo: 'mover', desde: 'descarte', hasta: 'c0', cantidad: 1 });
+  });
+});
+
+// ── FreeCell ─────────────────────────────────────────────────────────────────
+
+describe('pista del FreeCell', () => {
+  it('prefiere la fundación', () => {
+    const e = mesaFreeCell([['picas-9', 'treboles-1'], ['corazones-10'], ['diamantes-3']]);
+    expect(pistaF(e)).toMatchObject({ desde: 'c0', hasta: 'f0' });
+  });
+
+  it('usa una celda si deja libre una carta para la fundación', () => {
+    const e = mesaFreeCell([['corazones-1', 'picas-9'], ['diamantes-12']]);
+    expect(pistaF(e)).toMatchObject({ desde: 'c0', hasta: 'l0', cantidad: 1 });
+  });
+
+  it('sin ida y vuelta: no mueve cartas entre columnas sin ganar nada', () => {
+    const e = mesaFreeCell([
+      ['diamantes-12', 'picas-9'],
+      ['corazones-12', 'treboles-10'],
+      ['diamantes-13', 'corazones-10'],
+    ]);
+    expect(pistaF(e)).toBeNull();
+  });
+
+  it('con las celdas llenas y sin movimientos, la partida está atascada', () => {
+    // Columnas desordenadas (si no, se podría autocompletar) y sin nada que encaje.
+    const e = mesaFreeCell(
+      [
+        ['picas-2', 'picas-5'],
+        ['corazones-2', 'corazones-5'],
+        ['diamantes-2', 'diamantes-5'],
+        ['treboles-2', 'treboles-5'],
+        ['picas-3', 'picas-7'],
+        ['corazones-3', 'corazones-7'],
+        ['diamantes-3', 'diamantes-7'],
+        ['treboles-3', 'treboles-7'],
+      ],
+      ['picas-13', 'corazones-13', 'diamantes-13', 'treboles-13'],
+    );
+    const legales = freecell.accionesLegales(e, 0);
+    expect(atascado(legales)).toBe(true);
+    expect(pistaF(e)).toBeNull();
+  });
+});
+
+// ── Spider ───────────────────────────────────────────────────────────────────
+
+describe('pista del Spider', () => {
+  it('prefiere alargar la escalera del mismo palo', () => {
+    const e = mesaSpider([
+      { ocultas: [s('treboles-1')], visibles: [s('corazones-8')] },
+      { ocultas: [s('treboles-2')], visibles: [s('picas-8')] },
+      { ocultas: [s('treboles-3')], visibles: [s('diamantes-9'), s('picas-7')] },
+    ]);
+    expect(pistaS(e)).toEqual({ tipo: 'mover', desde: 2, hasta: 1, cantidad: 1 });
+  });
+
+  it('prefiere descubrir una carta', () => {
+    const e = mesaSpider([
+      { ocultas: [s('treboles-1')], visibles: [s('corazones-8')] },
+      { ocultas: [s('treboles-2')], visibles: [s('picas-7')] },
+    ]);
+    expect(pistaS(e)).toEqual({ tipo: 'mover', desde: 1, hasta: 0, cantidad: 1 });
+  });
+
+  it('reparte cuando no hay nada útil', () => {
+    const e = mesaSpider(
+      Array.from({ length: 10 }, (_, i) => ({
+        ocultas: [s('treboles-1', i)],
+        visibles: [s('corazones-13', i)],
+      })),
+      Array.from({ length: 10 }, (_, i) => s('diamantes-5', i)),
+    );
+    expect(pistaS(e)).toEqual({ tipo: 'repartir' });
+  });
+});
+
+// ── Propiedades ──────────────────────────────────────────────────────────────
+
+describe('las pistas en partidas al azar', () => {
+  const casos = [
+    { juego: klondike, config: CONFIG_KLONDIKE_POR_DEFECTO, pista: pistaKlondike },
+    { juego: freecell, config: CONFIG_FREECELL_POR_DEFECTO, pista: pistaFreeCell },
+    { juego: spider, config: CONFIG_SPIDER_POR_DEFECTO, pista: pistaSpider },
+  ] as unknown as {
+    juego: Juego<unknown, unknown, { tipo: string }, unknown>;
+    config: unknown;
+    pista: (v: unknown, a: readonly { tipo: string }[]) => { tipo: string } | null;
+  }[];
+
+  it.each(casos)('$juego.id: siempre legales, nunca deshacer ni abandonar, y rápidas', (c) => {
+    for (let p = 0; p < 15; p++) {
+      const creado = c.juego.crear(c.config, `pistas-${p}`);
+      if (!creado.ok) throw new Error(creado.error);
+      let e = creado.valor;
+      const g = new Generador(crearAzar(`pistas-${p}`));
+      for (let paso = 0; paso < 150 && c.juego.resultado(e) === null; paso++) {
+        const legales = c.juego.accionesLegales(e, 0);
+        const inicio = Date.now();
+        const pista = c.pista(c.juego.vistaDe(e, 0), legales);
+        expect(Date.now() - inicio).toBeLessThan(50);
+        if (pista !== null) {
+          expect(legales.some((a) => igualesJSON(a, pista))).toBe(true);
+          expect(['deshacer', 'abandonar', 'autocompletar']).not.toContain(pista.tipo);
+        }
+        // Se sigue la pista a veces, y otras se juega al azar sin abandonar.
+        const jugables = legales.filter((a) => a.tipo !== 'abandonar');
+        if (jugables.length === 0) break;
+        const accion =
+          pista !== null && g.enteroHasta(2) === 0
+            ? pista
+            : jugables[g.enteroHasta(jugables.length)]!;
+        e = c.juego.transicion(e, 0, accion);
+      }
+    }
+  });
+});

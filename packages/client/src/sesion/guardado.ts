@@ -16,6 +16,8 @@ export interface Guardado {
   readonly tiempoMs: number;
   /** Nivel de la IA; falta en las partidas guardadas antes de los niveles (se toman en Normal). */
   readonly nivel?: NivelIA;
+  /** Pistas pedidas en los solitarios; falta en las partidas guardadas antes de las pistas. */
+  readonly pistas?: number;
 }
 
 export const VERSION_GUARDADO = 1;
@@ -74,7 +76,8 @@ export function leerGuardado(): Lectura {
       typeof g.tiempoMs === 'number' &&
       typeof g.config === 'object' &&
       g.config !== null &&
-      (g.nivel === undefined || NIVELES_IA.includes(g.nivel));
+      (g.nivel === undefined || NIVELES_IA.includes(g.nivel)) &&
+      (g.pistas === undefined || (Number.isInteger(g.pistas) && g.pistas >= 0));
     return valido ? { tipo: 'valido', guardado: g as Guardado } : { tipo: 'invalido' };
   } catch {
     return { tipo: 'invalido' };

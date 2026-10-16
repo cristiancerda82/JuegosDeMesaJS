@@ -244,6 +244,10 @@
       {/if}
     {/if}
 
+    {#if partida.sesion.def.pista}
+      <p class="nota" data-testid="pistas-usadas">{T.partida.pistasUsadas(partida.sesion.pistas)}</p>
+    {/if}
+
     {#if partida.sesion.novedades}
       {@const n = partida.sesion.novedades}
       {#if n.racha >= 2 || n.mejorRacha || n.mejorTiempo || n.menosMovimientos}

@@ -11,6 +11,8 @@
   import { Interaccion } from '../interaccion/interaccion.svelte';
   import type { Sesion } from '../sesion/sesion.svelte';
   import { T } from '../textos';
+  import AvisoAtasco from './AvisoAtasco.svelte';
+  import BotonPista, { type Resalte } from './BotonPista.svelte';
   import { formatoTiempo } from './tiempo';
 
   interface Props {
@@ -77,6 +79,16 @@
     if (confirm(T.partida.confirmarAbandono)) sesion.jugar({ tipo: 'abandonar' });
   }
 
+  /** Qué resaltar para una pista: las cartas que se moverían y su destino, o el mazo. */
+  function resalte(pista: AccionKlondike): Resalte {
+    if (pista.tipo !== 'mover') return { cartas: [], pilas: ['mazo'] };
+    let cartas: readonly string[];
+    if (pista.desde === 'descarte') cartas = vista.descarte.slice(-1);
+    else if (pista.desde.startsWith('f')) cartas = vista.fundaciones[Number(pista.desde.slice(1))]!.slice(-1);
+    else cartas = vista.columnas[Number(pista.desde.slice(1))]!.visibles.slice(-pista.cantidad);
+    return { cartas, pilas: [pista.hasta] };
+  }
+
   // ── Tiempo ─────────────────────────────────────────────────────────────────
 
   let tiempo = $state('');
@@ -109,6 +121,7 @@
     <span class="dato"><span class="etiqueta">{T.partida.movimientos}</span> <b data-testid="movimientos">{vista.movimientos}</b></span>
     <span class="dato"><span class="etiqueta">{T.partida.tiempo}</span> <b>{tiempo}</b></span>
     <span class="acciones">
+      <BotonPista {sesion} {raiz} {resalte} />
       <button onclick={() => accion('deshacer')} disabled={!puede('deshacer')}>{T.partida.deshacer}</button>
       {#if puede('autocompletar')}
         <button class="principal" onclick={() => accion('autocompletar')}>{T.partida.autocompletar}</button>
@@ -231,6 +244,13 @@
     </div>
   </div>
 </div>
+
+<AvisoAtasco
+  {legales}
+  terminada={sesion.fin !== null}
+  deshacer={() => accion('deshacer')}
+  abandonar={() => sesion.jugar({ tipo: 'abandonar' })}
+/>
 
 <style>
   .klondike {

@@ -72,6 +72,9 @@ import {
   type AccionEscoba,
   type AccionTute,
   IAS,
+  pistaFreeCell,
+  pistaKlondike,
+  pistaSpider,
   type Agente,
   type Generador,
   type NivelIA,
@@ -110,6 +113,8 @@ export interface DefJuego<C, E, A, V> {
    * IA y cada IA actúa tras el retraso en milisegundos que devuelve `esperaIA` para la acción
    * que va a hacer (antes de aplicar `FACTOR_PAUSAS`).
    */
+  /** Solitarios: un movimiento útil para la vista del jugador, o `null` si no hay. */
+  pista?(vista: V, acciones: readonly A[]): A | null;
   readonly simultaneo?: {
     esperaIA(vista: V, accion: A, g: Generador, nivel: NivelIA): number;
   };
@@ -170,6 +175,7 @@ export const DEF_FREECELL: DefFreeCell = {
   configPorDefecto: CONFIG_FREECELL_POR_DEFECTO,
   ia: null,
   pausaTras: () => 0,
+  pista: pistaFreeCell,
 };
 
 export type DefSpider = DefJuego<ConfigSpider, EstadoSpider, AccionSpider, VistaSpider>;
@@ -181,6 +187,7 @@ export const DEF_SPIDER: DefSpider = {
   configPorDefecto: CONFIG_SPIDER_POR_DEFECTO,
   ia: null,
   pausaTras: () => 0,
+  pista: pistaSpider,
 };
 
 export const DEF_KLONDIKE: DefKlondike = {
@@ -190,6 +197,7 @@ export const DEF_KLONDIKE: DefKlondike = {
   configPorDefecto: CONFIG_KLONDIKE_POR_DEFECTO,
   ia: null,
   pausaTras: () => 0,
+  pista: pistaKlondike,
 };
 
 /** Tiempo para ver la baza completa antes de recogerla. */

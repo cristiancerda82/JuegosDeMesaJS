@@ -13,6 +13,8 @@
   import { Interaccion } from '../interaccion/interaccion.svelte';
   import type { Sesion } from '../sesion/sesion.svelte';
   import { T } from '../textos';
+  import AvisoAtasco from './AvisoAtasco.svelte';
+  import BotonPista, { type Resalte } from './BotonPista.svelte';
   import { formatoTiempo } from './tiempo';
 
   interface Props {
@@ -75,6 +77,18 @@
     },
   });
 
+  /** Qué resaltar para una pista: las cartas que se moverían y su destino, o el mazo. */
+  function resalte(pista: AccionSpider): Resalte {
+    if (pista.tipo !== 'mover') return { cartas: [], pilas: ['mazo'] };
+    return {
+      cartas: vista.columnas[pista.desde]!.visibles.slice(-pista.cantidad),
+      pilas: [`c${pista.hasta}`],
+    };
+  }
+
+  /** Toda la mesa, con el mazo (que está en la barra): ahí se buscan los resaltes. */
+  let mesaEntera: HTMLElement | undefined = $state();
+
   function accion(tipo: 'deshacer' | 'repartir') {
     interaccion.cancelar();
     sesion.jugar({ tipo });
@@ -126,7 +140,7 @@
     `calc(var(--alto-carta) + ${Math.max(0, c.visibles.length - 1 + c.ocultas * OCULTA)} * var(--paso))`;
 </script>
 
-<div class="spider" style:--divisor={masLarga}>
+<div class="spider" style:--divisor={masLarga} bind:this={mesaEntera}>
   <div class="barra">
     <button
       class="mazo"
@@ -152,6 +166,7 @@
     <span class="dato"><span class="etiqueta">{T.partida.movimientos}</span> <b data-testid="movimientos">{vista.movimientos}</b></span>
     <span class="dato"><span class="etiqueta">{T.partida.tiempo}</span> <b>{tiempo}</b></span>
     <span class="acciones">
+      <BotonPista {sesion} raiz={mesaEntera} {resalte} />
       <button onclick={() => accion('deshacer')} disabled={!puede('deshacer')} data-testid="deshacer">{T.partida.deshacer}</button>
       <button onclick={abandonar} disabled={!puede('abandonar')}>{T.partida.abandonar}</button>
     </span>
@@ -197,6 +212,13 @@
     {/each}
   </div>
 </div>
+
+<AvisoAtasco
+  {legales}
+  terminada={sesion.fin !== null}
+  deshacer={() => accion('deshacer')}
+  abandonar={() => sesion.jugar({ tipo: 'abandonar' })}
+/>
 
 <style>
   .spider {
