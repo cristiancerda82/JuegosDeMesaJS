@@ -18,34 +18,33 @@ const INTENTOS = 200;
 /** Ganar el juego en la mano vale más que sus piedras. */
 const PREMIO_JUEGO = 20;
 
-/** Las manos ajenas cuadran con lo que cada uno declaró de pares y de juego. */
-function cuadran(vista: VistaMus, manos: readonly (readonly IdCarta[])[]): boolean {
+/** La mano de `asiento` cuadra con lo que declaró de pares y de juego. */
+function cuadra(vista: VistaMus, asiento: number, mano: readonly IdCarta[]): boolean {
   const { pares: conPares, juego: conJuego } = vista.declaraciones;
-  return manos.every((mano, a) => {
-    if (a === vista.asiento) return true;
-    if (conPares && (pares(mano, vista.config.reyes) !== null) !== conPares[a]) return false;
-    if (conJuego && tieneJuego(mano, vista.config.reyes) !== conJuego[a]) return false;
-    return true;
-  });
+  if (conPares && (pares(mano, vista.config.reyes) !== null) !== conPares[asiento]) return false;
+  if (conJuego && tieneJuego(mano, vista.config.reyes) !== conJuego[asiento]) return false;
+  return true;
 }
 
 /**
- * Un estado de Mus coherente con la vista: manos ajenas, mazo y descartes, al azar. Las manos
- * ajenas se repiten hasta que cuadran con lo declarado de pares y juego (si no se consigue en
- * unos intentos, vale la última).
+ * Un estado de Mus coherente con la vista: manos ajenas, mazo y descartes, al azar. Cada mano
+ * ajena se saca de las cartas que quedan hasta que cuadra con lo que su jugador declaró de pares
+ * y juego, porque de eso dependen los lances que se juegan.
  */
 export function reconstruirMus(vista: VistaMus, azar: EstadoAzar): EstadoMus {
-  const desconocidas = cartasFuera(crearBaraja('espanola40'), vista.miMano ?? []);
   const g = new Generador(azar);
-  let manos: IdCarta[][] = [];
-  let ocultas = new Ocultas(desconocidas, azar);
-  for (let intento = 0; intento < INTENTOS; intento++) {
-    ocultas = new Ocultas(desconocidas, [g.siguiente(), g.siguiente(), g.siguiente(), 1]);
-    manos = vista.cartasEnMano.map((n, a) =>
-      a === vista.asiento && vista.miMano ? [...vista.miMano] : ocultas.tomar(n),
-    );
-    if (cuadran(vista, manos)) break;
-  }
+  let quedan = cartasFuera(crearBaraja('espanola40'), vista.miMano ?? []);
+  const manos = vista.cartasEnMano.map((n, a) => {
+    if (a === vista.asiento && vista.miMano) return [...vista.miMano];
+    let mano: IdCarta[] = [];
+    for (let intento = 0; intento < INTENTOS; intento++) {
+      mano = new Ocultas(quedan, [g.siguiente(), g.siguiente(), g.siguiente(), 1]).tomar(n);
+      if (cuadra(vista, a, mano)) break;
+    }
+    quedan = cartasFuera(quedan, mano);
+    return mano;
+  });
+  const ocultas = new Ocultas(quedan, [g.siguiente(), g.siguiente(), g.siguiente(), 1]);
   const descartes = ocultas.tomar(vista.cartasDescartadas);
   return {
     config: vista.config,
@@ -79,6 +78,7 @@ function ultimaAccion(vista: VistaMus, descartes: readonly IdCarta[]): EstadoMus
   return { asiento: ultima.asiento, accion: { tipo: 'descartar', cartas } };
 }
 
+/** Preparado para una IA difícil del Mus; hoy no se usa (ver `IAS.mus`). */
 export const SIMULABLE_MUS: Simulable<ConfigMus, EstadoMus, AccionMus, VistaMus> = {
   juego: mus,
   reconstruir: reconstruirMus,
@@ -95,4 +95,6 @@ export const SIMULABLE_MUS: Simulable<ConfigMus, EstadoMus, AccionMus, VistaMus>
   },
   reconstrucciones: 12,
   presupuesto: 150,
+  // Simula el mus y los descartes; los envites de los lances, como la normal.
+  decideLaBase: (vista) => vista.fase === 'lance',
 };

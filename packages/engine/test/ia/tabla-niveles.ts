@@ -55,7 +55,7 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Siete y media', sieteYMedia, CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, IAS.sieteYMedia, 2),
   entrada('Cinquillo', cinquillo, CONFIG_CINQUILLO_POR_DEFECTO, IAS.cinquillo, 4),
   entrada('Pocha', pocha, CONFIG_POCHA_POR_DEFECTO, IAS.pocha, 4),
-  entrada('Mus', mus, CONFIG_MUS_POR_DEFECTO, IAS.mus, 'bandos'),
+  entrada('Mus', mus, CONFIG_MUS_POR_DEFECTO, IAS.mus, 'bandos', false),
   entrada('Corazones', corazones, CONFIG_CORAZONES_POR_DEFECTO, IAS.corazones, 4),
   entrada('Burro', burro, CONFIG_BURRO_POR_DEFECTO, IAS.burro, 4, false),
 ];

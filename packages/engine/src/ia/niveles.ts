@@ -55,6 +55,12 @@ export interface Simulable<C, E, A, V> {
   readonly presupuesto: number;
   /** Jugadas simuladas como máximo tras la acción; sin él, hasta el fin de la mano. */
   readonly horizonte?: number;
+  /**
+   * Situaciones en las que no se simula y decide la IA base. Sirve para las apuestas: al
+   * repartir las cartas ocultas al azar, la simulación no ve que el rival acepta justo cuando
+   * tiene buena mano, y sobrevalora envidar.
+   */
+  decideLaBase?(vista: V): boolean;
 }
 
 /** Menos reconstrucciones que estas por acción no dan información: decide la base. */
@@ -91,9 +97,41 @@ function simular<C, E, A, V>(
 }
 
 /**
+ * Con qué seguridad tiene que ganar una acción a la de la base para cambiarla: la ventaja
+ * media, en número de errores típicos.
+ */
+const SEGURIDAD = 1.5;
+
+/**
+ * La acción que elegir a la vista de las simulaciones: la de mayor ventaja media sobre la de la
+ * base, pero solo si esa ventaja es clara. Las diferencias se miden por parejas (la misma
+ * reconstrucción para las dos acciones), y con pocas simulaciones y mucho azar elegir sin más la
+ * de mejor media escoge a menudo una acción que solo tuvo suerte.
+ */
+function mejorQueLaBase(valores: readonly (readonly number[])[], deBase: number): number {
+  const n = valores.length;
+  if (n < RECONSTRUCCIONES_MINIMAS) return deBase;
+  let mejor = deBase;
+  let mejorMedia = 0;
+  for (let i = 0; i < valores[0]!.length; i++) {
+    if (i === deBase) continue;
+    const diferencias = valores.map((v) => v[i]! - v[deBase]!);
+    const media = diferencias.reduce((s, d) => s + d, 0) / n;
+    const varianza = diferencias.reduce((s, d) => s + (d - media) ** 2, 0) / (n - 1);
+    const errorTipico = Math.sqrt(varianza / n);
+    const clara = media > 0 && (errorTipico === 0 || media / errorTipico > SEGURIDAD);
+    if (clara && media > mejorMedia) {
+      mejor = i;
+      mejorMedia = media;
+    }
+  }
+  return mejor;
+}
+
+/**
  * Nivel difícil: reconstruye varias veces las cartas ocultas y, en cada reconstrucción,
- * prueba cada acción legal jugando el resto de la mano con `base`. Elige la de mejor valor
- * medio; en caso de empate, la que elegiría `base`.
+ * prueba cada acción legal jugando el resto de la mano con `base`. Se aparta de lo que haría
+ * `base` solo cuando otra acción le gana claramente.
  */
 export function porSimulacion<C, E, A, V extends { readonly asiento: Asiento | null }>(
   base: Agente<V, A>,
@@ -110,25 +148,31 @@ export function porSimulacion<C, E, A, V extends { readonly asiento: Asiento | n
         Math.floor(s.presupuesto / acciones.length),
       );
       if (acciones.length === 1 || asiento === null) return normal;
-      if (reconstrucciones < RECONSTRUCCIONES_MINIMAS) return normal;
+      if (reconstrucciones < RECONSTRUCCIONES_MINIMAS || s.decideLaBase?.(vista)) return normal;
       const g = new Generador(normal.azar);
-      const sumas = acciones.map(() => 0);
+      /** Valor de cada acción en cada reconstrucción que se pudo jugar. */
+      const valores: number[][] = [];
       for (let r = 0; r < reconstrucciones; r++) {
         const estado = s.reconstruir(vista, azarDe(g));
         const azarSimulacion = azarDe(g);
-        acciones.forEach((accion, i) => {
-          const tras = s.juego.transicion(estado, asiento, accion);
-          const final = simular(s, base, estado, tras, azarSimulacion);
-          sumas[i]! += s.valorar(estado, final, asiento);
-        });
+        // Una reconstrucción que no se pueda jugar hasta el final no cuenta: la IA no debe
+        // romper la partida por una suposición imposible sobre las cartas ocultas.
+        try {
+          valores.push(
+            acciones.map((accion) => {
+              const tras = s.juego.transicion(estado, asiento, accion);
+              return s.valorar(estado, simular(s, base, estado, tras, azarSimulacion), asiento);
+            }),
+          );
+        } catch {
+          continue;
+        }
       }
-      let mejor = Math.max(
+      const deBase = Math.max(
         0,
         acciones.findIndex((a) => igualesJSON(a, normal.accion)),
       );
-      sumas.forEach((suma, i) => {
-        if (suma > sumas[mejor]!) mejor = i;
-      });
+      const mejor = mejorQueLaBase(valores, deBase);
       return { accion: acciones[mejor]!, azar: g.estado() };
     },
   };

@@ -16,7 +16,6 @@ import { SIMULABLE_CINQUILLO } from './reconstruir/cinquillo';
 import { SIMULABLE_CORAZONES } from './reconstruir/corazones';
 import { SIMULABLE_ESCOBA } from './reconstruir/escoba';
 import { SIMULABLE_GUINOTE } from './reconstruir/guinote';
-import { SIMULABLE_MUS } from './reconstruir/mus';
 import { SIMULABLE_POCHA } from './reconstruir/pocha';
 import { SIMULABLE_SIETE_Y_MEDIA } from './reconstruir/siete-y-media';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
@@ -50,7 +49,9 @@ export const IAS = {
   sieteYMedia: niveles(iaSieteYMediaBasica, SIMULABLE_SIETE_Y_MEDIA),
   cinquillo: niveles(iaCinquilloBasica, SIMULABLE_CINQUILLO),
   pocha: niveles(iaPochaBasica, SIMULABLE_POCHA),
-  mus: niveles(iaMusBasica, SIMULABLE_MUS),
+  // En el Mus la simulación no gana a la normal: no ve que el rival envida o acepta justo cuando
+  // lleva buena mano. Hasta tener una IA experta, el difícil juega como la normal.
+  mus: { facil: conErrores(iaMusBasica, ERRORES_FACIL), normal: iaMusBasica, dificil: iaMusBasica },
   corazones: niveles(iaCorazonesBasica, SIMULABLE_CORAZONES),
   // En el Burro decide la reacción, que pone el cliente: el difícil pasa como el normal, y el
   // fácil se equivoca solo al pasar, en la mitad de los pases.
