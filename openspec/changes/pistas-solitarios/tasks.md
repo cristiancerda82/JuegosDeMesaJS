@@ -16,4 +16,4 @@
 
 - [x] 3.1 E2E: pedir una pista en el Klondike resalta un movimiento legal sin cambiar la partida, y el fin muestra las pistas usadas
 - [x] 3.2 E2E: el aviso de atasco aparece en una posición sin movimientos y deja deshacer
-- [ ] 3.3 Ejecutar todos los tests (motor, cliente y E2E), la comprobación de tipos, el lint, el formato y `openspec validate --strict`
+- [x] 3.3 Ejecutar todos los tests (motor, cliente y E2E), la comprobación de tipos, el lint, el formato y `openspec validate --strict`

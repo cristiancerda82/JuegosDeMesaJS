@@ -17,5 +17,8 @@ describe.runIf(entorno?.FUERZA)('difícil contra normal', () => {
     expect(r.ganadas, `${r.ganadas} de ${r.partidas} (máx. ${r.maxMs} ms)`).toBeGreaterThan(
       partidas * j.parteJusta,
     );
+    // Aquí se mide sin otros tests en paralelo: 250 ms en escritorio dejan margen para los
+    // 500 ms en un móvil de gama media.
+    expect(r.maxMs).toBeLessThan(250);
   });
 });

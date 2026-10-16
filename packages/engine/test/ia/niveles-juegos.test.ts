@@ -10,8 +10,9 @@ describe.each(JUEGOS_CON_NIVELES)('niveles de la IA: $nombre', (j) => {
     // Difícil contra fácil en unas pocas partidas: la normal juega dentro de la simulación.
     const r = duelo(j.juego, j.config, j.ias.dificil, j.ias.facil, 2, j.esA, 'mezcla');
     expect(r.partidas).toBe(2);
-    // 250 ms en escritorio dejan margen para los 500 ms en un móvil de gama media.
-    expect(r.maxMs).toBeLessThan(250);
+    // Con los demás ficheros de test en paralelo, el tiempo depende de la carga: aquí solo se
+    // comprueba el límite de la spec. El margen para móviles (250 ms) lo mide `fuerza.test.ts`.
+    expect(r.maxMs).toBeLessThan(500);
   });
 
   it('todos los niveles son reproducibles', () => {

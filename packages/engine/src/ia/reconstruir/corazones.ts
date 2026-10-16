@@ -71,5 +71,5 @@ export const SIMULABLE_CORAZONES: Simulable<
     return media - puntos[asiento]! + bonoPartida(corazones.resultado(final), asiento);
   },
   reconstrucciones: 24,
-  presupuesto: 200,
+  presupuesto: 180,
 };
