@@ -85,33 +85,51 @@ import {
   type DefJuego,
   type IdJuego,
 } from './juegos';
+import type { SesionMesa } from './sesion-mesa';
+import type { ClienteRed, MensajePartida } from './red.svelte';
+import { SesionRed } from './sesion-red.svelte';
 import { Sesion } from './sesion.svelte';
 
-export type SesionKlondike = Sesion<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
-export type SesionBrisca = Sesion<ConfigBrisca, EstadoBrisca, AccionBrisca, VistaBrisca>;
-export type SesionTute = Sesion<ConfigTute, EstadoTute, AccionTute, VistaTute>;
-export type SesionEscoba = Sesion<ConfigEscoba, EstadoEscoba, AccionEscoba, VistaEscoba>;
-export type SesionChinchon = Sesion<ConfigChinchon, EstadoChinchon, AccionChinchon, VistaChinchon>;
-export type SesionGuinote = Sesion<ConfigGuinote, EstadoGuinote, AccionGuinote, VistaGuinote>;
-export type SesionCinquillo = Sesion<
+export type SesionKlondike = SesionMesa<
+  ConfigKlondike,
+  EstadoKlondike,
+  AccionKlondike,
+  VistaKlondike
+>;
+export type SesionBrisca = SesionMesa<ConfigBrisca, EstadoBrisca, AccionBrisca, VistaBrisca>;
+export type SesionTute = SesionMesa<ConfigTute, EstadoTute, AccionTute, VistaTute>;
+export type SesionEscoba = SesionMesa<ConfigEscoba, EstadoEscoba, AccionEscoba, VistaEscoba>;
+export type SesionChinchon = SesionMesa<
+  ConfigChinchon,
+  EstadoChinchon,
+  AccionChinchon,
+  VistaChinchon
+>;
+export type SesionGuinote = SesionMesa<ConfigGuinote, EstadoGuinote, AccionGuinote, VistaGuinote>;
+export type SesionCinquillo = SesionMesa<
   ConfigCinquillo,
   EstadoCinquillo,
   AccionCinquillo,
   VistaCinquillo
 >;
-export type SesionPocha = Sesion<ConfigPocha, EstadoPocha, AccionPocha, VistaPocha>;
-export type SesionMus = Sesion<ConfigMus, EstadoMus, AccionMus, VistaMus>;
-export type SesionSpider = Sesion<ConfigSpider, EstadoSpider, AccionSpider, VistaSpider>;
-export type SesionCorazones = Sesion<
+export type SesionPocha = SesionMesa<ConfigPocha, EstadoPocha, AccionPocha, VistaPocha>;
+export type SesionMus = SesionMesa<ConfigMus, EstadoMus, AccionMus, VistaMus>;
+export type SesionSpider = SesionMesa<ConfigSpider, EstadoSpider, AccionSpider, VistaSpider>;
+export type SesionCorazones = SesionMesa<
   ConfigCorazones,
   EstadoCorazones,
   AccionCorazones,
   VistaCorazones
 >;
-export type SesionBurro = Sesion<ConfigBurro, EstadoBurro, AccionBurro, VistaBurro>;
-export type SesionPinacle = Sesion<ConfigPinacle, EstadoPinacle, AccionPinacle, VistaPinacle>;
-export type SesionFreeCell = Sesion<ConfigFreeCell, EstadoFreeCell, AccionFreeCell, VistaFreeCell>;
-export type SesionSieteYMedia = Sesion<
+export type SesionBurro = SesionMesa<ConfigBurro, EstadoBurro, AccionBurro, VistaBurro>;
+export type SesionPinacle = SesionMesa<ConfigPinacle, EstadoPinacle, AccionPinacle, VistaPinacle>;
+export type SesionFreeCell = SesionMesa<
+  ConfigFreeCell,
+  EstadoFreeCell,
+  AccionFreeCell,
+  VistaFreeCell
+>;
+export type SesionSieteYMedia = SesionMesa<
   ConfigSieteYMedia,
   EstadoSieteYMedia,
   AccionSieteYMedia,
@@ -212,4 +230,10 @@ export function guardadoRepetible(g: Guardado): boolean {
 
 export function partidaGuardada(g: Guardado): Resultado<Partida> {
   return conDef(g.juego, (def) => etiquetar(g.juego, Sesion.desdeGuardado(def, g)));
+}
+
+/** La partida de una sala en red, con la primera vista que ha enviado el servidor. */
+export function partidaEnRed(cliente: ClienteRed, primera: MensajePartida): Partida {
+  const id = cliente.sala!.juego;
+  return conDef(id, (def) => ({ id, sesion: new SesionRed(def, cliente, primera) }) as Partida);
 }

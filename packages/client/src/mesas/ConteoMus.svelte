@@ -2,6 +2,7 @@
   import type { ConfigMus, ResultadoManoMus } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
   import { T } from '../textos';
+  import type { InfoRed } from '../sesion/sesion-mesa';
   import { nombreAsiento } from './bazas/asientos';
 
   interface Props {
@@ -9,12 +10,18 @@
     config: ConfigMus;
     /** Enseñar las cartas de los cuatro jugadores. */
     conCartas?: boolean;
+    /** Asiento del jugador: su pareja va primero. */
+    yo?: number;
+    red?: InfoRed | null;
   }
 
-  let { resultado, config, conCartas = true }: Props = $props();
+  let { resultado, config, conCartas = true, yo = 0, red = null }: Props = $props();
 
-  const parejas = [T.mus.nosotros, T.mus.ellos];
-  const parejasEn = [T.mus.nosotrosEn, T.mus.ellosEn];
+  const mia = $derived(yo % 2);
+  /** Parejas en el orden de las columnas: la del jugador primero. */
+  const orden = $derived(mia === 0 ? ([0, 1] as const) : ([1, 0] as const));
+  const pareja = (p: number) => (p === mia ? T.mus.nosotros : T.mus.ellos);
+  const parejaEn = (p: number) => (p === mia ? T.mus.nosotrosEn : T.mus.ellosEn);
   const celda = (n: number) => (n === 0 ? '–' : `${n}`);
 
   function estado(l: ResultadoManoMus['lances'][number]): string {
@@ -26,12 +33,12 @@
       case 'noQuerido':
         return T.mus.estadoLance.noQuerido(
           l.apuesta[0] + l.apuesta[1],
-          parejasEn[l.apuesta[0] > 0 ? 0 : 1]!,
+          parejaEn(l.apuesta[0] > 0 ? 0 : 1),
         );
       case 'ordago':
         return T.mus.estadoLance.ordago;
       case 'sinApuesta':
-        return T.mus.estadoLance.sinApuesta(l.ganador === null ? '' : parejasEn[l.ganador]!);
+        return T.mus.estadoLance.sinApuesta(l.ganador === null ? '' : parejaEn(l.ganador));
       case 'noSeJuega':
         return T.mus.estadoLance.noSeJuega;
     }
@@ -44,7 +51,7 @@
       {#each resultado.manos as cartas, a (a)}
         <li data-testid="cartas-{a}">
           <span class="quien">
-            {nombreAsiento(a, 4)}{#if a === resultado.mano}<small>{' · '}{T.mus.mano}</small>{/if}
+            {nombreAsiento(a, 4, yo, red)}{#if a === resultado.mano}<small>{' · '}{T.mus.mano}</small>{/if}
           </span>
           <span class="cartas">
             {#each cartas as id (id)}
@@ -65,8 +72,8 @@
       <tr>
         <th scope="col">{T.mus.lance}</th>
         <th scope="col">{T.mus.gana}</th>
-        <th scope="col">{parejas[0]}</th>
-        <th scope="col">{parejas[1]}</th>
+        <th scope="col">{pareja(orden[0])}</th>
+        <th scope="col">{pareja(orden[1])}</th>
       </tr>
     </thead>
     <tbody>
@@ -76,25 +83,25 @@
             {T.mus.lances[l.lance]}
             <small>{estado(l)}</small>
           </th>
-          <td>{l.ganador === null ? '–' : parejas[l.ganador]}</td>
-          <td>{celda(l.apuesta[0] + l.jugadas[0])}</td>
-          <td>{celda(l.apuesta[1] + l.jugadas[1])}</td>
+          <td>{l.ganador === null ? '–' : pareja(l.ganador)}</td>
+          <td>{celda(l.apuesta[orden[0]] + l.jugadas[orden[0]])}</td>
+          <td>{celda(l.apuesta[orden[1]] + l.jugadas[orden[1]])}</td>
         </tr>
       {/each}
     </tbody>
     <tfoot>
       <tr>
         <th scope="row" colspan="2">{T.mus.total} · {T.opciones.piedrasN(config.puntos).toLowerCase()}</th>
-        <td data-testid="piedras-0">{resultado.piedrasTras[0]}</td>
-        <td data-testid="piedras-1">{resultado.piedrasTras[1]}</td>
+        <td data-testid="piedras-0">{resultado.piedrasTras[orden[0]]}</td>
+        <td data-testid="piedras-1">{resultado.piedrasTras[orden[1]]}</td>
       </tr>
     </tfoot>
   </table>
 
   {#if resultado.juegoGanado !== null}
-    <p class="juego" data-testid="juego-ganado">{T.mus.ganaJuego(parejas[resultado.juegoGanado]!)}</p>
+    <p class="juego" data-testid="juego-ganado">{T.mus.ganaJuego(pareja(resultado.juegoGanado))}</p>
   {/if}
-  <p class="nota">{T.mus.juegos(resultado.juegosTras[0], resultado.juegosTras[1])}</p>
+  <p class="nota">{T.mus.juegos(resultado.juegosTras[orden[0]], resultado.juegosTras[orden[1]])}</p>
 </div>
 
 <style>

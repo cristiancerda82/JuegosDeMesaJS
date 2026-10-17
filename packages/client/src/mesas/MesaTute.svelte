@@ -11,13 +11,13 @@
   } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
   import { nombreCarta } from '../cartas/dibujo';
-  import type { Sesion } from '../sesion/sesion.svelte';
+  import { bandoDe, porBando, type SesionMesa } from '../sesion/sesion-mesa';
   import { T } from '../textos';
   import { nombreAsiento } from './bazas/asientos';
   import MesaBazas from './bazas/MesaBazas.svelte';
 
   interface Props {
-    sesion: Sesion<ConfigTute, EstadoTute, AccionTute, VistaTute>;
+    sesion: SesionMesa<ConfigTute, EstadoTute, AccionTute, VistaTute>;
   }
 
   let { sesion }: Props = $props();
@@ -36,13 +36,13 @@
   const cambio = $derived(legales.find((a) => a.tipo === 'cambiarSiete'));
 
   const puntosCante = (palo: string) => (palo === vista.triunfo ? 40 : 20);
-  const nombre = (asiento: Asiento) => nombreAsiento(asiento, n);
+  const nombre = (asiento: Asiento) => nombreAsiento(asiento, n, sesion.asiento, sesion.red);
   const nombreBando = (bando: 0 | 1) =>
     n === 2
-      ? bando === 0
+      ? bando === bandoDe(sesion.asiento)
         ? T.brisca.tu
         : T.brisca.rival
-      : bando === 0
+      : bando === bandoDe(sesion.asiento)
         ? T.brisca.nosotros
         : T.brisca.ellos;
 
@@ -92,7 +92,7 @@
   {#snippet info()}
     <span>{T.brisca.triunfo}: <b class="triunfo">{vista.triunfo}</b></span>
     {#if vista.config.manos > 1}
-      <span>{T.brisca.manosGanadas(vista.manosGanadas[0], vista.manosGanadas[1])}</span>
+      <span>{T.brisca.manosGanadas(...porBando(vista.manosGanadas, sesion.asiento))}</span>
     {/if}
     {#if vista.cantes.length > 0}
       <span class="cantes" data-testid="cantes">

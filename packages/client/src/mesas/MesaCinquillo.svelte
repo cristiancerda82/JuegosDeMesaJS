@@ -15,12 +15,13 @@
   import { nombreCarta } from '../cartas/dibujo';
   import { animar, medir, type Posiciones } from '../interaccion/flip';
   import { Interaccion } from '../interaccion/interaccion.svelte';
-  import { HUMANO, type Sesion } from '../sesion/sesion.svelte';
+  import type { SesionMesa } from '../sesion/sesion-mesa';
+  import { nombreNumerado } from './bazas/asientos';
   import { T } from '../textos';
   import ManoPropia from './bazas/ManoPropia.svelte';
 
   interface Props {
-    sesion: Sesion<ConfigCinquillo, EstadoCinquillo, AccionCinquillo, VistaCinquillo>;
+    sesion: SesionMesa<ConfigCinquillo, EstadoCinquillo, AccionCinquillo, VistaCinquillo>;
   }
 
   let { sesion }: Props = $props();
@@ -28,10 +29,12 @@
   const vista = $derived(sesion.vista);
   const legales = $derived(sesion.legales);
   const n = $derived(vista.config.jugadores);
-  const rivales = $derived(Array.from({ length: n - 1 }, (_, i) => i + 1));
+  const yo = $derived(sesion.asiento);
+  // Los rivales en el orden de juego, empezando por el siguiente al jugador.
+  const rivales = $derived(Array.from({ length: n - 1 }, (_, i) => (yo + i + 1) % n));
 
   const nombre = (asiento: Asiento) =>
-    asiento === HUMANO ? T.brisca.tu : n === 2 ? T.brisca.rival : T.brisca.rivalN(asiento);
+    nombreNumerado(asiento, n, yo, sesion.red, T.brisca.rivalN, T.brisca.rival);
   const activo = (asiento: Asiento) => vista.turno === asiento && sesion.fin === null;
 
   const jugable = (carta: IdCarta) =>
@@ -82,7 +85,7 @@
       return `${T.brisca.turnoDe(nombre(sesion.pensando))} · ${T.brisca.pensando}`;
     }
     if (sesion.bloqueada) return '';
-    if (vista.turno !== HUMANO) return T.brisca.turnoDe(nombre(vista.turno));
+    if (vista.turno !== yo) return T.brisca.turnoDe(nombre(vista.turno));
     if (soloPasar) return T.cinquillo.sinJugada;
     return vista.mesa.oros === null ? T.cinquillo.salidaOros : T.cinquillo.tuTurno;
   });
@@ -171,14 +174,14 @@
     <p class="aviso" role="status" data-testid="aviso">{aviso}</p>
   {/if}
 
-  <div class="propio" class:activo={activo(HUMANO)}>
+  <div class="propio" class:activo={activo(yo)}>
     <div class="estado">
       <span class="nombre">
         {T.brisca.tu}
-        <small>{T.cinquillo.puntos(vista.totales[HUMANO] ?? 0)}</small>
+        <small>{T.cinquillo.puntos(vista.totales[yo] ?? 0)}</small>
       </span>
       <span class="turno" role="status" data-testid="turno">{turno}</span>
-      {#if soloPasar && activo(HUMANO)}
+      {#if soloPasar && activo(yo)}
         <button
           class="principal"
           data-testid="paso"

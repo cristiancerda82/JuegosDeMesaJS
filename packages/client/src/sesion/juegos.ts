@@ -78,6 +78,7 @@ import {
   type AccionEscoba,
   type AccionTute,
   IAS,
+  retrasoBurro,
   pistaFreeCell,
   pistaKlondike,
   pistaSpider,
@@ -411,28 +412,6 @@ const PAUSA_INTERCAMBIO_MS = 450;
 /** Pausa al terminar una mano del Burro, mientras la mesa abre el resumen. */
 const PAUSA_FIN_MANO_BURRO_MS = 600;
 
-/** Retraso al azar entre `desde` y `hasta` milisegundos. */
-const entre = (g: Generador, desde: number, hasta: number) =>
-  desde + g.enteroHasta(hasta - desde + 1);
-
-/** Retrasos para plantarse en el Burro (ms): el primero, con 4 iguales, y como reacción. */
-const REACCION_BURRO: Readonly<
-  Record<NivelIA, readonly [readonly [number, number], readonly [number, number]]>
-> = {
-  facil: [
-    [2500, 5000],
-    [2000, 5000],
-  ],
-  normal: [
-    [1500, 4000],
-    [1000, 3500],
-  ],
-  dificil: [
-    [900, 2500],
-    [600, 2000],
-  ],
-};
-
 export const DEF_BURRO: DefBurro = {
   id: 'burro',
   nombre: T.menu.burro,
@@ -445,13 +424,7 @@ export const DEF_BURRO: DefBurro = {
   },
   // Pasar es rápido; plantarse lleva el tiempo de darse cuenta, como una persona, y depende
   // del nivel (spec mesa-cliente).
-  simultaneo: {
-    esperaIA(vista, accion, g, nivel) {
-      if (accion.tipo === 'pasar') return entre(g, 400, 1200);
-      const [desde, hasta] = REACCION_BURRO[nivel][vista.plantados.length === 0 ? 0 : 1];
-      return entre(g, desde, hasta);
-    },
-  },
+  simultaneo: { esperaIA: retrasoBurro },
 };
 
 export type DefPinacle = DefJuego<ConfigPinacle, EstadoPinacle, AccionPinacle, VistaPinacle>;

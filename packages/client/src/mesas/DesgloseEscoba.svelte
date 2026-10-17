@@ -8,9 +8,14 @@
     lados: readonly [string, string];
     /** Puntos acumulados de la partida tras esta mano. */
     totales: readonly [number, number];
+    /** Bando del jugador: sus valores van en la primera columna. */
+    bando?: 0 | 1;
   }
 
-  let { resultado, lados, totales }: Props = $props();
+  let { resultado, lados, totales, bando = 0 }: Props = $props();
+
+  /** Bandos en el orden de las columnas. */
+  const orden = $derived(bando === 0 ? ([0, 1] as const) : ([1, 0] as const));
 
   const filas = $derived([
     {
@@ -53,7 +58,7 @@
     {#each filas as fila (fila.concepto)}
       <tr>
         <th scope="row">{fila.concepto}</th>
-        {#each [0, 1] as const as b (b)}
+        {#each orden as b (b)}
           <td>
             <span class="detalle">{fila.detalle(b)}</span>
             <b class:gana={fila.puntos(b) > 0}>+{fila.puntos(b)}</b>
@@ -65,13 +70,13 @@
   <tfoot>
     <tr>
       <th scope="row">{T.escoba.totalMano}</th>
-      <td><b>{resultado.puntos[0].total}</b></td>
-      <td><b>{resultado.puntos[1].total}</b></td>
+      <td><b>{resultado.puntos[orden[0]].total}</b></td>
+      <td><b>{resultado.puntos[orden[1]].total}</b></td>
     </tr>
     <tr class="partida">
       <th scope="row">{T.escoba.totalPartida}</th>
-      <td data-testid="total-0"><b>{totales[0]}</b></td>
-      <td data-testid="total-1"><b>{totales[1]}</b></td>
+      <td data-testid="total-0"><b>{totales[orden[0]]}</b></td>
+      <td data-testid="total-1"><b>{totales[orden[1]]}</b></td>
     </tr>
   </tfoot>
 </table>

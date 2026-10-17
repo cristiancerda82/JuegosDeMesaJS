@@ -9,13 +9,15 @@
   interface Props {
     jugadas: readonly CartaJugada[];
     jugadores: number;
+    /** Asiento del jugador: su carta se dibuja abajo. */
+    yo?: number;
     interaccion: Interaccion;
     aviso: string | null;
     /** Contenido extra del aviso (p. ej. las cartas de un cante). */
     detalleAviso?: Snippet | undefined;
   }
 
-  let { jugadas, jugadores, interaccion, aviso, detalleAviso }: Props = $props();
+  let { jugadas, jugadores, yo = 0, interaccion, aviso, detalleAviso }: Props = $props();
 </script>
 
 <div
@@ -32,7 +34,7 @@
 >
   {#each jugadas as jugada (jugada.carta)}
     <div
-      class="jugada {lado(jugada.asiento, jugadores)}"
+      class="jugada {lado(jugada.asiento, jugadores, yo)}"
       data-carta={jugada.carta}
       data-desde="mano-{jugada.asiento}"
     >

@@ -15,10 +15,27 @@
     cambiarDorso: (dorso: string) => void;
     verCartas: () => void;
     verEstadisticas: () => void;
+    jugarEnRed: () => void;
+    /** Código de la sala en red de la que se viene (al recargar), o 
+ull. */
+    salaRed: string | null;
+    volverSala: () => void;
   }
 
-  let { guardado, aviso, dorso, elegir, continuar, descartar, cambiarDorso, verCartas, verEstadisticas }: Props =
-    $props();
+  let {
+    guardado,
+    aviso,
+    dorso,
+    elegir,
+    continuar,
+    descartar,
+    cambiarDorso,
+    verCartas,
+    verEstadisticas,
+    jugarEnRed,
+    salaRed,
+    volverSala,
+  }: Props = $props();
 
   const juegos = [
     { id: 'klondike', desc: T.menu.klondikeDesc, cartas: ['picas-1', 'corazones-13', 'diamantes-12'] },
@@ -61,6 +78,28 @@
       </div>
     </section>
   {/if}
+
+  {#if salaRed}
+    <section class="retomar" data-testid="volver-sala">
+      <div>
+        <h2>{T.menu.volverSala}</h2>
+        <p>{T.menu.volverSalaDesc(salaRed)}</p>
+      </div>
+      <div class="botones">
+        <button class="principal" onclick={volverSala}>{T.menu.volverSala}</button>
+      </div>
+    </section>
+  {/if}
+
+  <section class="retomar">
+    <div>
+      <h2>{T.menu.enRed}</h2>
+      <p>{T.menu.enRedDesc}</p>
+    </div>
+    <div class="botones">
+      <button class="principal" onclick={jugarEnRed} data-testid="jugar-en-red">{T.menu.enRed}</button>
+    </div>
+  </section>
 
   <h2 class="elegir">{T.menu.elegir}</h2>
   <div class="juegos">

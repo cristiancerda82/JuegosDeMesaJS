@@ -8,12 +8,12 @@
     type VistaBrisca,
   } from '@juegos/engine';
   import { nombreCarta } from '../cartas/dibujo';
-  import type { Sesion } from '../sesion/sesion.svelte';
+  import { porBando, type SesionMesa } from '../sesion/sesion-mesa';
   import { T } from '../textos';
   import MesaBazas from './bazas/MesaBazas.svelte';
 
   interface Props {
-    sesion: Sesion<ConfigBrisca, EstadoBrisca, AccionBrisca, VistaBrisca>;
+    sesion: SesionMesa<ConfigBrisca, EstadoBrisca, AccionBrisca, VistaBrisca>;
   }
 
   let { sesion }: Props = $props();
@@ -35,7 +35,7 @@
   {#snippet info()}
     <span>{T.brisca.triunfo}: <b class="triunfo">{vista.triunfo}</b></span>
     {#if vista.config.manos > 1}
-      <span>{T.brisca.manosGanadas(vista.manosGanadas[0], vista.manosGanadas[1])}</span>
+      <span>{T.brisca.manosGanadas(...porBando(vista.manosGanadas, sesion.asiento))}</span>
     {/if}
   {/snippet}
 

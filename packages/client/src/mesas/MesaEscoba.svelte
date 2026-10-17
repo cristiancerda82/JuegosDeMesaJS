@@ -11,7 +11,7 @@
   import Carta from '../cartas/Carta.svelte';
   import { animar, medir, type Posiciones } from '../interaccion/flip';
   import { Interaccion } from '../interaccion/interaccion.svelte';
-  import { HUMANO, type Sesion } from '../sesion/sesion.svelte';
+  import { bandoDe, porBando, type SesionMesa } from '../sesion/sesion-mesa';
   import { T } from '../textos';
   import AsientoRival from './bazas/AsientoRival.svelte';
   import { lado, nombreAsiento } from './bazas/asientos';
@@ -19,7 +19,7 @@
   import DesgloseEscoba from './DesgloseEscoba.svelte';
 
   interface Props {
-    sesion: Sesion<ConfigEscoba, EstadoEscoba, AccionEscoba, VistaEscoba>;
+    sesion: SesionMesa<ConfigEscoba, EstadoEscoba, AccionEscoba, VistaEscoba>;
   }
 
   let { sesion }: Props = $props();
@@ -27,8 +27,10 @@
   const vista = $derived(sesion.vista);
   const legales = $derived(sesion.legales);
   const n = $derived(vista.config.jugadores);
-  const rivales = $derived(Array.from({ length: n - 1 }, (_, i) => i + 1));
-  const nombre = (asiento: Asiento) => nombreAsiento(asiento, n);
+  const yo = $derived(sesion.asiento);
+  const miBando = $derived(bandoDe(yo) as 0 | 1);
+  const rivales = $derived(Array.from({ length: n }, (_, a) => a).filter((a) => a !== yo));
+  const nombre = (asiento: Asiento) => nombreAsiento(asiento, n, yo, sesion.red);
   const lados = $derived<[string, string]>(
     n === 2 ? [T.brisca.tu, T.brisca.rival] : [T.brisca.nosotros, T.brisca.ellos],
   );
@@ -125,7 +127,7 @@
       return `${T.brisca.turnoDe(nombre(sesion.pensando))} · ${T.brisca.pensando}`;
     }
     if (sesion.bloqueada) return '';
-    return vista.turno === HUMANO ? T.brisca.tuTurno : T.brisca.turnoDe(nombre(vista.turno));
+    return vista.turno === yo ? T.brisca.tuTurno : T.brisca.turnoDe(nombre(vista.turno));
   });
 
   // ── Desglose al terminar cada mano ─────────────────────────────────────────
@@ -176,11 +178,12 @@
 <div class="escoba" class:cuatro={n === 4} bind:this={raiz}>
   <div class="info">
     <span data-testid="puntos-partida">
-      {T.escoba.puntos(vista.puntosPartida[0], vista.puntosPartida[1], vista.config.puntosPartida)}
+      {T.escoba.puntos(...porBando(vista.puntosPartida, yo), vista.config.puntosPartida)}
     </span>
-    {#each [0, 1] as const as b (b)}
-      <span class="monton" data-testid="monton-{b}">
-        {lados[b]}: {T.escoba.montonCartas(vista.cartasRecogidas[b])}
+    {#each [0, 1] as const as k (k)}
+      {@const b = k === 0 ? miBando : ((1 - miBando) as 0 | 1)}
+      <span class="monton" data-testid="monton-{k}">
+        {lados[k]}: {T.escoba.montonCartas(vista.cartasRecogidas[b])}
         {#if vista.escobas[b] > 0}
           · <b class="escobas">{T.escoba.montonEscobas(vista.escobas[b])}</b>
         {/if}
@@ -191,7 +194,7 @@
   {#each rivales as asiento (asiento)}
     <AsientoRival
       {asiento}
-      lado={lado(asiento, n)}
+      lado={lado(asiento, n, yo)}
       nombre={nombre(asiento)}
       detalle=""
       cartas={vista.cartasEnMano[asiento] ?? 0}
@@ -256,7 +259,7 @@
     </div>
   </div>
 
-  <div class="propio" class:activo={activo(HUMANO)}>
+  <div class="propio" class:activo={activo(yo)}>
     <div class="estado">
       <span class="nombre">{T.brisca.tu}</span>
       <span class="turno" role="status" data-testid="turno">{turno}</span>
@@ -317,6 +320,7 @@
         resultado={vista.resultadosManos[desglose]!}
         {lados}
         totales={totalesHasta(desglose)}
+        bando={miBando}
       />
       <button class="principal" onclick={siguienteMano} data-testid="siguiente-mano">
         {T.escoba.siguienteMano}

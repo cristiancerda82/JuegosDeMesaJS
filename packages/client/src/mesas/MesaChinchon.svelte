@@ -15,15 +15,15 @@
   import { nombreCarta } from '../cartas/dibujo';
   import { animar, medir, type Posiciones } from '../interaccion/flip';
   import { Interaccion } from '../interaccion/interaccion.svelte';
-  import { HUMANO, type Sesion } from '../sesion/sesion.svelte';
+  import type { SesionMesa } from '../sesion/sesion-mesa';
   import { T } from '../textos';
   import AsientoRival from './bazas/AsientoRival.svelte';
-  import type { Lado } from './bazas/asientos';
+  import { nombreNumerado, relativo, type Lado } from './bazas/asientos';
   import ManoPropia from './bazas/ManoPropia.svelte';
   import ResultadoChinchon from './ResultadoChinchon.svelte';
 
   interface Props {
-    sesion: Sesion<ConfigChinchon, EstadoChinchon, AccionChinchon, VistaChinchon>;
+    sesion: SesionMesa<ConfigChinchon, EstadoChinchon, AccionChinchon, VistaChinchon>;
   }
 
   let { sesion }: Props = $props();
@@ -31,7 +31,8 @@
   const vista = $derived(sesion.vista);
   const legales = $derived(sesion.legales);
   const n = $derived(vista.config.jugadores);
-  const rivales = $derived(Array.from({ length: n - 1 }, (_, i) => i + 1));
+  const yo = $derived(sesion.asiento);
+  const rivales = $derived(Array.from({ length: n }, (_, a) => a).filter((a) => a !== yo));
 
   // Cada uno juega por su cuenta; el turno gira en sentido antihorario.
   const LADOS: Readonly<Record<number, readonly Lado[]>> = {
@@ -39,9 +40,9 @@
     3: ['abajo', 'derecha', 'arriba'],
     4: ['abajo', 'derecha', 'arriba', 'izquierda'],
   };
-  const lado = (asiento: Asiento) => LADOS[n]![asiento]!;
+  const lado = (asiento: Asiento) => LADOS[n]![relativo(asiento, n, yo)]!;
   const nombre = (asiento: Asiento) =>
-    asiento === HUMANO ? T.brisca.tu : n === 2 ? T.brisca.rival : T.brisca.rivalN(asiento);
+    nombreNumerado(asiento, n, yo, sesion.red, T.brisca.rivalN, T.brisca.rival);
 
   // ── Acciones legales ───────────────────────────────────────────────────────
 
@@ -123,14 +124,14 @@
     if (sesion.pensando !== null) {
       return `${T.brisca.turnoDe(nombre(sesion.pensando))} · ${T.brisca.pensando}`;
     }
-    if (vista.turno !== HUMANO) return T.brisca.turnoDe(nombre(vista.turno));
+    if (vista.turno !== yo) return T.brisca.turnoDe(nombre(vista.turno));
     return vista.fase === 'robar' ? T.chinchon.faseRobar : T.chinchon.faseDescartar;
   });
 
   /** Lo último que hizo un rival, para poder seguir su turno. */
   const avisoRival = $derived.by(() => {
     const a = vista.ultimaAccion;
-    if (a === null || a.asiento === HUMANO) return null;
+    if (a === null || a.asiento === yo) return null;
     return a.tipo === 'robar'
       ? T.chinchon.robaDe(nombre(a.asiento), a.desde)
       : T.chinchon.descarta(nombre(a.asiento), nombreCarta(a.carta).toLowerCase());
@@ -178,7 +179,7 @@
 
 <div class="chinchon" class:cuatro={n === 4} bind:this={raiz}>
   <div class="info">
-    {#each [HUMANO, ...rivales] as asiento (asiento)}
+    {#each [yo, ...rivales] as asiento (asiento)}
       <span class:eliminado={vista.eliminados[asiento]} data-testid="puntos-{asiento}">
         {nombre(asiento)}: {vista.eliminados[asiento] ? T.chinchon.eliminado : T.chinchon.puntos(vista.puntos[asiento] ?? 0)}
       </span>
@@ -248,11 +249,11 @@
     {/if}
   </div>
 
-  <div class="propio" class:activo={vista.turno === HUMANO && sesion.fin === null}>
+  <div class="propio" class:activo={vista.turno === yo && sesion.fin === null}>
     <div class="estado">
       <span class="nombre">{T.brisca.tu}</span>
       <span class="turno" role="status" data-testid="turno">{turno}</span>
-      {#if elegida !== null && vista.fase === 'descartar' && vista.turno === HUMANO}
+      {#if elegida !== null && vista.fase === 'descartar' && vista.turno === yo}
         <button data-testid="descartar" disabled={!descarte(elegida)} onclick={() => jugar(descarte(elegida))}
           >{T.chinchon.descartar}</button
         >

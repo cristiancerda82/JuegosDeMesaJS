@@ -41,11 +41,20 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], serviceWorkers: 'allow' },
     },
   ],
-  // Se prueba el build estático, que es lo que se empaqueta.
-  webServer: {
-    command: `npx vite build && npx vite preview --port ${PUERTO} --strictPort`,
-    port: PUERTO,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  webServer: [
+    // Se prueba el build estático, que es lo que se empaqueta.
+    {
+      command: `npx vite build && npx vite preview --port ${PUERTO} --strictPort`,
+      port: PUERTO,
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+    // El servidor de salas, para las partidas en red.
+    {
+      command: 'corepack pnpm --filter @juegos/server build && node ../server/dist/main.js',
+      port: 8787,
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+  ],
 });

@@ -18,6 +18,8 @@
   import { T } from '../textos';
   import ComoSeJuega from './ComoSeJuega.svelte';
   import Fin from './Fin.svelte';
+  import FranjaRed from './FranjaRed.svelte';
+  import { SesionRed } from '../sesion/sesion-red.svelte';
 
   interface Props {
     partida: Partida;
@@ -50,6 +52,14 @@
       data-testid="ver-ayuda">?</button
     >
   </header>
+
+  {#if partida.sesion.red}
+    <FranjaRed
+      red={partida.sesion.red}
+      asiento={partida.sesion.asiento}
+      reconectando={partida.sesion instanceof SesionRed && partida.sesion.cliente.estado === 'reconectando'}
+    />
+  {/if}
 
   {#if partida.id === 'klondike'}
     <MesaKlondike sesion={partida.sesion} />
@@ -84,7 +94,12 @@
   {/if}
 
   {#if partida.sesion.fin !== null}
-    <Fin {partida} {revancha} {menu} />
+    <Fin
+      {partida}
+      {revancha}
+      {menu}
+      esperaRevancha={partida.sesion.red !== null && partida.sesion.red.anfitrion !== partida.sesion.asiento}
+    />
   {/if}
 
   {#if verAyuda}

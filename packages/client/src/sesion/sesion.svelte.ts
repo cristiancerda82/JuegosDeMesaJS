@@ -17,6 +17,7 @@ import { FACTOR_PAUSAS } from '../ajustes';
 import { registrarPartida, resultadoDe, type Novedades } from '../estadisticas/estadisticas';
 import { borrarGuardado, guardar, type Guardado } from './guardado';
 import type { DefJuego } from './juegos';
+import type { InfoRed, SesionMesa } from './sesion-mesa';
 
 /** En modo local el humano ocupa siempre el asiento 0. */
 export const HUMANO: Asiento = 0;
@@ -29,12 +30,15 @@ const PAUSA_IA_MS = 750 * FACTOR_PAUSAS;
  * mesa solo leen `vista` y `legales` del humano (design, decisión 9). En el modo en red se
  * cambiará por una sesión que hable con el servidor, con la misma interfaz.
  */
-export class Sesion<C, E, A, V> {
+export class Sesion<C, E, A, V> implements SesionMesa<C, E, A, V> {
   readonly def: DefJuego<C, E, A, V>;
   readonly config: C;
   readonly semilla: string;
   /** Nivel de los asientos de la IA. */
   readonly nivel: NivelIA;
+  /** En local, el jugador está siempre en el asiento 0. */
+  readonly asiento: Asiento = HUMANO;
+  readonly red: InfoRed | null = null;
 
   #estado: E = $state.raw() as E;
   /** La IA está pensando o hay una pausa para seguir la jugada: el humano no puede jugar. */

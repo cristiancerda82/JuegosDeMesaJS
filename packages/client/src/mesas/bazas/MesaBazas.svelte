@@ -3,7 +3,7 @@
   import type { Snippet } from 'svelte';
   import { animar, medir, type Posiciones } from '../../interaccion/flip';
   import { Interaccion } from '../../interaccion/interaccion.svelte';
-  import { HUMANO } from '../../sesion/sesion.svelte';
+  import { porBando } from '../../sesion/sesion-mesa';
   import { T } from '../../textos';
   import AsientoRival from './AsientoRival.svelte';
   import { lado, nombreAsiento, type EstadoSesion, type VistaBazas } from './asientos';
@@ -45,12 +45,14 @@
     detalleAviso,
     info,
     acciones,
-    nombre = (asiento: Asiento) => nombreAsiento(asiento, vista.config.jugadores),
+    nombre = (asiento: Asiento) =>
+      nombreAsiento(asiento, vista.config.jugadores, sesion.asiento, sesion.red),
     detalle = (asiento: Asiento) => T.brisca.bazas(vista.bazas[asiento] ?? 0),
   }: Props = $props();
 
   const n = $derived(vista.config.jugadores);
-  const rivales = $derived(Array.from({ length: n - 1 }, (_, i) => i + 1));
+  const yo = $derived(sesion.asiento);
+  const rivales = $derived(Array.from({ length: n }, (_, a) => a).filter((a) => a !== yo));
   const activo = (asiento: Asiento) => vista.turno === asiento && sesion.fin === null;
 
   // ── Baza en curso y avisos ─────────────────────────────────────────────────
@@ -70,7 +72,7 @@
     const ultima = vista.resultadosManos.at(-1);
     const manoNueva = vista.bazas.every((b) => b === 0) && vista.mesa.length === 0;
     if (sesion.bloqueada && sesion.pensando === null && ultima && manoNueva) {
-      return T.brisca.finMano(ultima.puntos[0], ultima.puntos[1]);
+      return T.brisca.finMano(...porBando(ultima.puntos, yo));
     }
     return null;
   });
@@ -81,7 +83,7 @@
       return `${T.brisca.turnoDe(nombre(sesion.pensando))} · ${T.brisca.pensando}`;
     }
     if (sesion.bloqueada) return '';
-    return vista.turno === HUMANO ? T.brisca.tuTurno : T.brisca.turnoDe(nombre(vista.turno));
+    return vista.turno === yo ? T.brisca.tuTurno : T.brisca.turnoDe(nombre(vista.turno));
   });
 
   // ── Interacción ────────────────────────────────────────────────────────────
@@ -117,7 +119,7 @@
   {#each rivales as asiento (asiento)}
     <AsientoRival
       {asiento}
-      lado={lado(asiento, n)}
+      lado={lado(asiento, n, yo)}
       nombre={nombre(asiento)}
       detalle={detalle(asiento)}
       cartas={vista.cartasEnMano[asiento] ?? 0}
@@ -133,16 +135,17 @@
     <Tapete
       jugadas={enMesa}
       jugadores={n}
+      {yo}
       {interaccion}
       aviso={aviso ?? avisoBaza}
       detalleAviso={aviso ? detalleAviso : undefined}
     />
   </div>
 
-  <div class="propio" class:activo={activo(HUMANO)}>
+  <div class="propio" class:activo={activo(yo)}>
     <div class="estado">
       <span class="nombre">
-        {nombre(HUMANO)} <small data-testid="detalle-propio">{detalle(HUMANO)}</small>
+        {nombre(yo)} <small data-testid="detalle-propio">{detalle(yo)}</small>
       </span>
       <span class="turno" role="status" data-testid="turno">{turno}</span>
       {@render acciones?.(() => interaccion.cancelar())}

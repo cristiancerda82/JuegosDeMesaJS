@@ -10,11 +10,12 @@
   } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
   import { animar, medir, type Posiciones } from '../interaccion/flip';
-  import { HUMANO, type Sesion } from '../sesion/sesion.svelte';
+  import type { SesionMesa } from '../sesion/sesion-mesa';
+  import { nombreNumerado } from './bazas/asientos';
   import { T } from '../textos';
 
   interface Props {
-    sesion: Sesion<ConfigBurro, EstadoBurro, AccionBurro, VistaBurro>;
+    sesion: SesionMesa<ConfigBurro, EstadoBurro, AccionBurro, VistaBurro>;
   }
 
   let { sesion }: Props = $props();
@@ -22,18 +23,19 @@
   const vista = $derived(sesion.vista);
   const n = $derived(vista.config.jugadores);
 
+  const yo = $derived(sesion.asiento);
   const nombre = (asiento: Asiento) =>
-    asiento === HUMANO ? T.brisca.tu : T.corazones.rivalN(asiento);
+    nombreNumerado(asiento, n, yo, sesion.red, T.corazones.rivalN);
 
   /** Se pasa al siguiente asiento y se recibe del anterior. */
-  const siguiente = $derived((HUMANO + 1) % n);
-  const anterior = $derived((HUMANO - 1 + n) % n);
+  const siguiente = $derived((yo + 1) % n);
+  const anterior = $derived((yo - 1 + n) % n);
 
   /** Rivales de izquierda a derecha: el siguiente (a quien se pasa) queda a la derecha. */
-  const rivales = $derived(Array.from({ length: n - 1 }, (_, i) => n - 1 - i));
+  const rivales = $derived(Array.from({ length: n - 1 }, (_, i) => (yo + n - 1 - i) % n));
 
   const plantado = (asiento: Asiento) => vista.plantados.includes(asiento);
-  const yoPlantado = $derived(plantado(HUMANO));
+  const yoPlantado = $derived(plantado(yo));
 
   /** La mano agrupada por número, para ver de un vistazo cuántas iguales hay. */
   const mano = $derived(
@@ -125,7 +127,7 @@
   <div class="yo" class:plantado={yoPlantado} data-testid="asiento-0" data-plantado={yoPlantado}>
     <p class="estado" data-testid="estado-burro">{estado}</p>
 
-    <div class="mano" data-zona="mano-{HUMANO}">
+    <div class="mano" data-zona="mano-{yo}">
       {#each mano as id (id)}
         <button
           class="carta"
@@ -146,9 +148,9 @@
     </div>
 
     <div class="pie">
-      <span class="nombre">{nombre(HUMANO)}</span>
-      <span class="letras" data-testid="letras-0" aria-label={T.burro.letrasDe(vista.letras[HUMANO]!)}>
-        {T.burro.letras(vista.letras[HUMANO]!)}
+      <span class="nombre">{nombre(yo)}</span>
+      <span class="letras" data-testid="letras-0" aria-label={T.burro.letrasDe(vista.letras[yo]!)}>
+        {T.burro.letras(vista.letras[yo]!)}
       </span>
     </div>
 

@@ -1,17 +1,28 @@
 <script lang="ts">
-  import type { NivelIA } from '@juegos/engine';
+  import type { IdJuegoRed, NivelIA } from '@juegos/engine';
+  import type { MensajeCliente } from '@juegos/server/protocolo';
   import { onMount } from 'svelte';
   import Muestrario from './cartas/Muestrario.svelte';
   import Estadisticas from './pantallas/Estadisticas.svelte';
   import Menu from './pantallas/Menu.svelte';
   import Opciones from './pantallas/Opciones.svelte';
   import PantallaPartida from './pantallas/PantallaPartida.svelte';
+  import PantallaRed from './pantallas/PantallaRed.svelte';
+  import SalaEspera from './pantallas/SalaEspera.svelte';
+  import {
+    ClienteRed,
+    nombreGuardado,
+    salaGuardada,
+    servidorGuardado,
+  } from './sesion/red.svelte';
+  import { SesionRed } from './sesion/sesion-red.svelte';
   import { pwa } from './pwa/registro.svelte';
   import { borrarGuardado, leerGuardado, type Guardado } from './sesion/guardado';
   import type { IdJuego } from './sesion/juegos';
   import {
     guardadoRepetible,
     nuevaPartida,
+    partidaEnRed,
     partidaGuardada,
     type ConfigJuego,
     type Partida,
@@ -24,12 +35,20 @@
     | { readonly tipo: 'opciones'; readonly juego: IdJuego }
     | { readonly tipo: 'partida'; readonly partida: Partida }
     | { readonly tipo: 'muestrario' }
-    | { readonly tipo: 'estadisticas' };
+    | { readonly tipo: 'estadisticas' }
+    | { readonly tipo: 'red' }
+    | { readonly tipo: 'opcionesRed'; readonly juego: IdJuegoRed }
+    | { readonly tipo: 'espera'; readonly cliente: ClienteRed };
 
   let pantalla: Pantalla = $state.raw({ tipo: 'menu' });
   let guardado: Guardado | null = $state(null);
   let aviso: string | null = $state(null);
   let dorso = $state(leerDorso());
+  /** Aviso de la pantalla de red (conexión), o 
+ull. */
+  let avisoRed: string | null = $state(null);
+  /** Código de la sala en red de la que se viene al recargar. */
+  let salaRed: string | null = $state(salaGuardada()?.codigo ?? null);
 
   /** Comprueba la partida guardada repitiéndola; si no se puede, se descarta con aviso. */
   function revisarGuardado() {
@@ -50,6 +69,8 @@
 
   function irAlMenu() {
     cerrarPartida();
+    if (pantalla.tipo === 'espera') pantalla.cliente.cerrar();
+    salaRed = salaGuardada()?.codigo ?? null;
     revisarGuardado();
     pantalla = { tipo: 'menu' };
   }
@@ -86,8 +107,53 @@
   function revancha() {
     if (pantalla.tipo !== 'partida') return;
     const { partida } = pantalla;
+    if (partida.sesion instanceof SesionRed) {
+      partida.sesion.cliente.enviar({ tipo: 'revancha' });
+      return;
+    }
     empezar(partida.id, partida.sesion.config, partida.sesion.nivel);
   }
+
+  // ── Partidas en red ──────────────────────────────────────────────────────────
+
+  /** Conecta con el servidor, envía el primer mensaje y pasa a la sala de espera. */
+  async function entrarEnRed(cliente: ClienteRed, mensaje: MensajeCliente) {
+    avisoRed = T.red.conectando;
+    try {
+      await cliente.conectar();
+    } catch {
+      avisoRed = T.red.sinConexion;
+      pantalla = { tipo: 'red' };
+      return;
+    }
+    avisoRed = null;
+    cliente.enviar(mensaje);
+    pantalla = { tipo: 'espera', cliente };
+  }
+
+  function crearSala(juego: IdJuegoRed, config: ConfigJuego, nivel: NivelIA) {
+    const nombre = nombreGuardado();
+    void entrarEnRed(new ClienteRed(servidorGuardado()), { tipo: 'crear', juego, config, nivel, nombre });
+  }
+
+  function unirseSala(codigo: string) {
+    const nombre = nombreGuardado();
+    void entrarEnRed(new ClienteRed(servidorGuardado()), { tipo: 'unirse', codigo, nombre });
+  }
+
+  function volverSala() {
+    const s = salaGuardada();
+    if (!s) return;
+    void entrarEnRed(new ClienteRed(s.servidor), { tipo: 'volver', codigo: s.codigo, testigo: s.testigo });
+  }
+
+  // Cuando el anfitrión empieza (o al volver a una partida en marcha), se pasa a la mesa.
+  $effect(() => {
+    if (pantalla.tipo !== 'espera') return;
+    const { cliente } = pantalla;
+    const primera = cliente.sala?.empezada ? cliente.ultimaPartida : null;
+    if (primera && cliente.entrada) pantalla = { tipo: 'partida', partida: partidaEnRed(cliente, primera) };
+  });
 
   // ── Dorso elegido (preferencia local, no imprescindible) ─────────────────────
 
@@ -144,7 +210,22 @@
     {cambiarDorso}
     verCartas={() => (pantalla = { tipo: 'muestrario' })}
     verEstadisticas={() => (pantalla = { tipo: 'estadisticas' })}
+    jugarEnRed={() => (pantalla = { tipo: 'red' })}
+    {salaRed}
+    {volverSala}
   />
+{:else if pantalla.tipo === 'red'}
+  <PantallaRed
+    aviso={avisoRed}
+    crear={(juego) => (pantalla = { tipo: 'opcionesRed', juego })}
+    unirse={unirseSala}
+    volver={irAlMenu}
+  />
+{:else if pantalla.tipo === 'opcionesRed'}
+  {@const juego = pantalla.juego}
+  <Opciones {juego} red empezar={(config, nivel) => crearSala(juego, config, nivel)} volver={() => (pantalla = { tipo: 'red' })} />
+{:else if pantalla.tipo === 'espera'}
+  <SalaEspera cliente={pantalla.cliente} salir={irAlMenu} />
 {:else if pantalla.tipo === 'opciones'}
   {@const juego = pantalla.juego}
   <Opciones {juego} empezar={(config, nivel) => empezar(juego, config, nivel)} volver={irAlMenu} />

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { HUMANO } from '../sesion/sesion.svelte';
+  import { nombreNumerado } from '../mesas/bazas/asientos';
+  import { bandoDe, porBando } from '../sesion/sesion-mesa';
   import type { Partida } from '../sesion/partida';
   import DesgloseEscoba from '../mesas/DesgloseEscoba.svelte';
   import ConteoMus from '../mesas/ConteoMus.svelte';
@@ -14,21 +15,26 @@
     partida: Partida;
     revancha: () => void;
     menu: () => void;
+    /** En red, solo el anfitrión pide la revancha: los demás la esperan. */
+    esperaRevancha?: boolean;
   }
 
-  let { partida, revancha, menu }: Props = $props();
+  let { partida, revancha, menu, esperaRevancha = false }: Props = $props();
 
   const fin = $derived(partida.sesion.fin!);
+  /** Asiento y bando del jugador: el fin se ve desde él. */
+  const yo = $derived(partida.sesion.asiento);
+  const mio = $derived(bandoDe(yo) as 0 | 1);
 
   const titulo = $derived.by(() => {
     if (partida.id === 'klondike' || partida.id === 'freecell' || partida.id === 'spider') {
       return partida.sesion.vista.situacion === 'victoria' ? T.fin.solitarioGanado : T.fin.abandono;
     }
     if (partida.id === 'burro') {
-      return fin.ganadores.includes(HUMANO) ? T.burro.librado : T.burro.eresBurro;
+      return fin.ganadores.includes(yo) ? T.burro.librado : T.burro.eresBurro;
     }
     if (fin.empate) return T.fin.empate;
-    return fin.ganadores.includes(HUMANO) ? T.fin.victoria : T.fin.derrota;
+    return fin.ganadores.includes(yo) ? T.fin.victoria : T.fin.derrota;
   });
 
   // En el Chinchón y la Siete y media cada uno juega por su cuenta: no hay parejas.
@@ -48,7 +54,7 @@
 
   /** En el Chinchón: nombres por asiento y clasificación por puntos. */
   const nombreChinchon = (asiento: number, jugadores: number) =>
-    asiento === HUMANO ? T.brisca.tu : jugadores === 2 ? T.brisca.rival : T.brisca.rivalN(asiento);
+    nombreNumerado(asiento, jugadores, yo, partida.sesion.red, T.brisca.rivalN, T.brisca.rival);
   const lados = $derived(
     parejas ? [T.brisca.nosotros, T.brisca.ellos] : [T.brisca.tu, T.brisca.rival],
   );
@@ -57,7 +63,7 @@
   const tuteFinal = $derived.by(() => {
     if (partida.id !== 'tute') return null;
     const ultima = partida.sesion.vista.resultadosManos.at(-1);
-    return ultima?.tute && ultima.ganador !== null ? lados[ultima.ganador]! : null;
+    return ultima?.tute && ultima.ganador !== null ? lados[ultima.ganador === mio ? 0 : 1]! : null;
   });
 </script>
 
@@ -84,13 +90,14 @@
         <DesgloseEscoba
           resultado={ultima}
           lados={[lados[0]!, lados[1]!]}
+          bando={mio}
           totales={vista.puntosPartida}
         />
       {/if}
     {:else if partida.id === 'guinote'}
       {@const ultima = partida.sesion.vista.resultadosManos.at(-1)}
       {#if ultima}
-        <ResumenGuinote resultado={ultima} lados={[lados[0]!, lados[1]!]} />
+        <ResumenGuinote resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} />
       {/if}
       <p class="nota" data-testid="fin-guinote">
         {T.fin.manosJugadas(partida.sesion.vista.resultadosManos.length)}
@@ -99,13 +106,13 @@
       {@const vista = partida.sesion.vista}
       {@const ultima = vista.resultadosManos.at(-1)}
       {#if ultima}
-        <ConteoMus resultado={ultima} config={vista.config} conCartas={false} />
+        <ConteoMus resultado={ultima} config={vista.config} conCartas={false} {yo} red={partida.sesion.red} />
       {/if}
       <table>
         <caption>{T.mus.clasificacion}</caption>
         <tbody>
-          <tr><th scope="row">{T.mus.nosotros}</th><td data-testid="juegos-0">{vista.juegos[0]}</td></tr>
-          <tr><th scope="row">{T.mus.ellos}</th><td data-testid="juegos-1">{vista.juegos[1]}</td></tr>
+          <tr><th scope="row">{T.mus.nosotros}</th><td data-testid="juegos-0">{vista.juegos[mio]}</td></tr>
+          <tr><th scope="row">{T.mus.ellos}</th><td data-testid="juegos-1">{vista.juegos[1 - mio]}</td></tr>
         </tbody>
       </table>
     {:else if partida.id === 'pocha'}
@@ -139,7 +146,7 @@
       {@const vista = partida.sesion.vista}
       {@const n = vista.config.jugadores}
       {@const burro = vista.letras.findIndex((l) => l >= T.burro.palabra.length)}
-      {#if burro !== -1 && burro !== HUMANO}
+      {#if burro !== -1 && burro !== yo}
         <p data-testid="quien-burro">{T.burro.esBurro(nombreChinchon(burro, n))}</p>
       {/if}
       <table>
@@ -188,13 +195,13 @@
     {:else if partida.id === 'pinacle'}
       {@const vista = partida.sesion.vista}
       {#if vista.ultimaMano}
-        <ResumenPinacle resultado={vista.ultimaMano} lados={[lados[0]!, lados[1]!]} />
+        <ResumenPinacle resultado={vista.ultimaMano} lados={[lados[0]!, lados[1]!]} bando={mio} />
       {/if}
       <table>
         <caption>{T.pinacle.clasificacion}</caption>
         <tbody>
           {#each lados as lado, i (lado)}
-            <tr><th scope="row">{lado}</th><td data-testid="puntos-{i}">{vista.puntos[i]}</td></tr>
+            <tr><th scope="row">{lado}</th><td data-testid="puntos-{i}">{porBando(vista.puntos, yo)[i]}</td></tr>
           {/each}
         </tbody>
       </table>
@@ -230,7 +237,7 @@
           <caption>{T.fin.puntos}</caption>
           <tbody>
             {#each lados as lado, i (lado)}
-              <tr><th scope="row">{lado}</th><td data-testid="puntos-{i}">{puntos[i]}</td></tr>
+              <tr><th scope="row">{lado}</th><td data-testid="puntos-{i}">{porBando(puntos, yo)[i]}</td></tr>
             {/each}
           </tbody>
         </table>
@@ -239,13 +246,13 @@
           <caption>{T.fin.manos}</caption>
           <tbody>
             {#each lados as lado, i (lado)}
-              <tr><th scope="row">{lado}</th><td>{vista.manosGanadas[i]}</td></tr>
+              <tr><th scope="row">{lado}</th><td>{porBando(vista.manosGanadas, yo)[i]}</td></tr>
             {/each}
           </tbody>
         </table>
         <ol class="manos">
           {#each vista.resultadosManos as r, i (i)}
-            <li>{r.puntos[0]} – {r.puntos[1]}</li>
+            <li>{porBando(r.puntos, yo).join(' – ')}</li>
           {/each}
         </ol>
       {/if}
@@ -275,8 +282,12 @@
     {/if}
 
     <div class="botones">
-      <button class="principal" onclick={revancha} data-testid="revancha">{T.fin.revancha}</button>
-      <button onclick={menu}>{T.fin.menu}</button>
+      {#if esperaRevancha}
+        <p class="nota" role="status" data-testid="espera-revancha">{T.red.esperandoRevancha}</p>
+      {:else}
+        <button class="principal" onclick={revancha} data-testid="revancha">{T.fin.revancha}</button>
+      {/if}
+      <button onclick={menu}>{partida.sesion.red ? T.red.salir : T.fin.menu}</button>
     </div>
   </div>
 </div>

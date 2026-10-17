@@ -12,7 +12,8 @@
   import { T } from '../textos';
 
   interface Props {
-    juego: IdJuego;
+    /** Un juego, o 'red' para la ayuda de jugar en red. */
+    juego: IdJuego | 'red';
     cerrar: () => void;
   }
 

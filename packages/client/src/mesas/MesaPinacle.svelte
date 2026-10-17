@@ -21,14 +21,14 @@
   } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
   import { nombreCarta } from '../cartas/dibujo';
-  import { HUMANO, type Sesion } from '../sesion/sesion.svelte';
+  import { bandoDe, type SesionMesa } from '../sesion/sesion-mesa';
   import { T } from '../textos';
   import AsientoRival from './bazas/AsientoRival.svelte';
   import { lado, nombreAsiento } from './bazas/asientos';
   import ResumenPinacle from './ResumenPinacle.svelte';
 
   interface Props {
-    sesion: Sesion<ConfigPinacle, EstadoPinacle, AccionPinacle, VistaPinacle>;
+    sesion: SesionMesa<ConfigPinacle, EstadoPinacle, AccionPinacle, VistaPinacle>;
   }
 
   let { sesion }: Props = $props();
@@ -37,14 +37,16 @@
   const legales = $derived(sesion.legales);
   const n = $derived(vista.config.jugadores);
   const parejas = $derived(n === 4);
-  const rivales = $derived(Array.from({ length: n - 1 }, (_, i) => i + 1));
-  const nombre = (asiento: Asiento) => nombreAsiento(asiento, n);
+  const yo = $derived(sesion.asiento);
+  /** Bando del jugador; las combinaciones, los puntos y el resumen se ven desde él. */
+  const mio = $derived(bandoDe(yo) as 0 | 1);
+  const rivales = $derived(Array.from({ length: n }, (_, a) => a).filter((a) => a !== yo));
+  const nombre = (asiento: Asiento) => nombreAsiento(asiento, n, yo, sesion.red);
   const lados = $derived(
     parejas ? [T.brisca.nosotros, T.brisca.ellos] : [T.brisca.tu, T.brisca.rival],
   );
-  const bando = (asiento: Asiento) => asiento % 2;
 
-  const miTurno = $derived(vista.turno === HUMANO && sesion.fin === null);
+  const miTurno = $derived(vista.turno === yo && sesion.fin === null);
   const nombreDe = (c: CartaPinacle) => nombreCarta(basePinacle(c)).toLowerCase();
   const esLegal = (a: AccionPinacle) => legales.some((x) => igualesJSON(x, a));
 
@@ -175,7 +177,7 @@
       : undefined,
   );
 
-  const barbelePendiente = $derived(vista.barbele[0]! && !vista.abierto[0]!);
+  const barbelePendiente = $derived(vista.barbele[mio]! && !vista.abierto[mio]!);
   let confirmarBarbele = $state(false);
 
   function descartar() {
@@ -216,7 +218,7 @@
     if (sesion.pensando !== null) {
       return `${T.brisca.turnoDe(nombre(sesion.pensando))} · ${T.brisca.pensando}`;
     }
-    if (vista.turno !== HUMANO) return T.brisca.turnoDe(nombre(vista.turno));
+    if (vista.turno !== yo) return T.brisca.turnoDe(nombre(vista.turno));
     if (vista.fase === 'robar') return T.pinacle.faseRobar;
     if (vista.debeBajar !== null) return T.pinacle.debeBajar(nombreDe(vista.debeBajar));
     return T.pinacle.faseBajar;
@@ -224,7 +226,7 @@
 
   const avisoRival = $derived.by(() => {
     const u = vista.ultimaAccion;
-    if (u === null || u.asiento === HUMANO) return null;
+    if (u === null || u.asiento === yo) return null;
     const quien = nombre(u.asiento);
     const a = u.accion;
     if (a.tipo === 'robar') return a.desde === 'mazo' ? T.pinacle.roba(quien) : T.pinacle.seLleva(quien);
@@ -253,8 +255,8 @@
     sesion.reanudar();
   }
 
-  const propias = $derived(vista.combinaciones.filter((c) => c.bando === 0));
-  const ajenas = $derived(vista.combinaciones.filter((c) => c.bando === 1));
+  const propias = $derived(vista.combinaciones.filter((c) => c.bando === mio));
+  const ajenas = $derived(vista.combinaciones.filter((c) => c.bando !== mio));
   const cartasDe = (c: Combinacion) => (c.tipo === 'grupo' ? c.cartas : c.puestos);
 </script>
 
@@ -296,11 +298,12 @@
 
 <div class="pinacle" class:cuatro={n === 4}>
   <div class="info">
-    {#each [0, 1] as b (b)}
-      <span data-testid="puntos-bando-{b}">
-        {lados[b]}: {T.pinacle.puntos(vista.puntos[b] ?? 0)}
+    {#each [0, 1] as k (k)}
+      {@const b = k === 0 ? mio : 1 - mio}
+      <span data-testid="puntos-bando-{k}">
+        {lados[k]}: {T.pinacle.puntos(vista.puntos[b] ?? 0)}
         {#if vista.barbele[b]}
-          <abbr class="barbele" title={T.pinacle.barbeleDesc} data-testid="barbele-{b}">{T.pinacle.barbele}</abbr>
+          <abbr class="barbele" title={T.pinacle.barbeleDesc} data-testid="barbele-{k}">{T.pinacle.barbele}</abbr>
         {/if}
       </span>
     {/each}
@@ -310,7 +313,7 @@
   {#each rivales as asiento (asiento)}
     <AsientoRival
       {asiento}
-      lado={lado(asiento, n)}
+      lado={lado(asiento, n, yo)}
       nombre={nombre(asiento)}
       detalle={T.pinacle.cartas(vista.cartasEnMano[asiento] ?? 0)}
       cartas={Math.min(vista.cartasEnMano[asiento] ?? 0, 11)}
@@ -479,7 +482,7 @@
     <div class="dialogo" role="dialog" aria-modal="true" aria-labelledby="fin-mano" data-testid="panel-mano">
       <h2 id="fin-mano">{T.pinacle.finMano(u.numero)}</h2>
       <p>{u.cierra === null ? T.pinacle.mazoAgotado : T.pinacle.cierra(nombre(u.cierra))}</p>
-      <ResumenPinacle resultado={u} lados={[lados[0]!, lados[1]!]} />
+      <ResumenPinacle resultado={u} lados={[lados[0]!, lados[1]!]} bando={mio} />
       <button class="principal" onclick={siguienteMano} data-testid="siguiente-mano">
         {T.pinacle.siguienteMano}
       </button>

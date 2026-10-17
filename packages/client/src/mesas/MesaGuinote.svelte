@@ -12,14 +12,14 @@
   } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
   import { nombreCarta } from '../cartas/dibujo';
-  import type { Sesion } from '../sesion/sesion.svelte';
+  import { bandoDe, porBando, type SesionMesa } from '../sesion/sesion-mesa';
   import { T } from '../textos';
   import { nombreAsiento } from './bazas/asientos';
   import MesaBazas from './bazas/MesaBazas.svelte';
   import ResumenGuinote from './ResumenGuinote.svelte';
 
   interface Props {
-    sesion: Sesion<ConfigGuinote, EstadoGuinote, AccionGuinote, VistaGuinote>;
+    sesion: SesionMesa<ConfigGuinote, EstadoGuinote, AccionGuinote, VistaGuinote>;
   }
 
   let { sesion }: Props = $props();
@@ -37,7 +37,7 @@
   const cambio = $derived(legales.find((a) => a.tipo === 'cambiarSiete'));
 
   const puntosCante = (palo: string) => (palo === vista.triunfo ? 40 : 20);
-  const nombre = (asiento: Asiento) => nombreAsiento(asiento, n);
+  const nombre = (asiento: Asiento) => nombreAsiento(asiento, n, sesion.asiento, sesion.red);
   const lados = $derived<[string, string]>(
     n === 2 ? [T.brisca.tu, T.brisca.rival] : [T.brisca.nosotros, T.brisca.ellos],
   );
@@ -90,7 +90,7 @@
   {#snippet info()}
     <span>{T.brisca.triunfo}: <b class="triunfo">{vista.triunfo}</b></span>
     <span data-testid="marcador">
-      {T.guinote.puntos}: <b>{T.guinote.marcador(vista.totales[0], vista.totales[1], vista.config.meta)}</b>
+      {T.guinote.puntos}: <b>{T.guinote.marcador(...porBando(vista.totales, sesion.asiento), vista.config.meta)}</b>
     </span>
     {#if vista.arrastre}
       <span class="arrastre" data-testid="arrastre" title={T.guinote.arrastreDesc}>{T.guinote.arrastre}</span>
@@ -144,7 +144,7 @@
   <div class="velo">
     <div class="dialogo" role="dialog" aria-modal="true" aria-labelledby="fin-mano" data-testid="panel-mano">
       <h2 id="fin-mano">{T.guinote.finMano(resumen + 1)}</h2>
-      <ResumenGuinote resultado={vista.resultadosManos[resumen]!} {lados} />
+      <ResumenGuinote resultado={vista.resultadosManos[resumen]!} {lados} bando={bandoDe(sesion.asiento)} />
       <p class="vueltas" data-testid="de-vueltas">{T.guinote.deVueltas(vista.config.meta)}</p>
       <button class="principal" onclick={siguienteMano} data-testid="siguiente-mano">
         {T.guinote.siguienteMano}

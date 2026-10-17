@@ -1,0 +1,25 @@
+{
+  "name": "@juegos/server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./protocolo": "./src/protocolo.ts"
+  },
+  "scripts": {
+    "build": "vite build --ssr src/main.ts --outDir dist --emptyOutDir",
+    "start": "node dist/main.js",
+    "check": "tsc -p .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@juegos/engine": "workspace:*",
+    "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "@types/ws": "^8.18.2",
+    "vite": "^8.3.4",
+    "vitest": "5.0.3"
+  }
+}

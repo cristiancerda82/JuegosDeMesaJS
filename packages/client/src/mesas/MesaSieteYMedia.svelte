@@ -8,13 +8,13 @@
   } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
   import { animar, medir, type Posiciones } from '../interaccion/flip';
-  import { HUMANO, type Sesion } from '../sesion/sesion.svelte';
+  import type { SesionMesa } from '../sesion/sesion-mesa';
   import { T } from '../textos';
-  import { lado as ladoBazas, type Lado } from './bazas/asientos';
+  import { lado as ladoBazas, nombreNumerado, relativo, type Lado } from './bazas/asientos';
   import ResultadoSieteYMedia from './ResultadoSieteYMedia.svelte';
 
   interface Props {
-    sesion: Sesion<ConfigSieteYMedia, EstadoSieteYMedia, AccionSieteYMedia, VistaSieteYMedia>;
+    sesion: SesionMesa<ConfigSieteYMedia, EstadoSieteYMedia, AccionSieteYMedia, VistaSieteYMedia>;
   }
 
   let { sesion }: Props = $props();
@@ -22,12 +22,15 @@
   const vista = $derived(sesion.vista);
   const legales = $derived(sesion.legales);
   const n = $derived(vista.config.jugadores);
-  const rivales = $derived(Array.from({ length: n - 1 }, (_, i) => i + 1));
+  const yo = $derived(sesion.asiento);
+  const rivales = $derived(Array.from({ length: n }, (_, a) => a).filter((a) => a !== yo));
 
   const nombre = (asiento: Asiento) =>
-    asiento === HUMANO ? T.brisca.tu : n === 2 ? T.brisca.rival : T.brisca.rivalN(asiento);
+    nombreNumerado(asiento, n, yo, sesion.red, T.brisca.rivalN, T.brisca.rival);
   const lado = (asiento: Asiento): Lado =>
-    n === 3 ? (['abajo', 'derecha', 'arriba'] as const)[asiento]! : ladoBazas(asiento, n);
+    n === 3
+      ? (['abajo', 'derecha', 'arriba'] as const)[relativo(asiento, n, yo)]!
+      : ladoBazas(asiento, n, yo);
   const activo = (asiento: Asiento) => vista.turno === asiento && sesion.fin === null;
 
   // ── Controles ──────────────────────────────────────────────────────────────
@@ -47,10 +50,10 @@
       return `${T.brisca.turnoDe(nombre(sesion.pensando))} · ${T.brisca.pensando}`;
     }
     if (sesion.bloqueada) return '';
-    if (vista.turno === HUMANO) {
+    if (vista.turno === yo) {
       return vista.fase === 'apostar' ? T.sieteYMedia.faseApostar : T.sieteYMedia.faseJugar;
     }
-    if (vista.fase === 'apostar' && vista.banca === HUMANO) return T.sieteYMedia.esperaApuestas;
+    if (vista.fase === 'apostar' && vista.banca === yo) return T.sieteYMedia.esperaApuestas;
     return T.brisca.turnoDe(nombre(vista.turno));
   });
 
@@ -146,23 +149,23 @@
     {/if}
   </div>
 
-  <div class="propio" class:activo={activo(HUMANO)}>
+  <div class="propio" class:activo={activo(yo)}>
     <div class="estado-propio">
       <span class="nombre">
         {T.brisca.tu}
-        {#if vista.banca === HUMANO}<span class="marca">{T.sieteYMedia.banca}</span>{/if}
-        <small data-testid="mis-fichas">{detalle(HUMANO)}</small>
+        {#if vista.banca === yo}<span class="marca">{T.sieteYMedia.banca}</span>{/if}
+        <small data-testid="mis-fichas">{detalle(yo)}</small>
       </span>
       <span class="turno" role="status" data-testid="turno">{turno}</span>
     </div>
 
-    <div class="mi-jugada" data-zona="mano-{HUMANO}">
-      {#each vista.cartas[HUMANO]! as id (id)}
+    <div class="mi-jugada" data-zona="mano-{yo}">
+      {#each vista.cartas[yo]! as id (id)}
         <div class="carta-propia" data-carta={id} data-testid="mia-{id}"><Carta {id} /></div>
       {/each}
-      {#if vista.cartas[HUMANO]!.length > 0 && vista.miValor !== null}
-        <span class="valor" class:pasado={vista.estados[HUMANO] === 'pasado'} data-testid="mi-valor">
-          {vista.estados[HUMANO] === 'pasado' ? T.sieteYMedia.pasado : T.sieteYMedia.valor(vista.miValor)}
+      {#if vista.cartas[yo]!.length > 0 && vista.miValor !== null}
+        <span class="valor" class:pasado={vista.estados[yo] === 'pasado'} data-testid="mi-valor">
+          {vista.estados[yo] === 'pasado' ? T.sieteYMedia.pasado : T.sieteYMedia.valor(vista.miValor)}
         </span>
       {/if}
     </div>

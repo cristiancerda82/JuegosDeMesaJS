@@ -11,14 +11,14 @@
   import Carta from '../cartas/Carta.svelte';
   import { animar, medir, type Posiciones } from '../interaccion/flip';
   import { Interaccion } from '../interaccion/interaccion.svelte';
-  import type { Sesion } from '../sesion/sesion.svelte';
+  import type { SesionMesa } from '../sesion/sesion-mesa';
   import { T } from '../textos';
   import AvisoAtasco from './AvisoAtasco.svelte';
   import BotonPista, { type Resalte } from './BotonPista.svelte';
   import { formatoTiempo } from './tiempo';
 
   interface Props {
-    sesion: Sesion<ConfigSpider, EstadoSpider, AccionSpider, VistaSpider>;
+    sesion: SesionMesa<ConfigSpider, EstadoSpider, AccionSpider, VistaSpider>;
   }
 
   let { sesion }: Props = $props();

@@ -39,4 +39,6 @@ export * from './ia/corazones-basica';
 export * from './ia/burro-basica';
 export * from './ia/pinacle-basica';
 export * from './ia/ias';
+export * from './ia/reaccion';
 export * from './ia/pistas';
+export * from './red';

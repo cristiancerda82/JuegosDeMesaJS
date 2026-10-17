@@ -9,14 +9,14 @@
   import Carta from '../cartas/Carta.svelte';
   import { animar, medir, type Posiciones } from '../interaccion/flip';
   import { Interaccion } from '../interaccion/interaccion.svelte';
-  import type { Sesion } from '../sesion/sesion.svelte';
+  import type { SesionMesa } from '../sesion/sesion-mesa';
   import { T } from '../textos';
   import AvisoAtasco from './AvisoAtasco.svelte';
   import BotonPista, { type Resalte } from './BotonPista.svelte';
   import { formatoTiempo } from './tiempo';
 
   interface Props {
-    sesion: Sesion<ConfigFreeCell, EstadoFreeCell, AccionFreeCell, VistaFreeCell>;
+    sesion: SesionMesa<ConfigFreeCell, EstadoFreeCell, AccionFreeCell, VistaFreeCell>;
   }
 
   let { sesion }: Props = $props();

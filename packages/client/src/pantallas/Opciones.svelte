@@ -30,9 +30,11 @@
     juego: IdJuego;
     empezar: (config: ConfigJuego, nivel: NivelIA) => void;
     volver: () => void;
+    /** Opciones para crear una sala en red: el botón dice «Crear sala». */
+    red?: boolean;
   }
 
-  let { juego, empezar, volver }: Props = $props();
+  let { juego, empezar, volver, red = false }: Props = $props();
 
   type Editable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -424,7 +426,7 @@
 
     <div class="botones">
       <button type="button" onclick={volver}>{T.opciones.volver}</button>
-      <button type="submit" class="principal" data-testid="empezar">{T.opciones.empezar}</button>
+      <button type="submit" class="principal" data-testid="empezar">{red ? T.red.crear : T.opciones.empezar}</button>
     </div>
   </form>
 </main>

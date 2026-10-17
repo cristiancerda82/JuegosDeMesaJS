@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "dev": "pnpm --filter @juegos/client dev"
+    "dev": "pnpm --filter @juegos/client dev",
+    "servidor": "npm --prefix packages/server run build && node packages/server/dist/main.js"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

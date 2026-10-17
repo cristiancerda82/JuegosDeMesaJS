@@ -6,16 +6,21 @@
     resultado: ResultadoManoGuinote;
     /** Nombre de cada bando: el del humano primero. */
     lados: readonly [string, string];
+    /** Bando del jugador: sus valores van en la primera columna. */
+    bando?: number;
   }
 
-  let { resultado, lados }: Props = $props();
+  let { resultado, lados, bando = 0 }: Props = $props();
+
+  /** Índices de los bandos en el orden de las columnas. */
+  const [a, b] = $derived(bando === 0 ? [0, 1] : [1, 0]);
 
   const filas = $derived([
     { concepto: T.guinote.bazas, valores: resultado.bazas },
     { concepto: T.guinote.cantes, valores: resultado.cantes },
     {
       concepto: T.guinote.ultimas,
-      valores: [resultado.ultimas === 0 ? 10 : 0, resultado.ultimas === 1 ? 10 : 0],
+      valores: [0, 1].map((k) => (resultado.ultimas === k ? 10 : 0)),
     },
   ]);
 </script>
@@ -32,19 +37,19 @@
     {#each filas as fila (fila.concepto)}
       <tr>
         <th scope="row">{fila.concepto}</th>
-        <td>{fila.valores[0]}</td>
-        <td>{fila.valores[1]}</td>
+        <td>{fila.valores[a!]}</td>
+        <td>{fila.valores[b!]}</td>
       </tr>
     {/each}
     <tr class="total">
       <th scope="row">{T.guinote.totalMano}</th>
-      <td>{resultado.puntos[0]}</td>
-      <td>{resultado.puntos[1]}</td>
+      <td>{resultado.puntos[a!]}</td>
+      <td>{resultado.puntos[b!]}</td>
     </tr>
     <tr class="total">
       <th scope="row">{T.guinote.totalPartida}</th>
-      <td data-testid="total-0">{resultado.totalesTras[0]}</td>
-      <td data-testid="total-1">{resultado.totalesTras[1]}</td>
+      <td data-testid="total-0">{resultado.totalesTras[a!]}</td>
+      <td data-testid="total-1">{resultado.totalesTras[b!]}</td>
     </tr>
   </tbody>
 </table>

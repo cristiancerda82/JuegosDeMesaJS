@@ -9,13 +9,14 @@
   } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
   import { FACTOR_PAUSAS } from '../ajustes';
-  import { HUMANO, type Sesion } from '../sesion/sesion.svelte';
+  import type { SesionMesa } from '../sesion/sesion-mesa';
+  import { nombreNumerado } from './bazas/asientos';
   import { T } from '../textos';
   import type { VistaBazas } from './bazas/asientos';
   import MesaBazas from './bazas/MesaBazas.svelte';
 
   interface Props {
-    sesion: Sesion<ConfigCorazones, EstadoCorazones, AccionCorazones, VistaCorazones>;
+    sesion: SesionMesa<ConfigCorazones, EstadoCorazones, AccionCorazones, VistaCorazones>;
   }
 
   let { sesion }: Props = $props();
@@ -30,13 +31,13 @@
   const jugable = (carta: IdCarta) =>
     legales.some((a) => a.tipo === 'jugar' && a.carta === carta);
   const nombre = (asiento: Asiento) =>
-    asiento === HUMANO ? T.brisca.tu : T.corazones.rivalN(asiento);
+    nombreNumerado(asiento, JUGADORES, sesion.asiento, sesion.red, T.corazones.rivalN);
   const detalle = (asiento: Asiento) =>
     T.corazones.detalle(vista.puntosMano[asiento] ?? 0, vista.totales[asiento] ?? 0);
 
   /** A quién pasa el jugador y de quién recibe en esta mano. */
-  const destinatario = $derived((HUMANO + vista.direccionPase) % JUGADORES);
-  const remitente = $derived((HUMANO - vista.direccionPase + JUGADORES) % JUGADORES);
+  const destinatario = $derived((sesion.asiento + vista.direccionPase) % JUGADORES);
+  const remitente = $derived((sesion.asiento - vista.direccionPase + JUGADORES) % JUGADORES);
 
   /** La mano ordenada por palo y valor (en la mesa y en el pase). */
   const ORDEN_PALOS = ['treboles', 'diamantes', 'picas', 'corazones'];

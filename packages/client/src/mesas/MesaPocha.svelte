@@ -8,13 +8,14 @@
     VistaPocha,
   } from '@juegos/engine';
   import { FACTOR_PAUSAS } from '../ajustes';
-  import { HUMANO, type Sesion } from '../sesion/sesion.svelte';
+  import type { SesionMesa } from '../sesion/sesion-mesa';
+  import { nombreNumerado } from './bazas/asientos';
   import { T } from '../textos';
   import type { VistaBazas } from './bazas/asientos';
   import MesaBazas from './bazas/MesaBazas.svelte';
 
   interface Props {
-    sesion: Sesion<ConfigPocha, EstadoPocha, AccionPocha, VistaPocha>;
+    sesion: SesionMesa<ConfigPocha, EstadoPocha, AccionPocha, VistaPocha>;
   }
 
   let { sesion }: Props = $props();
@@ -32,7 +33,7 @@
   const apuestas = $derived(legales.flatMap((a) => (a.tipo === 'apostar' ? [a.bazas] : [])));
 
   const nombre = (asiento: Asiento) =>
-    asiento === HUMANO ? T.brisca.tu : T.pocha.rivalN(asiento);
+    nombreNumerado(asiento, vista.config.jugadores, sesion.asiento, sesion.red, T.pocha.rivalN);
   const detalle = (asiento: Asiento) =>
     T.pocha.detalle(
       vista.apuestas[asiento] ?? null,
@@ -65,7 +66,7 @@
     const actuales = vista.apuestas;
     const nueva = actuales.findIndex((a, i) => a !== null && (apuestasVistas[i] ?? null) === null);
     if (actuales.every((a) => a === null)) anunciado = null;
-    else if (nueva !== -1 && nueva !== HUMANO) anunciado = { asiento: nueva, bazas: actuales[nueva]! };
+    else if (nueva !== -1 && nueva !== sesion.asiento) anunciado = { asiento: nueva, bazas: actuales[nueva]! };
     apuestasVistas = actuales;
   });
 

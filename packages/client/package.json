@@ -12,7 +12,8 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@juegos/engine": "workspace:*"
+    "@juegos/engine": "workspace:*",
+    "@juegos/server": "workspace:*"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.0",

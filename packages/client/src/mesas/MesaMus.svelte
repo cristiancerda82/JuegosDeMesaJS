@@ -12,23 +12,24 @@
     type VistaMus,
   } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
-  import { HUMANO, type Sesion } from '../sesion/sesion.svelte';
+  import type { SesionMesa } from '../sesion/sesion-mesa';
   import { T } from '../textos';
   import AsientoRival from './bazas/AsientoRival.svelte';
   import { lado, nombreAsiento } from './bazas/asientos';
   import ConteoMus from './ConteoMus.svelte';
 
   interface Props {
-    sesion: Sesion<ConfigMus, EstadoMus, AccionMus, VistaMus>;
+    sesion: SesionMesa<ConfigMus, EstadoMus, AccionMus, VistaMus>;
   }
 
   let { sesion }: Props = $props();
 
   const vista = $derived(sesion.vista);
   const legales = $derived(sesion.legales);
-  const nombre = (asiento: Asiento) => nombreAsiento(asiento, 4);
+  const yo = $derived(sesion.asiento);
+  const nombre = (asiento: Asiento) => nombreAsiento(asiento, 4, yo, sesion.red);
   /** Nombre de la pareja dentro de una frase. */
-  const pareja = (p: 0 | 1) => (p === 0 ? T.mus.nosotrosEn : T.mus.ellosEn);
+  const pareja = (p: 0 | 1) => (p === parejaDe(yo) ? T.mus.nosotrosEn : T.mus.ellosEn);
   const activo = (asiento: Asiento) => vista.turno === asiento && sesion.fin === null;
 
   // ── Lo que dice cada uno ───────────────────────────────────────────────────
@@ -182,13 +183,13 @@
       return `${T.brisca.turnoDe(nombre(sesion.pensando))} · ${T.brisca.pensando}`;
     }
     if (sesion.bloqueada) return '';
-    if (vista.turno !== HUMANO) return T.brisca.turnoDe(nombre(vista.turno));
+    if (vista.turno !== yo) return T.brisca.turnoDe(nombre(vista.turno));
     return enDescarte ? T.mus.eligeDescarte : T.brisca.tuTurno;
   });
 
   const aviso = $derived.by(() => {
     const u = vista.ultimaAccion;
-    if (u === null || u.asiento === HUMANO || sesion.fin !== null) return null;
+    if (u === null || u.asiento === yo || sesion.fin !== null) return null;
     return T.mus.dice(nombre(u.asiento), texto(u.accion));
   });
 
@@ -215,18 +216,18 @@
 <div class="mus">
   <div class="info">
     <span data-testid="marcador-mus">
-      {T.mus.nosotros} <b>{vista.piedras[0]}</b> · {T.mus.ellos} <b>{vista.piedras[1]}</b>
+      {T.mus.nosotros} <b>{vista.piedras[parejaDe(yo)]}</b> · {T.mus.ellos} <b>{vista.piedras[1 - parejaDe(yo)]}</b>
       <small>({T.opciones.piedrasN(vista.config.puntos).toLowerCase()})</small>
     </span>
     {#if vista.config.juegos > 1}
-      <span data-testid="juegos-mus">{T.mus.juegos(vista.juegos[0], vista.juegos[1])}</span>
+      <span data-testid="juegos-mus">{T.mus.juegos(vista.juegos[parejaDe(yo)]!, vista.juegos[1 - parejaDe(yo)]!)}</span>
     {/if}
   </div>
 
-  {#each [1, 2, 3] as asiento (asiento)}
+  {#each [0, 1, 2, 3].filter((a) => a !== yo) as asiento (asiento)}
     <AsientoRival
       {asiento}
-      lado={lado(asiento, 4)}
+      lado={lado(asiento, 4, yo)}
       nombre={nombre(asiento)}
       detalle={detalle(asiento)}
       cartas={vista.cartasEnMano[asiento] ?? 0}
@@ -257,10 +258,10 @@
     {/if}
   </div>
 
-  <div class="propio" class:activo={activo(HUMANO)}>
+  <div class="propio" class:activo={activo(yo)}>
     <div class="estado-propio">
       <span class="nombre">
-        {T.brisca.tu} <small data-testid="detalle-propio">{detalle(HUMANO)}</small>
+        {T.brisca.tu} <small data-testid="detalle-propio">{detalle(yo)}</small>
       </span>
       <span class="turno" role="status" data-testid="turno">{turno}</span>
     </div>
@@ -304,7 +305,7 @@
   <div class="velo">
     <div class="dialogo" role="dialog" aria-modal="true" aria-labelledby="fin-mano" data-testid="panel-mano">
       <h2 id="fin-mano">{T.mus.conteo(conteo + 1)}</h2>
-      <ConteoMus resultado={vista.resultadosManos[conteo]!} config={vista.config} />
+      <ConteoMus resultado={vista.resultadosManos[conteo]!} config={vista.config} {yo} red={sesion.red} />
       <button class="principal" onclick={siguienteMano} data-testid="siguiente-mano">
         {T.mus.siguienteMano}
       </button>

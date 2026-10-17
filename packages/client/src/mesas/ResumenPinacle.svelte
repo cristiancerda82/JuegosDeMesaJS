@@ -6,9 +6,14 @@
     resultado: ResultadoManoPinacle;
     /** Nombre de cada bando: el del humano primero. */
     lados: readonly [string, string];
+    /** Bando del jugador: sus valores van en la primera columna. */
+    bando?: 0 | 1;
   }
 
-  let { resultado, lados }: Props = $props();
+  let { resultado, lados, bando = 0 }: Props = $props();
+
+  /** Bandos en el orden de las columnas. */
+  const orden = $derived(bando === 0 ? ([0, 1] as const) : ([1, 0] as const));
 
   const d = $derived(resultado.desglose);
 
@@ -47,23 +52,24 @@
     {#each filas as fila (fila.concepto)}
       <tr>
         <th scope="row">{fila.concepto}</th>
-        <td>{fila.valores[0]}</td>
-        <td>{fila.valores[1]}</td>
+        <td>{fila.valores[orden[0]]}</td>
+        <td>{fila.valores[orden[1]]}</td>
       </tr>
     {/each}
     <tr class="total">
       <th scope="row">{T.pinacle.totalMano}</th>
-      <td data-testid="mano-0">{d[0]!.total}</td>
-      <td data-testid="mano-1">{d[1]!.total}</td>
+      <td data-testid="mano-0">{d[orden[0]]!.total}</td>
+      <td data-testid="mano-1">{d[orden[1]]!.total}</td>
     </tr>
     <tr class="total">
       <th scope="row">{T.pinacle.acumulado}</th>
-      <td data-testid="acumulado-0">{resultado.puntosTras[0]}</td>
-      <td data-testid="acumulado-1">{resultado.puntosTras[1]}</td>
+      <td data-testid="acumulado-0">{resultado.puntosTras[orden[0]]}</td>
+      <td data-testid="acumulado-1">{resultado.puntosTras[orden[1]]}</td>
     </tr>
   </tbody>
 </table>
-{#each premios as lista, i (i)}
+{#each orden as b, i (b)}
+  {@const lista = premios[b]!}
   {#if lista.length > 0}
     <p class="premios" data-testid="premios-{i}"><b>{lados[i]}:</b> {lista.join(' · ')}</p>
   {/if}
