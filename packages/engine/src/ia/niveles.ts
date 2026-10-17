@@ -61,6 +61,12 @@ export interface Simulable<C, E, A, V> {
    * tiene buena mano, y sobrevalora envidar.
    */
   decideLaBase?(vista: V): boolean;
+  /**
+   * Las acciones que se simulan, entre las legales; sin él, todas. Si deja solo la de la base,
+   * decide la base. Sirve cuando unas decisiones merecen simularse y otras no (el Pinacle
+   * simula robar y descartar, y lo que baja lo decide la base).
+   */
+  candidatas?(vista: V, acciones: readonly A[], deLaBase: A): readonly A[];
 }
 
 /** Menos reconstrucciones que estas por acción no dan información: decide la base. */
@@ -143,11 +149,16 @@ export function porSimulacion<C, E, A, V extends { readonly asiento: Asiento | n
       if (acciones.length === 0) throw new Error('El agente no tiene acciones legales');
       const normal = base.decidir(vista, acciones, azar);
       const asiento = vista.asiento;
+      if (acciones.length === 1 || asiento === null) return normal;
+      const elegidas = s.candidatas?.(vista, acciones, normal.accion) ?? acciones;
+      const simuladas = elegidas.some((a) => igualesJSON(a, normal.accion))
+        ? elegidas
+        : [normal.accion, ...elegidas];
+      if (simuladas.length === 1) return normal;
       const reconstrucciones = Math.min(
         s.reconstrucciones,
-        Math.floor(s.presupuesto / acciones.length),
+        Math.floor(s.presupuesto / simuladas.length),
       );
-      if (acciones.length === 1 || asiento === null) return normal;
       if (reconstrucciones < RECONSTRUCCIONES_MINIMAS || s.decideLaBase?.(vista)) return normal;
       const g = new Generador(normal.azar);
       /** Valor de cada acción en cada reconstrucción que se pudo jugar. */
@@ -159,7 +170,7 @@ export function porSimulacion<C, E, A, V extends { readonly asiento: Asiento | n
         // romper la partida por una suposición imposible sobre las cartas ocultas.
         try {
           valores.push(
-            acciones.map((accion) => {
+            simuladas.map((accion) => {
               const tras = s.juego.transicion(estado, asiento, accion);
               return s.valorar(estado, simular(s, base, estado, tras, azarSimulacion), asiento);
             }),
@@ -170,10 +181,10 @@ export function porSimulacion<C, E, A, V extends { readonly asiento: Asiento | n
       }
       const deBase = Math.max(
         0,
-        acciones.findIndex((a) => igualesJSON(a, normal.accion)),
+        simuladas.findIndex((a) => igualesJSON(a, normal.accion)),
       );
       const mejor = mejorQueLaBase(valores, deBase);
-      return { accion: acciones[mejor]!, azar: g.estado() };
+      return { accion: simuladas[mejor]!, azar: g.estado() };
     },
   };
 }

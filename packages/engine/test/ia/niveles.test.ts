@@ -156,6 +156,37 @@ describe('nivel difícil (porSimulacion)', () => {
     expect(b).toEqual(a);
   });
 
+  it('con `candidatas`, solo simula esas acciones, y ninguna si solo queda la de la base', () => {
+    let valoradas = 0;
+    // Simular siempre prefiere el rey de oros, pero no está entre las candidatas.
+    const prefiereElRey: typeof simulable = {
+      ...simulable,
+      valorar(inicio, final, asiento) {
+        valoradas++;
+        return final.manos[asiento]!.includes('oros-12') ? -100 : 0;
+      },
+      candidatas: (_v, acciones) => acciones.filter((a) => a.carta !== 'oros-12'),
+    };
+    const mano: IdCarta[] = ['oros-12', 'oros-1', 'oros-7'];
+    const d = porSimulacion(laMasBaja, prefiereElRey).decidir(
+      vistaConMano(mano),
+      accionesDe(mano),
+      crearAzar('c'),
+    );
+    expect(d.accion.carta).not.toBe('oros-12');
+    expect(valoradas).toBeGreaterThan(0);
+
+    valoradas = 0;
+    const soloLaBase: typeof simulable = { ...prefiereElRey, candidatas: (_v, _a, b) => [b] };
+    const b = porSimulacion(laMasBaja, soloLaBase).decidir(
+      vistaConMano(mano),
+      accionesDe(mano),
+      crearAzar('c'),
+    );
+    expect(b.accion.carta).toBe('oros-1');
+    expect(valoradas).toBe(0);
+  });
+
   it('juega mejor que la base contra la que simula', () => {
     // Solo cambia de acción cuando la ventaja es clara, así que gana, aunque con poco margen.
     expect(enfrentar(dificil, laMasBaja, 200)).toBeGreaterThan(100);

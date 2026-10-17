@@ -14,6 +14,7 @@
     ConfigGuinote,
     ConfigKlondike,
     ConfigMus,
+    ConfigPinacle,
     ConfigPocha,
     ConfigSpider,
     ConfigSieteYMedia,
@@ -50,6 +51,7 @@
   let spider: Editable<ConfigSpider> = $state({ ...JUEGOS.spider.configPorDefecto });
   let corazones: Editable<ConfigCorazones> = $state({ ...JUEGOS.corazones.configPorDefecto });
   let burro: Editable<ConfigBurro> = $state({ ...JUEGOS.burro.configPorDefecto });
+  let pinacle: Editable<ConfigPinacle> = $state({ ...JUEGOS.pinacle.configPorDefecto });
   let freecellModo: 'azar' | 'numero' = $state('azar');
   let freecellNumero = $state(1);
 
@@ -81,6 +83,7 @@
       spider,
       corazones,
       burro,
+      pinacle,
     };
     if (conIA) guardarNivel(juego, nivel);
     empezar({ ...configs[juego] }, nivel);
@@ -201,6 +204,12 @@
         {#each [3, 4, 5] as n (n)}
           <label><input type="radio" bind:group={burro.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
         {/each}
+      </fieldset>
+    {:else if juego === 'pinacle'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        <label><input type="radio" bind:group={pinacle.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
+        <label><input type="radio" bind:group={pinacle.jugadores} value={4} /> {T.opciones.cuatroJugadores}</label>
       </fieldset>
     {:else if juego === 'spider'}
       <fieldset>

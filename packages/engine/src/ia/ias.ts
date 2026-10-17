@@ -9,6 +9,7 @@ import { iaEscobaBasica } from './escoba-basica';
 import { iaGuinoteBasica } from './guinote-basica';
 import { iaMusBasica } from './mus-basica';
 import { conErrores, porSimulacion, type NivelIA, type Simulable } from './niveles';
+import { iaPinacleBasica } from './pinacle-basica';
 import { iaPochaBasica } from './pocha-basica';
 import { SIMULABLE_BRISCA } from './reconstruir/brisca';
 import { SIMULABLE_CHINCHON } from './reconstruir/chinchon';
@@ -16,6 +17,7 @@ import { SIMULABLE_CINQUILLO } from './reconstruir/cinquillo';
 import { SIMULABLE_CORAZONES } from './reconstruir/corazones';
 import { SIMULABLE_ESCOBA } from './reconstruir/escoba';
 import { SIMULABLE_GUINOTE } from './reconstruir/guinote';
+import { SIMULABLE_PINACLE } from './reconstruir/pinacle';
 import { SIMULABLE_POCHA } from './reconstruir/pocha';
 import { SIMULABLE_SIETE_Y_MEDIA } from './reconstruir/siete-y-media';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
@@ -60,4 +62,5 @@ export const IAS = {
     normal: iaBurroBasica,
     dificil: iaBurroBasica,
   },
+  pinacle: niveles(iaPinacleBasica, SIMULABLE_PINACLE),
 } as const;

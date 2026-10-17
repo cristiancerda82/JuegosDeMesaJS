@@ -46,6 +46,12 @@ import {
   type ConfigMus,
   type EstadoMus,
   type VistaMus,
+  CONFIG_PINACLE_POR_DEFECTO,
+  pinacle,
+  type AccionPinacle,
+  type ConfigPinacle,
+  type EstadoPinacle,
+  type VistaPinacle,
   CONFIG_POCHA_POR_DEFECTO,
   pocha,
   type AccionPocha,
@@ -134,7 +140,8 @@ export type IdJuego =
   | 'mus'
   | 'spider'
   | 'corazones'
-  | 'burro';
+  | 'burro'
+  | 'pinacle';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -151,6 +158,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'spider',
   'corazones',
   'burro',
+  'pinacle',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -446,6 +454,26 @@ export const DEF_BURRO: DefBurro = {
   },
 };
 
+export type DefPinacle = DefJuego<ConfigPinacle, EstadoPinacle, AccionPinacle, VistaPinacle>;
+
+/** Tiempo para ver qué roba, baja o descarta un rival. */
+const PAUSA_PINACLE_MS = 650;
+
+export const DEF_PINACLE: DefPinacle = {
+  id: 'pinacle',
+  nombre: T.menu.pinacle,
+  juego: pinacle,
+  configPorDefecto: CONFIG_PINACLE_POR_DEFECTO,
+  ia: IAS.pinacle,
+  // El cierre de la mano lo detiene la propia mesa con el resumen.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    if (despues.numeroMano > antes.numeroMano) return 0;
+    return accion.asiento !== despues.asiento ? PAUSA_PINACLE_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -461,6 +489,7 @@ export const JUEGOS = {
   spider: DEF_SPIDER,
   corazones: DEF_CORAZONES,
   burro: DEF_BURRO,
+  pinacle: DEF_PINACLE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

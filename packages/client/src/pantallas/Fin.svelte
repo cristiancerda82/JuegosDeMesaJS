@@ -6,6 +6,7 @@
   import ResultadoChinchon from '../mesas/ResultadoChinchon.svelte';
   import ResumenGuinote from '../mesas/ResumenGuinote.svelte';
   import ResultadoSieteYMedia from '../mesas/ResultadoSieteYMedia.svelte';
+  import ResumenPinacle from '../mesas/ResumenPinacle.svelte';
   import { formatoTiempo } from '../mesas/tiempo';
   import { T } from '../textos';
 
@@ -181,6 +182,19 @@
               <th scope="row">{nombreChinchon(a, n)}</th>
               <td data-testid="fichas-{a}">{T.sieteYMedia.fichas(vista.fichas[a]!)}</td>
             </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'pinacle'}
+      {@const vista = partida.sesion.vista}
+      {#if vista.ultimaMano}
+        <ResumenPinacle resultado={vista.ultimaMano} lados={[lados[0]!, lados[1]!]} />
+      {/if}
+      <table>
+        <caption>{T.pinacle.clasificacion}</caption>
+        <tbody>
+          {#each lados as lado, i (lado)}
+            <tr><th scope="row">{lado}</th><td data-testid="puntos-{i}">{vista.puntos[i]}</td></tr>
           {/each}
         </tbody>
       </table>

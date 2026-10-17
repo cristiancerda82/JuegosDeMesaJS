@@ -30,6 +30,9 @@ import { crearAzar } from '../../src/baraja/azar';
 import { iaCorazonesBasica } from '../../src/ia/corazones-basica';
 import { reconstruirCorazones } from '../../src/ia/reconstruir/corazones';
 import { CONFIG_CORAZONES_POR_DEFECTO, corazones } from '../../src/juegos/corazones';
+import { iaPinacleBasica } from '../../src/ia/pinacle-basica';
+import { reconstruirPinacle } from '../../src/ia/reconstruir/pinacle';
+import { CONFIG_PINACLE_POR_DEFECTO, pinacle } from '../../src/juegos/pinacle';
 import { describirReconstruccion } from '../contrato/verificar-reconstruccion';
 
 // Una suite por juego (spec niveles-ia: reconstrucción de las cartas ocultas).
@@ -144,4 +147,11 @@ describirReconstruccion(corazones, reconstruirCorazones, {
   configs: [CONFIG_CORAZONES_POR_DEFECTO, { pase: false, fin: 50 }],
   base: iaCorazonesBasica,
   partidas: 4,
+});
+
+describirReconstruccion(pinacle, reconstruirPinacle, {
+  configs: [CONFIG_PINACLE_POR_DEFECTO, { jugadores: 4 }],
+  base: iaPinacleBasica,
+  partidas: 3,
+  pasosMaximos: 600,
 });

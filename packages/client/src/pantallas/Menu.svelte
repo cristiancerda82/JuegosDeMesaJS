@@ -30,6 +30,7 @@
     { id: 'corazones', desc: T.menu.corazonesDesc, cartas: ['corazones-1', 'picas-12', 'treboles-2'] },
     { id: 'escoba', desc: T.menu.escobaDesc, cartas: ['oros-7', 'copas-11', 'espadas-6'] },
     { id: 'chinchon', desc: T.menu.chinchonDesc, cartas: ['copas-5', 'copas-6', 'comodin-1'] },
+    { id: 'pinacle', desc: T.menu.pinacleDesc, cartas: ['corazones-13', 'corazones-12', 'comodin-1'] },
     { id: 'mus', desc: T.menu.musDesc, cartas: ['oros-12', 'copas-3', 'espadas-1'] },
     { id: 'pocha', desc: T.menu.pochaDesc, cartas: ['copas-1', 'oros-3', 'bastos-12'] },
     { id: 'burro', desc: T.menu.burroDesc, cartas: ['oros-12', 'copas-12', 'espadas-12'] },

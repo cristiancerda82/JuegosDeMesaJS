@@ -7,6 +7,7 @@ import { CONFIG_CORAZONES_POR_DEFECTO, corazones } from '../../src/juegos/corazo
 import { CONFIG_ESCOBA_POR_DEFECTO, escoba } from '../../src/juegos/escoba';
 import { CONFIG_GUINOTE_POR_DEFECTO, guinote } from '../../src/juegos/guinote';
 import { CONFIG_MUS_POR_DEFECTO, mus } from '../../src/juegos/mus';
+import { CONFIG_PINACLE_POR_DEFECTO, pinacle } from '../../src/juegos/pinacle';
 import { CONFIG_POCHA_POR_DEFECTO, pocha } from '../../src/juegos/pocha';
 import { CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, sieteYMedia } from '../../src/juegos/siete-y-media';
 import { CONFIG_TUTE_POR_DEFECTO, tute } from '../../src/juegos/tute';
@@ -58,4 +59,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Mus', mus, CONFIG_MUS_POR_DEFECTO, IAS.mus, 'bandos', false),
   entrada('Corazones', corazones, CONFIG_CORAZONES_POR_DEFECTO, IAS.corazones, 4),
   entrada('Burro', burro, CONFIG_BURRO_POR_DEFECTO, IAS.burro, 4, false),
+  entrada('Pinacle', pinacle, CONFIG_PINACLE_POR_DEFECTO, IAS.pinacle, 'bandos'),
 ];
