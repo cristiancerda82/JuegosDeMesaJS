@@ -22,8 +22,10 @@ import { SIMULABLE_GUINOTE } from './reconstruir/guinote';
 import { SIMULABLE_PINACLE } from './reconstruir/pinacle';
 import { SIMULABLE_POCHA } from './reconstruir/pocha';
 import { SIMULABLE_SIETE_Y_MEDIA } from './reconstruir/siete-y-media';
+import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
+import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
 
 export type IasPorNivel<V, A> = Readonly<Record<NivelIA, Agente<V, A>>>;
@@ -66,4 +68,6 @@ export const IAS = {
   },
   pinacle: niveles(iaPinacleBasica, SIMULABLE_PINACLE),
   butifarra: niveles(iaButifarraBasica, SIMULABLE_BUTIFARRA),
+  // Las apuestas del Truc las decide la base también en el difícil: solo simula las cartas.
+  truc: niveles(iaTrucBasica, SIMULABLE_TRUC),
 } as const;

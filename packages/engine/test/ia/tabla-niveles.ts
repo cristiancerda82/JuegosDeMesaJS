@@ -11,6 +11,7 @@ import { CONFIG_MUS_POR_DEFECTO, mus } from '../../src/juegos/mus';
 import { CONFIG_PINACLE_POR_DEFECTO, pinacle } from '../../src/juegos/pinacle';
 import { CONFIG_POCHA_POR_DEFECTO, pocha } from '../../src/juegos/pocha';
 import { CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, sieteYMedia } from '../../src/juegos/siete-y-media';
+import { CONFIG_TRUC_POR_DEFECTO, truc } from '../../src/juegos/truc';
 import { CONFIG_TUTE_POR_DEFECTO, tute } from '../../src/juegos/tute';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -62,4 +63,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Burro', burro, CONFIG_BURRO_POR_DEFECTO, IAS.burro, 4, false),
   entrada('Pinacle', pinacle, CONFIG_PINACLE_POR_DEFECTO, IAS.pinacle, 'bandos'),
   entrada('Butifarra', butifarra, CONFIG_BUTIFARRA_POR_DEFECTO, IAS.butifarra, 'bandos'),
+  entrada('Truc', truc, CONFIG_TRUC_POR_DEFECTO, IAS.truc, 'bandos'),
 ];

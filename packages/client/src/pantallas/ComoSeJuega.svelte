@@ -38,6 +38,9 @@
   /** Las cartas que dan puntos en el Guiñote (la sota por encima del caballo) y su cante. */
   const VALORES_G: readonly IdCarta[] = ['oros-1', 'oros-3', 'oros-12', 'oros-10', 'oros-11'];
   const CANTE_G: readonly IdCarta[] = ['copas-12', 'copas-10'];
+  /** Las cuatro cartas más altas del Truc y un envit de 33. */
+  const JERARQUIA_TRUC: readonly IdCarta[] = ['espadas-1', 'bastos-1', 'espadas-7', 'oros-7'];
+  const ENVIT_TRUC: readonly IdCarta[] = ['copas-7', 'copas-6', 'oros-12'];
   /** Las cartas que dan puntos en la Butifarra, de la manilla a la sota. */
   const VALORES_B: readonly IdCarta[] = ['oros-9', 'oros-1', 'oros-12', 'oros-11', 'oros-10'];
   /** Una escalera del Cinquillo: del 4 a la Sota de copas, pasando del 7 a la Sota. */
@@ -115,6 +118,22 @@
               </li>
             {/each}
           </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'jerarquiaTruc'}
+          <ul class="valores">
+            {#each JERARQUIA_TRUC as id, i (id)}
+              <li>
+                <div class="hueco"><Carta {id} /></div>
+                <span>{i + 1}.ª</span>
+              </li>
+            {/each}
+          </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'envitTruc'}
+          <ul class="valores">
+            {#each ENVIT_TRUC as id (id)}
+              <li><div class="hueco"><Carta {id} /></div></li>
+            {/each}
+          </ul>
+          <p class="nota-ejemplo">{T.ayuda.envitEjemplo}</p>
         {:else if 'ejemplo' in seccion && seccion.ejemplo === 'valoresButifarra'}
           <ul class="valores">
             {#each VALORES_B as id (id)}
@@ -349,5 +368,12 @@
 
   .puntos-pocha .puntos {
     font-weight: 800;
+  }
+
+  .nota-ejemplo {
+    margin: 4px 0 0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--texto-suave);
   }
 </style>

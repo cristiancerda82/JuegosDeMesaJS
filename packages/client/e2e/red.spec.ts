@@ -167,6 +167,50 @@ test('Butifarra en red: dos humanos rivales juegan una baza', async ({ browser }
   await luis.screenshot({ path: `test-results/red-butifarra-luis.png` });
 });
 
+test('Truc en red: dos humanos juegan una mano completa', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'truc');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) await expect(p.locator('.carta-mano')).toHaveCount(3);
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+
+  // Ana truca y Luis quiere; luego cada uno juega su carta cuando le toca.
+  await ana.getByTestId('truc-trucar').click();
+  await luis.getByTestId('truc-vull').click();
+  for (const p of [ana, luis])
+    await expect(p.getByTestId('valor-mano')).toHaveText('La mano vale 2');
+  const paneles = [ana, luis].map((p) => p.getByTestId('panel-mano'));
+  // La mano ha terminado en cuanto cambian las piedras de la came.
+  const terminada = async () =>
+    (await Promise.all(paneles.map((x) => x.isVisible()))).some(Boolean) ||
+    !(await ana.getByTestId('marcador').innerText()).includes('0 – 0 (a 12)');
+  for (let paso = 0; paso < 12 && !(await terminada()); paso++) {
+    const cartas = [ana, luis].map((p) => p.locator('.carta-mano.jugable').first());
+    await expect
+      .poll(
+        async () =>
+          (await Promise.all([...cartas, ...paneles].map((x) => x.isVisible()))).some(Boolean),
+        { timeout: 20_000 },
+      )
+      .toBe(true);
+    for (const [i, p] of [ana, luis].entries()) {
+      if (!(await terminada()) && (await cartas[i]!.isVisible())) {
+        const antes = await p.locator('.carta-mano').count();
+        await cartas[i]!.click({ position: { x: 8, y: 8 } });
+        await p.getByTestId('mesa').click();
+        await expect(p.locator('.carta-mano')).not.toHaveCount(antes);
+      }
+    }
+  }
+  for (const p of paneles) {
+    await expect(p).toBeVisible();
+    await expect(p.getByTestId('resumen-truc')).toContainText('Truc');
+  }
+});
+
 test('sin servidor, la pantalla de red lo dice', async ({ page }) => {
   await abrirRed(page, 'Ana');
   await page.locator('summary').click();

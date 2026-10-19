@@ -9,6 +9,7 @@
   import ResultadoSieteYMedia from '../mesas/ResultadoSieteYMedia.svelte';
   import ResumenPinacle from '../mesas/ResumenPinacle.svelte';
   import ResumenButifarra from '../mesas/ResumenButifarra.svelte';
+  import ResumenTruc from '../mesas/ResumenTruc.svelte';
   import { formatoTiempo } from '../mesas/tiempo';
   import { T } from '../textos';
 
@@ -190,6 +191,20 @@
               <th scope="row">{nombreChinchon(a, n)}</th>
               <td data-testid="fichas-{a}">{T.sieteYMedia.fichas(vista.fichas[a]!)}</td>
             </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'truc'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenTruc resultado={ultima} lados={[lados[0]!, lados[1]!]} {yo} jugadores={vista.config.jugadores} red={partida.sesion.red} />
+      {/if}
+      <table>
+        <caption>{T.truc.camesTitulo}</caption>
+        <tbody>
+          {#each lados as lado, i (lado)}
+            <tr><th scope="row">{lado}</th><td data-testid="cames-{i}">{porBando(vista.cames, yo)[i]}</td></tr>
           {/each}
         </tbody>
       </table>

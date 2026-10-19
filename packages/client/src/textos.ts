@@ -55,6 +55,8 @@ export const T = {
     volverSalaDesc: (codigo: string) => `Estabas en la sala ${codigo}.`,
     pinacleDesc:
       'El rummy de dos barajas con comodines: llévate el montón y baja escaleras y grupos.',
+    truc: 'Truc',
+    trucDesc: 'Envit y truc con tres cartas: apuesta, farolea y gana dos de tres bazas.',
     butifarra: 'Butifarra',
     butifarraDesc: 'Bazas por parejas con la manilla: elige el triunfo, delega o juega butifarra.',
     sieteYMedia: 'Siete y media',
@@ -90,6 +92,8 @@ export const T = {
     vueltasN: (n: number) => (n === 0 ? 'Ninguna' : n === 1 ? '1 vuelta' : `${n} vueltas`),
     jugadores: 'Jugadores',
     dosJugadores: '2 jugadores',
+    dosCames: 'Dos cames de 12 (gana quien gane dos)',
+    unaCame: 'Una came de 12',
     cuatroJugadores: '4 jugadores en parejas',
     cambioMuestra: 'Cambio de la muestra',
     cambioNo: 'No se permite',
@@ -303,6 +307,51 @@ export const T = {
     totalMano: 'Total de la mano',
     totalPartida: 'Total de la partida',
     deVueltas: (meta: number) => `Nadie llega a ${meta}: se juega de vueltas.`,
+    siguienteMano: 'Siguiente mano',
+  },
+
+  truc: {
+    piedras: 'Piedras',
+    marcador: (nuestras: number, suyas: number) => `${nuestras} – ${suyas} (a 12)`,
+    cames: (nuestras: number, suyas: number) => `Cames ${nuestras} – ${suyas}`,
+    camesTitulo: 'Cames',
+    valeMano: (n: number) => (n === 1 ? 'La mano vale 1' : `La mano vale ${n}`),
+    pendiente: (que: string) => `${que} sin responder`,
+    envit: 'Envit',
+    torne: 'Torne',
+    falta: 'Falta',
+    trucs: ['Truc', 'Retruc', 'Quatre val', 'Joc fora'] as readonly string[],
+    nivelesEnvit: ['', 'Envit', 'Torne', 'Falta'] as readonly string[],
+    vull: 'Vull',
+    noVull: 'No vull',
+    meVoy: "Me'n vaig",
+    parda: 'Baza parda',
+    envitQuerido: (valor: number) => `Envit querido (${valor})`,
+    envitNoQuerido: 'Envit no querido',
+    puntosEnvit: (quien: string, puntos: number) => `${quien} ${puntos}`,
+    bazas: (nuestras: number, suyas: number, pardas: number) =>
+      pardas > 0
+        ? `Bazas ${nuestras} – ${suyas} · ${pardas === 1 ? '1 parda' : `${pardas} pardas`}`
+        : `Bazas ${nuestras} – ${suyas}`,
+    detalleEnvit: (puntos: number) => `envit ${puntos}`,
+    /** Lo que dice un jugador. `quien` es «Tú» para el propio. */
+    dice: (quien: string, que: string) =>
+      quien === 'Tú' ? `Dices «${que}»` : `${quien}: «${que}»`,
+    seVa: (quien: string) => (quien === 'Tú' ? 'Te vas de la mano' : `${quien} se va de la mano`),
+    finMano: (n: number) => (n === 1 ? 'Fin de la primera mano' : `Fin de la mano ${n}`),
+    concepto: 'Concepto',
+    filaEnvit: 'Envit',
+    filaTruc: 'Truc',
+    totalMano: 'Total de la mano',
+    piedrasCame: 'Piedras de la came',
+    sinEnvit: 'Nadie envidó.',
+    envitResumen: (nivel: string, querido: boolean, gana: string) =>
+      querido ? `${nivel} querido · lo gana: ${gana}` : `${nivel} no querido · lo cobra: ${gana}`,
+    trucResumen: (nivel: string | null, gana: string) =>
+      `${nivel ?? 'Sin truc'} · gana la mano: ${gana}`,
+    seFueResumen: (quien: string, gana: string) =>
+      `${quien === 'Tú' ? 'Te fuiste' : `${quien} se fue`} de la mano · cobra: ${gana}`,
+    cameCerrada: (quien: string) => `Came cerrada · la gana: ${quien}`,
     siguienteMano: 'Siguiente mano',
   },
 
@@ -740,9 +789,11 @@ export const T = {
       burro: 'Cómo se juega al Burro',
       pinacle: 'Cómo se juega al Pinacle',
       butifarra: 'Cómo se juega a la Butifarra',
+      truc: 'Cómo se juega al Truc',
       red: 'Cómo se juega en red',
     },
     puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
+    envitEjemplo: '7 y 6 de copas: 20 + 7 + 6 = 33 de envit (el Rey no cuenta).',
 
     klondike: [
       {
@@ -1093,6 +1144,55 @@ export const T = {
           'No gastes un triunfo en una baza que no tiene puntos.',
           'Guarda el Rey y la Sota de un palo hasta que puedas cantarlos.',
           'En el arrastre cuenta los triunfos que han salido: el que tenga el último manda.',
+        ],
+      },
+    ],
+
+    truc: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja española de 40 cartas, con 2 jugadores o con 4 en parejas (tu compañero es el de enfrente). Cada uno recibe solo 3 cartas.',
+          'Cada mano reparte piedras y la primera pareja que llega a 12 gana una came. Gana la partida quien gana dos cames (o una, si lo eliges en las opciones).',
+        ],
+      },
+      {
+        titulo: 'Las cartas',
+        texto: [
+          'El orden no es el de otros juegos. De la más fuerte a la más débil: el As de espadas, el As de bastos, el 7 de espadas, el 7 de oros, los treses, los doses, los Ases de copas y oros, los Reyes, los Caballos, las Sotas, los 7 de copas y bastos, los seises, los cincos y los cuatros.',
+          'No hay triunfo y puedes jugar la carta que quieras: no hay que seguir el palo.',
+        ],
+        ejemplo: 'jerarquiaTruc',
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Gana la mano quien gana dos de las tres bazas. Si dos cartas iguales empatan, la baza es «parda»: si la primera es parda, decide la segunda; si la primera la ganó alguien y luego hay parda, gana ese.',
+          'Si las tres bazas son pardas, gana quien es mano (el siguiente al que reparte). Sin apuestas, la mano vale 1 piedra.',
+        ],
+      },
+      {
+        titulo: 'El envit',
+        texto: [
+          'En la primera baza, antes de jugar tu carta, puedes «envidar»: apostar a que tienes más puntos de envit. Dos cartas del mismo palo valen 20 más sus números (las figuras valen 0); si no tienes dos del mismo palo, vale tu carta más alta.',
+          'El rival puede decir «vull» (vale 2), «no vull» (cobras 1), «torne» (sube a 4) o «falta» (lo que le falta al que va ganando para acabar la came). Con empate gana el más cercano a la mano. El envit se cobra al terminar la mano.',
+        ],
+        ejemplo: 'envitTruc',
+      },
+      {
+        titulo: 'El truc',
+        texto: [
+          'En tu turno puedes «trucar»: la mano pasa a valer 2. El rival dice «vull», «no vull» (y cobras 1) o sube con «retruc» (3). Después vienen «quatre val» (4) y «joc fora»: quien gana esa mano gana la came entera.',
+          'Solo puede subir quien aceptó la última apuesta. Si en la primera baza te trucan y aún no has jugado, puedes envidar antes de responder: el envit va primero.',
+          "Con «me'n vaig» te vas de la mano: el rival cobra lo que valga en ese momento.",
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Trucar con malas cartas es un farol: a veces el rival no quiere y te llevas la mano.',
+          'Si ya ganaste una baza, tu mano vale más: con una carta alta guardada puedes subir.',
+          'Fíjate en los puntos de envit que muestra el rival: te dicen qué cartas tiene.',
         ],
       },
     ],

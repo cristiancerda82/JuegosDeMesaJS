@@ -3,6 +3,12 @@ import {
   burro,
   butifarra,
   CONFIG_BUTIFARRA_POR_DEFECTO,
+  CONFIG_TRUC_POR_DEFECTO,
+  truc,
+  type AccionTruc,
+  type ConfigTruc,
+  type EstadoTruc,
+  type VistaTruc,
   type AccionButifarra,
   type ConfigButifarra,
   type EstadoButifarra,
@@ -149,7 +155,8 @@ export type IdJuego =
   | 'corazones'
   | 'burro'
   | 'pinacle'
-  | 'butifarra';
+  | 'butifarra'
+  | 'truc';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -168,6 +175,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'burro',
   'pinacle',
   'butifarra',
+  'truc',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -481,6 +489,31 @@ export const DEF_BUTIFARRA: DefButifarra = {
   },
 };
 
+export type DefTruc = DefJuego<ConfigTruc, EstadoTruc, AccionTruc, VistaTruc>;
+
+/** Tiempo para leer lo que apuesta o responde cada jugador de la IA. */
+const PAUSA_APUESTA_TRUC_MS = 1000;
+
+export const DEF_TRUC: DefTruc = {
+  id: 'truc',
+  nombre: T.menu.truc,
+  juego: truc,
+  configPorDefecto: CONFIG_TRUC_POR_DEFECTO,
+  ia: IAS.truc,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, la última baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const apuesta =
+      antes.envit.estado !== despues.envit.estado ||
+      antes.envit.nivel !== despues.envit.nivel ||
+      antes.truc.nivel !== despues.truc.nivel ||
+      antes.truc.pendiente !== despues.truc.pendiente;
+    if (apuesta && antes.turno !== despues.asiento) return PAUSA_APUESTA_TRUC_MS;
+    if (despues.bazasJugadas.length > antes.bazasJugadas.length) return PAUSA_BAZA_MS;
+    return 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -498,6 +531,7 @@ export const JUEGOS = {
   burro: DEF_BURRO,
   pinacle: DEF_PINACLE,
   butifarra: DEF_BUTIFARRA,
+  truc: DEF_TRUC,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

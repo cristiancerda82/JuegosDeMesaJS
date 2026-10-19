@@ -37,6 +37,9 @@ import { iaButifarraBasica } from '../../src/ia/butifarra-basica';
 import { fallosConocidos, reconstruirButifarra } from '../../src/ia/reconstruir/butifarra';
 import { butifarra, CONFIG_BUTIFARRA_POR_DEFECTO } from '../../src/juegos/butifarra';
 import { paloDe } from '../../src/motor/bazas';
+import { iaTrucBasica } from '../../src/ia/truc-basica';
+import { reconstruirTruc } from '../../src/ia/reconstruir/truc';
+import { CONFIG_TRUC_POR_DEFECTO, puntosEnvit, truc } from '../../src/juegos/truc';
 import { describirReconstruccion } from '../contrato/verificar-reconstruccion';
 
 // Una suite por juego (spec niveles-ia: reconstrucción de las cartas ocultas).
@@ -224,5 +227,33 @@ describe('reconstrucción de la Butifarra', () => {
       if (fallos.some((f) => f.size > 0)) revisadas++;
     }
     expect(revisadas).toBeGreaterThan(50);
+  });
+});
+
+describirReconstruccion(truc, reconstruirTruc, {
+  configs: [CONFIG_TRUC_POR_DEFECTO, { jugadores: 4, cames: 1 }],
+  base: iaTrucBasica,
+});
+
+describe('reconstrucción del Truc', () => {
+  it('las manos ajenas dan los puntos de envit que se mostraron', () => {
+    let revisadas = 0;
+    for (let i = 0; i < 200; i++) {
+      const jugadores = i % 2 === 0 ? 2 : 4;
+      const creado = truc.crear({ jugadores, cames: 1 }, `envit-${i}`);
+      if (!creado.ok) throw new Error(creado.error);
+      let e = creado.valor;
+      e = truc.transicion(e, 0, { tipo: 'envidar' });
+      e = truc.transicion(e, 1, { tipo: 'vull' });
+      const vista = truc.vistaDe(e, 0);
+      for (let k = 0; k < 3; k++) {
+        const r = reconstruirTruc(vista, crearAzar(`envit-${i}/${k}`));
+        vista.envit.mostrado.forEach((p, a) => {
+          if (p !== null && a !== 0) expect(puntosEnvit(r.manos[a]!)).toBe(p);
+        });
+      }
+      revisadas++;
+    }
+    expect(revisadas).toBe(200);
   });
 });

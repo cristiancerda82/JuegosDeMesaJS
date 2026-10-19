@@ -7,6 +7,7 @@
     ConfigBrisca,
     ConfigBurro,
     ConfigButifarra,
+    ConfigTruc,
     ConfigChinchon,
     ConfigCorazones,
     ConfigCinquillo,
@@ -56,6 +57,7 @@
   let burro: Editable<ConfigBurro> = $state({ ...JUEGOS.burro.configPorDefecto });
   let pinacle: Editable<ConfigPinacle> = $state({ ...JUEGOS.pinacle.configPorDefecto });
   let butifarra: Editable<ConfigButifarra> = $state({ ...JUEGOS.butifarra.configPorDefecto });
+  let trucConfig: Editable<ConfigTruc> = $state({ ...JUEGOS.truc.configPorDefecto });
   let freecellModo: 'azar' | 'numero' = $state('azar');
   let freecellNumero = $state(1);
 
@@ -89,6 +91,7 @@
       burro,
       pinacle,
       butifarra,
+      truc: trucConfig,
     };
     if (conIA) guardarNivel(juego, nivel);
     empezar({ ...configs[juego] }, nivel);
@@ -215,6 +218,17 @@
         <legend>{T.opciones.jugadores}</legend>
         <label><input type="radio" bind:group={pinacle.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
         <label><input type="radio" bind:group={pinacle.jugadores} value={4} /> {T.opciones.cuatroJugadores}</label>
+      </fieldset>
+    {:else if juego === 'truc'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        <label><input type="radio" bind:group={trucConfig.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
+        <label><input type="radio" bind:group={trucConfig.jugadores} value={4} /> {T.opciones.cuatroJugadores}</label>
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.puntosPartida}</legend>
+        <label><input type="radio" bind:group={trucConfig.cames} value={2} /> {T.opciones.dosCames}</label>
+        <label><input type="radio" bind:group={trucConfig.cames} value={1} /> {T.opciones.unaCame}</label>
       </fieldset>
     {:else if juego === 'butifarra'}
       <fieldset>
