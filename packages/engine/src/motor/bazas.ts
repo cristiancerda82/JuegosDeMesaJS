@@ -26,6 +26,12 @@ export const VALORES_BRISCA: ValoresBazas = {
   puntos: { 1: 11, 3: 10, 12: 4, 11: 3, 10: 2 },
 };
 
+/** Butifarra (baraja de 48): manilla (9), as, rey, caballo, sota, 8…2. */
+export const VALORES_BUTIFARRA: ValoresBazas = {
+  orden: [9, 1, 12, 11, 10, 8, 7, 6, 5, 4, 3, 2],
+  puntos: { 9: 5, 1: 4, 12: 3, 11: 2, 10: 1 },
+};
+
 /** Guiñote: as, tres, rey, sota, caballo, 7, 6, 5, 4, 2; la sota vale 3 y el caballo 2. */
 export const VALORES_GUINOTE: ValoresBazas = {
   orden: [1, 3, 12, 10, 11, 7, 6, 5, 4, 2],
@@ -40,10 +46,13 @@ export const fuerza = (id: IdCarta, valores: ValoresBazas = VALORES_BRISCA) =>
 export const puntosDe = (id: IdCarta, valores: ValoresBazas = VALORES_BRISCA) =>
   valores.puntos[valorDe(id)] ?? 0;
 
-/** Carta que gana la baza: el triunfo más alto, o la más alta del palo de salida. */
+/**
+ * Carta que gana la baza: el triunfo más alto, o la más alta del palo de salida. Con
+ * `triunfo` `null` (la butifarra) no hay triunfo.
+ */
 export function cartaGanadora(
   mesa: readonly CartaJugada[],
-  triunfo: PaloEspanol,
+  triunfo: PaloEspanol | null,
   valores: ValoresBazas = VALORES_BRISCA,
 ): CartaJugada {
   let mejor = mesa[0]!;
@@ -123,12 +132,13 @@ export interface OpcionesObligadas {
 /**
  * Cartas que se pueden jugar cuando rigen las obligaciones: seguir el palo de salida y ganar
  * con él si se puede; sin ese palo, jugar triunfo y superar el triunfo más alto si se puede;
- * sin palo ni triunfo, cualquiera. Con la baza vacía, cualquier carta.
+ * sin palo ni triunfo, cualquiera. Con la baza vacía, cualquier carta. Con `triunfo` `null`,
+ * sin el palo de salida se juega cualquiera.
  */
 export function cartasObligadas(
   mano: readonly IdCarta[],
   mesa: readonly CartaJugada[],
-  triunfo: PaloEspanol,
+  triunfo: PaloEspanol | null,
   opciones: OpcionesObligadas,
 ): readonly IdCarta[] {
   if (mesa.length === 0) return mano;

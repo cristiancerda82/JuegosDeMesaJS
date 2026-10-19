@@ -26,13 +26,17 @@ import { iaMusBasica } from '../../src/ia/mus-basica';
 import { reconstruirMus } from '../../src/ia/reconstruir/mus';
 import { CONFIG_MUS_POR_DEFECTO, mus, pares, tieneJuego } from '../../src/juegos/mus';
 import { describe, expect, it } from 'vitest';
-import { crearAzar } from '../../src/baraja/azar';
+import { crearAzar, Generador } from '../../src/baraja/azar';
 import { iaCorazonesBasica } from '../../src/ia/corazones-basica';
 import { reconstruirCorazones } from '../../src/ia/reconstruir/corazones';
 import { CONFIG_CORAZONES_POR_DEFECTO, corazones } from '../../src/juegos/corazones';
 import { iaPinacleBasica } from '../../src/ia/pinacle-basica';
 import { reconstruirPinacle } from '../../src/ia/reconstruir/pinacle';
 import { CONFIG_PINACLE_POR_DEFECTO, pinacle } from '../../src/juegos/pinacle';
+import { iaButifarraBasica } from '../../src/ia/butifarra-basica';
+import { fallosConocidos, reconstruirButifarra } from '../../src/ia/reconstruir/butifarra';
+import { butifarra, CONFIG_BUTIFARRA_POR_DEFECTO } from '../../src/juegos/butifarra';
+import { paloDe } from '../../src/motor/bazas';
 import { describirReconstruccion } from '../contrato/verificar-reconstruccion';
 
 // Una suite por juego (spec niveles-ia: reconstrucción de las cartas ocultas).
@@ -154,4 +158,71 @@ describirReconstruccion(pinacle, reconstruirPinacle, {
   base: iaPinacleBasica,
   partidas: 3,
   pasosMaximos: 600,
+});
+
+describirReconstruccion(butifarra, reconstruirButifarra, {
+  configs: [CONFIG_BUTIFARRA_POR_DEFECTO, { objetivo: 51 }],
+  base: iaButifarraBasica,
+  partidas: 4,
+});
+
+describe('reconstrucción de la Butifarra', () => {
+  it('quien no siguió el palo no lo tiene, y quien no falló pudiendo no tiene triunfos', () => {
+    const fallos = fallosConocidos(
+      [
+        [
+          { asiento: 0, carta: 'copas-2' },
+          { asiento: 1, carta: 'espadas-4' },
+          { asiento: 2, carta: 'oros-3' },
+          { asiento: 3, carta: 'bastos-5' },
+        ],
+      ],
+      'oros',
+    );
+    expect([...fallos[1]!].sort()).toEqual(['copas', 'oros']);
+    expect([...fallos[2]!]).toEqual(['copas']);
+    // La baza la ganaba un rival (el 2, con triunfo): estaba obligado a fallar.
+    expect([...fallos[3]!].sort()).toEqual(['copas', 'oros']);
+    // Si la baza es del compañero, no fallar no dice nada de sus triunfos.
+    const conCompanero = fallosConocidos(
+      [
+        [
+          { asiento: 0, carta: 'copas-9' },
+          { asiento: 1, carta: 'copas-2' },
+          { asiento: 2, carta: 'bastos-4' },
+        ],
+      ],
+      'oros',
+    );
+    expect([...conCompanero[2]!]).toEqual(['copas']);
+  });
+
+  it('las manos reconstruidas respetan los fallos vistos en la mano', () => {
+    let revisadas = 0;
+    for (let i = 0; i < 200; i++) {
+      const creado = butifarra.crear(CONFIG_BUTIFARRA_POR_DEFECTO, `fallos-${i}`);
+      if (!creado.ok) throw new Error(creado.error);
+      let e = creado.valor;
+      const g = new Generador(crearAzar(`fallos-${i}/g`));
+      const pasos = 10 + g.enteroHasta(36);
+      for (let paso = 0; paso < pasos && e.resultadosManos.length === 0; paso++) {
+        const acciones = butifarra.accionesLegales(e, e.turno);
+        e = butifarra.transicion(e, e.turno, acciones[g.enteroHasta(acciones.length)]!);
+      }
+      if (e.resultadosManos.length > 0 || e.fase !== 'jugar') continue;
+      const vista = butifarra.vistaDe(e, 0);
+      const fallos = fallosConocidos(
+        [...vista.bazasJugadas.map((b) => b.cartas), vista.mesa],
+        vista.eleccion!.triunfo,
+      );
+      for (let k = 0; k < 5; k++) {
+        const r = reconstruirButifarra(vista, crearAzar(`fallos-${i}/${k}`));
+        for (let a = 1; a < 4; a++) {
+          for (const c of r.manos[a]!) expect(fallos[a]!.has(paloDe(c))).toBe(false);
+        }
+      }
+      if (fallos.some((f) => f.size > 0)) revisadas++;
+    }
+    expect(revisadas).toBeGreaterThan(50);
+  });
 });

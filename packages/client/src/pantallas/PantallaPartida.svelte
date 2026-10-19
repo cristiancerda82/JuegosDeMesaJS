@@ -2,6 +2,7 @@
   import MesaBrisca from '../mesas/MesaBrisca.svelte';
   import MesaBurro from '../mesas/MesaBurro.svelte';
   import MesaPinacle from '../mesas/MesaPinacle.svelte';
+  import MesaButifarra from '../mesas/MesaButifarra.svelte';
   import MesaChinchon from '../mesas/MesaChinchon.svelte';
   import MesaCinquillo from '../mesas/MesaCinquillo.svelte';
   import MesaCorazones from '../mesas/MesaCorazones.svelte';
@@ -73,6 +74,8 @@
     <MesaCorazones sesion={partida.sesion} />
   {:else if partida.id === 'burro'}
     <MesaBurro sesion={partida.sesion} />
+  {:else if partida.id === 'butifarra'}
+    <MesaButifarra sesion={partida.sesion} />
   {:else if partida.id === 'pinacle'}
     <MesaPinacle sesion={partida.sesion} />
   {:else if partida.id === 'mus'}

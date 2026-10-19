@@ -8,6 +8,7 @@
   import ResumenGuinote from '../mesas/ResumenGuinote.svelte';
   import ResultadoSieteYMedia from '../mesas/ResultadoSieteYMedia.svelte';
   import ResumenPinacle from '../mesas/ResumenPinacle.svelte';
+  import ResumenButifarra from '../mesas/ResumenButifarra.svelte';
   import { formatoTiempo } from '../mesas/tiempo';
   import { T } from '../textos';
 
@@ -192,6 +193,13 @@
           {/each}
         </tbody>
       </table>
+    {:else if partida.id === 'butifarra'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenButifarra resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} {yo} red={partida.sesion.red} />
+      {/if}
+      <p class="nota" data-testid="fin-butifarra">{T.fin.manosJugadas(vista.resultadosManos.length)}</p>
     {:else if partida.id === 'pinacle'}
       {@const vista = partida.sesion.vista}
       {#if vista.ultimaMano}

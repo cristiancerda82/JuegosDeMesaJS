@@ -1,6 +1,7 @@
 import { IAS, type IasPorNivel } from '../../src/ia/ias';
 import { brisca, CONFIG_BRISCA_POR_DEFECTO } from '../../src/juegos/brisca';
 import { burro, CONFIG_BURRO_POR_DEFECTO } from '../../src/juegos/burro';
+import { butifarra, CONFIG_BUTIFARRA_POR_DEFECTO } from '../../src/juegos/butifarra';
 import { chinchon, CONFIG_CHINCHON_POR_DEFECTO } from '../../src/juegos/chinchon';
 import { cinquillo, CONFIG_CINQUILLO_POR_DEFECTO } from '../../src/juegos/cinquillo';
 import { CONFIG_CORAZONES_POR_DEFECTO, corazones } from '../../src/juegos/corazones';
@@ -60,4 +61,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Corazones', corazones, CONFIG_CORAZONES_POR_DEFECTO, IAS.corazones, 4),
   entrada('Burro', burro, CONFIG_BURRO_POR_DEFECTO, IAS.burro, 4, false),
   entrada('Pinacle', pinacle, CONFIG_PINACLE_POR_DEFECTO, IAS.pinacle, 'bandos'),
+  entrada('Butifarra', butifarra, CONFIG_BUTIFARRA_POR_DEFECTO, IAS.butifarra, 'bandos'),
 ];

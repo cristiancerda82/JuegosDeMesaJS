@@ -20,7 +20,8 @@ import type { Asiento } from '../motor/contrato';
 export interface SituacionBaza {
   readonly asiento: Asiento;
   readonly jugadores: number;
-  readonly triunfo: PaloEspanol;
+  /** `null`: sin triunfo (la butifarra). */
+  readonly triunfo: PaloEspanol | null;
   readonly mesa: readonly CartaJugada[];
   /** Orden y puntos de las cartas; por defecto, los de la Brisca y el Tute. */
   readonly valores?: ValoresBazas;
@@ -31,7 +32,7 @@ const PUNTOS_PARA_TRIUNFO_ALTO = 10;
 
 /** Coste de entregar una carta: primero sus puntos, luego si es triunfo y luego su fuerza. */
 export function coste(
-  triunfo: PaloEspanol,
+  triunfo: PaloEspanol | null,
   carta: IdCarta,
   valores: ValoresBazas = VALORES_BRISCA,
 ): number {
@@ -41,14 +42,14 @@ export function coste(
 }
 
 export const masBarata = (
-  triunfo: PaloEspanol,
+  triunfo: PaloEspanol | null,
   cartas: readonly IdCarta[],
   valores: ValoresBazas = VALORES_BRISCA,
 ) => [...cartas].sort((a, b) => coste(triunfo, a, valores) - coste(triunfo, b, valores))[0]!;
 
 /** Al salir, la carta más baja que no sea triunfo ni dé puntos. */
 export function cartaParaSalir(
-  triunfo: PaloEspanol,
+  triunfo: PaloEspanol | null,
   cartas: readonly IdCarta[],
   valores: ValoresBazas = VALORES_BRISCA,
 ): IdCarta {

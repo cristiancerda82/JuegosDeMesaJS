@@ -9,6 +9,7 @@ import {
   puntosDe,
   robar,
   siguiente,
+  VALORES_BUTIFARRA,
   VALORES_GUINOTE,
   type CartaJugada,
 } from '../../src/motor/bazas';
@@ -194,5 +195,45 @@ describe('valores del Guiñote', () => {
     expect(cartaDeCambio('bastos-10', G)).toBe('bastos-7');
     expect(cartaDeCambio('bastos-11', G)).toBe('bastos-7');
     expect(cartaDeCambio('bastos-6', G)).toBe('bastos-2');
+  });
+});
+
+describe('valores de la Butifarra y sin triunfo', () => {
+  const B = VALORES_BUTIFARRA;
+
+  it('la baraja de 48 suma 60 puntos de cartas (72 con las 12 bazas)', () => {
+    expect(crearBaraja('espanola48').reduce((s, c) => s + puntosDe(c, B), 0)).toBe(60);
+  });
+
+  it('orden: manilla, as, rey, caballo, sota, 8…2', () => {
+    const orden = [9, 1, 12, 11, 10, 8, 7, 6, 5, 4, 3, 2].map((v) => `oros-${v}` as IdCarta);
+    expect([...orden].sort((a, b) => fuerza(b, B) - fuerza(a, B))).toEqual(orden);
+  });
+
+  it('sin triunfo gana la más alta del palo de salida aunque haya manillas de otro palo', () => {
+    const mesa = jugadas([0, 'copas-12'], [1, 'oros-9'], [2, 'copas-1'], [3, 'espadas-9']);
+    expect(cartaGanadora(mesa, null, B).asiento).toBe(2);
+  });
+
+  it('sin triunfo y sin el palo de salida, cualquier carta', () => {
+    const mano: IdCarta[] = ['oros-2', 'bastos-9'];
+    const mesa = jugadas([0, 'copas-12']);
+    expect(
+      cartasObligadas(mano, mesa, null, { asiento: 1, montarSobreCompanero: false, valores: B }),
+    ).toEqual(mano);
+  });
+
+  it('con el palo hay que superar; si la baza es del compañero, solo seguir el palo', () => {
+    const mano: IdCarta[] = ['copas-10', 'copas-9', 'oros-1'];
+    const opciones = { montarSobreCompanero: false, valores: B } as const;
+    expect(
+      cartasObligadas(mano, jugadas([0, 'copas-12']), 'oros', { ...opciones, asiento: 1 }),
+    ).toEqual(['copas-9']);
+    expect(
+      cartasObligadas(mano, jugadas([0, 'copas-12'], [1, 'copas-2']), 'oros', {
+        ...opciones,
+        asiento: 2,
+      }),
+    ).toEqual(['copas-10', 'copas-9']);
   });
 });

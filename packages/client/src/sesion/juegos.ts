@@ -1,6 +1,12 @@
 import {
   brisca,
   burro,
+  butifarra,
+  CONFIG_BUTIFARRA_POR_DEFECTO,
+  type AccionButifarra,
+  type ConfigButifarra,
+  type EstadoButifarra,
+  type VistaButifarra,
   CONFIG_BURRO_POR_DEFECTO,
   type AccionBurro,
   type ConfigBurro,
@@ -142,7 +148,8 @@ export type IdJuego =
   | 'spider'
   | 'corazones'
   | 'burro'
-  | 'pinacle';
+  | 'pinacle'
+  | 'butifarra';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -160,6 +167,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'corazones',
   'burro',
   'pinacle',
+  'butifarra',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -447,6 +455,32 @@ export const DEF_PINACLE: DefPinacle = {
   },
 };
 
+export type DefButifarra = DefJuego<
+  ConfigButifarra,
+  EstadoButifarra,
+  AccionButifarra,
+  VistaButifarra
+>;
+
+/** Tiempo para leer lo que elige o dice cada jugador de la IA antes de jugar. */
+const PAUSA_DECISION_BUTIFARRA_MS = 1000;
+
+export const DEF_BUTIFARRA: DefButifarra = {
+  id: 'butifarra',
+  nombre: T.menu.butifarra,
+  juego: butifarra,
+  configPorDefecto: CONFIG_BUTIFARRA_POR_DEFECTO,
+  ia: IAS.butifarra,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, la última baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (antes.fase !== 'jugar' && antes.turno !== despues.asiento) {
+      return PAUSA_DECISION_BUTIFARRA_MS;
+    }
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -463,6 +497,7 @@ export const JUEGOS = {
   corazones: DEF_CORAZONES,
   burro: DEF_BURRO,
   pinacle: DEF_PINACLE,
+  butifarra: DEF_BUTIFARRA,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

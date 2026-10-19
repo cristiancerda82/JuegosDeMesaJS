@@ -55,6 +55,8 @@ export const T = {
     volverSalaDesc: (codigo: string) => `Estabas en la sala ${codigo}.`,
     pinacleDesc:
       'El rummy de dos barajas con comodines: llévate el montón y baja escaleras y grupos.',
+    butifarra: 'Butifarra',
+    butifarraDesc: 'Bazas por parejas con la manilla: elige el triunfo, delega o juega butifarra.',
     sieteYMedia: 'Siete y media',
     sieteYMediaDesc: 'Pide cartas contra la banca y acércate a 7,5 sin pasarte.',
     jugar: 'Jugar',
@@ -301,6 +303,47 @@ export const T = {
     totalMano: 'Total de la mano',
     totalPartida: 'Total de la partida',
     deVueltas: (meta: number) => `Nadie llega a ${meta}: se juega de vueltas.`,
+    siguienteMano: 'Siguiente mano',
+  },
+
+  butifarra: {
+    marcador: (nuestros: number, suyos: number, objetivo: number) =>
+      `${nuestros} – ${suyos} (a ${objetivo})`,
+    puntos: 'Puntos',
+    triunfo: 'Triunfo',
+    sinTriunfo: 'Butifarra',
+    palo: (palo: string) => palo.charAt(0).toUpperCase() + palo.slice(1),
+    elige: (quien: string, delegada: boolean) =>
+      delegada ? `eligió ${quien} (delegada)` : `eligió ${quien}`,
+    eligiendo: (quien: string) => (quien === 'Tú' ? 'Te toca elegir' : `${quien} elige el triunfo`),
+    reparte: (quien: string) => (quien === 'Tú' ? 'Repartes tú' : `Reparte ${quien}`),
+    multiplicador: (n: number) => `×${n}`,
+    eligeTitulo: 'Elige el triunfo',
+    butifarra: 'Butifarra',
+    delegar: 'Delegar',
+    contros: ['Contro', 'Recontro', 'Sant Vicenç'] as readonly string[],
+    paso: 'Paso',
+    /** Lo que anuncia un jugador. `quien` es «Tú» para el propio. */
+    eligio: (quien: string, triunfo: string | null) =>
+      triunfo === null
+        ? quien === 'Tú'
+          ? 'Juegas butifarra'
+          : `${quien} juega butifarra`
+        : quien === 'Tú'
+          ? `Eliges ${triunfo}`
+          : `${quien} elige ${triunfo}`,
+    delego: (quien: string) => (quien === 'Tú' ? 'Delegas en tu compañero' : `${quien} delega`),
+    dijo: (quien: string, contro: string) =>
+      quien === 'Tú' ? `Dices ${contro.toLowerCase()}` : `${quien}: «${contro}»`,
+    paso_: (quien: string) => (quien === 'Tú' ? 'Pasas' : `${quien} pasa`),
+    finMano: (n: number) => (n === 1 ? 'Fin de la primera mano' : `Fin de la mano ${n}`),
+    concepto: 'Concepto',
+    cartas: 'Puntos de cartas',
+    bazas: 'Bazas',
+    totalMano: 'Total de la mano',
+    anotados: 'Se anota',
+    totalPartida: 'Total de la partida',
+    empate36: 'Empate a 36: nadie se anota.',
     siguienteMano: 'Siguiente mano',
   },
 
@@ -696,6 +739,7 @@ export const T = {
       mus: 'Cómo se juega al Mus',
       burro: 'Cómo se juega al Burro',
       pinacle: 'Cómo se juega al Pinacle',
+      butifarra: 'Cómo se juega a la Butifarra',
       red: 'Cómo se juega en red',
     },
     puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
@@ -1049,6 +1093,67 @@ export const T = {
           'No gastes un triunfo en una baza que no tiene puntos.',
           'Guarda el Rey y la Sota de un palo hasta que puedas cantarlos.',
           'En el arrastre cuenta los triunfos que han salido: el que tenga el último manda.',
+        ],
+      },
+    ],
+
+    butifarra: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja española de 48 cartas (con ochos y nueves), 4 jugadores en dos parejas: tu compañero es el de enfrente. Cada uno recibe 12 cartas y se reparte toda la baraja.',
+          'Gana la partida la pareja que antes llega a 101 puntos (o a 51 o 151, si lo cambias en las opciones).',
+        ],
+      },
+      {
+        titulo: 'Lo que vale cada carta',
+        texto: [
+          'De la más fuerte a la más débil: el 9 (la manilla), el As, el Rey, el Caballo, la Sota, y después el 8, 7, 6, 5, 4, 3 y 2.',
+          'La manilla vale 5 puntos, el As 4, el Rey 3, el Caballo 2 y la Sota 1; las demás no valen nada. Además, cada baza vale 1 punto: en total, cada mano reparte 72 puntos.',
+        ],
+        ejemplo: 'valoresButifarra',
+      },
+      {
+        titulo: 'Elegir el triunfo',
+        texto: [
+          'Antes de jugar, quien reparte elige el palo de triunfo mirando sus cartas. También puede jugar «butifarra»: sin triunfo, y la mano vale el doble.',
+          'Si no tiene buen juego, puede «delegar» en su compañero, que entonces tiene que elegir él (no puede devolverlo).',
+        ],
+      },
+      {
+        titulo: 'Contro, recontro y Sant Vicenç',
+        texto: [
+          'Cuando se ha elegido el triunfo, los rivales pueden decir «contro» si creen que van a ganar la mano: entonces vale el doble. Si lo dicen, la pareja que eligió puede contestar con «recontro» (×4), y los rivales todavía con «Sant Vicenç» (×8).',
+          'Cada pareja decide por turnos y basta con que uno de los dos lo diga. Si los dos pasan, empieza el juego.',
+        ],
+      },
+      {
+        titulo: 'Cómo se juega una baza',
+        texto: [
+          'Sale el jugador siguiente al que reparte. Gana la baza el triunfo más alto o, si no hay triunfos, la carta más fuerte del palo que salió. Quien la gana sale en la siguiente.',
+          'Hay que seguir el palo que salió y, si puedes, superar la carta que va ganando. Si no tienes de ese palo, tienes que fallar con triunfo (y superar el triunfo más alto si puedes).',
+          'Si la baza la va ganando tu compañero, solo tienes que seguir el palo: no hace falta superarle ni fallar. La mesa solo te deja jugar las cartas permitidas.',
+        ],
+      },
+      {
+        titulo: 'La puntuación',
+        texto: [
+          'Al acabar las 12 bazas, cada pareja cuenta sus puntos. La que pasa de 36 se anota lo que pasa, multiplicado por la butifarra y los contros; la otra no se anota nada. Con 36 a 36 nadie se anota.',
+          'Por ejemplo: se juega butifarra con contro (×4) y tu pareja hace 42 puntos. Os anotáis (42 − 36) × 4 = 24.',
+        ],
+      },
+      {
+        titulo: 'Cómo jugar una carta',
+        texto: [
+          'Arrastra la carta a la mesa, o tócala y toca la mesa. Con un doble toque también se juega.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Elige de triunfo el palo en el que tengas más cartas y la manilla o el As.',
+          'Si tu compañero va ganando la baza y nadie se la puede quitar, échale puntos.',
+          'Cuenta las manillas que han salido: cuando ya no queda ninguna de un palo, su As manda.',
         ],
       },
     ],

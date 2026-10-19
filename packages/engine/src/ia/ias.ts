@@ -2,6 +2,7 @@ import type { Asiento } from '../motor/contrato';
 import type { Agente } from './agente';
 import { iaBriscaBasica } from './brisca-basica';
 import { iaBurroBasica } from './burro-basica';
+import { iaButifarraBasica } from './butifarra-basica';
 import { iaChinchonBasica } from './chinchon-basica';
 import { iaCinquilloBasica } from './cinquillo-basica';
 import { iaCorazonesBasica } from './corazones-basica';
@@ -12,6 +13,7 @@ import { conErrores, porSimulacion, type NivelIA, type Simulable } from './nivel
 import { iaPinacleBasica } from './pinacle-basica';
 import { iaPochaBasica } from './pocha-basica';
 import { SIMULABLE_BRISCA } from './reconstruir/brisca';
+import { SIMULABLE_BUTIFARRA } from './reconstruir/butifarra';
 import { SIMULABLE_CHINCHON } from './reconstruir/chinchon';
 import { SIMULABLE_CINQUILLO } from './reconstruir/cinquillo';
 import { SIMULABLE_CORAZONES } from './reconstruir/corazones';
@@ -63,4 +65,5 @@ export const IAS = {
     dificil: iaBurroBasica,
   },
   pinacle: niveles(iaPinacleBasica, SIMULABLE_PINACLE),
+  butifarra: niveles(iaButifarraBasica, SIMULABLE_BUTIFARRA),
 } as const;

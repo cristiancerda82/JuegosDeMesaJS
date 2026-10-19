@@ -6,6 +6,7 @@
   import type {
     ConfigBrisca,
     ConfigBurro,
+    ConfigButifarra,
     ConfigChinchon,
     ConfigCorazones,
     ConfigCinquillo,
@@ -54,6 +55,7 @@
   let corazones: Editable<ConfigCorazones> = $state({ ...JUEGOS.corazones.configPorDefecto });
   let burro: Editable<ConfigBurro> = $state({ ...JUEGOS.burro.configPorDefecto });
   let pinacle: Editable<ConfigPinacle> = $state({ ...JUEGOS.pinacle.configPorDefecto });
+  let butifarra: Editable<ConfigButifarra> = $state({ ...JUEGOS.butifarra.configPorDefecto });
   let freecellModo: 'azar' | 'numero' = $state('azar');
   let freecellNumero = $state(1);
 
@@ -86,6 +88,7 @@
       corazones,
       burro,
       pinacle,
+      butifarra,
     };
     if (conIA) guardarNivel(juego, nivel);
     empezar({ ...configs[juego] }, nivel);
@@ -212,6 +215,13 @@
         <legend>{T.opciones.jugadores}</legend>
         <label><input type="radio" bind:group={pinacle.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
         <label><input type="radio" bind:group={pinacle.jugadores} value={4} /> {T.opciones.cuatroJugadores}</label>
+      </fieldset>
+    {:else if juego === 'butifarra'}
+      <fieldset>
+        <legend>{T.opciones.puntosPartida}</legend>
+        {#each [101, 51, 151] as const as p (p)}
+          <label><input type="radio" bind:group={butifarra.objetivo} value={p} /> {T.opciones.puntosN(p)}</label>
+        {/each}
       </fieldset>
     {:else if juego === 'spider'}
       <fieldset>

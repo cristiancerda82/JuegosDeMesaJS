@@ -6,6 +6,10 @@ import {
   type EstadoBurro,
   type VistaBurro,
   type AccionChinchon,
+  type AccionButifarra,
+  type ConfigButifarra,
+  type EstadoButifarra,
+  type VistaButifarra,
   type AccionPinacle,
   type ConfigPinacle,
   type EstadoPinacle,
@@ -77,6 +81,7 @@ import {
   DEF_CORAZONES,
   DEF_BURRO,
   DEF_PINACLE,
+  DEF_BUTIFARRA,
   DEF_SPIDER,
   DEF_KLONDIKE,
   DEF_ESCOBA,
@@ -123,6 +128,12 @@ export type SesionCorazones = SesionMesa<
 >;
 export type SesionBurro = SesionMesa<ConfigBurro, EstadoBurro, AccionBurro, VistaBurro>;
 export type SesionPinacle = SesionMesa<ConfigPinacle, EstadoPinacle, AccionPinacle, VistaPinacle>;
+export type SesionButifarra = SesionMesa<
+  ConfigButifarra,
+  EstadoButifarra,
+  AccionButifarra,
+  VistaButifarra
+>;
 export type SesionFreeCell = SesionMesa<
   ConfigFreeCell,
   EstadoFreeCell,
@@ -152,7 +163,8 @@ export type Partida =
   | { readonly id: 'spider'; readonly sesion: SesionSpider }
   | { readonly id: 'corazones'; readonly sesion: SesionCorazones }
   | { readonly id: 'burro'; readonly sesion: SesionBurro }
-  | { readonly id: 'pinacle'; readonly sesion: SesionPinacle };
+  | { readonly id: 'pinacle'; readonly sesion: SesionPinacle }
+  | { readonly id: 'butifarra'; readonly sesion: SesionButifarra };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -169,7 +181,8 @@ export type ConfigJuego =
   | ConfigSpider
   | ConfigCorazones
   | ConfigBurro
-  | ConfigPinacle;
+  | ConfigPinacle
+  | ConfigButifarra;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -208,6 +221,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_BURRO);
     case 'pinacle':
       return hacer(DEF_PINACLE);
+    case 'butifarra':
+      return hacer(DEF_BUTIFARRA);
   }
 }
 

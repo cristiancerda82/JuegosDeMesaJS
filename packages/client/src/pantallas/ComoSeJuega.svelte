@@ -4,6 +4,7 @@
     puntosPocha,
     valorCarta,
     valorEscoba,
+    VALORES_BUTIFARRA,
     VALORES_GUINOTE,
     type IdCarta,
   } from '@juegos/engine';
@@ -37,6 +38,8 @@
   /** Las cartas que dan puntos en el Guiñote (la sota por encima del caballo) y su cante. */
   const VALORES_G: readonly IdCarta[] = ['oros-1', 'oros-3', 'oros-12', 'oros-10', 'oros-11'];
   const CANTE_G: readonly IdCarta[] = ['copas-12', 'copas-10'];
+  /** Las cartas que dan puntos en la Butifarra, de la manilla a la sota. */
+  const VALORES_B: readonly IdCarta[] = ['oros-9', 'oros-1', 'oros-12', 'oros-11', 'oros-10'];
   /** Una escalera del Cinquillo: del 4 a la Sota de copas, pasando del 7 a la Sota. */
   const ESCALERA_CINQUILLO: readonly IdCarta[] = ['copas-4', 'copas-5', 'copas-6', 'copas-7', 'copas-10'];
   /** Valores de la Siete y media y una siete y media natural. */
@@ -109,6 +112,15 @@
               <li>
                 <div class="hueco"><Carta {id} /></div>
                 <span>{T.ayuda.puntos(puntosDe(id, VALORES_GUINOTE))}</span>
+              </li>
+            {/each}
+          </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'valoresButifarra'}
+          <ul class="valores">
+            {#each VALORES_B as id (id)}
+              <li>
+                <div class="hueco"><Carta {id} /></div>
+                <span>{T.ayuda.puntos(puntosDe(id, VALORES_BUTIFARRA))}</span>
               </li>
             {/each}
           </ul>

@@ -5,6 +5,7 @@ import type { NivelIA } from './ia/niveles';
 import { retrasoBurro } from './ia/reaccion';
 import { brisca, CONFIG_BRISCA_POR_DEFECTO } from './juegos/brisca';
 import { burro, CONFIG_BURRO_POR_DEFECTO } from './juegos/burro';
+import { butifarra, CONFIG_BUTIFARRA_POR_DEFECTO } from './juegos/butifarra';
 import { chinchon, CONFIG_CHINCHON_POR_DEFECTO } from './juegos/chinchon';
 import { cinquillo, CONFIG_CINQUILLO_POR_DEFECTO } from './juegos/cinquillo';
 import { CONFIG_CORAZONES_POR_DEFECTO, corazones } from './juegos/corazones';
@@ -34,6 +35,7 @@ export const IDS_JUEGOS_EN_RED = [
   'corazones',
   'burro',
   'pinacle',
+  'butifarra',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -78,6 +80,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   corazones: entrada(corazones, IAS.corazones, CONFIG_CORAZONES_POR_DEFECTO),
   burro: entrada(burro, IAS.burro, CONFIG_BURRO_POR_DEFECTO, retrasoBurro),
   pinacle: entrada(pinacle, IAS.pinacle, CONFIG_PINACLE_POR_DEFECTO),
+  butifarra: entrada(butifarra, IAS.butifarra, CONFIG_BUTIFARRA_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

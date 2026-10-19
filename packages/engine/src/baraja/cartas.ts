@@ -45,8 +45,22 @@ export function idCarta(carta: Carta): IdCarta {
   return `${carta.palo}-${carta.valor}`;
 }
 
+/**
+ * Cartas ya leídas por identificador. Solo guarda las válidas, que son un conjunto finito, y la
+ * IA las lee a millares en cada simulación.
+ */
+const LEIDAS = new Map<string, Carta>();
+
 /** Reconstruye la carta de un identificador; `null` si el identificador no es válido. */
 export function cartaDeId(id: string): Carta | null {
+  const leida = LEIDAS.get(id);
+  if (leida) return leida;
+  const carta = leerCarta(id);
+  if (carta) LEIDAS.set(id, Object.freeze(carta));
+  return carta;
+}
+
+function leerCarta(id: string): Carta | null {
   const separador = id.lastIndexOf('-');
   const palo = id.slice(0, separador) as Palo;
   const textoValor = id.slice(separador + 1);

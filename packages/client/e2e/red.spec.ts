@@ -120,6 +120,53 @@ test('Mus de 2 humanos y 2 IAs, jugando desde los asientos 0 y 2', async ({ brow
   await luis.screenshot({ path: `test-results/red-mus-asiento-2.png` });
 });
 
+test('Butifarra en red: dos humanos rivales juegan una baza', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'butifarra');
+  await unirse(luis, codigo, 'Luis');
+  await expect(ana.getByTestId('asiento-sala-1')).toContainText('Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) await expect(p.locator('.carta-mano')).toHaveCount(12);
+
+  // Cada uno decide lo que le toque (pasar, elegir oros) y juega una carta, hasta que los dos
+  // han jugado en la primera baza.
+  const paginas = [ana, luis];
+  const cartasEnMano = () => Promise.all(paginas.map((p) => p.locator('.carta-mano').count()));
+  for (let paso = 0; paso < 20 && (await cartasEnMano()).some((n) => n === 12); paso++) {
+    const accion = paginas.map((p) =>
+      p.locator('[data-testid="pasar"], [data-testid="elegir-oros"], .carta-mano.jugable').first(),
+    );
+    await expect
+      .poll(async () => (await Promise.all(accion.map((a) => a.isVisible()))).some(Boolean), {
+        timeout: 20_000,
+      })
+      .toBe(true);
+    const p = (await accion[0]!.isVisible()) ? ana : luis;
+    const boton = p.locator('[data-testid="pasar"], [data-testid="elegir-oros"]').first();
+    if (await boton.isVisible()) {
+      const id = await boton.getAttribute('data-testid');
+      await boton.click();
+      await expect(p.getByTestId(id!)).toBeHidden();
+    } else {
+      const antes = await p.locator('.carta-mano').count();
+      // La esquina de la carta queda a la vista aunque las cartas se solapen.
+      await p
+        .locator('.carta-mano.jugable')
+        .first()
+        .click({ position: { x: 8, y: 8 } });
+      await p.getByTestId('mesa').click();
+      await expect(p.locator('.carta-mano')).toHaveCount(antes - 1);
+    }
+  }
+  for (const p of [ana, luis]) {
+    await expect(p.getByTestId('triunfo-butifarra')).toBeVisible();
+    await expect(p.locator('.carta-mano')).toHaveCount(11);
+  }
+  await luis.screenshot({ path: `test-results/red-butifarra-luis.png` });
+});
+
 test('sin servidor, la pantalla de red lo dice', async ({ page }) => {
   await abrirRed(page, 'Ana');
   await page.locator('summary').click();
