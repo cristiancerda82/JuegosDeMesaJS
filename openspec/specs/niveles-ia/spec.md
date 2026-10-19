@@ -6,7 +6,7 @@ TBD - created by archiving change niveles-ia. Update Purpose after archive.
 ## Requirements
 
 ### Requirement: Tres niveles en cada juego contra la máquina
-Cada juego con IA (Brisca, Tute, Guiñote, Escoba, Chinchón, Siete y media, Cinquillo, Pocha, Mus, Corazones, Burro, Pinacle y Butifarra) MUST ofrecer una IA para cada nivel: `facil`, `normal` y `dificil`. La IA `normal` MUST ser la IA básica del juego. Todos los niveles MUST cumplir las garantías generales de la IA:
+Cada juego con IA (Brisca, Tute, Guiñote, Escoba, Chinchón, Siete y media, Cinquillo, Pocha, Mus, Corazones, Burro, Pinacle, Butifarra y Truc) MUST ofrecer una IA para cada nivel: `facil`, `normal` y `dificil`. La IA `normal` MUST ser la IA básica del juego. Todos los niveles MUST cumplir las garantías generales de la IA:
 - deciden solo con la vista de su asiento;
 - eligen siempre una acción legal;
 - son reproducibles con su semilla;
@@ -37,12 +37,12 @@ En cada juego, la IA normal MUST ganar claramente más partidas que la fácil cu
 Cada juego con IA difícil (todos menos el Burro) MUST tener una función que, a partir de la vista de un asiento y de un azar, construya un estado completo del juego coherente con esa vista. Las cartas que el asiento no ve (las manos ajenas, el mazo y cualquier otra carta oculta) MUST repartirse al azar entre los sitios ocultos, respetando cuántas cartas hay en cada uno. Todo lo visible MUST quedar igual. La vista de ese asiento en el estado reconstruido MUST ser idéntica a la vista de partida.
 
 Si una vista no tiene datos públicos suficientes para reconstruir el estado, se MUST añadir a la vista lo que falte, siempre que no sea información oculta y que la spec del juego no lo prohíba. Se añaden:
-- las cartas ya jugadas en bazas de la mano (Brisca, Tute, Guiñote, Pocha, Corazones y Butifarra);
+- las cartas ya jugadas en bazas de la mano (Brisca, Tute, Guiñote, Pocha, Corazones, Butifarra y Truc);
 - los puntos de las bazas de cada jugador (Brisca, Tute y Guiñote) o de cada bando (Butifarra);
 - quién puede cantar todavía (Tute y Guiñote);
 - quién ha pasado ya en el lance y cuántas cartas hay en el montón de descartes, sin cuáles (Mus).
 
-En la Escoba, las cartas recogidas siguen sin mostrarse (spec juego-escoba): la reconstrucción las reparte al azar con el número de cartas que se ve. En el Mus, las manos ajenas MUST cuadrar con lo declarado de pares y juego. En la Butifarra, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo, y la de uno que no falló pudiendo, sin triunfos.
+En la Escoba, las cartas recogidas siguen sin mostrarse (spec juego-escoba): la reconstrucción las reparte al azar con el número de cartas que se ve. En el Mus, las manos ajenas MUST cuadrar con lo declarado de pares y juego. En la Butifarra, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo, y la de uno que no falló pudiendo, sin triunfos. En el Truc, si se aceptó el envit, la mano de cada jugador cuyos puntos de envit se mostraron MUST dar esos puntos con sus cartas en mano y las que ya jugó.
 
 #### Scenario: La reconstrucción da la misma vista
 - **WHEN** en cualquier estado alcanzado en partidas al azar se reconstruye un estado desde la vista de un asiento
@@ -55,6 +55,10 @@ En la Escoba, las cartas recogidas siguen sin mostrarse (spec juego-escoba): la 
 #### Scenario: Fallos conocidos en la Butifarra
 - **WHEN** en la Butifarra un rival no siguió el palo de copas en una baza anterior y se reconstruye el estado
 - **THEN** la mano reconstruida de ese rival no tiene ninguna copa
+
+#### Scenario: Envit mostrado en el Truc
+- **WHEN** en el Truc un rival mostró 33 puntos de envit y se reconstruye el estado
+- **THEN** sus cartas en mano, junto con las que ya jugó, suman 33 puntos de envit
 
 ### Requirement: Nivel difícil por simulación
 La IA difícil MUST decidir así:
@@ -73,6 +77,8 @@ En el Mus, la IA difícil MUST jugar como la normal mientras no haya una IA expe
 En el Pinacle, la IA difícil MUST simular solo dos decisiones: si roba del mazo o se lleva el montón, y qué carta descarta cuando la normal descartaría. Lo que baja, añade o cambia lo decide como la normal. Con un montón de 10 cartas o más, o con alguna mano de más de 18, MUST decidir como la normal: quien se lleva el montón en la simulación acaba con muchas cartas y cada jugada simulada cuesta tanto que no cabría en el tiempo. La vista del Pinacle ya muestra todo lo público, incluidas las cartas que cada rival se llevó del montón, y la reconstrucción MUST mantenerlas en su mano.
 
 En la Butifarra, la IA difícil MUST simular la elección del triunfo y cada carta que juega. Los contros MUST decidirse como la normal, por la misma razón que las apuestas del Mus: al repartir al azar las manos ocultas, la simulación no ve que el rival dice contro justo cuando lleva buena mano.
+
+En el Truc, la IA difícil MUST simular solo la carta que juega. El envit, el truc, las respuestas y retirarse MUST decidirse como la normal, por la misma razón que en el Mus: la simulación no ve el farol ni que el rival apuesta justo cuando lleva buena mano.
 
 En cada juego con simulación, la IA difícil MUST ganar más partidas que la normal cuando se enfrentan.
 
@@ -94,4 +100,8 @@ En cada juego con simulación, la IA difícil MUST ganar más partidas que la no
 
 #### Scenario: Contros del difícil en la Butifarra
 - **WHEN** la IA difícil de la Butifarra decide si dice contro
+- **THEN** decide como la normal, sin simular
+
+#### Scenario: Apuestas del difícil en el Truc
+- **WHEN** la IA difícil del Truc decide si truca o responde a un envit
 - **THEN** decide como la normal, sin simular
