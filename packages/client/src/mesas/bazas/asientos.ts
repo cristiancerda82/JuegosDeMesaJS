@@ -5,20 +5,31 @@ import { T } from '../../textos';
 export type { EstadoSesion } from '../../sesion/sesion-mesa';
 
 /** Lado de la mesa donde se dibuja cada asiento. */
-export type Lado = 'abajo' | 'derecha' | 'arriba' | 'izquierda';
+export type Lado =
+  'abajo' | 'derecha' | 'arriba-derecha' | 'arriba' | 'arriba-izquierda' | 'izquierda';
+
+/** Los lados de la fila de arriba, en orden visual de izquierda a derecha. */
+export const LADOS_ARRIBA: readonly Lado[] = ['arriba-izquierda', 'arriba', 'arriba-derecha'];
 
 /** Posición de un asiento contando desde el del jugador (0 es él). */
 export const relativo = (asiento: Asiento, jugadores: number, yo: Asiento) =>
   (asiento - yo + jugadores) % jugadores;
 
 /**
- * El jugador (`yo`) abajo; con 3 y 4, el turno avanza en sentido antihorario: derecha,
- * (arriba,) izquierda.
+ * El jugador (`yo`) abajo; con 3 o más, el turno avanza en sentido antihorario: derecha, la
+ * fila de arriba de derecha a izquierda, e izquierda.
  */
 export function lado(asiento: Asiento, jugadores: number, yo: Asiento = 0): Lado {
   const r = relativo(asiento, jugadores, yo);
   if (jugadores === 2) return r === 0 ? 'abajo' : 'arriba';
   if (jugadores === 3) return (['abajo', 'derecha', 'izquierda'] as const)[r]!;
+  if (jugadores === 5) {
+    return (['abajo', 'derecha', 'arriba-derecha', 'arriba-izquierda', 'izquierda'] as const)[r]!;
+  }
+  if (jugadores === 6) {
+    const lados = ['abajo', 'derecha', 'arriba-derecha', 'arriba', 'arriba-izquierda', 'izquierda'];
+    return lados[r] as Lado;
+  }
   return (['abajo', 'derecha', 'arriba', 'izquierda'] as const)[r]!;
 }
 

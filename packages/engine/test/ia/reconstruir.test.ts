@@ -40,6 +40,9 @@ import { paloDe } from '../../src/motor/bazas';
 import { iaTrucBasica } from '../../src/ia/truc-basica';
 import { reconstruirTruc } from '../../src/ia/reconstruir/truc';
 import { CONFIG_TRUC_POR_DEFECTO, puntosEnvit, truc } from '../../src/juegos/truc';
+import { iaJulepeBasica } from '../../src/ia/julepe-basica';
+import { fallosJulepe, reconstruirJulepe } from '../../src/ia/reconstruir/julepe';
+import { CONFIG_JULEPE_POR_DEFECTO, julepe } from '../../src/juegos/julepe';
 import { describirReconstruccion } from '../contrato/verificar-reconstruccion';
 
 // Una suite por juego (spec niveles-ia: reconstrucción de las cartas ocultas).
@@ -255,5 +258,43 @@ describe('reconstrucción del Truc', () => {
       revisadas++;
     }
     expect(revisadas).toBe(200);
+  });
+});
+
+describirReconstruccion(julepe, reconstruirJulepe, {
+  configs: [CONFIG_JULEPE_POR_DEFECTO, { jugadores: 6, manos: 6 }, { jugadores: 3, manos: 6 }],
+  base: iaJulepeBasica,
+  partidas: 4,
+});
+
+describe('reconstrucción del Julepe', () => {
+  it('la carta de triunfo sigue en la mano del repartidor y se respetan los fallos', () => {
+    let revisadas = 0;
+    for (let i = 0; i < 150; i++) {
+      const creado = julepe.crear({ jugadores: 4, manos: 6 }, `julepe-${i}`);
+      if (!creado.ok) throw new Error(creado.error);
+      let e = creado.valor;
+      const g = new Generador(crearAzar(`julepe-${i}/g`));
+      const pasos = 6 + g.enteroHasta(16);
+      for (let paso = 0; paso < pasos && e.resultadosManos.length === 0; paso++) {
+        const acciones = julepe.accionesLegales(e, e.turno);
+        e = julepe.transicion(e, e.turno, acciones[g.enteroHasta(acciones.length)]!);
+      }
+      if (e.resultadosManos.length > 0) continue;
+      const vista = julepe.vistaDe(e, 0);
+      const fallos = fallosJulepe(
+        [...vista.bazasJugadas.map((b) => b.cartas), vista.mesa],
+        vista.triunfo,
+        4,
+      );
+      const r = reconstruirJulepe(vista, crearAzar(`julepe-${i}/r`));
+      if (vista.cartaTriunfo !== null)
+        expect(r.manos[vista.repartidor]).toContain(vista.cartaTriunfo);
+      for (let a = 1; a < 4; a++) {
+        for (const c of r.manos[a]!) expect(fallos[a]!.has(paloDe(c))).toBe(false);
+      }
+      revisadas++;
+    }
+    expect(revisadas).toBeGreaterThan(50);
   });
 });

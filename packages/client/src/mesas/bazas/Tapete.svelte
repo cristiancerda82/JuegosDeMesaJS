@@ -22,7 +22,8 @@
 
 <div
   class="tapete"
-  class:cuatro={jugadores === 4}
+  class:cuatro={jugadores >= 4}
+  class:muchos={jugadores >= 5}
   class:legal={interaccion.resaltados.has('mesa')}
   data-destino="mesa"
   data-testid="mesa"
@@ -103,6 +104,23 @@
 
   .jugada.izquierda {
     translate: -45% 0;
+  }
+
+  /* Con 5 y 6: los de arriba en abanico y los laterales algo más abajo. */
+  .jugada.arriba-izquierda {
+    translate: -42% -32%;
+  }
+
+  .jugada.arriba-derecha {
+    translate: 42% -32%;
+  }
+
+  .muchos .jugada.izquierda {
+    translate: -55% 10%;
+  }
+
+  .muchos .jugada.derecha {
+    translate: 55% 10%;
   }
 
   .aviso {

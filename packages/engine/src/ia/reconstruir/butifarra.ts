@@ -56,7 +56,7 @@ export function fallosConocidos(
  * condición de Hall en sus 16 subconjuntos, y como el estado real cumple las restricciones,
  * siempre hay solución.
  */
-function repartirConFallos(
+export function repartirConFallos(
   cartas: readonly IdCarta[],
   huecos: readonly number[],
   fallos: readonly Set<PaloEspanol>[],

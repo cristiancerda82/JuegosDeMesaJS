@@ -6,7 +6,13 @@
   import { porBando } from '../../sesion/sesion-mesa';
   import { T } from '../../textos';
   import AsientoRival from './AsientoRival.svelte';
-  import { lado, nombreAsiento, type EstadoSesion, type VistaBazas } from './asientos';
+  import {
+    lado,
+    LADOS_ARRIBA,
+    nombreAsiento,
+    type EstadoSesion,
+    type VistaBazas,
+  } from './asientos';
   import ManoPropia from './ManoPropia.svelte';
   import MazoYMuestra from './MazoYMuestra.svelte';
   import Tapete from './Tapete.svelte';
@@ -53,6 +59,13 @@
   const n = $derived(vista.config.jugadores);
   const yo = $derived(sesion.asiento);
   const rivales = $derived(Array.from({ length: n }, (_, a) => a).filter((a) => a !== yo));
+  /** Los rivales de la fila de arriba, de izquierda a derecha; los laterales van aparte. */
+  const deArriba = $derived(
+    rivales
+      .filter((a) => LADOS_ARRIBA.includes(lado(a, n, yo)))
+      .sort((a, b) => LADOS_ARRIBA.indexOf(lado(a, n, yo)) - LADOS_ARRIBA.indexOf(lado(b, n, yo))),
+  );
+  const laterales = $derived(rivales.filter((a) => !LADOS_ARRIBA.includes(lado(a, n, yo))));
   const activo = (asiento: Asiento) => vista.turno === asiento && sesion.fin === null;
 
   // ── Baza en curso y avisos ─────────────────────────────────────────────────
@@ -113,10 +126,10 @@
   });
 </script>
 
-<div class="mesa-bazas" class:cuatro={n >= 3} bind:this={raiz}>
+<div class="mesa-bazas" class:cuatro={n >= 3} class:muchos={n >= 5} bind:this={raiz}>
   <div class="info">{@render info()}</div>
 
-  {#each rivales as asiento (asiento)}
+  {#snippet rival(asiento: number)}
     <AsientoRival
       {asiento}
       lado={lado(asiento, n, yo)}
@@ -126,7 +139,13 @@
       activo={activo(asiento)}
       visible={cartaVisible(asiento)}
     />
-  {/each}
+  {/snippet}
+  {#if deArriba.length > 0}
+    <div class="fila-arriba">
+      {#each deArriba as asiento (asiento)}{@render rival(asiento)}{/each}
+    </div>
+  {/if}
+  {#each laterales as asiento (asiento)}{@render rival(asiento)}{/each}
 
   <div class="centro">
     {#if vista.mazo > 0 || vista.muestra !== null}
@@ -182,6 +201,20 @@
     --ancho-carta: min(16vw, 11dvh, 96px);
     --ancho-rival: min(9vw, 6dvh, 48px);
     --escala-mazo: 0.7;
+  }
+
+  /* Con 5 y 6 jugadores, tres rivales comparten la fila de arriba. */
+  .mesa-bazas.muchos {
+    --ancho-carta: min(15vw, 10dvh, 90px);
+    --ancho-rival: min(6vw, 5dvh, 40px);
+  }
+
+  .fila-arriba {
+    grid-area: arriba;
+    display: flex;
+    justify-content: space-evenly;
+    gap: 6px;
+    min-width: 0;
   }
 
   .info {

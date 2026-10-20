@@ -48,6 +48,21 @@
     grid-area: arriba;
   }
 
+  .arriba-izquierda .nombre,
+  .arriba-derecha .nombre,
+  :global(.muchos) .arriba .nombre {
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    text-align: center;
+  }
+
+  .arriba-izquierda .nombre small,
+  .arriba-derecha .nombre small,
+  :global(.muchos) .arriba .nombre small {
+    display: block;
+    margin: 0;
+  }
+
   .izquierda {
     grid-area: izquierda;
     align-self: center;

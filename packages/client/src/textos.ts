@@ -55,6 +55,8 @@ export const T = {
     volverSalaDesc: (codigo: string) => `Estabas en la sala ${codigo}.`,
     pinacleDesc:
       'El rummy de dos barajas con comodines: llévate el montón y baja escaleras y grupos.',
+    julepe: 'Julepe',
+    julepeDesc: 'De 3 a 6: decide si juegas la mano y haz dos bazas, o paga el julepe.',
     truc: 'Truc',
     trucDesc: 'Envit y truc con tres cartas: apuesta, farolea y gana dos de tres bazas.',
     butifarra: 'Butifarra',
@@ -92,6 +94,8 @@ export const T = {
     vueltasN: (n: number) => (n === 0 ? 'Ninguna' : n === 1 ? '1 vuelta' : `${n} vueltas`),
     jugadores: 'Jugadores',
     dosJugadores: '2 jugadores',
+    manosJulepe: 'Duración',
+    manosJulepeN: (n: number) => `${n} manos`,
     dosCames: 'Dos cames de 12 (gana quien gane dos)',
     unaCame: 'Una came de 12',
     cuatroJugadores: '4 jugadores en parejas',
@@ -307,6 +311,59 @@ export const T = {
     totalMano: 'Total de la mano',
     totalPartida: 'Total de la partida',
     deVueltas: (meta: number) => `Nadie llega a ${meta}: se juega de vueltas.`,
+    siguienteMano: 'Siguiente mano',
+  },
+
+  julepe: {
+    rivalN: (n: number) => `Rival ${n}`,
+    triunfo: 'Triunfo',
+    bote: (n: number) => `Bote: ${n}`,
+    mano: (n: number, total: number) => `Mano ${n} de ${total}`,
+    fichas: (n: number) => (n === 1 ? '1 ficha' : `${n} fichas`),
+    juego: 'Juego',
+    paso: 'Paso',
+    obligado: 'Estás obligado a jugar',
+    decidir: '¿Juegas la mano?',
+    marcaCambio: 'Toca las cartas que quieras cambiar',
+    cambiar: (n: number) => (n === 0 ? 'No cambio' : n === 1 ? 'Cambiar 1' : `Cambiar ${n}`),
+    mazo: (n: number) => (n === 1 ? 'Queda 1 carta en el mazo' : `Quedan ${n} cartas en el mazo`),
+    detalle: (
+      juega: boolean | null,
+      bazas: number,
+      fichas: number,
+      cambios: number | null,
+      eliminado: boolean,
+    ) =>
+      eliminado
+        ? 'eliminado'
+        : juega === false
+          ? `pasa · ${fichas}`
+          : juega === null
+            ? `${fichas} fichas`
+            : cambios !== null && bazas === 0
+              ? `juega · cambió ${cambios} · ${fichas}`
+              : `juega · ${bazas === 1 ? '1 baza' : `${bazas} bazas`} · ${fichas}`,
+    juega: (quien: string) => (quien === 'Tú' ? 'Juegas la mano' : `${quien} juega`),
+    pasa: (quien: string) => (quien === 'Tú' ? 'Pasas' : `${quien} pasa`),
+    cambia: (quien: string, n: number) =>
+      quien === 'Tú'
+        ? n === 0
+          ? 'No cambias ninguna carta'
+          : `Cambias ${n}`
+        : n === 0
+          ? `${quien} no cambia`
+          : `${quien} cambia ${n}`,
+    nadieJuega: (quien: string) => `Nadie juega: el bote es para ${quien}`,
+    finMano: (n: number) => (n === 1 ? 'Fin de la primera mano' : `Fin de la mano ${n}`),
+    jugador: 'Jugador',
+    bazasCol: 'Bazas',
+    cobraCol: 'Cobra',
+    julepeCol: 'Julepe',
+    fichasCol: 'Fichas',
+    pasoCelda: 'pasó',
+    eliminado: 'eliminado',
+    boteMano: (n: number, baza: number) => `Bote de ${n}: cada baza vale ${baza}`,
+    clasificacion: 'Fichas',
     siguienteMano: 'Siguiente mano',
   },
 
@@ -790,6 +847,7 @@ export const T = {
       pinacle: 'Cómo se juega al Pinacle',
       butifarra: 'Cómo se juega a la Butifarra',
       truc: 'Cómo se juega al Truc',
+      julepe: 'Cómo se juega al Julepe',
       red: 'Cómo se juega en red',
     },
     puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
@@ -1144,6 +1202,56 @@ export const T = {
           'No gastes un triunfo en una baza que no tiene puntos.',
           'Guarda el Rey y la Sota de un palo hasta que puedas cantarlos.',
           'En el arrastre cuenta los triunfos que han salido: el que tenga el último manda.',
+        ],
+      },
+    ],
+
+    julepe: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja española de 40 cartas, de 3 a 6 jugadores, cada uno por su cuenta. Todos empiezan con 50 fichas y gana quien más tenga al acabar las manos (12 por defecto). Quien se queda sin fichas queda eliminado.',
+        ],
+      },
+      {
+        titulo: 'El reparto y el bote',
+        texto: [
+          'Cada uno recibe 5 cartas. La última carta del que reparte se enseña a todos: su palo es el triunfo, y esa carta se queda en su mano.',
+          'Al empezar cada mano, el que reparte pone 10 fichas en el bote.',
+        ],
+      },
+      {
+        titulo: '¿Juegas o pasas?',
+        texto: [
+          'Mirando tus cartas, decides si juegas la mano o pasas. Si pasas, ni ganas ni pierdes nada en esa mano. Decide primero el siguiente al que reparte, y el que reparte el último.',
+          'Si antes del que reparte solo ha querido jugar uno, el que reparte está obligado a jugar. Si no ha querido nadie, el que reparte se lleva el bote.',
+        ],
+      },
+      {
+        titulo: 'El descarte',
+        texto: [
+          'Los que juegan pueden cambiar las cartas que quieran por otras del mazo, mientras queden. Toca las cartas que quieres cambiar y pulsa el botón.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Se juegan 5 bazas entre los que juegan. El orden es el de la Brisca: As, 3, Rey, Caballo, Sota, 7, 6, 5, 4 y 2. Gana el triunfo más alto o, si no hay, la carta más alta del palo que salió.',
+          'Hay que seguir el palo y superar la carta que va ganando si puedes. Si no tienes de ese palo, tienes que echar triunfo, y superar el triunfo de la mesa si puedes.',
+        ],
+      },
+      {
+        titulo: 'El cobro y el julepe',
+        texto: [
+          'Cada baza vale la quinta parte del bote. Pero quien juega y no hace al menos 2 bazas paga «julepe»: lo que valía el bote, que va al bote de la mano siguiente.',
+          'Por ejemplo: con un bote de 10 juegan tres. Quien hace 3 bazas cobra 6, quien hace 2 cobra 4, y quien no hace ninguna paga 10 de julepe.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Juega cuando tengas triunfos altos o Ases: con el descarte puedes mejorar el resto.',
+          'Con muchos jugadores en la mano, es más difícil hacer dos bazas: piénsalo antes de entrar.',
         ],
       },
     ],

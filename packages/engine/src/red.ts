@@ -15,6 +15,7 @@ import { CONFIG_MUS_POR_DEFECTO, mus } from './juegos/mus';
 import { CONFIG_PINACLE_POR_DEFECTO, pinacle } from './juegos/pinacle';
 import { CONFIG_POCHA_POR_DEFECTO, pocha } from './juegos/pocha';
 import { CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, sieteYMedia } from './juegos/siete-y-media';
+import { CONFIG_JULEPE_POR_DEFECTO, julepe } from './juegos/julepe';
 import { CONFIG_TRUC_POR_DEFECTO, truc } from './juegos/truc';
 import { CONFIG_TUTE_POR_DEFECTO, tute } from './juegos/tute';
 import type { Juego } from './motor/contrato';
@@ -38,6 +39,7 @@ export const IDS_JUEGOS_EN_RED = [
   'pinacle',
   'butifarra',
   'truc',
+  'julepe',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -84,6 +86,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   pinacle: entrada(pinacle, IAS.pinacle, CONFIG_PINACLE_POR_DEFECTO),
   butifarra: entrada(butifarra, IAS.butifarra, CONFIG_BUTIFARRA_POR_DEFECTO),
   truc: entrada(truc, IAS.truc, CONFIG_TRUC_POR_DEFECTO),
+  julepe: entrada(julepe, IAS.julepe, CONFIG_JULEPE_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

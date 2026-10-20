@@ -5,6 +5,12 @@ import {
   CONFIG_BUTIFARRA_POR_DEFECTO,
   CONFIG_TRUC_POR_DEFECTO,
   truc,
+  CONFIG_JULEPE_POR_DEFECTO,
+  julepe,
+  type AccionJulepe,
+  type ConfigJulepe,
+  type EstadoJulepe,
+  type VistaJulepe,
   type AccionTruc,
   type ConfigTruc,
   type EstadoTruc,
@@ -156,7 +162,8 @@ export type IdJuego =
   | 'burro'
   | 'pinacle'
   | 'butifarra'
-  | 'truc';
+  | 'truc'
+  | 'julepe';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -176,6 +183,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'pinacle',
   'butifarra',
   'truc',
+  'julepe',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -514,6 +522,25 @@ export const DEF_TRUC: DefTruc = {
   },
 };
 
+export type DefJulepe = DefJuego<ConfigJulepe, EstadoJulepe, AccionJulepe, VistaJulepe>;
+
+/** Tiempo para leer lo que decide o descarta cada jugador de la IA. */
+const PAUSA_DECISION_JULEPE_MS = 800;
+
+export const DEF_JULEPE: DefJulepe = {
+  id: 'julepe',
+  nombre: T.menu.julepe,
+  juego: julepe,
+  configPorDefecto: CONFIG_JULEPE_POR_DEFECTO,
+  ia: IAS.julepe,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, la última baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (antes.fase !== 'jugar' && antes.turno !== despues.asiento) return PAUSA_DECISION_JULEPE_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -532,6 +559,7 @@ export const JUEGOS = {
   pinacle: DEF_PINACLE,
   butifarra: DEF_BUTIFARRA,
   truc: DEF_TRUC,
+  julepe: DEF_JULEPE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

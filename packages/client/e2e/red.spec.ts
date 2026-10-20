@@ -211,6 +211,65 @@ test('Truc en red: dos humanos juegan una mano completa', async ({ browser }) =>
   }
 });
 
+test('Julepe en red: dos humanos y dos IAs juegan una mano', async ({ browser }) => {
+  test.setTimeout(150_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'julepe');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) await expect(p.locator('.carta-mano')).toHaveCount(5);
+
+  // Los dos juegan la mano, no cambian cartas y juegan su carta menor hasta el resumen.
+  const paginas = [ana, luis];
+  const paneles = paginas.map((p) => p.getByTestId('panel-mano'));
+  const terminada = async () =>
+    (await Promise.all(paneles.map((x) => x.isVisible()))).some(Boolean);
+  for (let paso = 0; paso < 40 && !(await terminada()); paso++) {
+    const accion = paginas.map((p) =>
+      p
+        .locator('[data-testid="julepe-jugar"], [data-testid="descartar"], .carta-mano.jugable')
+        .first(),
+    );
+    await expect
+      .poll(
+        async () =>
+          (await terminada()) ||
+          (await Promise.all(accion.map((a) => a.isVisible()))).some(Boolean),
+        {
+          timeout: 30_000,
+        },
+      )
+      .toBe(true);
+    if (await terminada()) break;
+    const i = (await accion[0]!.isVisible()) ? 0 : 1;
+    const p = paginas[i]!;
+    const boton = p.locator('[data-testid="julepe-jugar"], [data-testid="descartar"]').first();
+    if (await boton.isVisible()) {
+      const id = await boton.getAttribute('data-testid');
+      await boton.click();
+      await expect(p.getByTestId(id!)).toBeHidden();
+    } else {
+      const antes = await p.locator('.carta-mano').count();
+      await p
+        .locator('.carta-mano.jugable')
+        .first()
+        .click({ position: { x: 8, y: 8 } });
+      await p.getByTestId('mesa').click();
+      await expect(p.locator('.carta-mano')).not.toHaveCount(antes);
+    }
+  }
+  // Cada uno se ve como «Tú» y ve al otro por su nombre.
+  for (const [panel, otro] of [
+    [paneles[0]!, 'Luis'],
+    [paneles[1]!, 'Ana'],
+  ] as const) {
+    await expect(panel).toBeVisible({ timeout: 30_000 });
+    await expect(panel.getByTestId('resumen-julepe')).toContainText(otro);
+    await expect(panel.getByTestId('resumen-julepe')).toContainText('Tú');
+  }
+});
+
 test('sin servidor, la pantalla de red lo dice', async ({ page }) => {
   await abrirRed(page, 'Ana');
   await page.locator('summary').click();

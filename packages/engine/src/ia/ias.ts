@@ -22,9 +22,11 @@ import { SIMULABLE_GUINOTE } from './reconstruir/guinote';
 import { SIMULABLE_PINACLE } from './reconstruir/pinacle';
 import { SIMULABLE_POCHA } from './reconstruir/pocha';
 import { SIMULABLE_SIETE_Y_MEDIA } from './reconstruir/siete-y-media';
+import { SIMULABLE_JULEPE } from './reconstruir/julepe';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
+import { iaJulepeBasica } from './julepe-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
 
@@ -70,4 +72,5 @@ export const IAS = {
   butifarra: niveles(iaButifarraBasica, SIMULABLE_BUTIFARRA),
   // Las apuestas del Truc las decide la base también en el difícil: solo simula las cartas.
   truc: niveles(iaTrucBasica, SIMULABLE_TRUC),
+  julepe: niveles(iaJulepeBasica, SIMULABLE_JULEPE),
 } as const;

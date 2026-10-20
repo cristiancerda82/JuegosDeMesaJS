@@ -8,6 +8,7 @@
     ConfigBurro,
     ConfigButifarra,
     ConfigTruc,
+    ConfigJulepe,
     ConfigChinchon,
     ConfigCorazones,
     ConfigCinquillo,
@@ -58,6 +59,7 @@
   let pinacle: Editable<ConfigPinacle> = $state({ ...JUEGOS.pinacle.configPorDefecto });
   let butifarra: Editable<ConfigButifarra> = $state({ ...JUEGOS.butifarra.configPorDefecto });
   let trucConfig: Editable<ConfigTruc> = $state({ ...JUEGOS.truc.configPorDefecto });
+  let julepeConfig: Editable<ConfigJulepe> = $state({ ...JUEGOS.julepe.configPorDefecto });
   let freecellModo: 'azar' | 'numero' = $state('azar');
   let freecellNumero = $state(1);
 
@@ -92,6 +94,7 @@
       pinacle,
       butifarra,
       truc: trucConfig,
+      julepe: julepeConfig,
     };
     if (conIA) guardarNivel(juego, nivel);
     empezar({ ...configs[juego] }, nivel);
@@ -218,6 +221,19 @@
         <legend>{T.opciones.jugadores}</legend>
         <label><input type="radio" bind:group={pinacle.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
         <label><input type="radio" bind:group={pinacle.jugadores} value={4} /> {T.opciones.cuatroJugadores}</label>
+      </fieldset>
+    {:else if juego === 'julepe'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [3, 4, 5, 6] as const as n (n)}
+          <label><input type="radio" bind:group={julepeConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.manosJulepe}</legend>
+        {#each [12, 6, 20] as const as m (m)}
+          <label><input type="radio" bind:group={julepeConfig.manos} value={m} /> {T.opciones.manosJulepeN(m)}</label>
+        {/each}
       </fieldset>
     {:else if juego === 'truc'}
       <fieldset>
@@ -411,7 +427,7 @@
       <fieldset>
         <legend>{T.opciones.manos}</legend>
         {#each [1, 3, 5] as m (m)}
-          <label><input type="radio" bind:group={tute.manos} value={m} /> {T.opciones.manosN(m)}</label>
+          <label><input type="radio" bind:group={tute.manos} value={m} /> {T.opciones.manosJulepeN(m)}</label>
         {/each}
       </fieldset>
       <fieldset>
@@ -436,7 +452,7 @@
       <fieldset>
         <legend>{T.opciones.manos}</legend>
         {#each [1, 3, 5] as m (m)}
-          <label><input type="radio" bind:group={brisca.manos} value={m} /> {T.opciones.manosN(m)}</label>
+          <label><input type="radio" bind:group={brisca.manos} value={m} /> {T.opciones.manosJulepeN(m)}</label>
         {/each}
       </fieldset>
       <fieldset>
