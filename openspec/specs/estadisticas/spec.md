@@ -25,7 +25,7 @@ Una partida es ganada si el jugador está entre los ganadores, empatada si el re
 - **THEN** la partida está registrada exactamente una vez
 
 ### Requirement: Récords de los solitarios
-En el Klondike, el FreeCell, el Spider y la Pirámide, al ganar una partida se MUST guardar el mejor tiempo y el menor número de movimientos de todas las partidas ganadas de ese juego. El registro MUST indicar si la partida ha batido alguno de los dos récords.
+En el Klondike, el FreeCell, el Spider, la Pirámide y el Golf, al ganar una partida se MUST guardar el mejor tiempo y el menor número de movimientos de todas las partidas ganadas de ese juego. El registro MUST indicar si la partida ha batido alguno de los dos récords.
 
 #### Scenario: Nuevo mejor tiempo
 - **WHEN** el jugador gana un Klondike en 3 minutos y su mejor tiempo era de 5
