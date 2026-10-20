@@ -1,7 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { crearAzar, Generador } from '../../src/baraja/azar';
 import type { IdCarta } from '../../src/baraja/cartas';
-import { atascado, pistaFreeCell, pistaKlondike, pistaSpider } from '../../src/ia/pistas';
+import {
+  atascado,
+  pistaFreeCell,
+  pistaKlondike,
+  pistaPiramide,
+  pistaSpider,
+} from '../../src/ia/pistas';
+import {
+  CONFIG_PIRAMIDE_POR_DEFECTO,
+  piramide,
+  type EstadoPiramide,
+} from '../../src/juegos/piramide';
 import {
   CONFIG_FREECELL_POR_DEFECTO,
   freecell,
@@ -211,6 +222,54 @@ describe('pista del Spider', () => {
   });
 });
 
+describe('pista de la Pirámide', () => {
+  function mesaPiramide(parcial: Partial<EstadoPiramide>): EstadoPiramide {
+    const r = piramide.crear(CONFIG_PIRAMIDE_POR_DEFECTO, 'pista');
+    if (!r.ok) throw new Error(r.error);
+    // Relleno sin parejas: todo cuatros.
+    const relleno = new Array<IdCarta | null>(28).fill('picas-4');
+    return { ...r.valor, piramide: relleno, mazo: [], descarte: [], ...parcial };
+  }
+  const pistaP = (e: EstadoPiramide) =>
+    pistaPiramide(piramide.vistaDe(e, 0), piramide.accionesLegales(e, 0));
+
+  it('prefiere la pareja de la pirámide a la K del descarte', () => {
+    const p = mesaPiramide({}).piramide.slice();
+    p[21] = 'corazones-6';
+    p[22] = 'treboles-7';
+    const e = mesaPiramide({ piramide: p, descarte: ['picas-13'] });
+    expect(pistaP(e)).toEqual({
+      tipo: 'quitar',
+      cartas: [{ piramide: 21 }, { piramide: 22 }],
+    });
+  });
+
+  it('prefiere la pareja que libera cartas', () => {
+    const p = mesaPiramide({}).piramide.slice();
+    // 21 y 22 liberan la 15; 23 y 25 no liberan nada.
+    p[21] = 'corazones-6';
+    p[22] = 'treboles-7';
+    p[23] = 'corazones-5';
+    p[25] = 'treboles-8';
+    p[24] = 'picas-2';
+    const e = mesaPiramide({ piramide: p });
+    expect(pistaP(e)).toEqual({
+      tipo: 'quitar',
+      cartas: [{ piramide: 21 }, { piramide: 22 }],
+    });
+  });
+
+  it('roba cuando no se puede quitar nada', () => {
+    expect(pistaP(mesaPiramide({ mazo: ['picas-2'] }))).toEqual({ tipo: 'robar' });
+  });
+
+  it('sin mazo ni nada que quitar, está atascada', () => {
+    const e = mesaPiramide({ vueltas: 2, descarte: ['picas-2'] });
+    expect(pistaP(e)).toBeNull();
+    expect(atascado(piramide.accionesLegales(e, 0))).toBe(true);
+  });
+});
+
 // ── Propiedades ──────────────────────────────────────────────────────────────
 
 describe('las pistas en partidas al azar', () => {
@@ -218,6 +277,7 @@ describe('las pistas en partidas al azar', () => {
     { juego: klondike, config: CONFIG_KLONDIKE_POR_DEFECTO, pista: pistaKlondike },
     { juego: freecell, config: CONFIG_FREECELL_POR_DEFECTO, pista: pistaFreeCell },
     { juego: spider, config: CONFIG_SPIDER_POR_DEFECTO, pista: pistaSpider },
+    { juego: piramide, config: CONFIG_PIRAMIDE_POR_DEFECTO, pista: pistaPiramide },
   ] as unknown as {
     juego: Juego<unknown, unknown, { tipo: string }, unknown>;
     config: unknown;

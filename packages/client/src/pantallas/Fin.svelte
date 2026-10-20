@@ -33,7 +33,12 @@
   const mio = $derived(bandoDe(yo) as 0 | 1);
 
   const titulo = $derived.by(() => {
-    if (partida.id === 'klondike' || partida.id === 'freecell' || partida.id === 'spider') {
+    if (
+      partida.id === 'klondike' ||
+      partida.id === 'freecell' ||
+      partida.id === 'spider' ||
+      partida.id === 'piramide'
+    ) {
       return partida.sesion.vista.situacion === 'victoria' ? T.fin.solitarioGanado : T.fin.abandono;
     }
     if (partida.id === 'burro') {
@@ -48,6 +53,7 @@
     partida.id !== 'klondike' &&
       partida.id !== 'freecell' &&
       partida.id !== 'spider' &&
+      partida.id !== 'piramide' &&
       partida.id !== 'chinchon' &&
       partida.id !== 'sieteYMedia' &&
       partida.id !== 'cinquillo' &&
@@ -83,6 +89,10 @@
 
     {#if partida.id === 'klondike'}
       <p>{T.fin.resumenKlondike(partida.sesion.vista.movimientos, formatoTiempo(partida.sesion.tiempoMs()))}</p>
+    {:else if partida.id === 'piramide'}
+      <p data-testid="resumen-piramide">
+        {T.fin.resumenPiramide(partida.sesion.vista.movimientos, formatoTiempo(partida.sesion.tiempoMs()))}
+      </p>
     {:else if partida.id === 'spider'}
       {@const vista = partida.sesion.vista}
       <p data-testid="resumen-spider">

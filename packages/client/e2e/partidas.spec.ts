@@ -235,6 +235,7 @@ for (const juego of [
   'pocha',
   'mus',
   'spider',
+  'piramide',
   'corazones',
   'burro',
   'pinacle',

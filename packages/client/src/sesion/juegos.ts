@@ -53,6 +53,13 @@ import {
   CONFIG_FREECELL_POR_DEFECTO,
   CONFIG_SPIDER_POR_DEFECTO,
   spider,
+  piramide,
+  CONFIG_PIRAMIDE_POR_DEFECTO,
+  pistaPiramide,
+  type AccionPiramide,
+  type ConfigPiramide,
+  type EstadoPiramide,
+  type VistaPiramide,
   type AccionSpider,
   type ConfigSpider,
   type EstadoSpider,
@@ -176,6 +183,7 @@ export type IdJuego =
   | 'pocha'
   | 'mus'
   | 'spider'
+  | 'piramide'
   | 'corazones'
   | 'burro'
   | 'pinacle'
@@ -199,6 +207,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'pocha',
   'mus',
   'spider',
+  'piramide',
   'corazones',
   'burro',
   'pinacle',
@@ -245,6 +254,18 @@ export const DEF_SPIDER: DefSpider = {
   ia: null,
   pausaTras: () => 0,
   pista: pistaSpider,
+};
+
+export type DefPiramide = DefJuego<ConfigPiramide, EstadoPiramide, AccionPiramide, VistaPiramide>;
+
+export const DEF_PIRAMIDE: DefPiramide = {
+  id: 'piramide',
+  nombre: T.menu.piramide,
+  juego: piramide,
+  configPorDefecto: CONFIG_PIRAMIDE_POR_DEFECTO,
+  ia: null,
+  pausaTras: () => 0,
+  pista: pistaPiramide,
 };
 
 export const DEF_KLONDIKE: DefKlondike = {
@@ -641,6 +662,7 @@ export const JUEGOS = {
   pocha: DEF_POCHA,
   mus: DEF_MUS,
   spider: DEF_SPIDER,
+  piramide: DEF_PIRAMIDE,
   corazones: DEF_CORAZONES,
   burro: DEF_BURRO,
   pinacle: DEF_PINACLE,

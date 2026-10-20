@@ -32,6 +32,8 @@ export const T = {
     freecell: 'FreeCell',
     freecellDesc: 'Solitario con 4 celdas libres y todas las cartas a la vista.',
     spider: 'Spider',
+    piramide: 'Pirámide',
+    piramideDesc: 'Solitario: quita parejas de cartas que sumen 13 hasta deshacer la pirámide.',
     spiderDesc: 'Solitario de dos barajas: ordena escaleras del Rey al As del mismo palo.',
     brisca: 'Brisca',
     briscaDesc: 'Bazas con baraja española, contra la máquina.',
@@ -108,6 +110,9 @@ export const T = {
     dosJugadores: '2 jugadores',
     manosJulepe: 'Duración',
     manosJulepeN: (n: number) => `${n} manos`,
+    pasadas: 'Pasadas por el mazo',
+    pasadasN: (n: number | null) =>
+      n === null ? 'Sin límite' : n === 1 ? '1 pasada' : `${n} pasadas`,
     siempreCuatro: 'Siempre se juega con 4, cada uno por su cuenta.',
     dosCames: 'Dos cames de 12 (gana quien gane dos)',
     unaCame: 'Una came de 12',
@@ -541,6 +546,10 @@ export const T = {
     siguienteMano: 'Siguiente mano',
   },
 
+  piramide: {
+    sinLimite: 'Vueltas sin límite',
+  },
+
   truc: {
     piedras: 'Piedras',
     marcador: (nuestras: number, suyas: number) => `${nuestras} – ${suyas} (a 12)`,
@@ -964,6 +973,7 @@ export const T = {
     resumenKlondike: (movs: number, tiempo: string) => `${movs} movimientos en ${tiempo}`,
     resumenSpider: (escaleras: number, movs: number, tiempo: string) =>
       `${escaleras} de 8 escaleras, ${movs} movimientos en ${tiempo}`,
+    resumenPiramide: (movs: number, tiempo: string) => `${movs} movimientos en ${tiempo}`,
     resumenFreeCell: (numero: number, movs: number, tiempo: string) =>
       `Partida nº ${numero}: ${movs} movimientos en ${tiempo}`,
     porTute: (quien: string) =>
@@ -1014,6 +1024,7 @@ export const T = {
       freecell: 'Cómo se juega al FreeCell',
       cinquillo: 'Cómo se juega al Cinquillo',
       spider: 'Cómo se juega al Spider',
+      piramide: 'Cómo se juega a la Pirámide',
       corazones: 'Cómo se juega a los Corazones',
       pocha: 'Cómo se juega a la Pocha',
       mus: 'Cómo se juega al Mus',
@@ -1580,6 +1591,36 @@ export const T = {
         texto: [
           'Cuenta tus matadores antes de pujar: con dos o tres y unos cuantos triunfos, ya puedes jugar con rey.',
           'Llama el rey del palo en que tienes menos cartas: tu compañero te ganará esas bazas.',
+        ],
+      },
+    ],
+
+    piramide: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Es un solitario con la baraja francesa. Hay 28 cartas boca arriba en forma de pirámide, y ganas cuando las quitas todas, aunque queden cartas en el mazo.',
+        ],
+      },
+      {
+        titulo: 'Quitar cartas',
+        texto: [
+          'Se quitan parejas de cartas que sumen 13. El As vale 1, los números lo que marcan, la J 11 y la Q 12. La K vale 13 y se quita sola.',
+          'Solo se pueden quitar cartas libres: las de la pirámide que no tienen ninguna carta encima, y la de arriba del descarte. Toca una carta y luego la otra; la K se quita con un toque.',
+        ],
+      },
+      {
+        titulo: 'El mazo',
+        texto: [
+          'Toca el mazo para pasar su carta de arriba al descarte. Cuando se acaba, tócalo otra vez para darle la vuelta al descarte. Por defecto puedes recorrer el mazo 3 veces.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Antes de usar una carta del descarte, mira si hay en la pirámide otra que haga la pareja: liberar la pirámide es lo que importa.',
+          'Fíjate en qué cartas tapan a otras: a veces conviene esperar para quitar una pareja que libera más cartas.',
+          'Si te atascas, puedes deshacer o pedir una pista.',
         ],
       },
     ],

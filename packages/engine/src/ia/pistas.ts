@@ -1,6 +1,7 @@
 import { cartaDeId, type IdCarta } from '../baraja/cartas';
 import type { AccionFreeCell, VistaFreeCell } from '../juegos/freecell';
 import type { AccionKlondike, VistaKlondike } from '../juegos/klondike';
+import { libreEnPiramide, type AccionPiramide, type VistaPiramide } from '../juegos/piramide';
 import { baseSpider, type AccionSpider, type VistaSpider } from '../juegos/spider';
 
 /**
@@ -133,6 +134,37 @@ export function pistaSpider(
   return (
     mejor(acciones, (a) => puntosSpider(vista, a)) ??
     acciones.find((a) => a.tipo === 'repartir') ??
+    null
+  );
+}
+
+// ── Pirámide ─────────────────────────────────────────────────────────────────
+
+/**
+ * Lo que vale quitar unas cartas: mejor dos de la pirámide que una con el descarte, y mejor
+ * cuantas más cartas deja libres. Quitar solo del descarte (una K) es lo último.
+ */
+function puntosPiramide(v: VistaPiramide, a: AccionPiramide): number {
+  if (a.tipo !== 'quitar') return 0;
+  const posiciones = a.cartas.flatMap((s) => ('piramide' in s ? [s.piramide] : []));
+  if (posiciones.length === 0) return 20;
+  const tras = v.piramide.map((c, p) => (posiciones.includes(p) ? null : c));
+  const libera = tras.filter(
+    (_, p) => libreEnPiramide(tras, p) && !libreEnPiramide(v.piramide, p),
+  ).length;
+  const base = posiciones.length === 2 ? 100 : a.cartas.length === 1 ? 80 : 60;
+  return base + 10 * libera;
+}
+
+/** Pista de la Pirámide: quitar lo mejor, o robar, o dar la vuelta al descarte. */
+export function pistaPiramide(
+  vista: VistaPiramide,
+  acciones: readonly AccionPiramide[],
+): AccionPiramide | null {
+  return (
+    mejor(acciones, (a) => puntosPiramide(vista, a)) ??
+    acciones.find((a) => a.tipo === 'robar') ??
+    acciones.find((a) => a.tipo === 'reciclar') ??
     null
   );
 }

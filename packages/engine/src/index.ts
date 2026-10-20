@@ -28,6 +28,7 @@ export * from './juegos/cinquillo';
 export * from './juegos/pocha';
 export * from './juegos/mus';
 export * from './juegos/spider';
+export * from './juegos/piramide';
 export * from './juegos/corazones';
 export * from './juegos/burro';
 export * from './juegos/pinacle';
