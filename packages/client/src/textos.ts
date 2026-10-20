@@ -55,6 +55,8 @@ export const T = {
     volverSalaDesc: (codigo: string) => `Estabas en la sala ${codigo}.`,
     pinacleDesc:
       'El rummy de dos barajas con comodines: llévate el montón y baja escaleras y grupos.',
+    remigio: 'Remigio',
+    remigioDesc: 'Rummy de dos barajas con comodines: baja, añade a la mesa y cierra de golpe.',
     julepe: 'Julepe',
     julepeDesc: 'De 3 a 6: decide si juegas la mano y haz dos bazas, o paga el julepe.',
     truc: 'Truc',
@@ -311,6 +313,58 @@ export const T = {
     totalMano: 'Total de la mano',
     totalPartida: 'Total de la partida',
     deVueltas: (meta: number) => `Nadie llega a ${meta}: se juega de vueltas.`,
+    siguienteMano: 'Siguiente mano',
+  },
+
+  remigio: {
+    puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
+    limite: 'Eliminado al pasar de 100',
+    mano: (n: number) => `Mano ${n}`,
+    detalle: (cartas: number, puntos: number) =>
+      `${cartas === 1 ? '1 carta' : `${cartas} cartas`} · ${puntos} pts`,
+    robarMazo: 'Robar del mazo',
+    robarMonton: (carta: string) => `Robar del montón (${carta})`,
+    montonVacio: 'Montón vacío',
+    verMonton: (n: number) => `Ver el montón (${n})`,
+    montonTitulo: 'Cartas del montón',
+    cerrarPanel: 'Cerrar',
+    faseRobar: 'Roba del mazo o del montón',
+    faseBajar: 'Elige cartas para bajar, o una para descartar',
+    bajar: 'Bajar',
+    descartar: 'Descartar',
+    limpiar: 'Quitar selección',
+    cancelar: 'Cancelar',
+    eligeForma: '¿Cómo quieres bajarlas?',
+    noEncaja: 'Esas cartas no encajan en esa combinación.',
+    antesBaja: 'Para añadir a la mesa, primero tienes que bajar una combinación tuya.',
+    grupoDe: (numero: string, n: number) => `Grupo de ${numero} (${n} cartas)`,
+    escaleraDe: (desde: string, hasta: string, palo: string) =>
+      `Escalera de ${palo} del ${desde} al ${hasta}`,
+    ordenar: 'Ordenar',
+    porPalo: 'Por palo',
+    porNumero: 'Por número',
+    propias: 'Tus combinaciones',
+    de: (quien: string) => `De ${quien}`,
+    sinCombinaciones: 'Ninguna todavía',
+    roba: (quien: string) => `${quien} roba del mazo`,
+    robaMonton: (quien: string, carta: string) => `${quien} roba ${carta} del montón`,
+    baja: (quien: string) => `${quien} baja una combinación`,
+    anade: (quien: string) => `${quien} añade una carta`,
+    cambia: (quien: string) => `${quien} cambia un comodín`,
+    descarta: (quien: string, carta: string) => `${quien} descarta ${carta}`,
+    finMano: (n: number) => (n === 1 ? 'Fin de la primera mano' : `Fin de la mano ${n}`),
+    cierra: (quien: string) => (quien === 'Tú' ? 'Has cerrado tú' : `Ha cerrado ${quien}`),
+    remigio: (quien: string) =>
+      quien === 'Tú'
+        ? '¡Remigio! Has cerrado de golpe: los demás pagan doble'
+        : `¡Remigio de ${quien}! Los demás pagan doble`,
+    anulada: 'Nadie pudo cerrar: la mano se anula y nadie suma',
+    jugador: 'Jugador',
+    lesQueda: 'Le quedó',
+    manoCol: 'Mano',
+    totalCol: 'Total',
+    eliminado: 'eliminado',
+    clasificacion: 'Puntos',
     siguienteMano: 'Siguiente mano',
   },
 
@@ -848,6 +902,7 @@ export const T = {
       butifarra: 'Cómo se juega a la Butifarra',
       truc: 'Cómo se juega al Truc',
       julepe: 'Cómo se juega al Julepe',
+      remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
     puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
@@ -1202,6 +1257,51 @@ export const T = {
           'No gastes un triunfo en una baza que no tiene puntos.',
           'Guarda el Rey y la Sota de un palo hasta que puedas cantarlos.',
           'En el arrastre cuenta los triunfos que han salido: el que tenga el último manda.',
+        ],
+      },
+    ],
+
+    remigio: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con dos barajas españolas de 40 cartas y 4 comodines, de 2 a 5 jugadores. Cada uno recibe 7 cartas. Gana la mano quien se queda antes sin cartas, bajándolas a la mesa en combinaciones.',
+          'Los demás suman los puntos de las cartas que les quedan: cada número lo que vale, las figuras 10 y el comodín 25. Quien pasa de 100 queda eliminado, y gana la partida el último que queda.',
+        ],
+      },
+      {
+        titulo: 'Las combinaciones',
+        texto: [
+          'Escalera: 3 o más cartas seguidas del mismo palo. El orden es As, 2, 3, 4, 5, 6, 7, Sota, Caballo y Rey: el 7 y la Sota van seguidos, y el As solo puede ir abajo.',
+        ],
+        ejemplo: 'escaleraRemigio',
+      },
+      {
+        titulo: '',
+        texto: [
+          'Grupo: 3 o 4 cartas del mismo número, todas de palos distintos.',
+          'El comodín sustituye a cualquier carta, pero cada combinación necesita al menos 2 cartas de verdad.',
+        ],
+        ejemplo: 'grupoRemigio',
+      },
+      {
+        titulo: 'Tu turno',
+        texto: [
+          'Roba una carta del mazo o la de arriba del montón. Después puedes bajar combinaciones: elige las cartas y pulsa «Bajar». Al final, descarta una carta al montón.',
+          'Cuando ya has bajado alguna combinación en la mano, puedes añadir cartas a las combinaciones de cualquier jugador (elige la carta y toca la combinación) y cambiar un comodín de la mesa por la carta que representa: el comodín se va a tu mano.',
+        ],
+      },
+      {
+        titulo: 'Cerrar y remigio',
+        texto: [
+          'Cierras cuando te quedas sin cartas, bajando o descartando la última. Si lo bajas todo en un mismo turno sin haber bajado nada antes, es «remigio»: los demás pagan el doble.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'No tengas prisa por bajar si estás cerca de cerrarlo todo de golpe: un remigio hace mucho daño.',
+          'Pero si un rival tiene pocas cartas, baja lo que puedas: los comodines y las figuras en la mano cuestan muchos puntos.',
         ],
       },
     ],

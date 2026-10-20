@@ -11,6 +11,7 @@
   import ResumenButifarra from '../mesas/ResumenButifarra.svelte';
   import ResumenTruc from '../mesas/ResumenTruc.svelte';
   import ResumenJulepe from '../mesas/ResumenJulepe.svelte';
+  import ResumenRemigio from '../mesas/ResumenRemigio.svelte';
   import { formatoTiempo } from '../mesas/tiempo';
   import { T } from '../textos';
 
@@ -53,6 +54,7 @@
       partida.id !== 'corazones' &&
       partida.id !== 'burro' &&
       partida.id !== 'julepe' &&
+      partida.id !== 'remigio' &&
       partida.sesion.vista.config.jugadores === 4,
   );
 
@@ -192,6 +194,26 @@
             <tr>
               <th scope="row">{nombreChinchon(a, n)}</th>
               <td data-testid="fichas-{a}">{T.sieteYMedia.fichas(vista.fichas[a]!)}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'remigio'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenRemigio resultado={ultima} nombre={(a) => nombreChinchon(a, n)} />
+      {/if}
+      <table>
+        <caption>{T.remigio.clasificacion}</caption>
+        <tbody>
+          {#each Array.from({ length: n }, (_, a) => a).sort((a, b) => vista.puntos[a]! - vista.puntos[b]!) as a (a)}
+            <tr>
+              <th scope="row">{nombreChinchon(a, n)}</th>
+              <td data-testid="clasificacion-{a}">
+                {vista.eliminados[a] ? T.remigio.eliminado : T.remigio.puntos(vista.puntos[a]!)}
+              </td>
             </tr>
           {/each}
         </tbody>

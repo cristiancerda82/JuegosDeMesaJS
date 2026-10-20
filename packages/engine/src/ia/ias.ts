@@ -23,10 +23,12 @@ import { SIMULABLE_PINACLE } from './reconstruir/pinacle';
 import { SIMULABLE_POCHA } from './reconstruir/pocha';
 import { SIMULABLE_SIETE_Y_MEDIA } from './reconstruir/siete-y-media';
 import { SIMULABLE_JULEPE } from './reconstruir/julepe';
+import { SIMULABLE_REMIGIO } from './reconstruir/remigio';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
 import { iaJulepeBasica } from './julepe-basica';
+import { iaRemigioBasica } from './remigio-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
 
@@ -73,4 +75,5 @@ export const IAS = {
   // Las apuestas del Truc las decide la base también en el difícil: solo simula las cartas.
   truc: niveles(iaTrucBasica, SIMULABLE_TRUC),
   julepe: niveles(iaJulepeBasica, SIMULABLE_JULEPE),
+  remigio: niveles(iaRemigioBasica, SIMULABLE_REMIGIO),
 } as const;

@@ -7,6 +7,12 @@ import {
   truc,
   CONFIG_JULEPE_POR_DEFECTO,
   julepe,
+  CONFIG_REMIGIO_POR_DEFECTO,
+  remigio,
+  type AccionRemigio,
+  type ConfigRemigio,
+  type EstadoRemigio,
+  type VistaRemigio,
   type AccionJulepe,
   type ConfigJulepe,
   type EstadoJulepe,
@@ -163,7 +169,8 @@ export type IdJuego =
   | 'pinacle'
   | 'butifarra'
   | 'truc'
-  | 'julepe';
+  | 'julepe'
+  | 'remigio';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -184,6 +191,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'butifarra',
   'truc',
   'julepe',
+  'remigio',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -541,6 +549,26 @@ export const DEF_JULEPE: DefJulepe = {
   },
 };
 
+export type DefRemigio = DefJuego<ConfigRemigio, EstadoRemigio, AccionRemigio, VistaRemigio>;
+
+/** Tiempo para ver qué roba, baja o descarta un rival. */
+const PAUSA_REMIGIO_MS = 650;
+
+export const DEF_REMIGIO: DefRemigio = {
+  id: 'remigio',
+  nombre: T.menu.remigio,
+  juego: remigio,
+  configPorDefecto: CONFIG_REMIGIO_POR_DEFECTO,
+  ia: IAS.remigio,
+  // El cierre de la mano lo detiene la propia mesa con el resumen.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return 0;
+    return accion.asiento !== despues.asiento ? PAUSA_REMIGIO_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -560,6 +588,7 @@ export const JUEGOS = {
   butifarra: DEF_BUTIFARRA,
   truc: DEF_TRUC,
   julepe: DEF_JULEPE,
+  remigio: DEF_REMIGIO,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

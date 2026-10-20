@@ -38,6 +38,9 @@
   /** Las cartas que dan puntos en el Guiñote (la sota por encima del caballo) y su cante. */
   const VALORES_G: readonly IdCarta[] = ['oros-1', 'oros-3', 'oros-12', 'oros-10', 'oros-11'];
   const CANTE_G: readonly IdCarta[] = ['copas-12', 'copas-10'];
+  /** Una escalera del Remigio que cruza del 7 a la Sota, y un grupo con comodín. */
+  const ESCALERA_REMIGIO: readonly IdCarta[] = ['copas-6', 'copas-7', 'copas-10', 'copas-11'];
+  const GRUPO_REMIGIO: readonly IdCarta[] = ['oros-5', 'espadas-5', 'comodin-1'];
   /** Las cuatro cartas más altas del Truc y un envit de 33. */
   const JERARQUIA_TRUC: readonly IdCarta[] = ['espadas-1', 'bastos-1', 'espadas-7', 'oros-7'];
   const ENVIT_TRUC: readonly IdCarta[] = ['copas-7', 'copas-6', 'oros-12'];
@@ -116,6 +119,12 @@
                 <div class="hueco"><Carta {id} /></div>
                 <span>{T.ayuda.puntos(puntosDe(id, VALORES_GUINOTE))}</span>
               </li>
+            {/each}
+          </ul>
+        {:else if 'ejemplo' in seccion && (seccion.ejemplo === 'escaleraRemigio' || seccion.ejemplo === 'grupoRemigio')}
+          <ul class="valores">
+            {#each seccion.ejemplo === 'escaleraRemigio' ? ESCALERA_REMIGIO : GRUPO_REMIGIO as id (id)}
+              <li><div class="hueco"><Carta {id} /></div></li>
             {/each}
           </ul>
         {:else if 'ejemplo' in seccion && seccion.ejemplo === 'jerarquiaTruc'}

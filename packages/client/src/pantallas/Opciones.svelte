@@ -9,6 +9,7 @@
     ConfigButifarra,
     ConfigTruc,
     ConfigJulepe,
+    ConfigRemigio,
     ConfigChinchon,
     ConfigCorazones,
     ConfigCinquillo,
@@ -60,6 +61,7 @@
   let butifarra: Editable<ConfigButifarra> = $state({ ...JUEGOS.butifarra.configPorDefecto });
   let trucConfig: Editable<ConfigTruc> = $state({ ...JUEGOS.truc.configPorDefecto });
   let julepeConfig: Editable<ConfigJulepe> = $state({ ...JUEGOS.julepe.configPorDefecto });
+  let remigioConfig: Editable<ConfigRemigio> = $state({ ...JUEGOS.remigio.configPorDefecto });
   let freecellModo: 'azar' | 'numero' = $state('azar');
   let freecellNumero = $state(1);
 
@@ -95,6 +97,7 @@
       butifarra,
       truc: trucConfig,
       julepe: julepeConfig,
+      remigio: remigioConfig,
     };
     if (conIA) guardarNivel(juego, nivel);
     empezar({ ...configs[juego] }, nivel);
@@ -221,6 +224,13 @@
         <legend>{T.opciones.jugadores}</legend>
         <label><input type="radio" bind:group={pinacle.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
         <label><input type="radio" bind:group={pinacle.jugadores} value={4} /> {T.opciones.cuatroJugadores}</label>
+      </fieldset>
+    {:else if juego === 'remigio'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [2, 3, 4, 5] as const as n (n)}
+          <label><input type="radio" bind:group={remigioConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
+        {/each}
       </fieldset>
     {:else if juego === 'julepe'}
       <fieldset>

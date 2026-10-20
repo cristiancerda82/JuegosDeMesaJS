@@ -6,6 +6,10 @@ import {
   type EstadoBurro,
   type VistaBurro,
   type AccionChinchon,
+  type AccionRemigio,
+  type ConfigRemigio,
+  type EstadoRemigio,
+  type VistaRemigio,
   type AccionJulepe,
   type ConfigJulepe,
   type EstadoJulepe,
@@ -92,6 +96,7 @@ import {
   DEF_BUTIFARRA,
   DEF_TRUC,
   DEF_JULEPE,
+  DEF_REMIGIO,
   DEF_SPIDER,
   DEF_KLONDIKE,
   DEF_ESCOBA,
@@ -144,6 +149,7 @@ export type SesionButifarra = SesionMesa<
   AccionButifarra,
   VistaButifarra
 >;
+export type SesionRemigio = SesionMesa<ConfigRemigio, EstadoRemigio, AccionRemigio, VistaRemigio>;
 export type SesionJulepe = SesionMesa<ConfigJulepe, EstadoJulepe, AccionJulepe, VistaJulepe>;
 export type SesionTruc = SesionMesa<ConfigTruc, EstadoTruc, AccionTruc, VistaTruc>;
 export type SesionFreeCell = SesionMesa<
@@ -178,7 +184,8 @@ export type Partida =
   | { readonly id: 'pinacle'; readonly sesion: SesionPinacle }
   | { readonly id: 'butifarra'; readonly sesion: SesionButifarra }
   | { readonly id: 'truc'; readonly sesion: SesionTruc }
-  | { readonly id: 'julepe'; readonly sesion: SesionJulepe };
+  | { readonly id: 'julepe'; readonly sesion: SesionJulepe }
+  | { readonly id: 'remigio'; readonly sesion: SesionRemigio };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -198,7 +205,8 @@ export type ConfigJuego =
   | ConfigPinacle
   | ConfigButifarra
   | ConfigTruc
-  | ConfigJulepe;
+  | ConfigJulepe
+  | ConfigRemigio;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -243,6 +251,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_TRUC);
     case 'julepe':
       return hacer(DEF_JULEPE);
+    case 'remigio':
+      return hacer(DEF_REMIGIO);
   }
 }
 

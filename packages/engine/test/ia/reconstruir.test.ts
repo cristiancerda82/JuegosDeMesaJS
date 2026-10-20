@@ -43,6 +43,9 @@ import { CONFIG_TRUC_POR_DEFECTO, puntosEnvit, truc } from '../../src/juegos/tru
 import { iaJulepeBasica } from '../../src/ia/julepe-basica';
 import { fallosJulepe, reconstruirJulepe } from '../../src/ia/reconstruir/julepe';
 import { CONFIG_JULEPE_POR_DEFECTO, julepe } from '../../src/juegos/julepe';
+import { iaRemigioBasica } from '../../src/ia/remigio-basica';
+import { reconstruirRemigio } from '../../src/ia/reconstruir/remigio';
+import { CONFIG_REMIGIO_POR_DEFECTO, remigio } from '../../src/juegos/remigio';
 import { describirReconstruccion } from '../contrato/verificar-reconstruccion';
 
 // Una suite por juego (spec niveles-ia: reconstrucción de las cartas ocultas).
@@ -297,4 +300,11 @@ describe('reconstrucción del Julepe', () => {
     }
     expect(revisadas).toBeGreaterThan(50);
   });
+});
+
+describirReconstruccion(remigio, reconstruirRemigio, {
+  configs: [CONFIG_REMIGIO_POR_DEFECTO, { jugadores: 4 }],
+  base: iaRemigioBasica,
+  partidas: 3,
+  pasosMaximos: 400,
 });

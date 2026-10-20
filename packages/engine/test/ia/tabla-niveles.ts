@@ -12,6 +12,7 @@ import { CONFIG_PINACLE_POR_DEFECTO, pinacle } from '../../src/juegos/pinacle';
 import { CONFIG_POCHA_POR_DEFECTO, pocha } from '../../src/juegos/pocha';
 import { CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, sieteYMedia } from '../../src/juegos/siete-y-media';
 import { CONFIG_JULEPE_POR_DEFECTO, julepe } from '../../src/juegos/julepe';
+import { CONFIG_REMIGIO_POR_DEFECTO, remigio } from '../../src/juegos/remigio';
 import { CONFIG_TRUC_POR_DEFECTO, truc } from '../../src/juegos/truc';
 import { CONFIG_TUTE_POR_DEFECTO, tute } from '../../src/juegos/tute';
 import type { Asiento, Juego } from '../../src/motor/contrato';
@@ -66,4 +67,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Butifarra', butifarra, CONFIG_BUTIFARRA_POR_DEFECTO, IAS.butifarra, 'bandos'),
   entrada('Truc', truc, CONFIG_TRUC_POR_DEFECTO, IAS.truc, 'bandos'),
   entrada('Julepe', julepe, CONFIG_JULEPE_POR_DEFECTO, IAS.julepe, 4),
+  entrada('Remigio', remigio, CONFIG_REMIGIO_POR_DEFECTO, IAS.remigio, 2),
 ];

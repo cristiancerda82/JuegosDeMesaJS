@@ -270,6 +270,38 @@ test('Julepe en red: dos humanos y dos IAs juegan una mano', async ({ browser })
   }
 });
 
+test('Remigio en red: dos humanos roban y descartan', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'remigio');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(7);
+
+  // Cada uno roba del mazo y descarta su primera carta, dos veces.
+  for (let ronda = 0; ronda < 2; ronda++) {
+    for (const [p, otro] of [
+      [ana, luis],
+      [luis, ana],
+    ] as const) {
+      await expect(p.getByTestId('mazo')).toHaveClass(/robable/);
+      await p.getByTestId('mazo').click();
+      await expect(p.getByTestId('descartar')).toBeVisible();
+      const primera = p.locator('[data-testid="mano"] .carta-mano').first();
+      const carta = await primera.getAttribute('data-carta');
+      await primera.click({ position: { x: 6, y: 6 } });
+      await p.getByTestId('descartar').click();
+      await expect(otro.getByTestId('monton')).toHaveAttribute('aria-label', /Robar del montón/);
+      expect(carta).not.toBeNull();
+    }
+  }
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(7);
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('sin servidor, la pantalla de red lo dice', async ({ page }) => {
   await abrirRed(page, 'Ana');
   await page.locator('summary').click();
