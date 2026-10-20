@@ -155,7 +155,10 @@ function puedeCambiarSiete(e: EstadoTute, asiento: Asiento): boolean {
 }
 
 /** Palos en los que el asiento puede cantar: tiene rey y caballo y aún no se cantaron. */
-function palosCantables(e: EstadoTute, asiento: Asiento): PaloEspanol[] {
+export function palosCantables(
+  e: Pick<EstadoTute, 'manos' | 'cantes'>,
+  asiento: Asiento,
+): PaloEspanol[] {
   const mano = e.manos[asiento]!;
   return PALOS_ESPANOLES.filter(
     (palo) =>
@@ -166,7 +169,7 @@ function palosCantables(e: EstadoTute, asiento: Asiento): PaloEspanol[] {
 }
 
 /** Tiene los 4 reyes o los 4 caballos. */
-function tieneTute(mano: readonly IdCarta[]): boolean {
+export function tieneTute(mano: readonly IdCarta[]): boolean {
   return [REY, CABALLO].some((valor) =>
     PALOS_ESPANOLES.every((palo) => mano.includes(`${palo}-${valor}`)),
   );

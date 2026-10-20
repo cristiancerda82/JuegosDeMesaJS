@@ -5,6 +5,7 @@
   import MesaButifarra from '../mesas/MesaButifarra.svelte';
   import MesaTruc from '../mesas/MesaTruc.svelte';
   import MesaJulepe from '../mesas/MesaJulepe.svelte';
+  import MesaTuteSubastado from '../mesas/MesaTuteSubastado.svelte';
   import MesaRemigio from '../mesas/MesaRemigio.svelte';
   import MesaChinchon from '../mesas/MesaChinchon.svelte';
   import MesaCinquillo from '../mesas/MesaCinquillo.svelte';
@@ -79,6 +80,8 @@
     <MesaBurro sesion={partida.sesion} />
   {:else if partida.id === 'remigio'}
     <MesaRemigio sesion={partida.sesion} />
+  {:else if partida.id === 'tuteSubastado'}
+    <MesaTuteSubastado sesion={partida.sesion} />
   {:else if partida.id === 'julepe'}
     <MesaJulepe sesion={partida.sesion} />
   {:else if partida.id === 'truc'}

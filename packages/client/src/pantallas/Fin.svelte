@@ -11,6 +11,7 @@
   import ResumenButifarra from '../mesas/ResumenButifarra.svelte';
   import ResumenTruc from '../mesas/ResumenTruc.svelte';
   import ResumenJulepe from '../mesas/ResumenJulepe.svelte';
+  import ResumenTuteSubastado from '../mesas/ResumenTuteSubastado.svelte';
   import ResumenRemigio from '../mesas/ResumenRemigio.svelte';
   import { formatoTiempo } from '../mesas/tiempo';
   import { T } from '../textos';
@@ -55,6 +56,7 @@
       partida.id !== 'burro' &&
       partida.id !== 'julepe' &&
       partida.id !== 'remigio' &&
+      partida.id !== 'tuteSubastado' &&
       partida.sesion.vista.config.jugadores === 4,
   );
 
@@ -214,6 +216,23 @@
               <td data-testid="clasificacion-{a}">
                 {vista.eliminados[a] ? T.remigio.eliminado : T.remigio.puntos(vista.puntos[a]!)}
               </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'tuteSubastado'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenTuteSubastado resultado={ultima} nombre={(a) => nombreChinchon(a, 4)} />
+      {/if}
+      <table>
+        <caption>{T.tuteSubastado.clasificacion}</caption>
+        <tbody>
+          {#each [0, 1, 2, 3].sort((a, b) => vista.fichas[b]! - vista.fichas[a]!) as a (a)}
+            <tr>
+              <th scope="row">{nombreChinchon(a, 4)}</th>
+              <td data-testid="fichas-{a}">{T.tuteSubastado.fichas(vista.fichas[a]!)}</td>
             </tr>
           {/each}
         </tbody>

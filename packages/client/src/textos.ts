@@ -3,6 +3,11 @@ function formatoValor(medios: number): string {
   return medios % 2 === 0 ? `${medios / 2}` : `${(medios - 1) / 2},5`;
 }
 
+/** Un número con el signo menos tipográfico, como en el resto de marcadores. */
+const conSigno = (n: number) => (n < 0 ? `−${-n}` : `${n}`);
+const fichasConSigno = (n: number) =>
+  n === 1 || n === -1 ? `${conSigno(n)} ficha` : `${conSigno(n)} fichas`;
+
 /**
  * Todos los textos visibles del cliente, en español. Centralizados aquí por si hace falta
  * traducir más adelante (design: no hay sistema de traducción todavía).
@@ -58,6 +63,9 @@ export const T = {
     remigio: 'Remigio',
     remigioDesc: 'Rummy de dos barajas con comodines: baja, añade a la mesa y cierra de golpe.',
     julepe: 'Julepe',
+    tuteSubastado: 'Tute subastado',
+    tuteSubastadoDesc:
+      'Subasta cuántos puntos harás, elige el triunfo y juega tú solo contra tres.',
     julepeDesc: 'De 3 a 6: decide si juegas la mano y haz dos bazas, o paga el julepe.',
     truc: 'Truc',
     trucDesc: 'Envit y truc con tres cartas: apuesta, farolea y gana dos de tres bazas.',
@@ -98,6 +106,7 @@ export const T = {
     dosJugadores: '2 jugadores',
     manosJulepe: 'Duración',
     manosJulepeN: (n: number) => `${n} manos`,
+    siempreCuatro: 'Siempre se juega con 4, cada uno por su cuenta.',
     dosCames: 'Dos cames de 12 (gana quien gane dos)',
     unaCame: 'Una came de 12',
     cuatroJugadores: '4 jugadores en parejas',
@@ -417,6 +426,55 @@ export const T = {
     pasoCelda: 'pasó',
     eliminado: 'eliminado',
     boteMano: (n: number, baza: number) => `Bote de ${n}: cada baza vale ${baza}`,
+    clasificacion: 'Fichas',
+    siguienteMano: 'Siguiente mano',
+  },
+
+  tuteSubastado: {
+    rivalN: (n: number) => `Rival ${n}`,
+    triunfo: 'Triunfo',
+    sinTriunfo: 'por elegir',
+    palo: (palo: string) => palo.charAt(0).toUpperCase() + palo.slice(1),
+    mano: (n: number, total: number) => `Mano ${n} de ${total}`,
+    numero: (n: number) => conSigno(n),
+    fichas: (n: number) => fichasConSigno(n),
+    puja: (puntos: number, quien: string) => `Puja: ${puntos} (${quien})`,
+    sinPuja: 'Sin pujas',
+    lleva: (lleva: number, puja: number) => `Pujador: ${lleva} de ${puja}`,
+    subasta: 'Subasta',
+    tuTurno: (puja: number | null) =>
+      puja === null ? 'Nadie ha pujado: ¿cuánto pujas?' : `La puja va en ${puja}: ¿subes?`,
+    paso: 'Paso',
+    eligeTriunfo: 'Has ganado la subasta: elige el triunfo',
+    detalle: (dicho: number | 'paso' | null, fichas: number) => {
+      const saldo = fichasConSigno(fichas);
+      return dicho === 'paso'
+        ? `pasa · ${saldo}`
+        : dicho === null
+          ? saldo
+          : `puja ${dicho} · ${saldo}`;
+    },
+    detalleBazas: (pujador: boolean, bazas: number, fichas: number) =>
+      `${pujador ? 'pujador · ' : ''}${bazas === 1 ? '1 baza' : `${bazas} bazas`} · ${conSigno(fichas)}`,
+    pasa: (quien: string) => (quien === 'Tú' ? 'Pasas' : `${quien} pasa`),
+    puja2: (quien: string, puntos: number) =>
+      quien === 'Tú' ? `Pujas ${puntos}` : `${quien} puja ${puntos}`,
+    gana: (quien: string, puntos: number) =>
+      quien === 'Tú' ? `Ganas la subasta con ${puntos}` : `${quien} gana la subasta con ${puntos}`,
+    eligio: (quien: string, palo: string) =>
+      quien === 'Tú' ? `Triunfo: ${palo}` : `${quien} elige ${palo} de triunfo`,
+    todosPasaron: 'Pasaron todos: se reparte otra vez',
+    finMano: (n: number) => (n === 1 ? 'Fin de la primera mano' : `Fin de la mano ${n}`),
+    cumple: (quien: string, puja: number) =>
+      quien === 'Tú' ? `Cumples tus ${puja}` : `${quien} cumple sus ${puja}`,
+    falla: (quien: string, puja: number) =>
+      quien === 'Tú' ? `No llegas a tus ${puja}` : `${quien} no llega a sus ${puja}`,
+    tuteDe: (quien: string) => (quien === 'Tú' ? '¡Cantas el tute!' : `¡Tute de ${quien}!`),
+    puntosMano: (pujador: number, defensores: number) =>
+      `Pujador ${pujador} · defensores ${defensores}`,
+    jugador: 'Jugador',
+    cambioCol: 'Mano',
+    fichasCol: 'Fichas',
     clasificacion: 'Fichas',
     siguienteMano: 'Siguiente mano',
   },
@@ -902,6 +960,7 @@ export const T = {
       butifarra: 'Cómo se juega a la Butifarra',
       truc: 'Cómo se juega al Truc',
       julepe: 'Cómo se juega al Julepe',
+      tuteSubastado: 'Cómo se juega al Tute subastado',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -1352,6 +1411,59 @@ export const T = {
         texto: [
           'Juega cuando tengas triunfos altos o Ases: con el descarte puedes mejorar el resto.',
           'Con muchos jugadores en la mano, es más difícil hacer dos bazas: piénsalo antes de entrar.',
+        ],
+      },
+    ],
+
+    tuteSubastado: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja española de 40 cartas y 4 jugadores, sin parejas fijas. En cada mano se subastan los puntos que se van a hacer, y quien gana la subasta juega solo contra los otros tres, que esa mano son compañeros.',
+          'Se cobra en fichas. Todos empiezan con 0 y gana quien más tenga al acabar las manos (8 por defecto).',
+        ],
+      },
+      {
+        titulo: 'Las cartas',
+        texto: [
+          'Cada uno recibe 10 cartas. El orden y los puntos son los del Tute: As (11), 3 (10), Rey (4), Caballo (3) y Sota (2); el 7, 6, 5, 4 y 2 no valen puntos. Las bazas suman 120, y la última vale 10 más.',
+        ],
+        ejemplo: 'valores',
+      },
+      {
+        titulo: 'La subasta',
+        texto: [
+          'Empieza a hablar el siguiente al que reparte. En tu turno pasas o pujas: la primera puja es de 60 como mínimo y cada una sube la anterior de 10 en 10. Quien pasa ya no vuelve a pujar.',
+          'Cuando los otros tres han pasado, el último que pujó gana la subasta: es el pujador. Si pasan los cuatro, se reparte otra vez.',
+        ],
+      },
+      {
+        titulo: 'El triunfo y las bazas',
+        texto: [
+          'El pujador mira su mano, elige el palo de triunfo y sale en la primera baza.',
+          'Hay que seguir el palo y superar la carta que va ganando si puedes, aunque sea de un compañero. Si no tienes de ese palo, tienes que echar triunfo, y superar el triunfo de la mesa si puedes.',
+        ],
+      },
+      {
+        titulo: 'Los cantes',
+        texto: [
+          'Quien acaba de ganar una baza puede cantar, antes de salir, el Rey y el Caballo de un palo: 40 si es el triunfo y 20 si no. Los cantes suman al bando de quien canta.',
+          'Con los 4 Reyes o los 4 Caballos se canta el tute: si lo canta el pujador, cumple en el acto; si lo canta otro, el pujador falla.',
+        ],
+        ejemplo: 'cante',
+      },
+      {
+        titulo: 'El cobro',
+        texto: [
+          'El pujador cumple si sus bazas, sus cantes y las 10 de últimas llegan a lo que pujó. Si cumple, cobra de cada rival una ficha por cada 10 puntos pujados; si no, se las paga a cada uno.',
+          'Por ejemplo: con una puja de 80 hace 85 puntos. Cobra 8 fichas de cada rival: gana 24 y cada uno pierde 8.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
+          'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
         ],
       },
     ],

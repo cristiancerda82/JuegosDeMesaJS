@@ -25,6 +25,11 @@ export interface SituacionBaza {
   readonly mesa: readonly CartaJugada[];
   /** Orden y puntos de las cartas; por defecto, los de la Brisca y el Tute. */
   readonly valores?: ValoresBazas;
+  /**
+   * Si `otro` es compañero de `asiento`. Por defecto, en parejas fijas de 4 (pares contra
+   * impares); los juegos con bandos que cambian en cada mano dan el suyo.
+   */
+  readonly companero?: (otro: Asiento) => boolean;
 }
 
 /** Puntos en la mesa a partir de los cuales vale la pena gastar un triunfo de puntos. */
@@ -67,7 +72,9 @@ export function cartaParaResponder(b: SituacionBaza, cartas: readonly IdCarta[])
   const ganaAhora = cartaGanadora(b.mesa, b.triunfo, v).asiento;
 
   // En parejas, si la baza ya es del compañero y nadie puede quitársela, se le cargan puntos.
-  if (b.jugadores === 4 && bandoDe(ganaAhora) === bandoDe(b.asiento)) {
+  const companero =
+    b.companero ?? ((otro) => b.jugadores === 4 && bandoDe(otro) === bandoDe(b.asiento));
+  if (companero(ganaAhora)) {
     if (!ultimo) return barata(cartas);
     const sinTriunfo = cartas.filter((c) => paloDe(c) !== b.triunfo);
     const cargas = sinTriunfo.length > 0 ? sinTriunfo : cartas;

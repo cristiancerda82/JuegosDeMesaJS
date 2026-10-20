@@ -19,6 +19,7 @@ import { CONFIG_JULEPE_POR_DEFECTO, julepe } from './juegos/julepe';
 import { CONFIG_REMIGIO_POR_DEFECTO, remigio } from './juegos/remigio';
 import { CONFIG_TRUC_POR_DEFECTO, truc } from './juegos/truc';
 import { CONFIG_TUTE_POR_DEFECTO, tute } from './juegos/tute';
+import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from './juegos/tute-subastado';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -42,6 +43,7 @@ export const IDS_JUEGOS_EN_RED = [
   'truc',
   'julepe',
   'remigio',
+  'tuteSubastado',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -90,6 +92,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   truc: entrada(truc, IAS.truc, CONFIG_TRUC_POR_DEFECTO),
   julepe: entrada(julepe, IAS.julepe, CONFIG_JULEPE_POR_DEFECTO),
   remigio: entrada(remigio, IAS.remigio, CONFIG_REMIGIO_POR_DEFECTO),
+  tuteSubastado: entrada(tuteSubastado, IAS.tuteSubastado, CONFIG_TUTE_SUBASTADO_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

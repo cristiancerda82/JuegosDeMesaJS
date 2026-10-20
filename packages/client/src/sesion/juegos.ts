@@ -9,6 +9,12 @@ import {
   julepe,
   CONFIG_REMIGIO_POR_DEFECTO,
   remigio,
+  CONFIG_TUTE_SUBASTADO_POR_DEFECTO,
+  tuteSubastado,
+  type AccionTuteSubastado,
+  type ConfigTuteSubastado,
+  type EstadoTuteSubastado,
+  type VistaTuteSubastado,
   type AccionRemigio,
   type ConfigRemigio,
   type EstadoRemigio,
@@ -170,7 +176,8 @@ export type IdJuego =
   | 'butifarra'
   | 'truc'
   | 'julepe'
-  | 'remigio';
+  | 'remigio'
+  | 'tuteSubastado';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -192,6 +199,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'truc',
   'julepe',
   'remigio',
+  'tuteSubastado',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -569,6 +577,31 @@ export const DEF_REMIGIO: DefRemigio = {
   },
 };
 
+export type DefTuteSubastado = DefJuego<
+  ConfigTuteSubastado,
+  EstadoTuteSubastado,
+  AccionTuteSubastado,
+  VistaTuteSubastado
+>;
+
+/** Tiempo para leer lo que puja o elige cada jugador de la IA. */
+const PAUSA_SUBASTA_MS = 800;
+
+export const DEF_TUTE_SUBASTADO: DefTuteSubastado = {
+  id: 'tuteSubastado',
+  nombre: T.menu.tuteSubastado,
+  juego: tuteSubastado,
+  configPorDefecto: CONFIG_TUTE_SUBASTADO_POR_DEFECTO,
+  ia: IAS.tuteSubastado,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, la última baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (antes.fase !== 'bazas' && antes.turno !== despues.asiento) return PAUSA_SUBASTA_MS;
+    const cante = despues.cantes.length > antes.cantes.length ? PAUSA_CANTE_MS : 0;
+    return Math.max(cante, pausaBazas(antes, despues));
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -589,6 +622,7 @@ export const JUEGOS = {
   truc: DEF_TRUC,
   julepe: DEF_JULEPE,
   remigio: DEF_REMIGIO,
+  tuteSubastado: DEF_TUTE_SUBASTADO,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

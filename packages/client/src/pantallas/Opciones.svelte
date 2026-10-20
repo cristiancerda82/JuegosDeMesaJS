@@ -10,6 +10,7 @@
     ConfigTruc,
     ConfigJulepe,
     ConfigRemigio,
+    ConfigTuteSubastado,
     ConfigChinchon,
     ConfigCorazones,
     ConfigCinquillo,
@@ -62,6 +63,9 @@
   let trucConfig: Editable<ConfigTruc> = $state({ ...JUEGOS.truc.configPorDefecto });
   let julepeConfig: Editable<ConfigJulepe> = $state({ ...JUEGOS.julepe.configPorDefecto });
   let remigioConfig: Editable<ConfigRemigio> = $state({ ...JUEGOS.remigio.configPorDefecto });
+  let subastado: Editable<ConfigTuteSubastado> = $state({
+    ...JUEGOS.tuteSubastado.configPorDefecto,
+  });
   let freecellModo: 'azar' | 'numero' = $state('azar');
   let freecellNumero = $state(1);
 
@@ -98,6 +102,7 @@
       truc: trucConfig,
       julepe: julepeConfig,
       remigio: remigioConfig,
+      tuteSubastado: subastado,
     };
     if (conIA) guardarNivel(juego, nivel);
     empezar({ ...configs[juego] }, nivel);
@@ -230,6 +235,14 @@
         <legend>{T.opciones.jugadores}</legend>
         {#each [2, 3, 4, 5] as const as n (n)}
           <label><input type="radio" bind:group={remigioConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
+        {/each}
+      </fieldset>
+    {:else if juego === 'tuteSubastado'}
+      <p class="nota-opciones">{T.opciones.siempreCuatro}</p>
+      <fieldset>
+        <legend>{T.opciones.manosJulepe}</legend>
+        {#each [8, 4, 12] as const as m (m)}
+          <label><input type="radio" bind:group={subastado.manos} value={m} /> {T.opciones.manosJulepeN(m)}</label>
         {/each}
       </fieldset>
     {:else if juego === 'julepe'}
@@ -532,5 +545,11 @@
     justify-content: space-between;
     gap: 12px;
     margin-top: 18px;
+  }
+
+  .nota-opciones {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--texto-suave);
   }
 </style>

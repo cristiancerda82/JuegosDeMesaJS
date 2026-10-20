@@ -45,6 +45,9 @@ import { fallosJulepe, reconstruirJulepe } from '../../src/ia/reconstruir/julepe
 import { CONFIG_JULEPE_POR_DEFECTO, julepe } from '../../src/juegos/julepe';
 import { iaRemigioBasica } from '../../src/ia/remigio-basica';
 import { reconstruirRemigio } from '../../src/ia/reconstruir/remigio';
+import { reconstruirTuteSubastado } from '../../src/ia/reconstruir/tute-subastado';
+import { iaTuteSubastadoBasica } from '../../src/ia/tute-subastado-basica';
+import { tuteSubastado } from '../../src/juegos/tute-subastado';
 import { CONFIG_REMIGIO_POR_DEFECTO, remigio } from '../../src/juegos/remigio';
 import { describirReconstruccion } from '../contrato/verificar-reconstruccion';
 
@@ -307,4 +310,41 @@ describirReconstruccion(remigio, reconstruirRemigio, {
   base: iaRemigioBasica,
   partidas: 3,
   pasosMaximos: 400,
+});
+
+describirReconstruccion(tuteSubastado, reconstruirTuteSubastado, {
+  configs: [{ manos: 4 }],
+  base: iaTuteSubastadoBasica,
+  partidas: 3,
+  pasosMaximos: 400,
+});
+
+describe('reconstrucción del Tute subastado', () => {
+  it('ningún rival recibe un palo que se sabe que no tiene', () => {
+    let revisadas = 0;
+    for (let i = 0; i < 40; i++) {
+      const creado = tuteSubastado.crear({ manos: 4 }, `subastado-${i}`);
+      if (!creado.ok) throw new Error(creado.error);
+      let e = creado.valor;
+      const g = new Generador(crearAzar(`subastado-${i}/g`));
+      for (let paso = 0; paso < 30 + g.enteroHasta(30); paso++) {
+        const acciones = tuteSubastado.accionesLegales(e, e.turno);
+        if (acciones.length === 0) break;
+        e = tuteSubastado.transicion(e, e.turno, acciones[g.enteroHasta(acciones.length)]!);
+      }
+      if (e.fase !== 'bazas') continue;
+      const vista = tuteSubastado.vistaDe(e, 0);
+      const fallos = fallosJulepe(
+        [...vista.bazasMano.map((b) => b.cartas), vista.mesa],
+        vista.triunfo!,
+        4,
+      );
+      const r = reconstruirTuteSubastado(vista, crearAzar(`subastado-${i}/r`));
+      for (let a = 1; a < 4; a++) {
+        for (const c of r.manos[a]!) expect(fallos[a]!.has(paloDe(c))).toBe(false);
+      }
+      revisadas++;
+    }
+    expect(revisadas).toBeGreaterThan(20);
+  });
 });

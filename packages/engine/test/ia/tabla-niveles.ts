@@ -15,6 +15,7 @@ import { CONFIG_JULEPE_POR_DEFECTO, julepe } from '../../src/juegos/julepe';
 import { CONFIG_REMIGIO_POR_DEFECTO, remigio } from '../../src/juegos/remigio';
 import { CONFIG_TRUC_POR_DEFECTO, truc } from '../../src/juegos/truc';
 import { CONFIG_TUTE_POR_DEFECTO, tute } from '../../src/juegos/tute';
+import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
 
@@ -68,4 +69,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Truc', truc, CONFIG_TRUC_POR_DEFECTO, IAS.truc, 'bandos'),
   entrada('Julepe', julepe, CONFIG_JULEPE_POR_DEFECTO, IAS.julepe, 4),
   entrada('Remigio', remigio, CONFIG_REMIGIO_POR_DEFECTO, IAS.remigio, 2),
+  entrada('Tute subastado', tuteSubastado, CONFIG_TUTE_SUBASTADO_POR_DEFECTO, IAS.tuteSubastado, 4),
 ];
