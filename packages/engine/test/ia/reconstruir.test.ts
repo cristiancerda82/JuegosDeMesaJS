@@ -46,6 +46,9 @@ import { CONFIG_JULEPE_POR_DEFECTO, julepe } from '../../src/juegos/julepe';
 import { iaRemigioBasica } from '../../src/ia/remigio-basica';
 import { reconstruirRemigio } from '../../src/ia/reconstruir/remigio';
 import { reconstruirTuteSubastado } from '../../src/ia/reconstruir/tute-subastado';
+import { prohibidasCuatrola, reconstruirCuatrola } from '../../src/ia/reconstruir/cuatrola';
+import { iaCuatrolaBasica } from '../../src/ia/cuatrola-basica';
+import { cuatrola } from '../../src/juegos/cuatrola';
 import { iaTuteSubastadoBasica } from '../../src/ia/tute-subastado-basica';
 import { tuteSubastado } from '../../src/juegos/tute-subastado';
 import { CONFIG_REMIGIO_POR_DEFECTO, remigio } from '../../src/juegos/remigio';
@@ -343,6 +346,50 @@ describe('reconstrucción del Tute subastado', () => {
       for (let a = 1; a < 4; a++) {
         for (const c of r.manos[a]!) expect(fallos[a]!.has(paloDe(c))).toBe(false);
       }
+      revisadas++;
+    }
+    expect(revisadas).toBeGreaterThan(20);
+  });
+});
+
+describirReconstruccion(cuatrola, reconstruirCuatrola, {
+  configs: [{ manos: 4 }],
+  base: iaCuatrolaBasica,
+  partidas: 3,
+  pasosMaximos: 400,
+});
+
+describe('reconstrucción de la Cuatrola', () => {
+  it('respeta lo que se sabe de cada mano y la carta llamada', () => {
+    let revisadas = 0;
+    for (let i = 0; i < 60; i++) {
+      const creado = cuatrola.crear({ manos: 4 }, `cuatrola-${i}`);
+      if (!creado.ok) throw new Error(creado.error);
+      let e = creado.valor;
+      const g = new Generador(crearAzar(`cuatrola-${i}/g`));
+      for (let paso = 0; paso < 10 + g.enteroHasta(40); paso++) {
+        const acciones = cuatrola.accionesLegales(e, e.turno);
+        if (acciones.length === 0) break;
+        e = cuatrola.transicion(e, e.turno, acciones[g.enteroHasta(acciones.length)]!);
+      }
+      if (e.fase !== 'bazas') continue;
+      const yo = [0, 1, 2, 3].find((a) => a !== e.jugador && a !== e.companero)!;
+      const vista = cuatrola.vistaDe(e, yo);
+      const prohibidas = prohibidasCuatrola(
+        [...vista.bazasMano.map((b) => b.cartas), vista.mesa],
+        vista.triunfo!,
+      );
+      // Lo que se deduce nunca contradice el estado real.
+      for (let a = 0; a < 4; a++) {
+        for (const c of e.manos[a]!) expect(prohibidas[a]!.has(c)).toBe(false);
+      }
+      const r = reconstruirCuatrola(vista, crearAzar(`cuatrola-${i}/r`));
+      for (let a = 0; a < 4; a++) {
+        if (a === yo) continue;
+        for (const c of r.manos[a]!) expect(prohibidas[a]!.has(c)).toBe(false);
+      }
+      if (e.llamada !== null) expect(r.manos[e.jugador!]).not.toContain(e.llamada);
+      expect(cuatrola.vistaDe(r, yo)).toEqual(vista);
       revisadas++;
     }
     expect(revisadas).toBeGreaterThan(20);

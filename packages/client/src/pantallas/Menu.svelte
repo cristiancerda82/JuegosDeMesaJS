@@ -43,6 +43,7 @@ ull. */
     { id: 'spider', desc: T.menu.spiderDesc, cartas: ['picas-13', 'picas-12', 'picas-11'] },
     { id: 'brisca', desc: T.menu.briscaDesc, cartas: ['oros-1', 'copas-3', 'espadas-12'] },
     { id: 'tute', desc: T.menu.tuteDesc, cartas: ['bastos-12', 'oros-11', 'copas-12'] },
+    { id: 'cuatrola', desc: T.menu.cuatrolaDesc, cartas: ['espadas-1', 'oros-7', 'bastos-1'] },
     { id: 'tuteSubastado', desc: T.menu.tuteSubastadoDesc, cartas: ['oros-1', 'oros-12', 'oros-11'] },
     { id: 'guinote', desc: T.menu.guinoteDesc, cartas: ['espadas-12', 'espadas-10', 'oros-7'] },
     { id: 'corazones', desc: T.menu.corazonesDesc, cartas: ['corazones-1', 'picas-12', 'treboles-2'] },

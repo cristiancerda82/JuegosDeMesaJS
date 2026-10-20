@@ -11,6 +11,12 @@ import {
   remigio,
   CONFIG_TUTE_SUBASTADO_POR_DEFECTO,
   tuteSubastado,
+  CONFIG_CUATROLA_POR_DEFECTO,
+  cuatrola,
+  type AccionCuatrola,
+  type ConfigCuatrola,
+  type EstadoCuatrola,
+  type VistaCuatrola,
   type AccionTuteSubastado,
   type ConfigTuteSubastado,
   type EstadoTuteSubastado,
@@ -177,7 +183,8 @@ export type IdJuego =
   | 'truc'
   | 'julepe'
   | 'remigio'
-  | 'tuteSubastado';
+  | 'tuteSubastado'
+  | 'cuatrola';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -200,6 +207,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'julepe',
   'remigio',
   'tuteSubastado',
+  'cuatrola',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -602,6 +610,24 @@ export const DEF_TUTE_SUBASTADO: DefTuteSubastado = {
   },
 };
 
+export type DefCuatrola = DefJuego<ConfigCuatrola, EstadoCuatrola, AccionCuatrola, VistaCuatrola>;
+
+export const DEF_CUATROLA: DefCuatrola = {
+  id: 'cuatrola',
+  nombre: T.menu.cuatrola,
+  juego: cuatrola,
+  configPorDefecto: CONFIG_CUATROLA_POR_DEFECTO,
+  ia: IAS.cuatrola,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, la última baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (antes.fase !== 'bazas' && antes.turno !== despues.asiento) return PAUSA_SUBASTA_MS;
+    // Al descubrirse el compañero, un momento para leerlo.
+    if (antes.companero === null && despues.companero !== null) return PAUSA_CANTE_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -623,6 +649,7 @@ export const JUEGOS = {
   julepe: DEF_JULEPE,
   remigio: DEF_REMIGIO,
   tuteSubastado: DEF_TUTE_SUBASTADO,
+  cuatrola: DEF_CUATROLA,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

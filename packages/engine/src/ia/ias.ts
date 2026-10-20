@@ -25,12 +25,14 @@ import { SIMULABLE_SIETE_Y_MEDIA } from './reconstruir/siete-y-media';
 import { SIMULABLE_JULEPE } from './reconstruir/julepe';
 import { SIMULABLE_REMIGIO } from './reconstruir/remigio';
 import { SIMULABLE_TUTE_SUBASTADO } from './reconstruir/tute-subastado';
+import { SIMULABLE_CUATROLA } from './reconstruir/cuatrola';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
 import { iaJulepeBasica } from './julepe-basica';
 import { iaRemigioBasica } from './remigio-basica';
 import { iaTuteSubastadoBasica } from './tute-subastado-basica';
+import { iaCuatrolaBasica } from './cuatrola-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
 
@@ -79,4 +81,5 @@ export const IAS = {
   julepe: niveles(iaJulepeBasica, SIMULABLE_JULEPE),
   remigio: niveles(iaRemigioBasica, SIMULABLE_REMIGIO),
   tuteSubastado: niveles(iaTuteSubastadoBasica, SIMULABLE_TUTE_SUBASTADO),
+  cuatrola: niveles(iaCuatrolaBasica, SIMULABLE_CUATROLA),
 } as const;

@@ -8,6 +8,10 @@ import {
   type AccionChinchon,
   type AccionRemigio,
   type AccionTuteSubastado,
+  type AccionCuatrola,
+  type ConfigCuatrola,
+  type EstadoCuatrola,
+  type VistaCuatrola,
   type ConfigTuteSubastado,
   type EstadoTuteSubastado,
   type VistaTuteSubastado,
@@ -102,6 +106,7 @@ import {
   DEF_JULEPE,
   DEF_REMIGIO,
   DEF_TUTE_SUBASTADO,
+  DEF_CUATROLA,
   DEF_SPIDER,
   DEF_KLONDIKE,
   DEF_ESCOBA,
@@ -161,6 +166,12 @@ export type SesionTuteSubastado = SesionMesa<
   AccionTuteSubastado,
   VistaTuteSubastado
 >;
+export type SesionCuatrola = SesionMesa<
+  ConfigCuatrola,
+  EstadoCuatrola,
+  AccionCuatrola,
+  VistaCuatrola
+>;
 export type SesionJulepe = SesionMesa<ConfigJulepe, EstadoJulepe, AccionJulepe, VistaJulepe>;
 export type SesionTruc = SesionMesa<ConfigTruc, EstadoTruc, AccionTruc, VistaTruc>;
 export type SesionFreeCell = SesionMesa<
@@ -197,7 +208,8 @@ export type Partida =
   | { readonly id: 'truc'; readonly sesion: SesionTruc }
   | { readonly id: 'julepe'; readonly sesion: SesionJulepe }
   | { readonly id: 'remigio'; readonly sesion: SesionRemigio }
-  | { readonly id: 'tuteSubastado'; readonly sesion: SesionTuteSubastado };
+  | { readonly id: 'tuteSubastado'; readonly sesion: SesionTuteSubastado }
+  | { readonly id: 'cuatrola'; readonly sesion: SesionCuatrola };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -219,7 +231,8 @@ export type ConfigJuego =
   | ConfigTruc
   | ConfigJulepe
   | ConfigRemigio
-  | ConfigTuteSubastado;
+  | ConfigTuteSubastado
+  | ConfigCuatrola;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -268,6 +281,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_REMIGIO);
     case 'tuteSubastado':
       return hacer(DEF_TUTE_SUBASTADO);
+    case 'cuatrola':
+      return hacer(DEF_CUATROLA);
   }
 }
 

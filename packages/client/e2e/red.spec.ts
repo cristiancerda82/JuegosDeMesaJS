@@ -324,6 +324,61 @@ test('Tute subastado en red: dos humanos y dos IAs juegan una mano', async ({ br
   }
 });
 
+test('Cuatrola en red: dos humanos y dos IAs juegan una mano', async ({ browser }) => {
+  test.setTimeout(150_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'cuatrola');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) await expect(p.locator('.carta-mano')).toHaveCount(10);
+
+  // Los dos pasan en la subasta, eligen el primer palo y la primera carta si la ganan, y
+  // juegan su carta menor.
+  const paginas = [ana, luis];
+  const paneles = paginas.map((p) => p.getByTestId('panel-mano'));
+  const terminada = async () =>
+    (await Promise.all(paneles.map((x) => x.isVisible()))).some(Boolean);
+  const BOTONES = '[data-testid="pasar"], [data-testid^="triunfo-"], [data-testid^="llamar-"]';
+  for (let paso = 0; paso < 80 && !(await terminada()); paso++) {
+    const accion = paginas.map((p) => p.locator(`${BOTONES}, .carta-mano.jugable`).first());
+    await expect
+      .poll(
+        async () =>
+          (await terminada()) ||
+          (await Promise.all(accion.map((a) => a.isVisible()))).some(Boolean),
+        { timeout: 30_000 },
+      )
+      .toBe(true);
+    if (await terminada()) break;
+    const i = (await accion[0]!.isVisible()) ? 0 : 1;
+    const p = paginas[i]!;
+    const boton = p.locator(BOTONES).first();
+    if (await boton.isVisible()) {
+      const id = await boton.getAttribute('data-testid');
+      await boton.click();
+      await expect(p.getByTestId(id!)).toBeHidden();
+    } else {
+      const antes = await p.locator('.carta-mano').count();
+      await p
+        .locator('.carta-mano.jugable')
+        .first()
+        .click({ position: { x: 8, y: 8 } });
+      await p.getByTestId('mesa').click();
+      await expect(p.locator('.carta-mano')).not.toHaveCount(antes);
+    }
+  }
+  // Cada uno se ve como «Tú» y ve al otro por su nombre.
+  for (const [panel, otro] of [
+    [paneles[0]!, 'Luis'],
+    [paneles[1]!, 'Ana'],
+  ] as const) {
+    await expect(panel).toBeVisible({ timeout: 30_000 });
+    await expect(panel.getByTestId('resumen-cuatrola')).toContainText(otro);
+    await expect(panel.getByTestId('resumen-cuatrola')).toContainText('Tú');
+  }
+});
+
 test('Remigio en red: dos humanos roban y descartan', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

@@ -44,6 +44,8 @@
   /** Las cuatro cartas más altas del Truc y un envit de 33. */
   const JERARQUIA_TRUC: readonly IdCarta[] = ['espadas-1', 'bastos-1', 'espadas-7', 'oros-7'];
   const ENVIT_TRUC: readonly IdCarta[] = ['copas-7', 'copas-6', 'oros-12'];
+  /** Los matadores de la Cuatrola con triunfo de oros: espadilla, malilla, basto y punto. */
+  const MATADORES: readonly IdCarta[] = ['espadas-1', 'oros-7', 'bastos-1', 'oros-1'];
   /** Las cartas que dan puntos en la Butifarra, de la manilla a la sota. */
   const VALORES_B: readonly IdCarta[] = ['oros-9', 'oros-1', 'oros-12', 'oros-11', 'oros-10'];
   /** Una escalera del Cinquillo: del 4 a la Sota de copas, pasando del 7 a la Sota. */
@@ -133,6 +135,15 @@
               <li>
                 <div class="hueco"><Carta {id} /></div>
                 <span>{i + 1}.ª</span>
+              </li>
+            {/each}
+          </ul>
+        {:else if 'ejemplo' in seccion && seccion.ejemplo === 'matadores'}
+          <ul class="valores">
+            {#each MATADORES as id, i (id)}
+              <li>
+                <div class="hueco"><Carta {id} /></div>
+                <span>{T.ayuda.matadores[i]}</span>
               </li>
             {/each}
           </ul>

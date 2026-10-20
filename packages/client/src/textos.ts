@@ -64,6 +64,8 @@ export const T = {
     remigioDesc: 'Rummy de dos barajas con comodines: baja, añade a la mesa y cierra de golpe.',
     julepe: 'Julepe',
     tuteSubastado: 'Tute subastado',
+    cuatrola: 'Cuatrola',
+    cuatrolaDesc: 'El Tresillo de 4: juega solo o llama a un rey, con espadilla, malilla y basto.',
     tuteSubastadoDesc:
       'Subasta cuántos puntos harás, elige el triunfo y juega tú solo contra tres.',
     julepeDesc: 'De 3 a 6: decide si juegas la mano y haz dos bazas, o paga el julepe.',
@@ -473,6 +475,66 @@ export const T = {
     puntosMano: (pujador: number, defensores: number) =>
       `Pujador ${pujador} · defensores ${defensores}`,
     jugador: 'Jugador',
+    cambioCol: 'Mano',
+    fichasCol: 'Fichas',
+    clasificacion: 'Fichas',
+    siguienteMano: 'Siguiente mano',
+  },
+
+  cuatrola: {
+    rivalN: (n: number) => `Rival ${n}`,
+    triunfo: 'Triunfo',
+    sinTriunfo: 'por elegir',
+    palo: (palo: string) => palo.charAt(0).toUpperCase() + palo.slice(1),
+    mano: (n: number, total: number) => `Mano ${n} de ${total}`,
+    fichas: (n: number) => fichasConSigno(n),
+    numero: (n: number) => conSigno(n),
+    modalidad: (m: 'rey' | 'solo') => (m === 'rey' ? 'con rey' : 'solo'),
+    conRey: 'Con rey',
+    solo: 'Solo',
+    paso: 'Paso',
+    sinPuja: 'Sin pujas',
+    juega: (quien: string, m: 'rey' | 'solo') =>
+      quien === 'Tú'
+        ? `Juegas ${m === 'rey' ? 'con rey' : 'solo'}`
+        : `Juega ${quien} ${m === 'rey' ? 'con rey' : 'solo'}`,
+    llama: (carta: string) => `Llama al ${carta}`,
+    companero: (quien: string) => `Compañero: ${quien}`,
+    eresCompanero: 'Eres el compañero',
+    bazasBando: (jugador: number, defensores: number) => `Bazas ${jugador} – ${defensores}`,
+    subasta: 'Subasta',
+    tuTurno: (m: 'rey' | 'solo' | null) =>
+      m === null ? 'Nadie ha pujado: ¿juegas?' : 'Ya se juega con rey: ¿subes a solo?',
+    eligeTriunfo: 'Has ganado la subasta: elige el triunfo',
+    eligeLlamada: 'Elige el rey que llamas',
+    detalle: (dicho: 'rey' | 'solo' | 'paso' | null, fichas: number) => {
+      const saldo = fichasConSigno(fichas);
+      return dicho === 'paso'
+        ? `pasa · ${saldo}`
+        : dicho === null
+          ? saldo
+          : `${dicho === 'rey' ? 'con rey' : 'solo'} · ${saldo}`;
+    },
+    detalleBazas: (papel: string, bazas: number, fichas: number) =>
+      `${papel}${bazas === 1 ? '1 baza' : `${bazas} bazas`} · ${conSigno(fichas)}`,
+    papelJugador: 'juega · ',
+    papelCompanero: 'compañero · ',
+    pasa: (quien: string) => (quien === 'Tú' ? 'Pasas' : `${quien} pasa`),
+    pujaAviso: (quien: string, m: 'rey' | 'solo') =>
+      quien === 'Tú'
+        ? `Pujas ${m === 'rey' ? 'con rey' : 'solo'}`
+        : `${quien} puja ${m === 'rey' ? 'con rey' : 'solo'}`,
+    eligio: (quien: string, palo: string, carta: string | null) =>
+      `${quien === 'Tú' ? 'Triunfo' : `${quien}: triunfo`} ${palo}${carta === null ? '' : `, llama al ${carta}`}`,
+    descubre: (quien: string) =>
+      quien === 'Tú' ? '¡Eres el compañero!' : `${quien} es el compañero`,
+    todosPasaron: 'Pasaron todos: se reparte otra vez',
+    finMano: (n: number) => (n === 1 ? 'Fin de la primera mano' : `Fin de la mano ${n}`),
+    resultado: (quien: string, gana: boolean, bola: boolean) =>
+      `${quien === 'Tú' ? (gana ? 'Ganas' : 'Pierdes') : `${quien} ${gana ? 'gana' : 'pierde'}`}${bola ? ' con bola' : ''}`,
+    bazasMano: (jugador: number, defensores: number) =>
+      `Bazas: jugador ${jugador} · defensores ${defensores}`,
+    jugadorCol: 'Jugador',
     cambioCol: 'Mano',
     fichasCol: 'Fichas',
     clasificacion: 'Fichas',
@@ -961,10 +1023,12 @@ export const T = {
       truc: 'Cómo se juega al Truc',
       julepe: 'Cómo se juega al Julepe',
       tuteSubastado: 'Cómo se juega al Tute subastado',
+      cuatrola: 'Cómo se juega a la Cuatrola',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
     puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
+    matadores: ['Espadilla', 'Malilla', 'Basto', 'Punto'],
     envitEjemplo: '7 y 6 de copas: 20 + 7 + 6 = 33 de envit (el Rey no cuenta).',
 
     klondike: [
@@ -1464,6 +1528,58 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    cuatrola: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Es el Tresillo para 4 jugadores, con la baraja española de 40 cartas. Cada uno recibe 10. En cada mano, uno se compromete a hacer 6 bazas de 10: solo, o con un compañero que elige llamando a un rey.',
+          'Se cobra en fichas. Todos empiezan con 0 y gana quien más tenga al acabar las manos (8 por defecto).',
+        ],
+      },
+      {
+        titulo: 'La subasta',
+        texto: [
+          'Empieza a hablar el siguiente al que reparte. En tu turno pasas, pujas «con rey» o pujas «solo», que vale más. Se puede subir de «con rey» a «solo», y quien pasa ya no vuelve a hablar.',
+          'Gana quien hizo la última puja: es el jugador. Si pasan los cuatro, se reparte otra vez.',
+        ],
+      },
+      {
+        titulo: 'El triunfo y el rey',
+        texto: [
+          'El jugador elige el palo de triunfo. Si juega con rey, nombra un rey que no tenga: quien lo tenga es su compañero, pero nadie lo sabe hasta que lo juega. Los otros dos defienden juntos.',
+        ],
+      },
+      {
+        titulo: 'Los matadores',
+        texto: [
+          'Hay cartas que son siempre triunfo, aunque sean de otro palo: la espadilla (As de espadas), la malilla (el 7 del triunfo, o el 2 si es espadas o bastos), el basto (As de bastos) y, si el triunfo es oros o copas, el punto (su As). Son las más altas, en ese orden.',
+          'Después van el Rey, el Caballo y la Sota del triunfo, y sus números. Ojo: en oros y copas los números van al revés, el 2 gana al 7, y el As va justo después de la Sota.',
+        ],
+        ejemplo: 'matadores',
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Sale el siguiente al que reparte. Hay que seguir el palo si puedes; si no, echas lo que quieras: no hay obligación de fallar ni de superar. Gana el triunfo más alto o, si no hay, la carta más alta del palo que salió.',
+          'Los matadores tienen privilegio: si se sale de triunfo con una carta más baja que tu matador, no estás obligado a echarlo.',
+        ],
+      },
+      {
+        titulo: 'El cobro',
+        texto: [
+          'El jugador (con su compañero) gana si hace 6 bazas o más. Con rey, si ganan, cada defensor paga 1 ficha a cada uno de la pareja; si pierden, solo paga el jugador: 2 a cada defensor. Solo, cobra o paga 2 a cada uno de los otros tres.',
+          'Si un bando hace las 10 bazas, es bola y el cobro se dobla.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Cuenta tus matadores antes de pujar: con dos o tres y unos cuantos triunfos, ya puedes jugar con rey.',
+          'Llama el rey del palo en que tienes menos cartas: tu compañero te ganará esas bazas.',
         ],
       },
     ],
