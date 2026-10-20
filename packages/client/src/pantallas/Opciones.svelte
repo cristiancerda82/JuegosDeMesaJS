@@ -13,6 +13,7 @@
     ConfigTuteSubastado,
     ConfigCuatrola,
     ConfigPiramide,
+    ConfigGolf,
     ConfigChinchon,
     ConfigCorazones,
     ConfigCinquillo,
@@ -59,6 +60,7 @@
   let musConfig: Editable<ConfigMus> = $state({ ...JUEGOS.mus.configPorDefecto });
   let spider: Editable<ConfigSpider> = $state({ ...JUEGOS.spider.configPorDefecto });
   let piramideConfig: Editable<ConfigPiramide> = $state({ ...JUEGOS.piramide.configPorDefecto });
+  let golfConfig: Editable<ConfigGolf> = $state({ ...JUEGOS.golf.configPorDefecto });
   let corazones: Editable<ConfigCorazones> = $state({ ...JUEGOS.corazones.configPorDefecto });
   let burro: Editable<ConfigBurro> = $state({ ...JUEGOS.burro.configPorDefecto });
   let pinacle: Editable<ConfigPinacle> = $state({ ...JUEGOS.pinacle.configPorDefecto });
@@ -100,6 +102,7 @@
       mus: musConfig,
       spider,
       piramide: piramideConfig,
+      golf: golfConfig,
       corazones,
       burro,
       pinacle,
@@ -289,6 +292,14 @@
         {#each [101, 51, 151] as const as p (p)}
           <label><input type="radio" bind:group={butifarra.objetivo} value={p} /> {T.opciones.puntosN(p)}</label>
         {/each}
+      </fieldset>
+    {:else if juego === 'golf'}
+      <fieldset>
+        <legend>{T.opciones.vueltaGolf}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={golfConfig.vuelta} data-testid="vuelta-golf" />
+          {T.opciones.vueltaGolfDesc}
+        </label>
       </fieldset>
     {:else if juego === 'piramide'}
       <fieldset>

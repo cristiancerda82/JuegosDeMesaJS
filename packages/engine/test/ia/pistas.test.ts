@@ -4,10 +4,12 @@ import type { IdCarta } from '../../src/baraja/cartas';
 import {
   atascado,
   pistaFreeCell,
+  pistaGolf,
   pistaKlondike,
   pistaPiramide,
   pistaSpider,
 } from '../../src/ia/pistas';
+import { CONFIG_GOLF_POR_DEFECTO, golf, type EstadoGolf } from '../../src/juegos/golf';
 import {
   CONFIG_PIRAMIDE_POR_DEFECTO,
   piramide,
@@ -270,6 +272,33 @@ describe('pista de la Pirámide', () => {
   });
 });
 
+describe('pista del Golf', () => {
+  function mesaGolf(columnas: IdCarta[][], arriba: IdCarta, mazo: IdCarta[] = []): EstadoGolf {
+    const r = golf.crear(CONFIG_GOLF_POR_DEFECTO, 'pista');
+    if (!r.ok) throw new Error(r.error);
+    const todas = Array.from({ length: 7 }, (_, i) => columnas[i] ?? []);
+    return { ...r.valor, columnas: todas, descarte: [arriba], mazo };
+  }
+  const pistaG = (e: EstadoGolf) => pistaGolf(golf.vistaDe(e, 0), golf.accionesLegales(e, 0));
+
+  it('elige la carta tras la que se encadenan más', () => {
+    // Con un 7: el 6 no deja seguir; el 8 deja el 9 y después el 10.
+    const e = mesaGolf([['picas-6'], ['corazones-8'], ['treboles-9'], ['diamantes-10']], 'picas-7');
+    expect(pistaG(e)).toEqual({ tipo: 'mover', columna: 1 });
+  });
+
+  it('roba cuando no se puede mover nada', () => {
+    const e = mesaGolf([['picas-2']], 'picas-9', ['corazones-5']);
+    expect(pistaG(e)).toEqual({ tipo: 'robar' });
+  });
+
+  it('sin mazo ni movimientos, está atascado', () => {
+    const e = mesaGolf([['picas-2']], 'picas-9');
+    expect(pistaG(e)).toBeNull();
+    expect(atascado(golf.accionesLegales(e, 0))).toBe(true);
+  });
+});
+
 // ── Propiedades ──────────────────────────────────────────────────────────────
 
 describe('las pistas en partidas al azar', () => {
@@ -278,6 +307,7 @@ describe('las pistas en partidas al azar', () => {
     { juego: freecell, config: CONFIG_FREECELL_POR_DEFECTO, pista: pistaFreeCell },
     { juego: spider, config: CONFIG_SPIDER_POR_DEFECTO, pista: pistaSpider },
     { juego: piramide, config: CONFIG_PIRAMIDE_POR_DEFECTO, pista: pistaPiramide },
+    { juego: golf, config: CONFIG_GOLF_POR_DEFECTO, pista: pistaGolf },
   ] as unknown as {
     juego: Juego<unknown, unknown, { tipo: string }, unknown>;
     config: unknown;

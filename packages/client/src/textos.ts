@@ -33,6 +33,9 @@ export const T = {
     freecellDesc: 'Solitario con 4 celdas libres y todas las cartas a la vista.',
     spider: 'Spider',
     piramide: 'Pirámide',
+    golf: 'Golf',
+    golfDesc:
+      'Solitario: pasa al descarte cartas que valgan una más o una menos y vacía las 7 columnas.',
     piramideDesc: 'Solitario: quita parejas de cartas que sumen 13 hasta deshacer la pirámide.',
     spiderDesc: 'Solitario de dos barajas: ordena escaleras del Rey al As del mismo palo.',
     brisca: 'Brisca',
@@ -164,6 +167,8 @@ export const T = {
     capturaObligatoria: 'Recoger es obligatorio',
     capturaObligatoriaDesc: 'Si la carta que juegas puede sumar 15, tienes que recoger.',
     escobaInicial: 'Escoba del que reparte',
+    vueltaGolf: 'La K y el As',
+    vueltaGolfDesc: 'Con vuelta: sobre una K va un As, y sobre un As una K.',
     escobaInicialDesc: 'Si las 4 cartas iniciales de la mesa suman 15, son escoba del que reparte.',
     jugadoresN: (n: number) => `${n} jugadores`,
     baraja: 'Baraja',
@@ -973,6 +978,7 @@ export const T = {
     resumenKlondike: (movs: number, tiempo: string) => `${movs} movimientos en ${tiempo}`,
     resumenSpider: (escaleras: number, movs: number, tiempo: string) =>
       `${escaleras} de 8 escaleras, ${movs} movimientos en ${tiempo}`,
+    resumenGolf: (movs: number, tiempo: string) => `${movs} movimientos en ${tiempo}`,
     resumenPiramide: (movs: number, tiempo: string) => `${movs} movimientos en ${tiempo}`,
     resumenFreeCell: (numero: number, movs: number, tiempo: string) =>
       `Partida nº ${numero}: ${movs} movimientos en ${tiempo}`,
@@ -1025,6 +1031,7 @@ export const T = {
       cinquillo: 'Cómo se juega al Cinquillo',
       spider: 'Cómo se juega al Spider',
       piramide: 'Cómo se juega a la Pirámide',
+      golf: 'Cómo se juega al Golf',
       corazones: 'Cómo se juega a los Corazones',
       pocha: 'Cómo se juega a la Pocha',
       mus: 'Cómo se juega al Mus',
@@ -1591,6 +1598,36 @@ export const T = {
         texto: [
           'Cuenta tus matadores antes de pujar: con dos o tres y unos cuantos triunfos, ya puedes jugar con rey.',
           'Llama el rey del palo en que tienes menos cartas: tu compañero te ganará esas bazas.',
+        ],
+      },
+    ],
+
+    golf: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Es un solitario con la baraja francesa. Hay 7 columnas de 5 cartas boca arriba, y ganas cuando las pasas todas al descarte, aunque queden cartas en el mazo.',
+        ],
+      },
+      {
+        titulo: 'Mover cartas',
+        texto: [
+          'Toca la última carta de una columna para pasarla al descarte. Solo se puede si vale exactamente una más o una menos que la de arriba del descarte, sea del palo que sea: sobre un 7 va un 6 o un 8.',
+          'El As vale 1, la J 11, la Q 12 y la K 13. Sobre una K no va nada y sobre un As solo un 2, salvo que en las opciones elijas que la K y el As se toquen.',
+        ],
+      },
+      {
+        titulo: 'El mazo',
+        texto: [
+          'Cuando no puedas mover, toca el mazo: su carta de arriba pasa al descarte y puedes seguir desde ella. El mazo solo se recorre una vez.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Antes de mover, mira hasta dónde llega cada cadena: a veces conviene empezar por una carta que deja seguir más.',
+          'No vacíes primero las columnas cortas: las cartas de las largas son las más difíciles de sacar.',
+          'Si te atascas, puedes deshacer o pedir una pista.',
         ],
       },
     ],

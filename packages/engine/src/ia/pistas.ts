@@ -1,5 +1,6 @@
 import { cartaDeId, type IdCarta } from '../baraja/cartas';
 import type { AccionFreeCell, VistaFreeCell } from '../juegos/freecell';
+import { encajaGolf, type AccionGolf, type VistaGolf } from '../juegos/golf';
 import type { AccionKlondike, VistaKlondike } from '../juegos/klondike';
 import { libreEnPiramide, type AccionPiramide, type VistaPiramide } from '../juegos/piramide';
 import { baseSpider, type AccionSpider, type VistaSpider } from '../juegos/spider';
@@ -167,4 +168,55 @@ export function pistaPiramide(
     acciones.find((a) => a.tipo === 'reciclar') ??
     null
   );
+}
+
+// ── Golf ─────────────────────────────────────────────────────────────────────
+
+/** Nodos que como mucho mira la búsqueda de la cadena más larga: de sobra con 35 cartas. */
+const NODOS_GOLF = 5000;
+
+/**
+ * La cadena más larga de cartas que se pueden pasar al descarte, sin robar, desde estas
+ * columnas y con `arriba` en el descarte. Búsqueda en profundidad acotada.
+ */
+function cadenaGolf(
+  columnas: readonly (readonly IdCarta[])[],
+  arriba: IdCarta,
+  vuelta: boolean,
+): number {
+  let nodos = 0;
+  const largos = columnas.map((c) => c.length);
+  const buscar = (tope: IdCarta): number => {
+    if (++nodos > NODOS_GOLF) return 0;
+    let mejorLargo = 0;
+    for (let i = 0; i < columnas.length; i++) {
+      if (largos[i] === 0) continue;
+      const carta = columnas[i]![largos[i]! - 1]!;
+      if (!encajaGolf(carta, tope, vuelta)) continue;
+      largos[i]!--;
+      mejorLargo = Math.max(mejorLargo, 1 + buscar(carta));
+      largos[i]!++;
+    }
+    return mejorLargo;
+  };
+  return buscar(arriba);
+}
+
+/** Pista del Golf: la carta tras la que se encadenan más, o robar si no se puede mover nada. */
+export function pistaGolf(vista: VistaGolf, acciones: readonly AccionGolf[]): AccionGolf | null {
+  let elegida: AccionGolf | null = null;
+  let mejorPuntos = -1;
+  for (const a of acciones) {
+    if (a.tipo !== 'mover') continue;
+    const columna = vista.columnas[a.columna]!;
+    const carta = columna.at(-1)!;
+    const tras = vista.columnas.map((c, i) => (i === a.columna ? c.slice(0, -1) : c));
+    // Primero la cadena más larga; si empatan, la columna con más cartas.
+    const puntos = cadenaGolf(tras, carta, vista.config.vuelta) * 100 + columna.length;
+    if (puntos > mejorPuntos) {
+      elegida = a;
+      mejorPuntos = puntos;
+    }
+  }
+  return elegida ?? acciones.find((a) => a.tipo === 'robar') ?? null;
 }

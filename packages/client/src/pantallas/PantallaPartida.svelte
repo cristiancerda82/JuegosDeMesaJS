@@ -20,6 +20,7 @@
   import MesaSieteYMedia from '../mesas/MesaSieteYMedia.svelte';
   import MesaSpider from '../mesas/MesaSpider.svelte';
   import MesaPiramide from '../mesas/MesaPiramide.svelte';
+  import MesaGolf from '../mesas/MesaGolf.svelte';
   import MesaTute from '../mesas/MesaTute.svelte';
   import type { Partida } from '../sesion/partida';
   import { T } from '../textos';
@@ -70,6 +71,8 @@
 
   {#if partida.id === 'klondike'}
     <MesaKlondike sesion={partida.sesion} />
+  {:else if partida.id === 'golf'}
+    <MesaGolf sesion={partida.sesion} />
   {:else if partida.id === 'piramide'}
     <MesaPiramide sesion={partida.sesion} />
   {:else if partida.id === 'spider'}

@@ -236,6 +236,7 @@ for (const juego of [
   'mus',
   'spider',
   'piramide',
+  'golf',
   'corazones',
   'burro',
   'pinacle',

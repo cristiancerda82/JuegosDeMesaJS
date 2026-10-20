@@ -10,6 +10,10 @@ import {
   type AccionTuteSubastado,
   type AccionCuatrola,
   type AccionPiramide,
+  type AccionGolf,
+  type ConfigGolf,
+  type EstadoGolf,
+  type VistaGolf,
   type ConfigPiramide,
   type EstadoPiramide,
   type VistaPiramide,
@@ -113,6 +117,7 @@ import {
   DEF_CUATROLA,
   DEF_SPIDER,
   DEF_PIRAMIDE,
+  DEF_GOLF,
   DEF_KLONDIKE,
   DEF_ESCOBA,
   DEF_TUTE,
@@ -171,6 +176,7 @@ export type SesionTuteSubastado = SesionMesa<
   AccionTuteSubastado,
   VistaTuteSubastado
 >;
+export type SesionGolf = SesionMesa<ConfigGolf, EstadoGolf, AccionGolf, VistaGolf>;
 export type SesionPiramide = SesionMesa<
   ConfigPiramide,
   EstadoPiramide,
@@ -213,6 +219,7 @@ export type Partida =
   | { readonly id: 'mus'; readonly sesion: SesionMus }
   | { readonly id: 'spider'; readonly sesion: SesionSpider }
   | { readonly id: 'piramide'; readonly sesion: SesionPiramide }
+  | { readonly id: 'golf'; readonly sesion: SesionGolf }
   | { readonly id: 'corazones'; readonly sesion: SesionCorazones }
   | { readonly id: 'burro'; readonly sesion: SesionBurro }
   | { readonly id: 'pinacle'; readonly sesion: SesionPinacle }
@@ -245,7 +252,8 @@ export type ConfigJuego =
   | ConfigRemigio
   | ConfigTuteSubastado
   | ConfigCuatrola
-  | ConfigPiramide;
+  | ConfigPiramide
+  | ConfigGolf;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -280,6 +288,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_SPIDER);
     case 'piramide':
       return hacer(DEF_PIRAMIDE);
+    case 'golf':
+      return hacer(DEF_GOLF);
     case 'corazones':
       return hacer(DEF_CORAZONES);
     case 'burro':

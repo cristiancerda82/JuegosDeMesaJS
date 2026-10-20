@@ -56,6 +56,13 @@ import {
   piramide,
   CONFIG_PIRAMIDE_POR_DEFECTO,
   pistaPiramide,
+  golf,
+  CONFIG_GOLF_POR_DEFECTO,
+  pistaGolf,
+  type AccionGolf,
+  type ConfigGolf,
+  type EstadoGolf,
+  type VistaGolf,
   type AccionPiramide,
   type ConfigPiramide,
   type EstadoPiramide,
@@ -184,6 +191,7 @@ export type IdJuego =
   | 'mus'
   | 'spider'
   | 'piramide'
+  | 'golf'
   | 'corazones'
   | 'burro'
   | 'pinacle'
@@ -208,6 +216,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'mus',
   'spider',
   'piramide',
+  'golf',
   'corazones',
   'burro',
   'pinacle',
@@ -266,6 +275,18 @@ export const DEF_PIRAMIDE: DefPiramide = {
   ia: null,
   pausaTras: () => 0,
   pista: pistaPiramide,
+};
+
+export type DefGolf = DefJuego<ConfigGolf, EstadoGolf, AccionGolf, VistaGolf>;
+
+export const DEF_GOLF: DefGolf = {
+  id: 'golf',
+  nombre: T.menu.golf,
+  juego: golf,
+  configPorDefecto: CONFIG_GOLF_POR_DEFECTO,
+  ia: null,
+  pausaTras: () => 0,
+  pista: pistaGolf,
 };
 
 export const DEF_KLONDIKE: DefKlondike = {
@@ -663,6 +684,7 @@ export const JUEGOS = {
   mus: DEF_MUS,
   spider: DEF_SPIDER,
   piramide: DEF_PIRAMIDE,
+  golf: DEF_GOLF,
   corazones: DEF_CORAZONES,
   burro: DEF_BURRO,
   pinacle: DEF_PINACLE,
