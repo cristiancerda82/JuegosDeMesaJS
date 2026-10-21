@@ -16,6 +16,7 @@ import { CONFIG_REMIGIO_POR_DEFECTO, remigio } from '../../src/juegos/remigio';
 import { CONFIG_TRUC_POR_DEFECTO, truc } from '../../src/juegos/truc';
 import { CONFIG_TUTE_POR_DEFECTO, tute } from '../../src/juegos/tute';
 import { CONFIG_CUATROLA_POR_DEFECTO, cuatrola } from '../../src/juegos/cuatrola';
+import { CONFIG_MENTIROSO_POR_DEFECTO, mentiroso } from '../../src/juegos/mentiroso';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -29,7 +30,7 @@ export interface JuegoConNiveles {
   readonly esA: (asiento: Asiento, i: number) => boolean;
   /** Parte de las partidas que ganaría un lado si las dos IAs fueran iguales. */
   readonly parteJusta: number;
-  /** El nivel difícil simula (todos menos el Burro). */
+  /** El difícil tiene que ganar a la normal en la prueba de fuerza (todos menos el Burro y el Mus). */
   readonly simula: boolean;
 }
 
@@ -72,4 +73,6 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Remigio', remigio, CONFIG_REMIGIO_POR_DEFECTO, IAS.remigio, 2),
   entrada('Tute subastado', tuteSubastado, CONFIG_TUTE_SUBASTADO_POR_DEFECTO, IAS.tuteSubastado, 4),
   entrada('Cuatrola', cuatrola, CONFIG_CUATROLA_POR_DEFECTO, IAS.cuatrola, 4),
+  // No simula, pero su difícil (con memoria) tiene que ganar a la normal: entra en la prueba.
+  entrada('Mentiroso', mentiroso, CONFIG_MENTIROSO_POR_DEFECTO, IAS.mentiroso, 4),
 ];

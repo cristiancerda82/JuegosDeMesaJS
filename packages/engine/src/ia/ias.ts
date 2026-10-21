@@ -33,6 +33,7 @@ import { iaJulepeBasica } from './julepe-basica';
 import { iaRemigioBasica } from './remigio-basica';
 import { iaTuteSubastadoBasica } from './tute-subastado-basica';
 import { iaCuatrolaBasica } from './cuatrola-basica';
+import { iaMentirosoBasica, iaMentirosoExperta } from './mentiroso-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
 
@@ -82,4 +83,10 @@ export const IAS = {
   remigio: niveles(iaRemigioBasica, SIMULABLE_REMIGIO),
   tuteSubastado: niveles(iaTuteSubastadoBasica, SIMULABLE_TUTE_SUBASTADO),
   cuatrola: niveles(iaCuatrolaBasica, SIMULABLE_CUATROLA),
+  // En el Mentiroso la simulación no ve los faroles: el difícil gana por memoria de cartas.
+  mentiroso: {
+    facil: conErrores(iaMentirosoBasica, ERRORES_FACIL),
+    normal: iaMentirosoBasica,
+    dificil: iaMentirosoExperta,
+  },
 } as const;

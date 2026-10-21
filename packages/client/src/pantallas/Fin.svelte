@@ -67,6 +67,7 @@
       partida.id !== 'remigio' &&
       partida.id !== 'tuteSubastado' &&
       partida.id !== 'cuatrola' &&
+      partida.id !== 'mentiroso' &&
       partida.sesion.vista.config.jugadores === 4,
   );
 
@@ -234,6 +235,23 @@
               <td data-testid="clasificacion-{a}">
                 {vista.eliminados[a] ? T.remigio.eliminado : T.remigio.puntos(vista.puntos[a]!)}
               </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'mentiroso'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      {#if vista.ganador !== null}
+        <p data-testid="sin-cartas">{T.mentiroso.sinCartas(nombreChinchon(vista.ganador, n))}</p>
+      {/if}
+      <table>
+        <caption>{T.mentiroso.quedan}</caption>
+        <tbody>
+          {#each Array.from({ length: n }, (_, a) => a).sort((a, b) => vista.cartasEnMano[a]! - vista.cartasEnMano[b]!) as a (a)}
+            <tr>
+              <th scope="row">{nombreChinchon(a, n)}</th>
+              <td data-testid="quedan-{a}">{T.mentiroso.cartas(vista.cartasEnMano[a]!)}</td>
             </tr>
           {/each}
         </tbody>

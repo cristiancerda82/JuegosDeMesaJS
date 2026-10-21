@@ -9,6 +9,10 @@ import {
   type AccionRemigio,
   type AccionTuteSubastado,
   type AccionCuatrola,
+  type AccionMentiroso,
+  type ConfigMentiroso,
+  type EstadoMentiroso,
+  type VistaMentiroso,
   type AccionPiramide,
   type AccionGolf,
   type ConfigGolf,
@@ -115,6 +119,7 @@ import {
   DEF_REMIGIO,
   DEF_TUTE_SUBASTADO,
   DEF_CUATROLA,
+  DEF_MENTIROSO,
   DEF_SPIDER,
   DEF_PIRAMIDE,
   DEF_GOLF,
@@ -183,6 +188,12 @@ export type SesionPiramide = SesionMesa<
   AccionPiramide,
   VistaPiramide
 >;
+export type SesionMentiroso = SesionMesa<
+  ConfigMentiroso,
+  EstadoMentiroso,
+  AccionMentiroso,
+  VistaMentiroso
+>;
 export type SesionCuatrola = SesionMesa<
   ConfigCuatrola,
   EstadoCuatrola,
@@ -228,7 +239,8 @@ export type Partida =
   | { readonly id: 'julepe'; readonly sesion: SesionJulepe }
   | { readonly id: 'remigio'; readonly sesion: SesionRemigio }
   | { readonly id: 'tuteSubastado'; readonly sesion: SesionTuteSubastado }
-  | { readonly id: 'cuatrola'; readonly sesion: SesionCuatrola };
+  | { readonly id: 'cuatrola'; readonly sesion: SesionCuatrola }
+  | { readonly id: 'mentiroso'; readonly sesion: SesionMentiroso };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -252,6 +264,7 @@ export type ConfigJuego =
   | ConfigRemigio
   | ConfigTuteSubastado
   | ConfigCuatrola
+  | ConfigMentiroso
   | ConfigPiramide
   | ConfigGolf;
 
@@ -308,6 +321,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_TUTE_SUBASTADO);
     case 'cuatrola':
       return hacer(DEF_CUATROLA);
+    case 'mentiroso':
+      return hacer(DEF_MENTIROSO);
   }
 }
 

@@ -12,6 +12,7 @@
     ConfigRemigio,
     ConfigTuteSubastado,
     ConfigCuatrola,
+    ConfigMentiroso,
     ConfigPiramide,
     ConfigGolf,
     ConfigChinchon,
@@ -69,6 +70,7 @@
   let julepeConfig: Editable<ConfigJulepe> = $state({ ...JUEGOS.julepe.configPorDefecto });
   let remigioConfig: Editable<ConfigRemigio> = $state({ ...JUEGOS.remigio.configPorDefecto });
   let cuatrolaConfig: Editable<ConfigCuatrola> = $state({ ...JUEGOS.cuatrola.configPorDefecto });
+  let mentirosoConfig: Editable<ConfigMentiroso> = $state({ ...JUEGOS.mentiroso.configPorDefecto });
   let subastado: Editable<ConfigTuteSubastado> = $state({
     ...JUEGOS.tuteSubastado.configPorDefecto,
   });
@@ -112,6 +114,7 @@
       remigio: remigioConfig,
       tuteSubastado: subastado,
       cuatrola: cuatrolaConfig,
+      mentiroso: mentirosoConfig,
     };
     if (conIA) guardarNivel(juego, nivel);
     empezar({ ...configs[juego] }, nivel);
@@ -244,6 +247,13 @@
         <legend>{T.opciones.jugadores}</legend>
         {#each [2, 3, 4, 5] as const as n (n)}
           <label><input type="radio" bind:group={remigioConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
+        {/each}
+      </fieldset>
+    {:else if juego === 'mentiroso'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [3, 4, 5, 6] as const as n (n)}
+          <label><input type="radio" bind:group={mentirosoConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
         {/each}
       </fieldset>
     {:else if juego === 'cuatrola'}

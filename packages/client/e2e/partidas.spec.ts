@@ -246,6 +246,7 @@ for (const juego of [
   'remigio',
   'tuteSubastado',
   'cuatrola',
+  'mentiroso',
 ] as const) {
   test(`la guía de ${juego} se abre desde las opciones y desde la partida`, async ({ page }) => {
     // Semilla fija: con alguna al azar, la primera mano de la Siete y media termina sola y su

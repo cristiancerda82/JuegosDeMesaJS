@@ -13,6 +13,12 @@ import {
   tuteSubastado,
   CONFIG_CUATROLA_POR_DEFECTO,
   cuatrola,
+  CONFIG_MENTIROSO_POR_DEFECTO,
+  mentiroso,
+  type AccionMentiroso,
+  type ConfigMentiroso,
+  type EstadoMentiroso,
+  type VistaMentiroso,
   type AccionCuatrola,
   type ConfigCuatrola,
   type EstadoCuatrola,
@@ -200,7 +206,8 @@ export type IdJuego =
   | 'julepe'
   | 'remigio'
   | 'tuteSubastado'
-  | 'cuatrola';
+  | 'cuatrola'
+  | 'mentiroso';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -226,6 +233,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'remigio',
   'tuteSubastado',
   'cuatrola',
+  'mentiroso',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -670,6 +678,31 @@ export const DEF_CUATROLA: DefCuatrola = {
   },
 };
 
+export type DefMentiroso = DefJuego<
+  ConfigMentiroso,
+  EstadoMentiroso,
+  AccionMentiroso,
+  VistaMentiroso
+>;
+
+/** Tiempo para ver una bajada de la IA, y para leer lo descubierto en un «¡Mentiroso!». */
+const PAUSA_BAJADA_MS = 700;
+const PAUSA_REVELACION_MS = 1800;
+
+export const DEF_MENTIROSO: DefMentiroso = {
+  id: 'mentiroso',
+  nombre: T.menu.mentiroso,
+  juego: mentiroso,
+  configPorDefecto: CONFIG_MENTIROSO_POR_DEFECTO,
+  ia: IAS.mentiroso,
+  // Marcar cartas no se pausa: solo bajar y desconfiar.
+  pausaTras(antes, despues) {
+    if (despues.revelaciones.length > antes.revelaciones.length) return PAUSA_REVELACION_MS;
+    if (despues.bajadas.length > antes.bajadas.length) return PAUSA_BAJADA_MS;
+    return 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -694,6 +727,7 @@ export const JUEGOS = {
   remigio: DEF_REMIGIO,
   tuteSubastado: DEF_TUTE_SUBASTADO,
   cuatrola: DEF_CUATROLA,
+  mentiroso: DEF_MENTIROSO,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

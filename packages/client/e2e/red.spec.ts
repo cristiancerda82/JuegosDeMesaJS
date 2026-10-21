@@ -379,6 +379,34 @@ test('Cuatrola en red: dos humanos y dos IAs juegan una mano', async ({ browser 
   }
 });
 
+test('Mentiroso en red: dos humanos bajan y cada uno ve la bajada del otro', async ({
+  browser,
+}) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'mentiroso');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(13);
+
+  // Ana es mano: baja una carta como As; Luis la ve y baja la suya como dos.
+  const bajarUna = async (p: Page) => {
+    await p.getByTestId('bajar').waitFor({ timeout: 30_000 });
+    await p
+      .locator('[data-testid="mano"] .carta-mano')
+      .first()
+      .click({ position: { x: 6, y: 6 } });
+    await p.getByTestId('bajar').click();
+  };
+  await bajarUna(ana);
+  await expect(luis.getByTestId('ultima-bajada')).toHaveText('Ana: 1 As');
+  await bajarUna(luis);
+  await expect(ana.getByTestId('ultima-bajada')).toHaveText('Luis: 1 dos', { timeout: 30_000 });
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Remigio en red: dos humanos roban y descartan', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

@@ -70,6 +70,8 @@ export const T = {
     julepe: 'Julepe',
     tuteSubastado: 'Tute subastado',
     cuatrola: 'Cuatrola',
+    mentiroso: 'Mentiroso',
+    mentirosoDesc: 'De 3 a 6: baja cartas boca abajo diciendo qué son, y pilla al que miente.',
     cuatrolaDesc: 'El Tresillo de 4: juega solo o llama a un rey, con espadilla, malilla y basto.',
     tuteSubastadoDesc:
       'Subasta cuántos puntos harás, elige el triunfo y juega tú solo contra tres.',
@@ -489,6 +491,47 @@ export const T = {
     fichasCol: 'Fichas',
     clasificacion: 'Fichas',
     siguienteMano: 'Siguiente mano',
+  },
+
+  mentiroso: {
+    rivalN: (n: number) => `Rival ${n}`,
+    /** Nombre del valor, en singular o plural: «As», «2 doses», «3 reinas»… */
+    valor: (v: number, cuantas: number) => {
+      const nombres: Record<number, [string, string]> = {
+        1: ['As', 'Ases'],
+        2: ['dos', 'doses'],
+        3: ['tres', 'treses'],
+        4: ['cuatro', 'cuatros'],
+        5: ['cinco', 'cincos'],
+        6: ['seis', 'seises'],
+        7: ['siete', 'sietes'],
+        8: ['ocho', 'ochos'],
+        9: ['nueve', 'nueves'],
+        10: ['diez', 'dieces'],
+        11: ['jota', 'jotas'],
+        12: ['reina', 'reinas'],
+        13: ['rey', 'reyes'],
+      };
+      return nombres[v]![cuantas === 1 ? 0 : 1];
+    },
+    toca: (valor: string) => `Toca: ${valor}`,
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    monton: (n: number) => (n === 1 ? '1 carta en el montón' : `${n} cartas en el montón`),
+    bajada: (quien: string, n: number, valor: string) => `${quien}: ${n} ${valor}`,
+    leToca: (quien: string) => `Le toca a ${quien}`,
+    tuTurno: (valor: string) => `Tu turno: marca de 1 a 4 cartas y bájalas como ${valor}`,
+    ultimaBajada: (quien: string) => `${quien} se ha quedado sin cartas: ¿le crees?`,
+    bajar: (n: number) => (n === 0 ? 'Bajar' : `Bajar ${n}`),
+    desconfiar: '¡Mentiroso!',
+    creer: 'Me lo creo',
+    pillado: (quien: string) => (quien === 'Tú' ? '¡Te han pillado!' : `¡${quien} mentía!`),
+    eraVerdad: (quien: string) =>
+      quien === 'Tú' ? 'Decías la verdad' : `${quien} decía la verdad`,
+    seLleva: (quien: string, n: number) =>
+      `${quien === 'Tú' ? 'Te llevas' : `${quien} se lleva`} el montón (${n === 1 ? '1 carta' : `${n} cartas`})`,
+    sinCartas: (quien: string) =>
+      quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
+    quedan: 'Cartas que les quedan',
   },
 
   cuatrola: {
@@ -1042,6 +1085,7 @@ export const T = {
       julepe: 'Cómo se juega al Julepe',
       tuteSubastado: 'Cómo se juega al Tute subastado',
       cuatrola: 'Cómo se juega a la Cuatrola',
+      mentiroso: 'Cómo se juega al Mentiroso',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -1546,6 +1590,42 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    mentiroso: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja francesa, de 3 a 6 jugadores, cada uno por su cuenta. Se reparten todas las cartas, y gana el primero que se queda sin ninguna.',
+        ],
+      },
+      {
+        titulo: 'Bajar cartas',
+        texto: [
+          'En cada turno toca un valor, en orden: Ases, doses, treses… hasta reyes, y vuelta a empezar. Bajas boca abajo de 1 a 4 cartas diciendo que son de ese valor.',
+          'Puedes decir la verdad o mentir: nadie ve las cartas. Toca las cartas para marcarlas y pulsa «Bajar».',
+        ],
+      },
+      {
+        titulo: '¡Mentiroso!',
+        texto: [
+          'Antes de bajar, puedes decir «¡Mentiroso!» al jugador que acaba de bajar. Se descubren sus cartas: si alguna no era del valor que dijo, se lleva él todo el montón; si era verdad, te lo llevas tú.',
+          'Después bajas tú, con el valor siguiente.',
+        ],
+      },
+      {
+        titulo: 'Ganar',
+        texto: [
+          'Cuando alguien baja sus últimas cartas, el siguiente decide: si le cree, gana. Si dice «¡Mentiroso!» y mentía, se lleva el montón y sigue jugando.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Fíjate en tus cartas: si tienes dos reyes y alguien dice que baja tres, miente seguro.',
+          'Mentir con muchas cartas a la vez es arriesgado si el montón es grande: si te pillan, te lo llevas entero.',
         ],
       },
     ],
