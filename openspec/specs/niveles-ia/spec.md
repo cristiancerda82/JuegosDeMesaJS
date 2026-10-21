@@ -6,7 +6,7 @@ TBD - created by archiving change niveles-ia. Update Purpose after archive.
 ## Requirements
 
 ### Requirement: Tres niveles en cada juego contra la máquina
-Cada juego con IA (Brisca, Tute, Guiñote, Escoba, Chinchón, Siete y media, Cinquillo, Pocha, Mus, Corazones, Burro, Pinacle, Butifarra, Truc, Julepe, Remigio, Tute subastado y Cuatrola) MUST ofrecer una IA para cada nivel: `facil`, `normal` y `dificil`. La IA `normal` MUST ser la IA básica del juego. Todos los niveles MUST cumplir las garantías generales de la IA:
+Cada juego con IA (Brisca, Tute, Guiñote, Escoba, Chinchón, Siete y media, Cinquillo, Pocha, Mus, Corazones, Burro, Pinacle, Butifarra, Truc, Julepe, Remigio, Tute subastado, Cuatrola y Mentiroso) MUST ofrecer una IA para cada nivel: `facil`, `normal` y `dificil`. La IA `normal` MUST ser la IA básica del juego. Todos los niveles MUST cumplir las garantías generales de la IA:
 - deciden solo con la vista de su asiento;
 - eligen siempre una acción legal;
 - son reproducibles con su semilla;
@@ -34,7 +34,7 @@ En cada juego, la IA normal MUST ganar claramente más partidas que la fácil cu
 - **THEN** gana más partidas de las que le corresponderían si las dos fueran iguales
 
 ### Requirement: Reconstrucción de las cartas ocultas
-Cada juego con IA difícil (todos menos el Burro) MUST tener una función que, a partir de la vista de un asiento y de un azar, construya un estado completo del juego coherente con esa vista. Las cartas que el asiento no ve (las manos ajenas, el mazo y cualquier otra carta oculta) MUST repartirse al azar entre los sitios ocultos, respetando cuántas cartas hay en cada uno. Todo lo visible MUST quedar igual. La vista de ese asiento en el estado reconstruido MUST ser idéntica a la vista de partida.
+Cada juego con IA difícil (todos menos el Burro y el Mentiroso) MUST tener una función que, a partir de la vista de un asiento y de un azar, construya un estado completo del juego coherente con esa vista. Las cartas que el asiento no ve (las manos ajenas, el mazo y cualquier otra carta oculta) MUST repartirse al azar entre los sitios ocultos, respetando cuántas cartas hay en cada uno. Todo lo visible MUST quedar igual. La vista de ese asiento en el estado reconstruido MUST ser idéntica a la vista de partida.
 
 Si una vista no tiene datos públicos suficientes para reconstruir el estado, se MUST añadir a la vista lo que falte, siempre que no sea información oculta y que la spec del juego no lo prohíba. Se añaden:
 - las cartas ya jugadas en bazas de la mano (Brisca, Tute, Guiñote, Pocha, Corazones, Butifarra, Truc, Julepe, Tute subastado y Cuatrola);
@@ -88,6 +88,8 @@ En el Tute subastado, la IA difícil MUST simular la elección del triunfo, los 
 
 En la Cuatrola, la IA difícil MUST simular la elección del triunfo y de la carta llamada, y cada carta que juega. Las pujas MUST decidirse como la normal, por la misma razón que en el Tute subastado.
 
+En el Mentiroso no hay simulación ni reconstrucción. La IA difícil MUST llevar la cuenta de las cartas que ha visto: las suyas que bajó, las descubiertas en cada «¡Mentiroso!» y quién se las llevó. Con esa cuenta MUST desconfiar cuando sabe que es imposible que digan la verdad, y calcula mejor que la normal lo probable que es una bajada. Al bajar MUST ser prudente: la verdad, o una sola carta si no tiene el valor, sin rellenar con falsas. Como en el resto de juegos, MUST ganar más partidas que la normal cuando se enfrentan.
+
 En cada juego con simulación, la IA difícil MUST ganar más partidas que la normal cuando se enfrentan.
 
 #### Scenario: Una sola acción legal
@@ -129,3 +131,7 @@ En cada juego con simulación, la IA difícil MUST ganar más partidas que la no
 #### Scenario: Pujas del difícil en la Cuatrola
 - **WHEN** la IA difícil de la Cuatrola decide si pasa, puja con rey o puja solo
 - **THEN** decide como la normal, sin simular
+
+#### Scenario: El difícil del Mentiroso recuerda las cartas
+- **WHEN** en el Mentiroso se descubrieron 2 reinas que se llevó el asiento 1, la IA difícil tiene otra reina y el asiento 2 declara 2 reinas
+- **THEN** la IA difícil dice «¡Mentiroso!», porque solo puede quedar una reina fuera de su mano y de la del asiento 1
