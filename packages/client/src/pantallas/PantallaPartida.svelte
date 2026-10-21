@@ -8,6 +8,7 @@
   import MesaTuteSubastado from '../mesas/MesaTuteSubastado.svelte';
   import MesaCuatrola from '../mesas/MesaCuatrola.svelte';
   import MesaMentiroso from '../mesas/MesaMentiroso.svelte';
+  import MesaOchoLoco from '../mesas/MesaOchoLoco.svelte';
   import MesaRemigio from '../mesas/MesaRemigio.svelte';
   import MesaChinchon from '../mesas/MesaChinchon.svelte';
   import MesaCinquillo from '../mesas/MesaCinquillo.svelte';
@@ -88,6 +89,8 @@
     <MesaBurro sesion={partida.sesion} />
   {:else if partida.id === 'remigio'}
     <MesaRemigio sesion={partida.sesion} />
+  {:else if partida.id === 'ochoLoco'}
+    <MesaOchoLoco sesion={partida.sesion} />
   {:else if partida.id === 'mentiroso'}
     <MesaMentiroso sesion={partida.sesion} />
   {:else if partida.id === 'cuatrola'}

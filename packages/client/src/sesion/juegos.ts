@@ -15,6 +15,12 @@ import {
   cuatrola,
   CONFIG_MENTIROSO_POR_DEFECTO,
   mentiroso,
+  CONFIG_OCHO_LOCO_POR_DEFECTO,
+  ochoLoco,
+  type AccionOchoLoco,
+  type ConfigOchoLoco,
+  type EstadoOchoLoco,
+  type VistaOchoLoco,
   type AccionMentiroso,
   type ConfigMentiroso,
   type EstadoMentiroso,
@@ -207,7 +213,8 @@ export type IdJuego =
   | 'remigio'
   | 'tuteSubastado'
   | 'cuatrola'
-  | 'mentiroso';
+  | 'mentiroso'
+  | 'ochoLoco';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -234,6 +241,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'tuteSubastado',
   'cuatrola',
   'mentiroso',
+  'ochoLoco',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -703,6 +711,29 @@ export const DEF_MENTIROSO: DefMentiroso = {
   },
 };
 
+export type DefOchoLoco = DefJuego<ConfigOchoLoco, EstadoOchoLoco, AccionOchoLoco, VistaOchoLoco>;
+
+/** Tiempo para ver la carta que juega la IA, y para ver que roba o pasa. */
+const PAUSA_CARTA_OCHO_MS = 600;
+const PAUSA_ROBAR_OCHO_MS = 400;
+
+export const DEF_OCHO_LOCO: DefOchoLoco = {
+  id: 'ochoLoco',
+  nombre: T.menu.ochoLoco,
+  juego: ochoLoco,
+  configPorDefecto: CONFIG_OCHO_LOCO_POR_DEFECTO,
+  ia: IAS.ochoLoco,
+  // El cierre de la mano lo detiene la propia mesa con el resumen.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_CARTA_OCHO_MS;
+    if (despues.descarte.length > antes.descarte.length) return PAUSA_CARTA_OCHO_MS;
+    const cambia = despues.ultimas.some(
+      (u, a) => JSON.stringify(u) !== JSON.stringify(antes.ultimas[a]),
+    );
+    return cambia ? PAUSA_ROBAR_OCHO_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -728,6 +759,7 @@ export const JUEGOS = {
   tuteSubastado: DEF_TUTE_SUBASTADO,
   cuatrola: DEF_CUATROLA,
   mentiroso: DEF_MENTIROSO,
+  ochoLoco: DEF_OCHO_LOCO,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

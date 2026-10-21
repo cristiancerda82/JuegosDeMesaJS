@@ -17,6 +17,9 @@ import { reconstruirSieteYMedia } from '../../src/ia/reconstruir/siete-y-media';
 import { iaSieteYMediaBasica } from '../../src/ia/siete-y-media-basica';
 import { CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, sieteYMedia } from '../../src/juegos/siete-y-media';
 import { iaCinquilloBasica } from '../../src/ia/cinquillo-basica';
+import { iaOchoLocoBasica } from '../../src/ia/ocho-loco-basica';
+import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
+import { CONFIG_OCHO_LOCO_POR_DEFECTO, ochoLoco } from '../../src/juegos/ocho-loco';
 import { reconstruirCinquillo } from '../../src/ia/reconstruir/cinquillo';
 import { cinquillo, CONFIG_CINQUILLO_POR_DEFECTO } from '../../src/juegos/cinquillo';
 import { iaPochaBasica } from '../../src/ia/pocha-basica';
@@ -394,4 +397,9 @@ describe('reconstrucción de la Cuatrola', () => {
     }
     expect(revisadas).toBeGreaterThan(20);
   });
+});
+
+describirReconstruccion(ochoLoco, reconstruirOchoLoco, {
+  configs: [CONFIG_OCHO_LOCO_POR_DEFECTO, { jugadores: 2 }, { jugadores: 5 }],
+  base: iaOchoLocoBasica,
 });

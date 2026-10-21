@@ -26,6 +26,7 @@ import { SIMULABLE_JULEPE } from './reconstruir/julepe';
 import { SIMULABLE_REMIGIO } from './reconstruir/remigio';
 import { SIMULABLE_TUTE_SUBASTADO } from './reconstruir/tute-subastado';
 import { SIMULABLE_CUATROLA } from './reconstruir/cuatrola';
+import { SIMULABLE_OCHO_LOCO } from './reconstruir/ocho-loco';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -34,6 +35,7 @@ import { iaRemigioBasica } from './remigio-basica';
 import { iaTuteSubastadoBasica } from './tute-subastado-basica';
 import { iaCuatrolaBasica } from './cuatrola-basica';
 import { iaMentirosoBasica, iaMentirosoExperta } from './mentiroso-basica';
+import { iaOchoLocoBasica, iaOchoLocoExperta } from './ocho-loco-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
 
@@ -88,5 +90,12 @@ export const IAS = {
     facil: conErrores(iaMentirosoBasica, ERRORES_FACIL),
     normal: iaMentirosoBasica,
     dificil: iaMentirosoExperta,
+  },
+  // En el Ocho loco lo que más pesa es guardar los ochos: la normal no los guarda, y el difícil
+  // simula sobre la experta, que sí.
+  ochoLoco: {
+    facil: conErrores(iaOchoLocoBasica, ERRORES_FACIL),
+    normal: iaOchoLocoBasica,
+    dificil: porSimulacion(iaOchoLocoExperta, SIMULABLE_OCHO_LOCO),
   },
 } as const;

@@ -11,12 +11,18 @@ const cartasMano = (page: Page) => page.locator('[data-testid="mano"] .carta-man
 
 /** Marca las `n` primeras cartas de la mano y las baja. */
 async function bajar(page: Page, n: number) {
+  // Mientras dura la pausa tras la jugada anterior, la mesa ignora los toques: se repite el
+  // toque de cada carta hasta que queda marcada.
   for (let i = 0; i < n; i++) {
-    await cartasMano(page)
-      .nth(i)
-      .click({ position: { x: 6, y: 6 } });
+    await expect(async () => {
+      if ((await page.getByTestId('bajar').textContent())?.trim() !== `Bajar ${i + 1}`) {
+        await cartasMano(page)
+          .nth(i)
+          .click({ position: { x: 6, y: 6 } });
+      }
+      await expect(page.getByTestId('bajar')).toHaveText(`Bajar ${i + 1}`, { timeout: 1_000 });
+    }).toPass();
   }
-  await expect(page.getByTestId('bajar')).toHaveText(`Bajar ${n}`);
   await page.getByTestId('bajar').click();
 }
 

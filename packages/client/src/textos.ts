@@ -72,6 +72,8 @@ export const T = {
     cuatrola: 'Cuatrola',
     mentiroso: 'Mentiroso',
     mentirosoDesc: 'De 3 a 6: baja cartas boca abajo diciendo qué son, y pilla al que miente.',
+    ochoLoco: 'Ocho loco',
+    ochoLocoDesc: 'De 2 a 5: suelta cartas del mismo palo o número; el 8 cambia de palo.',
     cuatrolaDesc: 'El Tresillo de 4: juega solo o llama a un rey, con espadilla, malilla y basto.',
     tuteSubastadoDesc:
       'Subasta cuántos puntos harás, elige el triunfo y juega tú solo contra tres.',
@@ -532,6 +534,37 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  ochoLoco: {
+    rivalN: (n: number) => `Rival ${n}`,
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
+    mazo: (n: number) => (n === 1 ? '1 carta en el mazo' : `${n} cartas en el mazo`),
+    toca: (palo: string) => `Toca: ${palo}`,
+    eligePalo: 'Elige el palo que sigue',
+    robar: 'Robar',
+    pasar: 'Pasar',
+    leToca: (quien: string) => `Le toca a ${quien}`,
+    tuTurno: 'Tu turno: juega una carta del mismo palo o número, o un 8',
+    tuTurnoRobar: 'No tienes ninguna carta que case: roba una',
+    tuRobada: 'Puedes jugar la carta que has robado o pasar',
+    robadaNoCasa: 'La carta que has robado no casa: pasa',
+    nadaQueRobar: 'No queda nada que robar: pasa',
+    jugo: (carta: string, palo: string | null) => (palo === null ? carta : `${carta} → ${palo}`),
+    robo: 'Roba',
+    paso: 'Pasa',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    siguienteMano: 'Siguiente mano',
+    ganaMano: (quien: string, puntos: number) =>
+      `${quien === 'Tú' ? 'Ganas' : `Gana ${quien}`} la mano: ${puntos === 1 ? '1 punto' : `${puntos} puntos`}`,
+    bloqueada: 'Mano bloqueada: nadie podía jugar ni robar',
+    empate: 'Empate con menos puntos: nadie se apunta nada',
+    jugadorCol: 'Jugador',
+    enManoCol: 'En la mano',
+    ganaCol: 'Gana',
+    totalCol: 'Total',
+    clasificacion: 'Puntos',
   },
 
   cuatrola: {
@@ -1086,6 +1119,7 @@ export const T = {
       tuteSubastado: 'Cómo se juega al Tute subastado',
       cuatrola: 'Cómo se juega a la Cuatrola',
       mentiroso: 'Cómo se juega al Mentiroso',
+      ochoLoco: 'Cómo se juega al Ocho loco',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -1590,6 +1624,44 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    ochoLoco: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja francesa, de 2 a 5 jugadores, cada uno por su cuenta. Se reparten 7 cartas con 2 jugadores y 5 con más, y se pone una boca arriba para empezar el descarte.',
+          'Quien se queda antes sin cartas gana la mano. Se juegan manos hasta que alguien llega a 100 puntos.',
+        ],
+      },
+      {
+        titulo: 'Jugar',
+        texto: [
+          'En tu turno juegas una carta del palo que toca o del mismo número que la de arriba del descarte. Por ejemplo, sobre el 9 de corazones vale cualquier corazón o cualquier 9.',
+          'El 8 se juega siempre, encima de cualquier carta, y eliges el palo que sigue.',
+        ],
+      },
+      {
+        titulo: 'Robar',
+        texto: [
+          'Si no tienes ninguna carta que case, robas una del mazo. Si la robada casa, puedes jugarla; si no, pasas.',
+          'Cuando se acaba el mazo, se baraja el descarte (menos la de arriba) para hacer uno nuevo.',
+        ],
+      },
+      {
+        titulo: 'Puntos',
+        texto: [
+          'Quien se queda sin cartas se apunta lo que les queda a los demás: el 8 vale 50, las figuras 10, el As 1 y el resto su número.',
+          'Si nadie puede jugar ni robar, la mano se bloquea y la gana quien tenga menos puntos en la mano.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Guarda los ochos para cuando no tengas otra cosa: te salvan de robar. Pero si alguien está a punto de quedarse sin cartas, un 8 en la mano son 50 puntos para él.',
+          'Al elegir palo con un 8, elige el que más tienes.',
         ],
       },
     ],

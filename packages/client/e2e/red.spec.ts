@@ -407,6 +407,49 @@ test('Mentiroso en red: dos humanos bajan y cada uno ve la bajada del otro', asy
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Ocho loco en red: dos humanos juegan y cada uno ve lo que hizo el otro', async ({
+  browser,
+}) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'ochoLoco');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(5);
+
+  // Juega una carta que case (eligiendo corazones con un 8), o roba y pasa.
+  const turno = async (p: Page) => {
+    await p
+      .locator('[data-testid="mano"] .carta-mano.jugable, [data-testid="robar"]')
+      .first()
+      .waitFor({ timeout: 30_000 });
+    const jugable = p.locator('[data-testid="mano"] .carta-mano.jugable').first();
+    if (await jugable.isVisible()) {
+      const id = (await jugable.getAttribute('data-carta'))!;
+      await jugable.click({ position: { x: 6, y: 6 } });
+      if (id.endsWith('-8')) await p.getByTestId('palo-corazones').click();
+      return id;
+    }
+    await p.getByTestId('robar').click();
+    await p.getByTestId('pasar').click();
+    return null;
+  };
+  // Ana es mano; Luis ve lo que hizo y juega él.
+  const deAna = await turno(ana);
+  if (deAna) await expect(luis.getByTestId('descarte')).toHaveAttribute('data-carta', deAna);
+  else await expect(luis.getByTestId('asiento-0')).toContainText('Pasa');
+  await expect(luis.getByTestId('asiento-0')).toContainText('Ana');
+  const deLuis = await turno(luis);
+  if (deLuis) {
+    await expect(ana.getByTestId('asiento-1')).toContainText(/de /, { timeout: 30_000 });
+  } else {
+    await expect(ana.getByTestId('asiento-1')).toContainText(/Pasa|de /, { timeout: 30_000 });
+  }
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Remigio en red: dos humanos roban y descartan', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);
