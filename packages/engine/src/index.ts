@@ -17,6 +17,7 @@ export * from './juegos/cuatrola';
 export * from './juegos/mentiroso';
 export * from './juegos/ocho-loco';
 export * from './juegos/picas';
+export * from './juegos/tripeaks';
 export * from './juegos/truc';
 export * from './juegos/julepe';
 export * from './juegos/remigio';

@@ -339,13 +339,17 @@ export class Sesion<C, E, A, V> implements SesionMesa<C, E, A, V> {
   /** Suma la partida a las estadísticas: solo ocurre una vez, al pasar a terminada. */
   #registrarFin(fin: Fin): void {
     // Los solitarios (sin IA) también guardan el tiempo y los movimientos como récords.
-    const vista = this.vista as { movimientos?: unknown };
+    const vista = this.vista as { movimientos?: unknown; puntos?: unknown };
+    const solitario = this.def.ia === null;
     const movimientos =
-      this.def.ia === null && typeof vista.movimientos === 'number' ? vista.movimientos : null;
+      solitario && typeof vista.movimientos === 'number' ? vista.movimientos : null;
+    // TriPeaks lleva además una puntuación, que es récord aunque no se gane.
+    const puntos = solitario && typeof vista.puntos === 'number' ? vista.puntos : null;
     this.novedades = registrarPartida(this.def.id, {
       resultado: resultadoDe(fin, HUMANO),
       tiempoMs: this.tiempoMs(),
       movimientos,
+      puntos,
     });
   }
 

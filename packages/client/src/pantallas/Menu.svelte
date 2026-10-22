@@ -41,6 +41,7 @@ ull. */
     { id: 'klondike', desc: T.menu.klondikeDesc, cartas: ['picas-1', 'corazones-13', 'diamantes-12'] },
     { id: 'freecell', desc: T.menu.freecellDesc, cartas: ['treboles-1', 'corazones-2', 'picas-13'] },
     { id: 'spider', desc: T.menu.spiderDesc, cartas: ['picas-13', 'picas-12', 'picas-11'] },
+    { id: 'tripeaks', desc: T.menu.tripeaksDesc, cartas: ['corazones-9', 'picas-10', 'diamantes-11'] },
     { id: 'golf', desc: T.menu.golfDesc, cartas: ['treboles-7', 'corazones-8', 'picas-9'] },
     { id: 'piramide', desc: T.menu.piramideDesc, cartas: ['corazones-6', 'picas-7', 'diamantes-13'] },
     { id: 'brisca', desc: T.menu.briscaDesc, cartas: ['oros-1', 'copas-3', 'espadas-12'] },

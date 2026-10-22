@@ -17,6 +17,7 @@
     ConfigPicas,
     ConfigPiramide,
     ConfigGolf,
+    ConfigTriPeaks,
     ConfigChinchon,
     ConfigCorazones,
     ConfigCinquillo,
@@ -64,6 +65,7 @@
   let spider: Editable<ConfigSpider> = $state({ ...JUEGOS.spider.configPorDefecto });
   let piramideConfig: Editable<ConfigPiramide> = $state({ ...JUEGOS.piramide.configPorDefecto });
   let golfConfig: Editable<ConfigGolf> = $state({ ...JUEGOS.golf.configPorDefecto });
+  const tripeaksConfig: ConfigTriPeaks = JUEGOS.tripeaks.configPorDefecto;
   let corazones: Editable<ConfigCorazones> = $state({ ...JUEGOS.corazones.configPorDefecto });
   let burro: Editable<ConfigBurro> = $state({ ...JUEGOS.burro.configPorDefecto });
   let pinacle: Editable<ConfigPinacle> = $state({ ...JUEGOS.pinacle.configPorDefecto });
@@ -109,6 +111,7 @@
       spider,
       piramide: piramideConfig,
       golf: golfConfig,
+      tripeaks: tripeaksConfig,
       corazones,
       burro,
       pinacle,

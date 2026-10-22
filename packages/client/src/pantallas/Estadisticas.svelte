@@ -80,6 +80,12 @@
                 <dd data-testid="menos-movimientos">{e.menosMovimientos}</dd>
               </div>
             {/if}
+            {#if e.mejorPuntuacion !== null}
+              <div>
+                <dt>{T.estadisticas.mejorPuntuacion}</dt>
+                <dd data-testid="mejor-puntuacion">{e.mejorPuntuacion}</dd>
+              </div>
+            {/if}
           </dl>
         </li>
       {/each}

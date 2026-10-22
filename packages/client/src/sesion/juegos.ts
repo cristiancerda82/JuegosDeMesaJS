@@ -77,6 +77,13 @@ import {
   golf,
   CONFIG_GOLF_POR_DEFECTO,
   pistaGolf,
+  CONFIG_TRIPEAKS_POR_DEFECTO,
+  tripeaks,
+  pistaTriPeaks,
+  type AccionTriPeaks,
+  type ConfigTriPeaks,
+  type EstadoTriPeaks,
+  type VistaTriPeaks,
   type AccionGolf,
   type ConfigGolf,
   type EstadoGolf,
@@ -210,6 +217,7 @@ export type IdJuego =
   | 'spider'
   | 'piramide'
   | 'golf'
+  | 'tripeaks'
   | 'corazones'
   | 'burro'
   | 'pinacle'
@@ -238,6 +246,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'spider',
   'piramide',
   'golf',
+  'tripeaks',
   'corazones',
   'burro',
   'pinacle',
@@ -311,6 +320,18 @@ export const DEF_GOLF: DefGolf = {
   ia: null,
   pausaTras: () => 0,
   pista: pistaGolf,
+};
+
+export type DefTriPeaks = DefJuego<ConfigTriPeaks, EstadoTriPeaks, AccionTriPeaks, VistaTriPeaks>;
+
+export const DEF_TRIPEAKS: DefTriPeaks = {
+  id: 'tripeaks',
+  nombre: T.menu.tripeaks,
+  juego: tripeaks,
+  configPorDefecto: CONFIG_TRIPEAKS_POR_DEFECTO,
+  ia: null,
+  pausaTras: () => 0,
+  pista: pistaTriPeaks,
 };
 
 export const DEF_KLONDIKE: DefKlondike = {
@@ -773,6 +794,7 @@ export const JUEGOS = {
   spider: DEF_SPIDER,
   piramide: DEF_PIRAMIDE,
   golf: DEF_GOLF,
+  tripeaks: DEF_TRIPEAKS,
   corazones: DEF_CORAZONES,
   burro: DEF_BURRO,
   pinacle: DEF_PINACLE,

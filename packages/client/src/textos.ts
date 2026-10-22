@@ -34,6 +34,8 @@ export const T = {
     spider: 'Spider',
     piramide: 'Pirámide',
     golf: 'Golf',
+    tripeaks: 'TriPeaks',
+    tripeaksDesc: 'Solitario: despeja tres picos subiendo o bajando una carta y encadena rachas.',
     golfDesc:
       'Solitario: pasa al descarte cartas que valgan una más o una menos y vacía las 7 columnas.',
     piramideDesc: 'Solitario: quita parejas de cartas que sumen 13 hasta deshacer la pirámide.',
@@ -837,6 +839,13 @@ export const T = {
     ejemplo: 'Apuesta / bazas hechas → puntos',
   },
 
+  tripeaks: {
+    puntos: 'Puntos',
+    racha: (n: number) => (n === 0 ? 'Sin racha' : `Racha ×${n}`),
+    bocaAbajo: 'Carta boca abajo',
+    puntosFin: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
+  },
+
   corazones: {
     rivalN: (n: number) => `Rival ${n}`,
     detalle: (mano: number, total: number) => `${mano} pts · total ${total}`,
@@ -1069,12 +1078,14 @@ export const T = {
     mejorRacha: 'Mejor racha',
     mejorTiempo: 'Mejor tiempo',
     menosMovimientos: 'Menos movimientos',
+    mejorPuntuacion: 'Mejor puntuación',
     borrar: 'Borrar estadísticas',
     confirmarBorrar: '¿Seguro que quieres borrar todas las estadísticas? No se puede deshacer.',
     rachaEnCurso: (n: number) => `Llevas ${n} victorias seguidas`,
     nuevaMejorRacha: '¡Tu mejor racha!',
     recordTiempo: '¡Nuevo récord de tiempo!',
     recordMovimientos: '¡Nuevo récord de movimientos!',
+    recordPuntos: '¡Nuevo récord de puntos!',
   },
 
   fin: {
@@ -1144,6 +1155,7 @@ export const T = {
       spider: 'Cómo se juega al Spider',
       piramide: 'Cómo se juega a la Pirámide',
       golf: 'Cómo se juega al Golf',
+      tripeaks: 'Cómo se juega a TriPeaks',
       corazones: 'Cómo se juega a los Corazones',
       pocha: 'Cómo se juega a la Pocha',
       mus: 'Cómo se juega al Mus',
@@ -1825,6 +1837,42 @@ export const T = {
         texto: [
           'Cuenta tus matadores antes de pujar: con dos o tres y unos cuantos triunfos, ya puedes jugar con rey.',
           'Llama el rey del palo en que tienes menos cartas: tu compañero te ganará esas bazas.',
+        ],
+      },
+    ],
+
+    tripeaks: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Hay tres picos de cartas en cuatro filas. Solo la fila de abajo empieza boca arriba. Hay que quitar las 28 cartas de los picos pasándolas al descarte.',
+        ],
+      },
+      {
+        titulo: 'Quitar cartas',
+        texto: [
+          'Puedes quitar una carta sin nada encima si vale uno más o uno menos que la de arriba del descarte, sea cual sea el palo. La K y el As se tocan: sobre una K va una Q o un As.',
+          'Al quitar las dos cartas que tapan a otra, esa se vuelve boca arriba.',
+        ],
+      },
+      {
+        titulo: 'El mazo',
+        texto: [
+          'Si no puedes quitar nada, toca el mazo para pasar una carta al descarte. El mazo se recorre una sola vez.',
+        ],
+      },
+      {
+        titulo: 'Puntos',
+        texto: [
+          'Cada carta de una racha suma su número en la racha: la primera 1, la segunda 2, la tercera 3… Robar corta la racha.',
+          'Despejar un pico suma 15, y despejar los tres, 30 más. La mejor puntuación queda como récord, aunque no ganes.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Antes de quitar, mira qué carta te deja encadenar más: una racha larga vale mucho más que varias cortas.',
+          'Si puedes elegir, quita las cartas que destapan otras.',
         ],
       },
     ],

@@ -64,6 +64,21 @@ describe('registrar', () => {
     expect(est.menosMovimientos).toBeNull();
   });
 
+  it('TriPeaks guarda la mejor puntuación, aunque no gane', () => {
+    const p = (puntos: number, resultado: 'ganada' | 'perdida' = 'perdida') =>
+      ({ resultado, tiempoMs: 1000, movimientos: 40, puntos }) as const;
+    let r = serie([p(60)], 'klondike');
+    expect(r.est.mejorPuntuacion).toBe(60);
+    expect(r.novedades.mejorPuntuacion).toBe(false);
+    r = serie([p(60), p(85)], 'klondike');
+    expect(r.est.mejorPuntuacion).toBe(85);
+    expect(r.novedades.mejorPuntuacion).toBe(true);
+    r = serie([p(85), p(40, 'ganada')], 'klondike');
+    expect(r.est.mejorPuntuacion).toBe(85);
+    expect(r.novedades.mejorPuntuacion).toBe(false);
+    expect(serie([ganada]).est.mejorPuntuacion).toBeNull();
+  });
+
   it('los juegos con IA no guardan tiempos', () => {
     expect(serie([ganada]).est.mejorTiempoMs).toBeNull();
   });
@@ -114,6 +129,15 @@ describe('almacenamiento', () => {
       juegos: { brisca: valida, ajedrez: valida, tute: { jugadas: -1 } },
     });
     expect(leerEstadisticas()).toEqual({ brisca: valida });
+  });
+
+  it('lee las estadísticas guardadas antes de la mejor puntuación', () => {
+    const { mejorPuntuacion: _, ...antigua } = serie([ganada]).est;
+    datos['juegos-de-mesa/estadisticas'] = JSON.stringify({
+      version: 1,
+      juegos: { brisca: antigua },
+    });
+    expect(leerEstadisticas()).toEqual({ brisca: { ...antigua, mejorPuntuacion: null } });
   });
 
   it('si el almacenamiento falla, sigue funcionando', () => {

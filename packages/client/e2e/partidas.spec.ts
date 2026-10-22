@@ -237,6 +237,7 @@ for (const juego of [
   'spider',
   'piramide',
   'golf',
+  'tripeaks',
   'corazones',
   'burro',
   'pinacle',

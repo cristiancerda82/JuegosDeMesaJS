@@ -5,11 +5,17 @@ import {
   atascado,
   pistaFreeCell,
   pistaGolf,
+  pistaTriPeaks,
   pistaKlondike,
   pistaPiramide,
   pistaSpider,
 } from '../../src/ia/pistas';
 import { CONFIG_GOLF_POR_DEFECTO, golf, type EstadoGolf } from '../../src/juegos/golf';
+import {
+  CONFIG_TRIPEAKS_POR_DEFECTO,
+  tripeaks,
+  type EstadoTriPeaks,
+} from '../../src/juegos/tripeaks';
 import {
   CONFIG_PIRAMIDE_POR_DEFECTO,
   piramide,
@@ -299,6 +305,42 @@ describe('pista del Golf', () => {
   });
 });
 
+describe('pista de TriPeaks', () => {
+  function mesaTriPeaks(
+    cartas: Record<number, IdCarta>,
+    arriba: IdCarta,
+    mazo: IdCarta[] = [],
+  ): EstadoTriPeaks {
+    const r = tripeaks.crear(CONFIG_TRIPEAKS_POR_DEFECTO, 'pista');
+    if (!r.ok) throw new Error(r.error);
+    const picos = Array.from({ length: 28 }, (_, i) => cartas[i] ?? null);
+    return { ...r.valor, picos, descarte: [arriba], mazo };
+  }
+  const pistaT = (e: EstadoTriPeaks) =>
+    pistaTriPeaks(tripeaks.vistaDe(e, 0), tripeaks.accionesLegales(e, 0));
+
+  it('sugiere la carta que encadena más', () => {
+    const e = mesaTriPeaks({ 18: 'picas-6', 19: 'corazones-8', 22: 'treboles-9' }, 'diamantes-7');
+    expect(pistaT(e)).toEqual({ tipo: 'quitar', posicion: 19 });
+  });
+
+  it('a igualdad, la que libera una carta boca abajo', () => {
+    // El 6 de la posición 26 es la última que tapa al 9 de la posición 17 (la 27 ya no está);
+    // el 8 de la 18 va antes en el orden, pero no libera nada.
+    const e = mesaTriPeaks({ 17: 'picas-9', 18: 'corazones-8', 26: 'picas-6' }, 'diamantes-7');
+    expect(pistaT(e)).toEqual({ tipo: 'quitar', posicion: 26 });
+  });
+
+  it('roba si no puede quitar nada, y sin mazo está atascada', () => {
+    expect(pistaT(mesaTriPeaks({ 27: 'picas-2' }, 'picas-9', ['corazones-5']))).toEqual({
+      tipo: 'robar',
+    });
+    const e = mesaTriPeaks({ 27: 'picas-2' }, 'picas-9');
+    expect(pistaT(e)).toBeNull();
+    expect(atascado(tripeaks.accionesLegales(e, 0))).toBe(true);
+  });
+});
+
 // ── Propiedades ──────────────────────────────────────────────────────────────
 
 describe('las pistas en partidas al azar', () => {
@@ -308,6 +350,7 @@ describe('las pistas en partidas al azar', () => {
     { juego: spider, config: CONFIG_SPIDER_POR_DEFECTO, pista: pistaSpider },
     { juego: piramide, config: CONFIG_PIRAMIDE_POR_DEFECTO, pista: pistaPiramide },
     { juego: golf, config: CONFIG_GOLF_POR_DEFECTO, pista: pistaGolf },
+    { juego: tripeaks, config: CONFIG_TRIPEAKS_POR_DEFECTO, pista: pistaTriPeaks },
   ] as unknown as {
     juego: Juego<unknown, unknown, { tipo: string }, unknown>;
     config: unknown;

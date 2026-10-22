@@ -40,7 +40,8 @@
       partida.id === 'freecell' ||
       partida.id === 'spider' ||
       partida.id === 'piramide' ||
-      partida.id === 'golf'
+      partida.id === 'golf' ||
+      partida.id === 'tripeaks'
     ) {
       return partida.sesion.vista.situacion === 'victoria' ? T.fin.solitarioGanado : T.fin.abandono;
     }
@@ -58,6 +59,7 @@
       partida.id !== 'spider' &&
       partida.id !== 'piramide' &&
       partida.id !== 'golf' &&
+      partida.id !== 'tripeaks' &&
       partida.id !== 'chinchon' &&
       partida.id !== 'sieteYMedia' &&
       partida.id !== 'cinquillo' &&
@@ -95,6 +97,14 @@
 
     {#if partida.id === 'klondike'}
       <p>{T.fin.resumenKlondike(partida.sesion.vista.movimientos, formatoTiempo(partida.sesion.tiempoMs()))}</p>
+    {:else if partida.id === 'tripeaks'}
+      {@const vista = partida.sesion.vista}
+      <p data-testid="puntos-tripeaks">{T.tripeaks.puntosFin(vista.puntos)}</p>
+      {#if vista.situacion === 'victoria'}
+        <p data-testid="resumen-tripeaks">
+          {T.fin.resumenGolf(vista.movimientos, formatoTiempo(partida.sesion.tiempoMs()))}
+        </p>
+      {/if}
     {:else if partida.id === 'golf'}
       <p data-testid="resumen-golf">
         {T.fin.resumenGolf(partida.sesion.vista.movimientos, formatoTiempo(partida.sesion.tiempoMs()))}
@@ -442,12 +452,13 @@
 
     {#if partida.sesion.novedades}
       {@const n = partida.sesion.novedades}
-      {#if n.racha >= 2 || n.mejorRacha || n.mejorTiempo || n.menosMovimientos}
+      {#if n.racha >= 2 || n.mejorRacha || n.mejorTiempo || n.menosMovimientos || n.mejorPuntuacion}
         <ul class="novedades" data-testid="novedades">
           {#if n.racha >= 2}<li data-testid="racha-en-curso">{T.estadisticas.rachaEnCurso(n.racha)}</li>{/if}
           {#if n.mejorRacha}<li>{T.estadisticas.nuevaMejorRacha}</li>{/if}
           {#if n.mejorTiempo}<li data-testid="record-tiempo">{T.estadisticas.recordTiempo}</li>{/if}
           {#if n.menosMovimientos}<li data-testid="record-movimientos">{T.estadisticas.recordMovimientos}</li>{/if}
+          {#if n.mejorPuntuacion}<li data-testid="record-puntos">{T.estadisticas.recordPuntos}</li>{/if}
         </ul>
       {/if}
     {/if}

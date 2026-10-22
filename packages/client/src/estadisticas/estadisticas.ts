@@ -17,6 +17,8 @@ export interface EstadisticasJuego {
   /** Solo en los solitarios: récords de las partidas ganadas. */
   readonly mejorTiempoMs: number | null;
   readonly menosMovimientos: number | null;
+  /** Solo en los solitarios con puntos (TriPeaks): la mejor de todas las partidas terminadas. */
+  readonly mejorPuntuacion: number | null;
 }
 
 export type Estadisticas = Partial<Record<IdJuego, EstadisticasJuego>>;
@@ -28,6 +30,8 @@ export interface PartidaTerminada {
   readonly tiempoMs: number;
   /** Movimientos en los solitarios; `null` en el resto. */
   readonly movimientos: number | null;
+  /** Puntos en los solitarios que los cuentan (TriPeaks); `null` o ausente en el resto. */
+  readonly puntos?: number | null;
 }
 
 /** Lo que la partida ha cambiado y merece un aviso en la pantalla de fin. */
@@ -37,6 +41,7 @@ export interface Novedades {
   readonly mejorRacha: boolean;
   readonly mejorTiempo: boolean;
   readonly menosMovimientos: boolean;
+  readonly mejorPuntuacion: boolean;
 }
 
 const VACIAS: EstadisticasJuego = {
@@ -48,6 +53,7 @@ const VACIAS: EstadisticasJuego = {
   mejorRacha: 0,
   mejorTiempoMs: null,
   menosMovimientos: null,
+  mejorPuntuacion: null,
 };
 
 export function resultadoDe(fin: Fin, humano: Asiento): ResultadoPartida {
@@ -70,6 +76,10 @@ export function registrar(
     gana &&
     partida.movimientos !== null &&
     (antes.menosMovimientos === null || partida.movimientos < antes.menosMovimientos);
+  // La puntuación cuenta en cualquier partida terminada, ganada o no.
+  const puntos = partida.puntos ?? null;
+  const mejoraPuntuacion =
+    puntos !== null && (antes.mejorPuntuacion === null || puntos > antes.mejorPuntuacion);
   const despues: EstadisticasJuego = {
     jugadas: antes.jugadas + 1,
     ganadas: antes.ganadas + (gana ? 1 : 0),
@@ -80,6 +90,7 @@ export function registrar(
     mejorTiempoMs:
       partida.movimientos !== null && mejoraTiempo ? partida.tiempoMs : antes.mejorTiempoMs,
     menosMovimientos: mejoraMovimientos ? partida.movimientos : antes.menosMovimientos,
+    mejorPuntuacion: mejoraPuntuacion ? puntos : antes.mejorPuntuacion,
   };
   return {
     estadisticas: { ...est, [juego]: despues },
@@ -90,6 +101,7 @@ export function registrar(
       mejorRacha: antes.mejorRacha > 0 && racha > antes.mejorRacha,
       mejorTiempo: partida.movimientos !== null && mejoraTiempo && antes.mejorTiempoMs !== null,
       menosMovimientos: mejoraMovimientos && antes.menosMovimientos !== null,
+      mejorPuntuacion: mejoraPuntuacion && antes.mejorPuntuacion !== null,
     },
   };
 }
@@ -119,7 +131,9 @@ function esValida(e: unknown): e is EstadisticasJuego {
       esEntero(x[k]),
     ) &&
     esEnteroONulo(x.mejorTiempoMs) &&
-    esEnteroONulo(x.menosMovimientos)
+    esEnteroONulo(x.menosMovimientos) &&
+    // Las estadísticas guardadas antes de este récord no lo tienen.
+    (x.mejorPuntuacion === undefined || esEnteroONulo(x.mejorPuntuacion))
   );
 }
 
@@ -138,7 +152,9 @@ export function leerEstadisticas(): Estadisticas {
     }
     const est: Estadisticas = {};
     for (const [juego, valor] of Object.entries(datos.juegos)) {
-      if (ID_JUEGOS.includes(juego as IdJuego) && esValida(valor)) est[juego as IdJuego] = valor;
+      if (ID_JUEGOS.includes(juego as IdJuego) && esValida(valor)) {
+        est[juego as IdJuego] = { ...valor, mejorPuntuacion: valor.mejorPuntuacion ?? null };
+      }
     }
     return est;
   } catch {

@@ -4,6 +4,12 @@ import { encajaGolf, type AccionGolf, type VistaGolf } from '../juegos/golf';
 import type { AccionKlondike, VistaKlondike } from '../juegos/klondike';
 import { libreEnPiramide, type AccionPiramide, type VistaPiramide } from '../juegos/piramide';
 import { baseSpider, type AccionSpider, type VistaSpider } from '../juegos/spider';
+import {
+  tapadorasTriPeaks,
+  type AccionTriPeaks,
+  type SitioTriPeaks,
+  type VistaTriPeaks,
+} from '../juegos/tripeaks';
 
 /**
  * Pistas de los solitarios (spec pistas-solitarios): puntúan los movimientos legales con reglas
@@ -213,6 +219,67 @@ export function pistaGolf(vista: VistaGolf, acciones: readonly AccionGolf[]): Ac
     const tras = vista.columnas.map((c, i) => (i === a.columna ? c.slice(0, -1) : c));
     // Primero la cadena más larga; si empatan, la columna con más cartas.
     const puntos = cadenaGolf(tras, carta, vista.config.vuelta) * 100 + columna.length;
+    if (puntos > mejorPuntos) {
+      elegida = a;
+      mejorPuntos = puntos;
+    }
+  }
+  return elegida ?? acciones.find((a) => a.tipo === 'robar') ?? null;
+}
+
+// ── TriPeaks ─────────────────────────────────────────────────────────────────
+
+/** Tope de nodos de la búsqueda de cadenas, para que la pista sea instantánea. */
+const NODOS_TRIPEAKS = 5000;
+
+/**
+ * La cadena más larga de cartas que se pueden quitar seguidas sobre `arriba`, con las cartas
+ * boca arriba que se ven. Las que quedan libres al quitar otras no se sabe cuáles son: no se
+ * siguen.
+ */
+function cadenaTriPeaks(picos: SitioTriPeaks[], arriba: IdCarta): number {
+  let nodos = 0;
+  const buscar = (tope: IdCarta): number => {
+    if (++nodos > NODOS_TRIPEAKS) return 0;
+    let mejorLargo = 0;
+    for (let i = 0; i < picos.length; i++) {
+      const carta = picos[i];
+      if (carta === null || carta === 'oculta' || carta === undefined) continue;
+      if (!encajaGolf(carta, tope, true)) continue;
+      picos[i] = null;
+      mejorLargo = Math.max(mejorLargo, 1 + buscar(carta));
+      picos[i] = carta;
+    }
+    return mejorLargo;
+  };
+  return buscar(arriba);
+}
+
+/** Cartas boca abajo que quedan libres al quitar la de `posicion`. */
+function liberaTriPeaks(picos: readonly SitioTriPeaks[], posicion: number): number {
+  return picos.filter(
+    (c, i) =>
+      c === 'oculta' &&
+      tapadorasTriPeaks(i).includes(posicion) &&
+      tapadorasTriPeaks(i).every((t) => t === posicion || picos[t] === null),
+  ).length;
+}
+
+/**
+ * Pista de TriPeaks: la carta tras la que se encadenan más (y, a igualdad, la que libera más
+ * cartas boca abajo), o robar si no se puede quitar nada.
+ */
+export function pistaTriPeaks(
+  vista: VistaTriPeaks,
+  acciones: readonly AccionTriPeaks[],
+): AccionTriPeaks | null {
+  let elegida: AccionTriPeaks | null = null;
+  let mejorPuntos = -1;
+  for (const a of acciones) {
+    if (a.tipo !== 'quitar') continue;
+    const carta = vista.picos[a.posicion] as IdCarta;
+    const tras = vista.picos.map((c, i) => (i === a.posicion ? null : c));
+    const puntos = cadenaTriPeaks(tras, carta) * 100 + liberaTriPeaks(vista.picos, a.posicion);
     if (puntos > mejorPuntos) {
       elegida = a;
       mejorPuntos = puntos;
