@@ -6,7 +6,7 @@ TBD - created by archiving change niveles-ia. Update Purpose after archive.
 ## Requirements
 
 ### Requirement: Tres niveles en cada juego contra la máquina
-Cada juego con IA (Brisca, Tute, Guiñote, Escoba, Chinchón, Siete y media, Cinquillo, Pocha, Mus, Corazones, Burro, Pinacle, Butifarra, Truc, Julepe, Remigio, Tute subastado, Cuatrola, Mentiroso y Ocho loco) MUST ofrecer una IA para cada nivel: `facil`, `normal` y `dificil`. La IA `normal` MUST ser la IA básica del juego. Todos los niveles MUST cumplir las garantías generales de la IA:
+Cada juego con IA (Brisca, Tute, Guiñote, Escoba, Chinchón, Siete y media, Cinquillo, Pocha, Mus, Corazones, Burro, Pinacle, Butifarra, Truc, Julepe, Remigio, Tute subastado, Cuatrola, Mentiroso, Ocho loco y Picas) MUST ofrecer una IA para cada nivel: `facil`, `normal` y `dificil`. La IA `normal` MUST ser la IA básica del juego. Todos los niveles MUST cumplir las garantías generales de la IA:
 - deciden solo con la vista de su asiento;
 - eligen siempre una acción legal;
 - son reproducibles con su semilla;
@@ -37,13 +37,13 @@ En cada juego, la IA normal MUST ganar claramente más partidas que la fácil cu
 Cada juego con IA difícil (todos menos el Burro y el Mentiroso) MUST tener una función que, a partir de la vista de un asiento y de un azar, construya un estado completo del juego coherente con esa vista. Las cartas que el asiento no ve (las manos ajenas, el mazo y cualquier otra carta oculta) MUST repartirse al azar entre los sitios ocultos, respetando cuántas cartas hay en cada uno. Todo lo visible MUST quedar igual. La vista de ese asiento en el estado reconstruido MUST ser idéntica a la vista de partida.
 
 Si una vista no tiene datos públicos suficientes para reconstruir el estado, se MUST añadir a la vista lo que falte, siempre que no sea información oculta y que la spec del juego no lo prohíba. Se añaden:
-- las cartas ya jugadas en bazas de la mano (Brisca, Tute, Guiñote, Pocha, Corazones, Butifarra, Truc, Julepe, Tute subastado y Cuatrola);
+- las cartas ya jugadas en bazas de la mano (Brisca, Tute, Guiñote, Pocha, Corazones, Butifarra, Truc, Julepe, Tute subastado, Cuatrola y Picas);
 - los puntos de las bazas de cada jugador (Brisca, Tute y Guiñote) o de cada bando (Butifarra);
 - quién puede cantar todavía (Tute, Guiñote y Tute subastado);
 - quién ha pasado ya en el lance y cuántas cartas hay en el montón de descartes, sin cuáles (Mus).
 - cuántos jugadores han pasado seguidos sin poder robar y, de la última vez que robó cada uno, qué palo y qué número no tenía (Ocho loco).
 
-En la Escoba, las cartas recogidas siguen sin mostrarse (spec juego-escoba): la reconstrucción las reparte al azar con el número de cartas que se ve. En el Mus, las manos ajenas MUST cuadrar con lo declarado de pares y juego. En la Butifarra, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo, y la de uno que no falló pudiendo, sin triunfos. En el Truc, si se aceptó el envit, la mano de cada jugador cuyos puntos de envit se mostraron MUST dar esos puntos con sus cartas en mano y las que ya jugó. En el Julepe, las cartas descartadas y las del mazo son ocultas, y la carta de triunfo a la vista MUST seguir en la mano del repartidor. En el Remigio, la vista muestra todo el montón y las combinaciones de la mesa, y la reconstrucción reparte al azar entre las manos ajenas y el mazo solo las cartas que no se ven. En el Tute subastado, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo, y la de uno que tampoco jugó triunfo, sin triunfos. En la Cuatrola, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo (contando los matadores como triunfo, salvo los que el privilegio le dejaba guardar), y mientras el compañero esté oculto la carta llamada MUST quedar en la mano de uno de los otros tres, nunca en la del jugador. En el Ocho loco, quien robó por no poder jugar no tenía entonces ni ese palo, ni ese número, ni ochos: todas sus cartas menos una (la robada) MUST elegirse entre las que lo cumplen, y si las cartas ocultas no alcanzan para cumplirlo, se reparten sin esa restricción.
+En la Escoba, las cartas recogidas siguen sin mostrarse (spec juego-escoba): la reconstrucción las reparte al azar con el número de cartas que se ve. En el Mus, las manos ajenas MUST cuadrar con lo declarado de pares y juego. En la Butifarra, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo, y la de uno que no falló pudiendo, sin triunfos. En el Truc, si se aceptó el envit, la mano de cada jugador cuyos puntos de envit se mostraron MUST dar esos puntos con sus cartas en mano y las que ya jugó. En el Julepe, las cartas descartadas y las del mazo son ocultas, y la carta de triunfo a la vista MUST seguir en la mano del repartidor. En el Remigio, la vista muestra todo el montón y las combinaciones de la mesa, y la reconstrucción reparte al azar entre las manos ajenas y el mazo solo las cartas que no se ven. En el Tute subastado, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo, y la de uno que tampoco jugó triunfo, sin triunfos. En la Cuatrola, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo (contando los matadores como triunfo, salvo los que el privilegio le dejaba guardar), y mientras el compañero esté oculto la carta llamada MUST quedar en la mano de uno de los otros tres, nunca en la del jugador. En Picas, la mano de un jugador que no siguió el palo de salida en una baza de la mano MUST quedar sin cartas de ese palo. En el Ocho loco, quien robó por no poder jugar no tenía entonces ni ese palo, ni ese número, ni ochos: todas sus cartas menos una (la robada) MUST elegirse entre las que lo cumplen, y si las cartas ocultas no alcanzan para cumplirlo, se reparten sin esa restricción.
 
 #### Scenario: La reconstrucción da la misma vista
 - **WHEN** en cualquier estado alcanzado en partidas al azar se reconstruye un estado desde la vista de un asiento
@@ -91,6 +91,8 @@ En la Cuatrola, la IA difícil MUST simular la elección del triunfo y de la car
 
 En el Mentiroso no hay simulación ni reconstrucción. La IA difícil MUST llevar la cuenta de las cartas que ha visto: las suyas que bajó, las descubiertas en cada «¡Mentiroso!» y quién se las llevó. Con esa cuenta MUST desconfiar cuando sabe que es imposible que digan la verdad, y calcula mejor que la normal lo probable que es una bajada. Al bajar MUST ser prudente: la verdad, o una sola carta si no tiene el valor, sin rellenar con falsas. Como en el resto de juegos, MUST ganar más partidas que la normal cuando se enfrentan.
 
+En Picas, la IA difícil MUST simular solo la carta que juega, valorando los puntos de la mano de su pareja frente a los de la otra. La apuesta MUST decidirla como la normal, por la misma razón que en el Tute subastado: la simulación no ve que el rival apuesta alto justo cuando lleva buena mano.
+
 En el Ocho loco, la IA difícil MUST simular sobre una IA experta que guarda los ochos mientras tenga otra carta que case, en lugar de sobre la normal, que los suelta como cualquier otra carta: guardar los ochos es lo que más pesa en el juego, y entre estrategias que los guardan la simulación apenas encuentra ventaja. Elige lo que elegiría la experta salvo que otra acción le gane claramente.
 
 En cada juego con simulación, la IA difícil MUST ganar más partidas que la normal cuando se enfrentan.
@@ -133,6 +135,10 @@ En cada juego con simulación, la IA difícil MUST ganar más partidas que la no
 
 #### Scenario: Pujas del difícil en la Cuatrola
 - **WHEN** la IA difícil de la Cuatrola decide si pasa, puja con rey o puja solo
+- **THEN** decide como la normal, sin simular
+
+#### Scenario: Apuesta del difícil en Picas
+- **WHEN** la IA difícil de Picas decide cuántas bazas apuesta
 - **THEN** decide como la normal, sin simular
 
 #### Scenario: El difícil del Ocho loco guarda los ochos
