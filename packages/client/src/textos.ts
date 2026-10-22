@@ -73,6 +73,8 @@ export const T = {
     mentiroso: 'Mentiroso',
     mentirosoDesc: 'De 3 a 6: baja cartas boca abajo diciendo qué son, y pilla al que miente.',
     ochoLoco: 'Ocho loco',
+    picas: 'Picas',
+    picasDesc: 'En parejas: apuesta cuántas bazas haréis; las picas siempre son triunfo.',
     ochoLocoDesc: 'De 2 a 5: suelta cartas del mismo palo o número; el 8 cambia de palo.',
     cuatrolaDesc: 'El Tresillo de 4: juega solo o llama a un rey, con espadilla, malilla y basto.',
     tuteSubastadoDesc:
@@ -534,6 +536,40 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  picas: {
+    rivalN: (n: number) => `Rival ${n}`,
+    nil: 'Nil',
+    detalle: (apuesta: number | null, bazas: number) =>
+      apuesta === null
+        ? `${bazas} bazas`
+        : apuesta === 0
+          ? `Nil · ${bazas}`
+          : `${apuesta} / ${bazas}`,
+    contrato: (lado: string, contrato: number, bazas: number) => `${lado} ${bazas} de ${contrato}`,
+    puntos: (lado: string, puntos: number, sacos: number) =>
+      `${lado}: ${puntos} (${sacos === 1 ? '1 saco' : `${sacos} sacos`})`,
+    rotas: 'Picas rotas',
+    apostar: '¿Cuántas bazas harás?',
+    apostarNota: 'Nil: no hacer ninguna (±100). Tu pareja suma tu apuesta a la suya.',
+    esperando: 'Esperando las apuestas…',
+    yaApostaron: 'Apuestas',
+    sinApostar: '—',
+    apuesta: (n: number) => (n === 0 ? 'Nil' : String(n)),
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    siguienteMano: 'Siguiente mano',
+    jugadorCol: 'Jugador',
+    apuestaCol: 'Apuesta',
+    bazasCol: 'Bazas',
+    parejaCol: 'Pareja',
+    contratoCol: 'Contrato',
+    manoCol: 'Mano',
+    sacosCol: 'Sacos',
+    totalCol: 'Total',
+    penalizacion: (lado: string) => `${lado}: 10 sacos, −100`,
+    finPartida: 'Gana la primera pareja que llega a 500 puntos.',
+    clasificacion: 'Puntos',
   },
 
   ochoLoco: {
@@ -1120,6 +1156,7 @@ export const T = {
       cuatrola: 'Cómo se juega a la Cuatrola',
       mentiroso: 'Cómo se juega al Mentiroso',
       ochoLoco: 'Cómo se juega al Ocho loco',
+      picas: 'Cómo se juega a Picas',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -1624,6 +1661,44 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    picas: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja francesa entre 4, en dos parejas: tu compañero es el de enfrente. Cada uno recibe 13 cartas.',
+          'Antes de jugar, cada pareja se compromete a hacer un número de bazas. Gana la primera pareja que llega a 500 puntos.',
+        ],
+      },
+      {
+        titulo: 'Apostar',
+        texto: [
+          'Por turnos, cada uno dice cuántas bazas hará, de 1 a 13. El contrato de la pareja es la suma de las dos apuestas.',
+          'También puedes decir Nil: que no harás ninguna baza. Si lo cumples, tu pareja suma 100; si no, resta 100.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Hay que seguir el palo de salida si se tiene; si no, puedes echar cualquier carta. Las picas son siempre triunfo: la pica más alta gana la baza, y si no hay picas, la más alta del palo de salida. El As es la carta más alta.',
+          'No se puede salir de picas hasta que alguien haya echado una pica sobre otro palo («picas rotas»), salvo que solo te queden picas.',
+        ],
+      },
+      {
+        titulo: 'Puntos',
+        texto: [
+          'Si la pareja llega a su contrato, suma 10 por cada baza apostada y 1 por cada baza de más. Si no llega, resta 10 por cada baza apostada.',
+          'Cada baza de más es un saco. Al juntar 10 sacos, la pareja pierde 100 puntos: no conviene pasarse.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Cuenta como bazas los ases, los reyes acompañados y las picas altas o largas.',
+          'Si tu compañero dice Nil, intenta ganar tú las bazas que él podría llevarse.',
         ],
       },
     ],

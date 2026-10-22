@@ -6,6 +6,7 @@
   import ConteoMus from '../mesas/ConteoMus.svelte';
   import ResultadoChinchon from '../mesas/ResultadoChinchon.svelte';
   import ResumenGuinote from '../mesas/ResumenGuinote.svelte';
+  import ResumenPicas from '../mesas/ResumenPicas.svelte';
   import ResumenOchoLoco from '../mesas/ResumenOchoLoco.svelte';
   import ResultadoSieteYMedia from '../mesas/ResultadoSieteYMedia.svelte';
   import ResumenPinacle from '../mesas/ResumenPinacle.svelte';
@@ -239,6 +240,19 @@
               </td>
             </tr>
           {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'picas'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenPicas resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} nombre={(a) => nombreChinchon(a, 4)} />
+      {/if}
+      <table>
+        <caption>{T.picas.clasificacion}</caption>
+        <tbody>
+          <tr><th scope="row">{lados[0]}</th><td data-testid="puntos-0">{vista.puntos[mio]}</td></tr>
+          <tr><th scope="row">{lados[1]}</th><td data-testid="puntos-1">{vista.puntos[1 - mio]}</td></tr>
         </tbody>
       </table>
     {:else if partida.id === 'ochoLoco'}

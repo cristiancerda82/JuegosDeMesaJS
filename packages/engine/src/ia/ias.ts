@@ -27,6 +27,7 @@ import { SIMULABLE_REMIGIO } from './reconstruir/remigio';
 import { SIMULABLE_TUTE_SUBASTADO } from './reconstruir/tute-subastado';
 import { SIMULABLE_CUATROLA } from './reconstruir/cuatrola';
 import { SIMULABLE_OCHO_LOCO } from './reconstruir/ocho-loco';
+import { SIMULABLE_PICAS } from './reconstruir/picas';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -36,6 +37,7 @@ import { iaTuteSubastadoBasica } from './tute-subastado-basica';
 import { iaCuatrolaBasica } from './cuatrola-basica';
 import { iaMentirosoBasica, iaMentirosoExperta } from './mentiroso-basica';
 import { iaOchoLocoBasica, iaOchoLocoExperta } from './ocho-loco-basica';
+import { iaPicasBasica } from './picas-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
 
@@ -98,4 +100,6 @@ export const IAS = {
     normal: iaOchoLocoBasica,
     dificil: porSimulacion(iaOchoLocoExperta, SIMULABLE_OCHO_LOCO),
   },
+  // La apuesta de Picas la decide la base también en el difícil: solo simula las cartas.
+  picas: niveles(iaPicasBasica, SIMULABLE_PICAS),
 } as const;

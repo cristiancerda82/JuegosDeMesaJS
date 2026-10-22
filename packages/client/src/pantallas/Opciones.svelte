@@ -14,6 +14,7 @@
     ConfigCuatrola,
     ConfigMentiroso,
     ConfigOchoLoco,
+    ConfigPicas,
     ConfigPiramide,
     ConfigGolf,
     ConfigChinchon,
@@ -73,6 +74,7 @@
   let cuatrolaConfig: Editable<ConfigCuatrola> = $state({ ...JUEGOS.cuatrola.configPorDefecto });
   let mentirosoConfig: Editable<ConfigMentiroso> = $state({ ...JUEGOS.mentiroso.configPorDefecto });
   let ochoLocoConfig: Editable<ConfigOchoLoco> = $state({ ...JUEGOS.ochoLoco.configPorDefecto });
+  const picasConfig: ConfigPicas = JUEGOS.picas.configPorDefecto;
   let subastado: Editable<ConfigTuteSubastado> = $state({
     ...JUEGOS.tuteSubastado.configPorDefecto,
   });
@@ -118,6 +120,7 @@
       cuatrola: cuatrolaConfig,
       mentiroso: mentirosoConfig,
       ochoLoco: ochoLocoConfig,
+      picas: picasConfig,
     };
     if (conIA) guardarNivel(juego, nivel);
     empezar({ ...configs[juego] }, nivel);

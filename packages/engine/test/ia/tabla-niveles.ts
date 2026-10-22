@@ -18,6 +18,7 @@ import { CONFIG_TUTE_POR_DEFECTO, tute } from '../../src/juegos/tute';
 import { CONFIG_CUATROLA_POR_DEFECTO, cuatrola } from '../../src/juegos/cuatrola';
 import { CONFIG_MENTIROSO_POR_DEFECTO, mentiroso } from '../../src/juegos/mentiroso';
 import { CONFIG_OCHO_LOCO_POR_DEFECTO, ochoLoco } from '../../src/juegos/ocho-loco';
+import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -77,4 +78,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   // No simula, pero su difícil (con memoria) tiene que ganar a la normal: entra en la prueba.
   entrada('Mentiroso', mentiroso, CONFIG_MENTIROSO_POR_DEFECTO, IAS.mentiroso, 4),
   entrada('Ocho loco', ochoLoco, CONFIG_OCHO_LOCO_POR_DEFECTO, IAS.ochoLoco, 4),
+  entrada('Picas', picas, CONFIG_PICAS_POR_DEFECTO, IAS.picas, 'bandos'),
 ];

@@ -450,6 +450,25 @@ test('Ocho loco en red: dos humanos juegan y cada uno ve lo que hizo el otro', a
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Picas en red: dos humanos apuestan y ven la apuesta del otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'picas');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(13);
+
+  // Ana apuesta primero; Luis ve su apuesta y apuesta él.
+  await ana.getByTestId('apostar-4').click();
+  await expect(luis.getByTestId('asiento-0')).toContainText('Ana');
+  await expect(luis.getByTestId('asiento-0')).toContainText('4 / 0');
+  await luis.getByTestId('apostar-0').click();
+  await expect(ana.getByTestId('asiento-1')).toContainText('Nil', { timeout: 30_000 });
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Remigio en red: dos humanos roban y descartan', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

@@ -17,6 +17,12 @@ import {
   mentiroso,
   CONFIG_OCHO_LOCO_POR_DEFECTO,
   ochoLoco,
+  CONFIG_PICAS_POR_DEFECTO,
+  picas,
+  type AccionPicas,
+  type ConfigPicas,
+  type EstadoPicas,
+  type VistaPicas,
   type AccionOchoLoco,
   type ConfigOchoLoco,
   type EstadoOchoLoco,
@@ -214,7 +220,8 @@ export type IdJuego =
   | 'tuteSubastado'
   | 'cuatrola'
   | 'mentiroso'
-  | 'ochoLoco';
+  | 'ochoLoco'
+  | 'picas';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -242,6 +249,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'cuatrola',
   'mentiroso',
   'ochoLoco',
+  'picas',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -734,6 +742,22 @@ export const DEF_OCHO_LOCO: DefOchoLoco = {
   },
 };
 
+export type DefPicas = DefJuego<ConfigPicas, EstadoPicas, AccionPicas, VistaPicas>;
+
+export const DEF_PICAS: DefPicas = {
+  id: 'picas',
+  nombre: T.menu.picas,
+  juego: picas,
+  configPorDefecto: CONFIG_PICAS_POR_DEFECTO,
+  ia: IAS.picas,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada baza y apuesta.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (antes.fase === 'apuesta' && antes.turno !== despues.asiento) return PAUSA_SUBASTA_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -760,6 +784,7 @@ export const JUEGOS = {
   cuatrola: DEF_CUATROLA,
   mentiroso: DEF_MENTIROSO,
   ochoLoco: DEF_OCHO_LOCO,
+  picas: DEF_PICAS,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */
