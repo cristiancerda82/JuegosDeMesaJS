@@ -19,6 +19,9 @@ import { CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, sieteYMedia } from '../../src/juegos/
 import { iaCinquilloBasica } from '../../src/ia/cinquillo-basica';
 import { iaOchoLocoBasica } from '../../src/ia/ocho-loco-basica';
 import { iaPicasBasica } from '../../src/ia/picas-basica';
+import { iaBlackjackBasica } from '../../src/ia/blackjack-basica';
+import { reconstruirBlackjack } from '../../src/ia/reconstruir/blackjack';
+import { blackjack, CONFIG_BLACKJACK_POR_DEFECTO } from '../../src/juegos/blackjack';
 import { reconstruirPicas } from '../../src/ia/reconstruir/picas';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
@@ -410,4 +413,9 @@ describirReconstruccion(ochoLoco, reconstruirOchoLoco, {
 describirReconstruccion(picas, reconstruirPicas, {
   configs: [CONFIG_PICAS_POR_DEFECTO],
   base: iaPicasBasica,
+});
+
+describirReconstruccion(blackjack, reconstruirBlackjack, {
+  configs: [CONFIG_BLACKJACK_POR_DEFECTO, { jugadores: 4, manos: 5 }],
+  base: iaBlackjackBasica,
 });

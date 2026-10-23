@@ -19,6 +19,12 @@ import {
   ochoLoco,
   CONFIG_PICAS_POR_DEFECTO,
   picas,
+  CONFIG_BLACKJACK_POR_DEFECTO,
+  blackjack,
+  type AccionBlackjack,
+  type ConfigBlackjack,
+  type EstadoBlackjack,
+  type VistaBlackjack,
   type AccionPicas,
   type ConfigPicas,
   type EstadoPicas,
@@ -229,7 +235,8 @@ export type IdJuego =
   | 'cuatrola'
   | 'mentiroso'
   | 'ochoLoco'
-  | 'picas';
+  | 'picas'
+  | 'blackjack';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -259,6 +266,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'mentiroso',
   'ochoLoco',
   'picas',
+  'blackjack',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -779,6 +787,35 @@ export const DEF_PICAS: DefPicas = {
   },
 };
 
+export type DefBlackjack = DefJuego<
+  ConfigBlackjack,
+  EstadoBlackjack,
+  AccionBlackjack,
+  VistaBlackjack
+>;
+
+/** Tiempo para ver cada carta o apuesta de la IA en el Blackjack. */
+const PAUSA_BLACKJACK_MS = 600;
+
+const cartasEnMesa = (v: VistaBlackjack) =>
+  v.manos.reduce((s, ms) => s + ms.reduce((t, m) => t + m.cartas.length, 0), 0);
+
+export const DEF_BLACKJACK: DefBlackjack = {
+  id: 'blackjack',
+  nombre: T.menu.blackjack,
+  juego: blackjack,
+  configPorDefecto: CONFIG_BLACKJACK_POR_DEFECTO,
+  ia: IAS.blackjack,
+  // El cierre de la mano lo detiene la propia mesa con el resumen.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return 0;
+    if (antes.turno === despues.asiento) return 0;
+    const apuesta = despues.apuestas.filter((a) => a !== null).length;
+    if (apuesta > antes.apuestas.filter((a) => a !== null).length) return PAUSA_BLACKJACK_MS;
+    return cartasEnMesa(despues) > cartasEnMesa(antes) ? PAUSA_BLACKJACK_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -807,6 +844,7 @@ export const JUEGOS = {
   mentiroso: DEF_MENTIROSO,
   ochoLoco: DEF_OCHO_LOCO,
   picas: DEF_PICAS,
+  blackjack: DEF_BLACKJACK,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

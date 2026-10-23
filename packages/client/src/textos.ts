@@ -76,6 +76,8 @@ export const T = {
     mentirosoDesc: 'De 3 a 6: baja cartas boca abajo diciendo qué son, y pilla al que miente.',
     ochoLoco: 'Ocho loco',
     picas: 'Picas',
+    blackjack: 'Blackjack',
+    blackjackDesc: 'De 1 a 4 contra la banca: llega a 21 sin pasarte, dobla y separa.',
     picasDesc: 'En parejas: apuesta cuántas bazas haréis; las picas siempre son triunfo.',
     ochoLocoDesc: 'De 2 a 5: suelta cartas del mismo palo o número; el 8 cambia de palo.',
     cuatrolaDesc: 'El Tresillo de 4: juega solo o llama a un rey, con espadilla, malilla y basto.',
@@ -538,6 +540,36 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  blackjack: {
+    banca: 'Banca',
+    mano: (n: number, total: number) => `Mano ${n} de ${total}`,
+    fichas: (n: number) => (n === 1 ? '1 ficha' : `${n} fichas`),
+    apuesta: (n: number) => `apuesta ${n}`,
+    blanda: (n: number) => `${n - 10}/${n}`,
+    doblada: 'doblada',
+    leToca: (quien: string) => `Le toca a ${quien}`,
+    tuApuesta: 'Tu turno: ¿cuántas fichas apuestas?',
+    tuTurno: 'Tu turno: pide carta o plántate',
+    pedir: 'Pedir',
+    plantarse: 'Plantarse',
+    doblar: 'Doblar',
+    separar: 'Separar',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    siguienteMano: 'Siguiente mano',
+    jugadorCol: 'Jugador',
+    manosCol: 'Manos',
+    ganaCol: 'Gana',
+    fichasCol: 'Fichas',
+    resultado: {
+      gana: 'gana',
+      blackjack: '¡blackjack!',
+      empata: 'empata',
+      pierde: 'pierde',
+      pasa: 'se pasa',
+    },
+    clasificacion: 'Fichas',
   },
 
   picas: {
@@ -1169,6 +1201,7 @@ export const T = {
       mentiroso: 'Cómo se juega al Mentiroso',
       ochoLoco: 'Cómo se juega al Ocho loco',
       picas: 'Cómo se juega a Picas',
+      blackjack: 'Cómo se juega al Blackjack',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -1673,6 +1706,44 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    blackjack: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja francesa contra la banca, que lleva la máquina. Cada jugador empieza con 100 fichas y gana quien más tenga al acabar las manos (jugando solo, si acabas con más de 100).',
+          'En cada mano tienes que acercarte a 21 más que la banca, sin pasarte.',
+        ],
+      },
+      {
+        titulo: 'Valores',
+        texto: [
+          'Del 2 al 10, su número; la J, la Q y la K valen 10; el As vale 11 o 1, lo que más te convenga.',
+          'Un As y una carta de 10 de entrada son un blackjack, la mejor mano: cobra 3 por cada 2 apostadas.',
+        ],
+      },
+      {
+        titulo: 'La mano',
+        texto: [
+          'Primero apuestas de 2 a 20 fichas. Recibes dos cartas boca arriba; la banca, una a la vista y otra tapada.',
+          'Puedes pedir carta las veces que quieras o plantarte. Con tus dos primeras cartas también puedes doblar (doblas la apuesta y recibes una sola carta más) o, si son del mismo valor, separarlas en dos manos.',
+        ],
+      },
+      {
+        titulo: 'La banca',
+        texto: [
+          'Cuando todos han jugado, la banca descubre su carta y pide mientras tenga 16 o menos; con 17 o más se planta.',
+          'Si te pasas de 21 pierdes aunque la banca también se pase. Si empatas, recuperas tu apuesta.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Si la banca enseña un 2 al 6, es fácil que se pase: con 12 o más, plántate.',
+          'Dobla con 11, y separa siempre los ases y los ochos.',
         ],
       },
     ],

@@ -469,6 +469,25 @@ test('Picas en red: dos humanos apuestan y ven la apuesta del otro', async ({ br
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Blackjack en red: dos humanos apuestan y ven las cartas del otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'blackjack');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+
+  // Ana apuesta primero; Luis ve su apuesta y apuesta él.
+  await ana.getByTestId('apostar-10').click();
+  await expect(luis.getByTestId('apuesta-0')).toHaveText('apuesta 10');
+  await expect(luis.getByTestId('puesto-0')).toContainText('Ana');
+  await luis.getByTestId('apostar-4').click();
+  // Repartido: cada uno ve las dos cartas del otro.
+  await expect(ana.locator('[data-testid="mano-1-0"] .naipe')).toHaveCount(2, { timeout: 30_000 });
+  await expect(luis.locator('[data-testid="mano-0-0"] .naipe')).toHaveCount(2);
+  await expect(ana.getByTestId('puesto-1')).toContainText('Luis');
+});
+
 test('Remigio en red: dos humanos roban y descartan', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

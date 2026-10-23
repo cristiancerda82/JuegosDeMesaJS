@@ -28,6 +28,7 @@ import { SIMULABLE_TUTE_SUBASTADO } from './reconstruir/tute-subastado';
 import { SIMULABLE_CUATROLA } from './reconstruir/cuatrola';
 import { SIMULABLE_OCHO_LOCO } from './reconstruir/ocho-loco';
 import { SIMULABLE_PICAS } from './reconstruir/picas';
+import { SIMULABLE_BLACKJACK } from './reconstruir/blackjack';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -38,6 +39,7 @@ import { iaCuatrolaBasica } from './cuatrola-basica';
 import { iaMentirosoBasica, iaMentirosoExperta } from './mentiroso-basica';
 import { iaOchoLocoBasica, iaOchoLocoExperta } from './ocho-loco-basica';
 import { iaPicasBasica } from './picas-basica';
+import { iaBlackjackBasica, iaBlackjackExperta } from './blackjack-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
 
@@ -102,4 +104,10 @@ export const IAS = {
   },
   // La apuesta de Picas la decide la base también en el difícil: solo simula las cartas.
   picas: niveles(iaPicasBasica, SIMULABLE_PICAS),
+  // En el Blackjack la normal juega como la banca; el difícil simula sobre la estrategia básica.
+  blackjack: {
+    facil: conErrores(iaBlackjackBasica, ERRORES_FACIL),
+    normal: iaBlackjackBasica,
+    dificil: porSimulacion(iaBlackjackExperta, SIMULABLE_BLACKJACK),
+  },
 } as const;

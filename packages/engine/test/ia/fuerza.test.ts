@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { duelo } from './duelo';
 import { JUEGOS_CON_NIVELES } from './tabla-niveles';
+import { IAS } from '../../src/ia/ias';
+import { fichasPorMano } from './fichas-blackjack';
 
 /** Variable de entorno sin depender de los tipos de Node (el motor no los usa). */
 const entorno = (globalThis as { process?: { env: Record<string, string | undefined> } }).process
@@ -20,5 +22,19 @@ describe.runIf(entorno?.FUERZA)('difícil contra normal', () => {
     // Aquí se mide sin otros tests en paralelo: 250 ms en escritorio dejan margen para los
     // 500 ms en un móvil de gama media.
     expect(r.maxMs).toBeLessThan(250);
+  });
+});
+
+/**
+ * En el Blackjack la suerte decide casi todas las partidas: la fuerza se mide por fichas por mano,
+ * con las mismas cartas para los dos niveles (spec niveles-ia).
+ */
+describe.runIf(entorno?.FUERZA)('difícil contra normal por fichas', () => {
+  it('Blackjack', { timeout: 3_600_000 }, () => {
+    const normal = fichasPorMano(IAS.blackjack.normal, 300, 'fuerza');
+    const dificil = fichasPorMano(IAS.blackjack.dificil, 300, 'fuerza');
+    expect(dificil - normal, `${dificil.toFixed(3)} contra ${normal.toFixed(3)}`).toBeGreaterThan(
+      0.15,
+    );
   });
 });

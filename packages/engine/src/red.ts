@@ -24,6 +24,7 @@ import { CONFIG_CUATROLA_POR_DEFECTO, cuatrola } from './juegos/cuatrola';
 import { CONFIG_MENTIROSO_POR_DEFECTO, mentiroso } from './juegos/mentiroso';
 import { CONFIG_OCHO_LOCO_POR_DEFECTO, ochoLoco } from './juegos/ocho-loco';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from './juegos/picas';
+import { blackjack, CONFIG_BLACKJACK_POR_DEFECTO } from './juegos/blackjack';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -52,6 +53,7 @@ export const IDS_JUEGOS_EN_RED = [
   'mentiroso',
   'ochoLoco',
   'picas',
+  'blackjack',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -105,6 +107,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   mentiroso: entrada(mentiroso, IAS.mentiroso, CONFIG_MENTIROSO_POR_DEFECTO),
   ochoLoco: entrada(ochoLoco, IAS.ochoLoco, CONFIG_OCHO_LOCO_POR_DEFECTO),
   picas: entrada(picas, IAS.picas, CONFIG_PICAS_POR_DEFECTO),
+  blackjack: entrada(blackjack, IAS.blackjack, CONFIG_BLACKJACK_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>
