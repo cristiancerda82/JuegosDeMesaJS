@@ -6,7 +6,7 @@ TBD - created by archiving change niveles-ia. Update Purpose after archive.
 ## Requirements
 
 ### Requirement: Tres niveles en cada juego contra la máquina
-Cada juego con IA (Brisca, Tute, Guiñote, Escoba, Chinchón, Siete y media, Cinquillo, Pocha, Mus, Corazones, Burro, Pinacle, Butifarra, Truc, Julepe, Remigio, Tute subastado, Cuatrola, Mentiroso, Ocho loco y Picas) MUST ofrecer una IA para cada nivel: `facil`, `normal` y `dificil`. La IA `normal` MUST ser la IA básica del juego. Todos los niveles MUST cumplir las garantías generales de la IA:
+Cada juego con IA (Brisca, Tute, Guiñote, Escoba, Chinchón, Siete y media, Cinquillo, Pocha, Mus, Corazones, Burro, Pinacle, Butifarra, Truc, Julepe, Remigio, Tute subastado, Cuatrola, Mentiroso, Ocho loco, Picas y Blackjack) MUST ofrecer una IA para cada nivel: `facil`, `normal` y `dificil`. La IA `normal` MUST ser la IA básica del juego. Todos los niveles MUST cumplir las garantías generales de la IA:
 - deciden solo con la vista de su asiento;
 - eligen siempre una acción legal;
 - son reproducibles con su semilla;
@@ -43,7 +43,7 @@ Si una vista no tiene datos públicos suficientes para reconstruir el estado, se
 - quién ha pasado ya en el lance y cuántas cartas hay en el montón de descartes, sin cuáles (Mus).
 - cuántos jugadores han pasado seguidos sin poder robar y, de la última vez que robó cada uno, qué palo y qué número no tenía (Ocho loco).
 
-En la Escoba, las cartas recogidas siguen sin mostrarse (spec juego-escoba): la reconstrucción las reparte al azar con el número de cartas que se ve. En el Mus, las manos ajenas MUST cuadrar con lo declarado de pares y juego. En la Butifarra, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo, y la de uno que no falló pudiendo, sin triunfos. En el Truc, si se aceptó el envit, la mano de cada jugador cuyos puntos de envit se mostraron MUST dar esos puntos con sus cartas en mano y las que ya jugó. En el Julepe, las cartas descartadas y las del mazo son ocultas, y la carta de triunfo a la vista MUST seguir en la mano del repartidor. En el Remigio, la vista muestra todo el montón y las combinaciones de la mesa, y la reconstrucción reparte al azar entre las manos ajenas y el mazo solo las cartas que no se ven. En el Tute subastado, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo, y la de uno que tampoco jugó triunfo, sin triunfos. En la Cuatrola, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo (contando los matadores como triunfo, salvo los que el privilegio le dejaba guardar), y mientras el compañero esté oculto la carta llamada MUST quedar en la mano de uno de los otros tres, nunca en la del jugador. En Picas, la mano de un jugador que no siguió el palo de salida en una baza de la mano MUST quedar sin cartas de ese palo. En el Ocho loco, quien robó por no poder jugar no tenía entonces ni ese palo, ni ese número, ni ochos: todas sus cartas menos una (la robada) MUST elegirse entre las que lo cumplen, y si las cartas ocultas no alcanzan para cumplirlo, se reparten sin esa restricción.
+En la Escoba, las cartas recogidas siguen sin mostrarse (spec juego-escoba): la reconstrucción las reparte al azar con el número de cartas que se ve. En el Mus, las manos ajenas MUST cuadrar con lo declarado de pares y juego. En la Butifarra, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo, y la de uno que no falló pudiendo, sin triunfos. En el Truc, si se aceptó el envit, la mano de cada jugador cuyos puntos de envit se mostraron MUST dar esos puntos con sus cartas en mano y las que ya jugó. En el Julepe, las cartas descartadas y las del mazo son ocultas, y la carta de triunfo a la vista MUST seguir en la mano del repartidor. En el Remigio, la vista muestra todo el montón y las combinaciones de la mesa, y la reconstrucción reparte al azar entre las manos ajenas y el mazo solo las cartas que no se ven. En el Tute subastado, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo, y la de uno que tampoco jugó triunfo, sin triunfos. En la Cuatrola, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo (contando los matadores como triunfo, salvo los que el privilegio le dejaba guardar), y mientras el compañero esté oculto la carta llamada MUST quedar en la mano de uno de los otros tres, nunca en la del jugador. En Picas, la mano de un jugador que no siguió el palo de salida en una baza de la mano MUST quedar sin cartas de ese palo. En el Blackjack, la carta tapada de la banca y la baraja MUST repartirse al azar entre las cartas que no se ven; si la banca miró su carta tapada sin descubrirla, esa carta MUST ser una que no le dé blackjack. En el Ocho loco, quien robó por no poder jugar no tenía entonces ni ese palo, ni ese número, ni ochos: todas sus cartas menos una (la robada) MUST elegirse entre las que lo cumplen, y si las cartas ocultas no alcanzan para cumplirlo, se reparten sin esa restricción.
 
 #### Scenario: La reconstrucción da la misma vista
 - **WHEN** en cualquier estado alcanzado en partidas al azar se reconstruye un estado desde la vista de un asiento
@@ -95,6 +95,8 @@ En Picas, la IA difícil MUST simular solo la carta que juega, valorando los pun
 
 En el Ocho loco, la IA difícil MUST simular sobre una IA experta que guarda los ochos mientras tenga otra carta que case, en lugar de sobre la normal, que los suelta como cualquier otra carta: guardar los ochos es lo que más pesa en el juego, y entre estrategias que los guardan la simulación apenas encuentra ventaja. Elige lo que elegiría la experta salvo que otra acción le gane claramente.
 
+En el Blackjack, la IA difícil MUST simular sobre una IA experta que sigue la estrategia básica completa (pedir, plantarse, doblar o separar según su mano y la carta visible de la banca), en lugar de sobre la normal, que juega como la banca. Elige lo que elegiría la experta salvo que otra acción le gane claramente. La apuesta la MUST decidir como la experta, sin simular. En el Blackjack la suerte pesa tanto en una partida que ganar más partidas no mide el nivel: su prueba de fuerza MUST comparar, con las mismas cartas, las fichas que gana por mano cada nivel jugando solo, y la difícil MUST perder claramente menos por mano que la normal.
+
 En cada juego con simulación, la IA difícil MUST ganar más partidas que la normal cuando se enfrentan.
 
 #### Scenario: Una sola acción legal
@@ -140,6 +142,14 @@ En cada juego con simulación, la IA difícil MUST ganar más partidas que la no
 #### Scenario: Apuesta del difícil en Picas
 - **WHEN** la IA difícil de Picas decide cuántas bazas apuesta
 - **THEN** decide como la normal, sin simular
+
+#### Scenario: Fuerza del difícil en el Blackjack
+- **WHEN** la IA difícil y la normal juegan solas 300 partidas de 20 manos con las mismas semillas
+- **THEN** la difícil pierde de media claramente menos fichas por mano que la normal
+
+#### Scenario: Estrategia básica del difícil en el Blackjack
+- **WHEN** la IA difícil del Blackjack tiene 12 y la banca muestra un 4
+- **THEN** se planta, aunque la normal pediría
 
 #### Scenario: El difícil del Ocho loco guarda los ochos
 - **WHEN** la IA difícil del Ocho loco puede jugar el 4 de corazones o el 8 de picas, y las simulaciones no dan una ventaja clara a ninguna
