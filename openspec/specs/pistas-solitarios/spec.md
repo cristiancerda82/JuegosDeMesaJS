@@ -6,7 +6,7 @@ TBD - created by archiving change pistas-solitarios. Update Purpose after archiv
 ## Requirements
 
 ### Requirement: Pista de un solitario
-Cada solitario (Klondike, FreeCell, Spider, Pirámide, Golf, TriPeaks y Yukon) MUST tener una función de pista que, a partir de la vista del jugador y de sus acciones legales, devuelva una acción legal útil o `null` si no ve ninguna. La pista MUST ser determinista e instantánea (menos de 50 ms). MUST NOT sugerir deshacer, abandonar ni autocompletar.
+Cada solitario (Klondike, FreeCell, Spider, Pirámide, Golf, TriPeaks, Yukon y Canfield) MUST tener una función de pista que, a partir de la vista del jugador y de sus acciones legales, devuelva una acción legal útil o `null` si no ve ninguna. La pista MUST ser determinista e instantánea (menos de 50 ms). MUST NOT sugerir deshacer, abandonar ni autocompletar.
 
 Un movimiento MUST considerarse útil solo si cambia algo que acerca a la victoria:
 - sube una carta a una fundación;
@@ -18,13 +18,14 @@ Un movimiento MUST considerarse útil solo si cambia algo que acerca a la victor
 - en el Golf, pasa una carta de una columna al descarte (mejor la que deja encadenar más cartas después).
 - en TriPeaks, quita una carta de los picos (mejor la que deja encadenar más cartas boca arriba después, contando las que deja libres).
 - en el Yukon, mueve un grupo que deja arriba de su columna una carta que puede subir a una fundación.
+- en el Canfield, saca la carta de arriba de la reserva (a una fundación o a una columna), antes que una del descarte.
 
 MUST NOT considerarse útiles los movimientos de ida y vuelta:
 - pasar una escalera de una columna a otra sin descubrir ni vaciar nada;
 - bajar una carta de una fundación;
 - mover un Rey que ya está solo al fondo de su columna a otra columna vacía.
 
-Si no hay ningún movimiento útil, la pista MUST sugerir robar o reciclar (Klondike, Pirámide, Golf y TriPeaks) o repartir (Spider) cuando se pueda; si tampoco se puede, MUST devolver `null`.
+Si no hay ningún movimiento útil, la pista MUST sugerir robar o reciclar (Klondike, Pirámide, Golf, TriPeaks y Canfield) o repartir (Spider) cuando se pueda; si tampoco se puede, MUST devolver `null`.
 
 #### Scenario: Prefiere la fundación
 - **WHEN** en el Klondike se puede subir el As de corazones a una fundación y también mover una carta entre columnas
@@ -65,6 +66,10 @@ Si no hay ningún movimiento útil, la pista MUST sugerir robar o reciclar (Klon
 #### Scenario: Sin pista en el Yukon
 - **WHEN** en el Yukon ningún movimiento es útil
 - **THEN** la pista no sugiere nada, porque no hay mazo
+
+#### Scenario: La reserva antes que el descarte en el Canfield
+- **WHEN** en el Canfield la carta de arriba de la reserva y la del descarte pueden ir a columnas, y no hay nada que subir a las fundaciones
+- **THEN** la pista sugiere mover la de la reserva
 
 #### Scenario: La carta que encadena más en TriPeaks
 - **WHEN** en TriPeaks, con un 7 en el descarte, se puede quitar un 6 tras el que no se puede seguir y un 8 tras el que queda libre un 9
