@@ -29,6 +29,7 @@ import { SIMULABLE_CUATROLA } from './reconstruir/cuatrola';
 import { SIMULABLE_OCHO_LOCO } from './reconstruir/ocho-loco';
 import { SIMULABLE_PICAS } from './reconstruir/picas';
 import { SIMULABLE_BLACKJACK } from './reconstruir/blackjack';
+import { SIMULABLE_GIN_RUMMY } from './reconstruir/gin-rummy';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -40,6 +41,7 @@ import { iaMentirosoBasica, iaMentirosoExperta } from './mentiroso-basica';
 import { iaOchoLocoBasica, iaOchoLocoExperta } from './ocho-loco-basica';
 import { iaPicasBasica } from './picas-basica';
 import { iaBlackjackBasica, iaBlackjackExperta } from './blackjack-basica';
+import { iaGinRummyBasica } from './gin-rummy-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
 
@@ -110,4 +112,6 @@ export const IAS = {
     normal: iaBlackjackBasica,
     dificil: porSimulacion(iaBlackjackExperta, SIMULABLE_BLACKJACK),
   },
+  // Como en el Remigio, el difícil simula el robo y el descarte; cierra como la normal.
+  ginRummy: niveles(iaGinRummyBasica, SIMULABLE_GIN_RUMMY),
 } as const;

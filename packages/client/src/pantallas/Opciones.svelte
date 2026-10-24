@@ -16,6 +16,7 @@
     ConfigOchoLoco,
     ConfigPicas,
     ConfigBlackjack,
+    ConfigGinRummy,
     ConfigPiramide,
     ConfigGolf,
     ConfigTriPeaks,
@@ -79,6 +80,7 @@
   let ochoLocoConfig: Editable<ConfigOchoLoco> = $state({ ...JUEGOS.ochoLoco.configPorDefecto });
   const picasConfig: ConfigPicas = JUEGOS.picas.configPorDefecto;
   let blackjackConfig: Editable<ConfigBlackjack> = $state({ ...JUEGOS.blackjack.configPorDefecto });
+  const ginRummyConfig: ConfigGinRummy = JUEGOS.ginRummy.configPorDefecto;
   let subastado: Editable<ConfigTuteSubastado> = $state({
     ...JUEGOS.tuteSubastado.configPorDefecto,
   });
@@ -127,6 +129,7 @@
       ochoLoco: ochoLocoConfig,
       picas: picasConfig,
       blackjack: blackjackConfig,
+      ginRummy: ginRummyConfig,
     };
     if (conIA) guardarNivel(juego, nivel);
     empezar({ ...configs[juego] }, nivel);

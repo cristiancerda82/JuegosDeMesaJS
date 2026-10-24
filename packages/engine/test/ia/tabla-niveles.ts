@@ -20,6 +20,7 @@ import { CONFIG_MENTIROSO_POR_DEFECTO, mentiroso } from '../../src/juegos/mentir
 import { CONFIG_OCHO_LOCO_POR_DEFECTO, ochoLoco } from '../../src/juegos/ocho-loco';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { blackjack, CONFIG_BLACKJACK_POR_DEFECTO } from '../../src/juegos/blackjack';
+import { CONFIG_GIN_RUMMY_POR_DEFECTO, ginRummy } from '../../src/juegos/gin-rummy';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -83,4 +84,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   // Gana claramente más fichas por mano, pero en 10 manos manda la suerte: su prueba de fuerza
   // es por fichas (test de fuerza propio).
   entrada('Blackjack', blackjack, CONFIG_BLACKJACK_POR_DEFECTO, IAS.blackjack, 2, false),
+  entrada('Gin Rummy', ginRummy, CONFIG_GIN_RUMMY_POR_DEFECTO, IAS.ginRummy, 2),
 ];

@@ -488,6 +488,33 @@ test('Blackjack en red: dos humanos apuestan y ven las cartas del otro', async (
   await expect(ana.getByTestId('puesto-1')).toContainText('Luis');
 });
 
+test('Gin Rummy en red: dos humanos pasan la primera carta, roban y descartan', async ({
+  browser,
+}) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'ginRummy');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(10);
+
+  // Los dos pasan la primera carta; Ana roba del mazo y descarta.
+  await ana.getByTestId('pasar').click();
+  await expect(luis.getByTestId('pasar')).toBeVisible();
+  await luis.getByTestId('pasar').click();
+  await expect(ana.getByTestId('mazo')).toHaveClass(/robable/);
+  await ana.getByTestId('mazo').click();
+  const primera = ana.locator('[data-testid="mano"] .carta-mano').first();
+  const carta = await primera.getAttribute('data-carta');
+  await primera.click({ position: { x: 6, y: 6 } });
+  await ana.getByTestId('descartar').click();
+  await expect(luis.getByTestId('descarte').locator(`[data-carta="${carta}"]`)).toBeVisible();
+  await expect(luis.getByTestId('mazo')).toHaveClass(/robable/);
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Remigio en red: dos humanos roban y descartan', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

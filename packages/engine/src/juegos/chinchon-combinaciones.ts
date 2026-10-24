@@ -1,4 +1,4 @@
-import { cartaDeId, esComodin, type IdCarta, type PaloEspanol } from '../baraja/cartas';
+import { cartaDeId, esComodin, type IdCarta, type Palo } from '../baraja/cartas';
 
 /**
  * Combinaciones del Chinchón y búsqueda de la mejor agrupación de una mano (design, decisión 2).
@@ -6,16 +6,20 @@ import { cartaDeId, esComodin, type IdCarta, type PaloEspanol } from '../baraja/
  */
 
 export type BarajaChinchon = 'espanola40' | 'espanola48';
+/** Barajas con las que se buscan combinaciones: las del Chinchón y la francesa del Gin Rummy. */
+export type BarajaCombinable = BarajaChinchon | 'francesa52';
 
 /** Orden de los valores para las escaleras: en la de 40, el 7 y la sota son seguidos. */
-const ORDEN: Readonly<Record<BarajaChinchon, readonly number[]>> = {
+const ORDEN: Readonly<Record<BarajaCombinable, readonly number[]>> = {
   espanola40: [1, 2, 3, 4, 5, 6, 7, 10, 11, 12],
   espanola48: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+  // El As siempre bajo: Q-K-A no es escalera.
+  francesa52: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
 };
 
 const VALOR_COMODIN = 25;
 
-/** Puntos de una carta sin ligar: as 1, del 2 al 9 su número, figuras 10 y comodín 25. */
+/** Puntos de una carta sin ligar: as 1, del 2 al 9 su número, 10 y figuras 10 y comodín 25. */
 export function puntosCarta(id: IdCarta): number {
   if (esComodin(id)) return VALOR_COMODIN;
   const valor = cartaDeId(id)!.valor;
@@ -36,12 +40,12 @@ interface Candidata {
 }
 
 /** Todas las combinaciones posibles con las cartas de la mano (como mucho un comodín cada una). */
-function candidatas(mano: readonly IdCarta[], baraja: BarajaChinchon): Candidata[] {
+function candidatas(mano: readonly IdCarta[], baraja: BarajaCombinable): Candidata[] {
   const orden = ORDEN[baraja];
   const comodines = mano.flatMap((c, i) => (esComodin(c) ? [i] : []));
   const naturales = mano.flatMap((c, i) => {
     const carta = esComodin(c) ? null : cartaDeId(c);
-    return carta ? [{ i, id: c, palo: carta.palo as PaloEspanol, valor: carta.valor }] : [];
+    return carta ? [{ i, id: c, palo: carta.palo as Palo, valor: carta.valor }] : [];
   });
   const resultado: Candidata[] = [];
   const agregar = (indices: readonly number[], cartas: readonly IdCarta[]) =>
@@ -108,7 +112,7 @@ function subconjuntos<T>(lista: readonly T[]): T[][] {
  * La agrupación de la mano que deja menos puntos sin ligar. Búsqueda exacta con memoria sobre
  * la máscara de cartas restantes: la carta más baja queda suelta o entra en una combinación.
  */
-export function mejorReparto(mano: readonly IdCarta[], baraja: BarajaChinchon): Reparto {
+export function mejorReparto(mano: readonly IdCarta[], baraja: BarajaCombinable): Reparto {
   const clave = `${baraja}|${mano.join(',')}`;
   const guardado = recordados.get(clave);
   if (guardado) return guardado;
@@ -154,6 +158,11 @@ const MAXIMO_RECORDADOS = 20_000;
 function recordar(clave: string, reparto: Reparto): void {
   if (recordados.size >= MAXIMO_RECORDADOS) recordados.clear();
   recordados.set(clave, reparto);
+}
+
+/** Posición de un valor en el orden de las escaleras de la baraja. */
+export function posicionEscalera(valor: number, baraja: BarajaCombinable): number {
+  return ORDEN[baraja].indexOf(valor);
 }
 
 /** Las 7 cartas forman una escalera del mismo palo sin comodines. */

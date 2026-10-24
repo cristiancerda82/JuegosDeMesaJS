@@ -22,6 +22,9 @@ import { iaPicasBasica } from '../../src/ia/picas-basica';
 import { iaBlackjackBasica } from '../../src/ia/blackjack-basica';
 import { reconstruirBlackjack } from '../../src/ia/reconstruir/blackjack';
 import { blackjack, CONFIG_BLACKJACK_POR_DEFECTO } from '../../src/juegos/blackjack';
+import { iaGinRummyBasica } from '../../src/ia/gin-rummy-basica';
+import { reconstruirGinRummy } from '../../src/ia/reconstruir/gin-rummy';
+import { CONFIG_GIN_RUMMY_POR_DEFECTO, ginRummy } from '../../src/juegos/gin-rummy';
 import { reconstruirPicas } from '../../src/ia/reconstruir/picas';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
@@ -418,4 +421,9 @@ describirReconstruccion(picas, reconstruirPicas, {
 describirReconstruccion(blackjack, reconstruirBlackjack, {
   configs: [CONFIG_BLACKJACK_POR_DEFECTO, { jugadores: 4, manos: 5 }],
   base: iaBlackjackBasica,
+});
+
+describirReconstruccion(ginRummy, reconstruirGinRummy, {
+  configs: [CONFIG_GIN_RUMMY_POR_DEFECTO],
+  base: iaGinRummyBasica,
 });

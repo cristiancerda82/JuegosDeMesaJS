@@ -13,6 +13,10 @@ import {
   type AccionOchoLoco,
   type AccionPicas,
   type AccionBlackjack,
+  type AccionGinRummy,
+  type ConfigGinRummy,
+  type EstadoGinRummy,
+  type VistaGinRummy,
   type ConfigBlackjack,
   type EstadoBlackjack,
   type VistaBlackjack,
@@ -139,6 +143,7 @@ import {
   DEF_OCHO_LOCO,
   DEF_PICAS,
   DEF_BLACKJACK,
+  DEF_GIN_RUMMY,
   DEF_SPIDER,
   DEF_PIRAMIDE,
   DEF_GOLF,
@@ -214,6 +219,12 @@ export type SesionPiramide = SesionMesa<
   AccionPiramide,
   VistaPiramide
 >;
+export type SesionGinRummy = SesionMesa<
+  ConfigGinRummy,
+  EstadoGinRummy,
+  AccionGinRummy,
+  VistaGinRummy
+>;
 export type SesionBlackjack = SesionMesa<
   ConfigBlackjack,
   EstadoBlackjack,
@@ -283,7 +294,8 @@ export type Partida =
   | { readonly id: 'mentiroso'; readonly sesion: SesionMentiroso }
   | { readonly id: 'ochoLoco'; readonly sesion: SesionOchoLoco }
   | { readonly id: 'picas'; readonly sesion: SesionPicas }
-  | { readonly id: 'blackjack'; readonly sesion: SesionBlackjack };
+  | { readonly id: 'blackjack'; readonly sesion: SesionBlackjack }
+  | { readonly id: 'ginRummy'; readonly sesion: SesionGinRummy };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -311,6 +323,7 @@ export type ConfigJuego =
   | ConfigOchoLoco
   | ConfigPicas
   | ConfigBlackjack
+  | ConfigGinRummy
   | ConfigPiramide
   | ConfigGolf
   | ConfigTriPeaks;
@@ -378,6 +391,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_PICAS);
     case 'blackjack':
       return hacer(DEF_BLACKJACK);
+    case 'ginRummy':
+      return hacer(DEF_GIN_RUMMY);
   }
 }
 

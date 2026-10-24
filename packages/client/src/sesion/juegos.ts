@@ -22,6 +22,12 @@ import {
   CONFIG_BLACKJACK_POR_DEFECTO,
   blackjack,
   type AccionBlackjack,
+  CONFIG_GIN_RUMMY_POR_DEFECTO,
+  ginRummy,
+  type AccionGinRummy,
+  type ConfigGinRummy,
+  type EstadoGinRummy,
+  type VistaGinRummy,
   type ConfigBlackjack,
   type EstadoBlackjack,
   type VistaBlackjack,
@@ -236,7 +242,8 @@ export type IdJuego =
   | 'mentiroso'
   | 'ochoLoco'
   | 'picas'
-  | 'blackjack';
+  | 'blackjack'
+  | 'ginRummy';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -267,6 +274,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'ochoLoco',
   'picas',
   'blackjack',
+  'ginRummy',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -816,6 +824,22 @@ export const DEF_BLACKJACK: DefBlackjack = {
   },
 };
 
+export type DefGinRummy = DefJuego<ConfigGinRummy, EstadoGinRummy, AccionGinRummy, VistaGinRummy>;
+
+export const DEF_GIN_RUMMY: DefGinRummy = {
+  id: 'ginRummy',
+  nombre: T.menu.ginRummy,
+  juego: ginRummy,
+  configPorDefecto: CONFIG_GIN_RUMMY_POR_DEFECTO,
+  ia: IAS.ginRummy,
+  // Como en el Chinchón: el cierre de la mano lo detiene la propia mesa con el resumen.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    return accion.asiento !== despues.asiento ? PAUSA_RIVAL_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -845,6 +869,7 @@ export const JUEGOS = {
   ochoLoco: DEF_OCHO_LOCO,
   picas: DEF_PICAS,
   blackjack: DEF_BLACKJACK,
+  ginRummy: DEF_GIN_RUMMY,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

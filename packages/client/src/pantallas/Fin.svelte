@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { marcadorFinal, OBJETIVO_GIN_RUMMY } from '@juegos/engine';
   import { nombreNumerado } from '../mesas/bazas/asientos';
   import { bandoDe, porBando } from '../sesion/sesion-mesa';
   import type { Partida } from '../sesion/partida';
@@ -6,6 +7,7 @@
   import ConteoMus from '../mesas/ConteoMus.svelte';
   import ResultadoChinchon from '../mesas/ResultadoChinchon.svelte';
   import ResumenGuinote from '../mesas/ResumenGuinote.svelte';
+  import ResumenGinRummy from '../mesas/ResumenGinRummy.svelte';
   import ResumenBlackjack from '../mesas/ResumenBlackjack.svelte';
   import ResumenPicas from '../mesas/ResumenPicas.svelte';
   import ResumenOchoLoco from '../mesas/ResumenOchoLoco.svelte';
@@ -75,6 +77,7 @@
       partida.id !== 'mentiroso' &&
       partida.id !== 'ochoLoco' &&
       partida.id !== 'blackjack' &&
+      partida.id !== 'ginRummy' &&
       partida.sesion.vista.config.jugadores === 4,
   );
 
@@ -250,6 +253,36 @@
               <td data-testid="clasificacion-{a}">
                 {vista.eliminados[a] ? T.remigio.eliminado : T.remigio.puntos(vista.puntos[a]!)}
               </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'ginRummy'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const ganador = vista.puntos.findIndex((p) => p >= OBJETIVO_GIN_RUMMY)}
+      {#if ultima}
+        <ResumenGinRummy resultado={ultima} nombre={(a) => nombreChinchon(a, 2)} />
+      {/if}
+      <table class="marcador-gin">
+        <caption>{T.ginRummy.marcadorFinal}</caption>
+        <thead>
+          <tr>
+            <th></th>
+            <th scope="col">{T.ginRummy.colPuntos}</th>
+            <th scope="col">{T.ginRummy.colManos}</th>
+            <th scope="col">{T.ginRummy.colPartida}</th>
+            <th scope="col">{T.ginRummy.colTotal}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each marcadorFinal(vista.puntos, vista.manosGanadas, ganador < 0 ? null : ganador) as m, a (a)}
+            <tr>
+              <th scope="row">{nombreChinchon(a, 2)}</th>
+              <td>{m.puntos}</td>
+              <td>{m.bonoManos}</td>
+              <td>{m.bonoPartida}</td>
+              <td data-testid="marcador-fin-{a}"><b>{m.total}</b>{#if m.doble}<small> {T.ginRummy.doble}</small>{/if}</td>
             </tr>
           {/each}
         </tbody>
@@ -541,6 +574,22 @@
   th {
     text-align: left;
     font-weight: 500;
+  }
+
+  /* El marcador del Gin Rummy tiene cinco columnas: más compacto para que quepa en el móvil. */
+  .marcador-gin {
+    font-size: 0.95rem;
+  }
+
+  .marcador-gin th,
+  .marcador-gin td {
+    padding: 4px 6px;
+  }
+
+  .marcador-gin thead th {
+    font-size: 0.8rem;
+    color: var(--texto-suave);
+    text-align: center;
   }
 
   td {

@@ -77,6 +77,9 @@ export const T = {
     ochoLoco: 'Ocho loco',
     picas: 'Picas',
     blackjack: 'Blackjack',
+    ginRummy: 'Gin Rummy',
+    ginRummyDesc:
+      'Duelo de combinaciones: cierra con pocos puntos sueltos o haz Gin, y llega a 100.',
     blackjackDesc: 'De 1 a 4 contra la banca: llega a 21 sin pasarte, dobla y separa.',
     picasDesc: 'En parejas: apuesta cuántas bazas haréis; las picas siempre son triunfo.',
     ochoLocoDesc: 'De 2 a 5: suelta cartas del mismo palo o número; el 8 cambia de palo.',
@@ -540,6 +543,48 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  ginRummy: {
+    marcador: (puntos: number, manos: number) =>
+      `${puntos} puntos · ${manos === 1 ? '1 mano' : `${manos} manos`}`,
+    fasePrimera: 'Coge la carta del descarte o pasa',
+    faseRobarMazo: 'Roba una carta del mazo',
+    pasar: 'Pasar',
+    gin: '¡Gin!',
+    pasa: (quien: string) => `${quien} pasa`,
+    coge: (quien: string, carta: string) => `${quien} coge ${carta} del descarte`,
+    cogidas: 'Cogió del descarte:',
+    nula: 'Mano nula: se acabó el mazo y nadie suma',
+    titular: (
+      tipo: 'gin' | 'cierre' | 'undercut',
+      cierra: string,
+      gana: string,
+      puntos: number,
+    ) => {
+      if (tipo === 'gin') {
+        return cierra === 'Tú'
+          ? `¡Gin! Ganas ${puntos} puntos`
+          : `¡Gin de ${cierra}! Gana ${puntos} puntos`;
+      }
+      if (tipo === 'cierre') {
+        return cierra === 'Tú'
+          ? `Cierras y ganas ${puntos} puntos`
+          : `Cierra ${cierra} y gana ${puntos} puntos`;
+      }
+      return gana === 'Tú'
+        ? `¡Undercut! Ganas ${puntos} puntos`
+        : `¡Undercut de ${gana}! Gana ${puntos} puntos`;
+    },
+    sueltos: 'Sueltos',
+    colocadas: 'Colocadas en las combinaciones del rival',
+    colocaN: (n: number) => (n === 1 ? 'Coloca 1 carta' : `Coloca ${n} cartas`),
+    marcadorFinal: 'Marcador final',
+    colPuntos: 'Puntos',
+    colManos: 'Manos',
+    colPartida: 'Partida',
+    colTotal: 'Total',
+    doble: '(doble)',
   },
 
   blackjack: {
@@ -1202,6 +1247,7 @@ export const T = {
       ochoLoco: 'Cómo se juega al Ocho loco',
       picas: 'Cómo se juega a Picas',
       blackjack: 'Cómo se juega al Blackjack',
+      ginRummy: 'Cómo se juega al Gin Rummy',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -1706,6 +1752,52 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    ginRummy: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Un duelo de dos con la baraja francesa. Cada uno tiene 10 cartas y quiere ligarlas en combinaciones para quedarse con pocos puntos sueltos.',
+          'Gana la partida quien llega antes a 100 puntos.',
+        ],
+      },
+      {
+        titulo: 'Combinaciones',
+        texto: [
+          'Grupos de 3 o 4 cartas del mismo número, o escaleras de 3 o más cartas seguidas del mismo palo. El As va siempre abajo: A-2-3 vale, Q-K-A no.',
+          'Las cartas sueltas suman puntos: el As 1, del 2 al 10 su número, y la J, la Q y la K 10.',
+        ],
+      },
+      {
+        titulo: 'El turno',
+        texto: [
+          'Al empezar cada mano, quien no reparte puede quedarse la carta descubierta o pasar; si pasa, puede quedársela el otro.',
+          'Después, en tu turno robas una carta (del mazo o la de arriba del descarte) y descartas otra. La que coges del descarte no la puedes soltar en el mismo turno, y el rival la ve.',
+        ],
+      },
+      {
+        titulo: 'Cerrar',
+        texto: [
+          'Si al descartar te quedan 10 puntos sueltos o menos, puedes cerrar. Con 0 es Gin.',
+          'Al cerrar se destapan las dos manos. Si no es Gin, el rival coloca sus cartas sueltas en tus combinaciones (lo hace la máquina, lo mejor posible para él).',
+        ],
+      },
+      {
+        titulo: 'Puntos',
+        texto: [
+          'Si tienes menos puntos sueltos que el rival, ganas la diferencia. Si él tiene los mismos o menos, es un undercut: gana él la diferencia más 25. Con Gin ganas sus puntos sueltos más 25.',
+          'Si en el mazo quedan solo 2 cartas y se descarta sin cerrar, la mano es nula.',
+          'Al final, cada mano ganada suma 25 y el ganador suma 100 más; si el rival no ganó ninguna mano, el ganador dobla su marcador.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Suelta pronto las figuras que no te sirven: pesan mucho si el rival cierra.',
+          'Fíjate en lo que coge el rival del descarte, y no le sueltes cartas que le liguen.',
         ],
       },
     ],
