@@ -27,6 +27,7 @@
   import MesaPiramide from '../mesas/MesaPiramide.svelte';
   import MesaGolf from '../mesas/MesaGolf.svelte';
   import MesaTriPeaks from '../mesas/MesaTriPeaks.svelte';
+  import MesaYukon from '../mesas/MesaYukon.svelte';
   import MesaTute from '../mesas/MesaTute.svelte';
   import type { Partida } from '../sesion/partida';
   import { T } from '../textos';
@@ -77,6 +78,8 @@
 
   {#if partida.id === 'klondike'}
     <MesaKlondike sesion={partida.sesion} />
+  {:else if partida.id === 'yukon'}
+    <MesaYukon sesion={partida.sesion} />
   {:else if partida.id === 'tripeaks'}
     <MesaTriPeaks sesion={partida.sesion} />
   {:else if partida.id === 'golf'}

@@ -90,6 +90,13 @@ import {
   CONFIG_GOLF_POR_DEFECTO,
   pistaGolf,
   CONFIG_TRIPEAKS_POR_DEFECTO,
+  CONFIG_YUKON_POR_DEFECTO,
+  yukon,
+  pistaYukon,
+  type AccionYukon,
+  type ConfigYukon,
+  type EstadoYukon,
+  type VistaYukon,
   tripeaks,
   pistaTriPeaks,
   type AccionTriPeaks,
@@ -230,6 +237,7 @@ export type IdJuego =
   | 'piramide'
   | 'golf'
   | 'tripeaks'
+  | 'yukon'
   | 'corazones'
   | 'burro'
   | 'pinacle'
@@ -261,6 +269,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'piramide',
   'golf',
   'tripeaks',
+  'yukon',
   'corazones',
   'burro',
   'pinacle',
@@ -336,6 +345,18 @@ export const DEF_GOLF: DefGolf = {
   ia: null,
   pausaTras: () => 0,
   pista: pistaGolf,
+};
+
+export type DefYukon = DefJuego<ConfigYukon, EstadoYukon, AccionYukon, VistaYukon>;
+
+export const DEF_YUKON: DefYukon = {
+  id: 'yukon',
+  nombre: T.menu.yukon,
+  juego: yukon,
+  configPorDefecto: CONFIG_YUKON_POR_DEFECTO,
+  ia: null,
+  pausaTras: () => 0,
+  pista: pistaYukon,
 };
 
 export type DefTriPeaks = DefJuego<ConfigTriPeaks, EstadoTriPeaks, AccionTriPeaks, VistaTriPeaks>;
@@ -856,6 +877,7 @@ export const JUEGOS = {
   piramide: DEF_PIRAMIDE,
   golf: DEF_GOLF,
   tripeaks: DEF_TRIPEAKS,
+  yukon: DEF_YUKON,
   corazones: DEF_CORAZONES,
   burro: DEF_BURRO,
   pinacle: DEF_PINACLE,

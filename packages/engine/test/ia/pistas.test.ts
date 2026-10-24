@@ -9,7 +9,9 @@ import {
   pistaKlondike,
   pistaPiramide,
   pistaSpider,
+  pistaYukon,
 } from '../../src/ia/pistas';
+import { CONFIG_YUKON_POR_DEFECTO, yukon, type EstadoYukon } from '../../src/juegos/yukon';
 import { CONFIG_GOLF_POR_DEFECTO, golf, type EstadoGolf } from '../../src/juegos/golf';
 import {
   CONFIG_TRIPEAKS_POR_DEFECTO,
@@ -341,6 +343,65 @@ describe('pista de TriPeaks', () => {
   });
 });
 
+describe('pista del Yukon', () => {
+  function mesaYukon(
+    columnas: { ocultas?: IdCarta[]; visibles: IdCarta[] }[],
+    fundaciones: IdCarta[][] = [[], [], [], []],
+  ): EstadoYukon {
+    return {
+      config: CONFIG_YUKON_POR_DEFECTO,
+      columnas: Array.from({ length: 7 }, (_, i) => ({
+        ocultas: columnas[i]?.ocultas ?? [],
+        visibles: columnas[i]?.visibles ?? [],
+      })),
+      fundaciones,
+      movimientos: 0,
+      historial: [],
+      abandonada: false,
+    };
+  }
+  const pistaY = (e: EstadoYukon) => pistaYukon(yukon.vistaDe(e, 0), yukon.accionesLegales(e, 0));
+
+  it('prefiere subir a una fundación', () => {
+    const e = mesaYukon([
+      { visibles: ['picas-13', 'corazones-1'] },
+      { visibles: ['diamantes-9'] },
+      { ocultas: ['treboles-2'], visibles: ['picas-8'] },
+    ]);
+    expect(pistaY(e)).toEqual({ tipo: 'mover', desde: 'c0', hasta: 'f0', cantidad: 1 });
+  });
+
+  it('deja arriba un as moviendo el grupo que lo tapa', () => {
+    // El 9 de picas va sobre el 10 de corazones y deja arriba el as de diamantes.
+    const e = mesaYukon([
+      { visibles: ['treboles-12', 'diamantes-1', 'picas-9', 'corazones-3'] },
+      { visibles: ['corazones-10'] },
+    ]);
+    expect(pistaY(e)).toEqual({ tipo: 'mover', desde: 'c0', hasta: 'c1', cantidad: 2 });
+  });
+
+  it('descubre una carta boca abajo', () => {
+    const e = mesaYukon([
+      { ocultas: ['treboles-5'], visibles: ['picas-9', 'corazones-3'] },
+      { visibles: ['corazones-10'] },
+    ]);
+    expect(pistaY(e)).toEqual({ tipo: 'mover', desde: 'c0', hasta: 'c1', cantidad: 2 });
+  });
+
+  it('sin movimientos útiles no sugiere nada', () => {
+    // El rey solo en su columna podría pasar a otra vacía, pero no sirve de nada.
+    const e = mesaYukon([{ visibles: ['picas-13'] }, { visibles: ['corazones-5'] }]);
+    expect(pistaY(e)).toBeNull();
+    // Una columna sin ordenar, para que tampoco se pueda autocompletar.
+    const atascada = mesaYukon([
+      { visibles: ['picas-5', 'corazones-9'] },
+      { visibles: ['treboles-12'] },
+    ]);
+    expect(pistaY(atascada)).toBeNull();
+    expect(atascado(yukon.accionesLegales(atascada, 0))).toBe(true);
+  });
+});
+
 // ── Propiedades ──────────────────────────────────────────────────────────────
 
 describe('las pistas en partidas al azar', () => {
@@ -351,6 +412,7 @@ describe('las pistas en partidas al azar', () => {
     { juego: piramide, config: CONFIG_PIRAMIDE_POR_DEFECTO, pista: pistaPiramide },
     { juego: golf, config: CONFIG_GOLF_POR_DEFECTO, pista: pistaGolf },
     { juego: tripeaks, config: CONFIG_TRIPEAKS_POR_DEFECTO, pista: pistaTriPeaks },
+    { juego: yukon, config: CONFIG_YUKON_POR_DEFECTO, pista: pistaYukon },
   ] as unknown as {
     juego: Juego<unknown, unknown, { tipo: string }, unknown>;
     config: unknown;

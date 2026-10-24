@@ -238,6 +238,7 @@ for (const juego of [
   'piramide',
   'golf',
   'tripeaks',
+  'yukon',
   'corazones',
   'burro',
   'pinacle',

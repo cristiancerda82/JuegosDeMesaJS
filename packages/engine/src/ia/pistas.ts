@@ -10,6 +10,7 @@ import {
   type SitioTriPeaks,
   type VistaTriPeaks,
 } from '../juegos/tripeaks';
+import type { AccionYukon, VistaYukon } from '../juegos/yukon';
 
 /**
  * Pistas de los solitarios (spec pistas-solitarios): puntúan los movimientos legales con reglas
@@ -286,4 +287,30 @@ export function pistaTriPeaks(
     }
   }
   return elegida ?? acciones.find((a) => a.tipo === 'robar') ?? null;
+}
+
+// ── Yukon ────────────────────────────────────────────────────────────────────
+
+function puntosYukon(v: VistaYukon, a: AccionYukon): number {
+  if (a.tipo !== 'mover' || a.desde[0] === 'f') return 0;
+  const origen = v.columnas[indice(a.desde)]!;
+  const quedan = origen.visibles.length - a.cantidad;
+  const descubre = quedan === 0 && origen.ocultas > 0;
+  const vacia = quedan === 0 && origen.ocultas === 0;
+  if (a.hasta[0] === 'f') return 100 + (descubre ? 50 : 0);
+  if (descubre) return 80;
+  // Deja arriba una carta que puede subir a las fundaciones.
+  if (quedan > 0 && subeAFundacion(origen.visibles[quedan - 1]!, v.fundaciones)) return 60;
+  // Vaciar una columna deja sitio a un Rey; pasar un Rey de una columna vacía a otra no cambia
+  // nada.
+  if (vacia && v.columnas[indice(a.hasta)]!.visibles.length > 0) return 30;
+  return 0;
+}
+
+/** Pista del Yukon: un movimiento útil, o `null` (no hay mazo). */
+export function pistaYukon(
+  vista: VistaYukon,
+  acciones: readonly AccionYukon[],
+): AccionYukon | null {
+  return mejor(acciones, (a) => puntosYukon(vista, a));
 }

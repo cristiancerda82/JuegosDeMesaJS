@@ -35,6 +35,9 @@ export const T = {
     piramide: 'Pirámide',
     golf: 'Golf',
     tripeaks: 'TriPeaks',
+    yukon: 'Yukon',
+    yukonDesc:
+      'Solitario sin mazo: mueve grupos aunque no estén ordenados y sube los cuatro palos.',
     tripeaksDesc: 'Solitario: despeja tres picos subiendo o bajando una carta y encadena rachas.',
     golfDesc:
       'Solitario: pasa al descarte cartas que valgan una más o una menos y vacía las 7 columnas.',
@@ -119,6 +122,9 @@ export const T = {
     robo: 'Robo',
     robo1: 'De 1 en 1',
     robo3: 'De 3 en 3',
+    construccion: 'Construir en las columnas',
+    construccionColores: 'Colores alternos (Yukon)',
+    construccionPalo: 'Mismo palo (Solitario ruso)',
     vueltas: 'Vueltas al mazo',
     ilimitadas: 'Ilimitadas',
     vueltasN: (n: number) => (n === 0 ? 'Ninguna' : n === 1 ? '1 vuelta' : `${n} vueltas`),
@@ -916,6 +922,11 @@ export const T = {
     ejemplo: 'Apuesta / bazas hechas → puntos',
   },
 
+  yukon: {
+    porColores: 'Colores alternos',
+    porPalo: 'Mismo palo',
+  },
+
   tripeaks: {
     puntos: 'Puntos',
     racha: (n: number) => (n === 0 ? 'Sin racha' : `Racha ×${n}`),
@@ -1233,6 +1244,7 @@ export const T = {
       piramide: 'Cómo se juega a la Pirámide',
       golf: 'Cómo se juega al Golf',
       tripeaks: 'Cómo se juega a TriPeaks',
+      yukon: 'Cómo se juega al Yukon',
       corazones: 'Cómo se juega a los Corazones',
       pocha: 'Cómo se juega a la Pocha',
       mus: 'Cómo se juega al Mus',
@@ -2000,6 +2012,45 @@ export const T = {
         texto: [
           'Cuenta tus matadores antes de pujar: con dos o tres y unos cuantos triunfos, ya puedes jugar con rey.',
           'Llama el rey del palo en que tienes menos cartas: tu compañero te ganará esas bazas.',
+        ],
+      },
+    ],
+
+    yukon: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Subir las 52 cartas a las cuatro fundaciones, una por palo, del As al Rey.',
+          'No hay mazo: todas las cartas están repartidas en las 7 columnas desde el principio, muchas boca abajo.',
+        ],
+      },
+      {
+        titulo: 'Mover',
+        texto: [
+          'Puedes mover cualquier carta boca arriba junto con todas las que tiene encima, aunque no estén ordenadas.',
+          'La carta que mueves tiene que ir sobre una de un valor más y de color contrario (un 9 negro sobre un 10 rojo). En el Solitario ruso, del mismo palo.',
+          'Solo un Rey, con lo que tenga encima, puede ocupar una columna vacía.',
+        ],
+      },
+      {
+        titulo: 'Fundaciones',
+        texto: [
+          'Sube a las fundaciones la última carta de una columna. Haz doble toque en una carta para subirla directamente.',
+          'Al quedar boca abajo la última carta de una columna, se da la vuelta sola.',
+        ],
+      },
+      {
+        titulo: 'Ayudas',
+        texto: [
+          'Puedes deshacer, pedir una pista y, cuando todo está boca arriba y cada columna ordenada, autocompletar.',
+          'Se guardan tu mejor tiempo y tus menos movimientos.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Destapa primero las columnas con más cartas boca abajo.',
+          'No vacíes una columna si no tienes un Rey que poner en ella.',
         ],
       },
     ],

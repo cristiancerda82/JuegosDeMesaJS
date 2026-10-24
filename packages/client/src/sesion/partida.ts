@@ -33,6 +33,10 @@ import {
   type AccionGolf,
   type AccionTriPeaks,
   type ConfigTriPeaks,
+  type AccionYukon,
+  type ConfigYukon,
+  type EstadoYukon,
+  type VistaYukon,
   type EstadoTriPeaks,
   type VistaTriPeaks,
   type ConfigGolf,
@@ -148,6 +152,7 @@ import {
   DEF_PIRAMIDE,
   DEF_GOLF,
   DEF_TRIPEAKS,
+  DEF_YUKON,
   DEF_KLONDIKE,
   DEF_ESCOBA,
   DEF_TUTE,
@@ -206,6 +211,7 @@ export type SesionTuteSubastado = SesionMesa<
   AccionTuteSubastado,
   VistaTuteSubastado
 >;
+export type SesionYukon = SesionMesa<ConfigYukon, EstadoYukon, AccionYukon, VistaYukon>;
 export type SesionTriPeaks = SesionMesa<
   ConfigTriPeaks,
   EstadoTriPeaks,
@@ -282,6 +288,7 @@ export type Partida =
   | { readonly id: 'piramide'; readonly sesion: SesionPiramide }
   | { readonly id: 'golf'; readonly sesion: SesionGolf }
   | { readonly id: 'tripeaks'; readonly sesion: SesionTriPeaks }
+  | { readonly id: 'yukon'; readonly sesion: SesionYukon }
   | { readonly id: 'corazones'; readonly sesion: SesionCorazones }
   | { readonly id: 'burro'; readonly sesion: SesionBurro }
   | { readonly id: 'pinacle'; readonly sesion: SesionPinacle }
@@ -326,7 +333,8 @@ export type ConfigJuego =
   | ConfigGinRummy
   | ConfigPiramide
   | ConfigGolf
-  | ConfigTriPeaks;
+  | ConfigTriPeaks
+  | ConfigYukon;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -365,6 +373,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_GOLF);
     case 'tripeaks':
       return hacer(DEF_TRIPEAKS);
+    case 'yukon':
+      return hacer(DEF_YUKON);
     case 'corazones':
       return hacer(DEF_CORAZONES);
     case 'burro':
