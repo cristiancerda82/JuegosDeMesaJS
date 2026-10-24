@@ -25,7 +25,7 @@ Una partida es ganada si el jugador está entre los ganadores, empatada si el re
 - **THEN** la partida está registrada exactamente una vez
 
 ### Requirement: Récords de los solitarios
-En el Klondike, el FreeCell, el Spider, la Pirámide, el Golf y TriPeaks, al ganar una partida se MUST guardar el mejor tiempo y el menor número de movimientos de todas las partidas ganadas de ese juego. El registro MUST indicar si la partida ha batido alguno de los dos récords.
+En el Klondike, el FreeCell, el Spider, la Pirámide, el Golf, TriPeaks y el Yukon, al ganar una partida se MUST guardar el mejor tiempo y el menor número de movimientos de todas las partidas ganadas de ese juego. El registro MUST indicar si la partida ha batido alguno de los dos récords.
 
 En TriPeaks, además, se MUST guardar la mejor puntuación de todas sus partidas terminadas, ganadas o abandonadas. El registro MUST indicar si la partida la ha batido; como con el resto de récords, la primera partida no cuenta como récord batido. Las estadísticas guardadas antes de existir este récord MUST seguir leyéndose, con la mejor puntuación vacía.
 
