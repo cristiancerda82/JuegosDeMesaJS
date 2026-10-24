@@ -541,6 +541,29 @@ test('Rummy 500 en red: dos humanos roban y descartan', async ({ browser }) => {
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Texas Hold’em en red: dos humanos igualan y ven el flop', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'holdem', (p) =>
+    p.getByLabel('2 jugadores', { exact: true }).check(),
+  );
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] [data-carta]')).toHaveCount(2);
+
+  // Con 2 jugadores, Ana tiene el botón y habla primero: iguala la ciega grande.
+  await ana.getByTestId('igualar').click();
+  await expect(luis.getByTestId('apuesta-0')).toHaveText('apuesta 2');
+  await luis.getByTestId('pasar').click();
+  // Se descubre el flop para los dos.
+  for (const p of [ana, luis]) {
+    await expect(p.getByTestId('comunes').locator('[data-carta]')).toHaveCount(3);
+  }
+  await expect(ana.getByTestId('puesto-1')).toContainText('Luis');
+});
+
 test('Remigio en red: dos humanos roban y descartan', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

@@ -44,6 +44,7 @@ import { iaPicasBasica } from './picas-basica';
 import { iaBlackjackBasica, iaBlackjackExperta } from './blackjack-basica';
 import { iaGinRummyBasica } from './gin-rummy-basica';
 import { iaRummy500Basica } from './rummy-500-basica';
+import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
 
@@ -118,4 +119,10 @@ export const IAS = {
   ginRummy: niveles(iaGinRummyBasica, SIMULABLE_GIN_RUMMY),
   // Como en el Remigio: el difícil simula el robo y el descarte; baja y añade como la normal.
   rummy500: niveles(iaRummy500Basica, SIMULABLE_RUMMY_500),
+  // En el Hold'em no se simulan partidas: el difícil estima su probabilidad de ganar.
+  holdem: {
+    facil: conErrores(iaHoldemBasica, ERRORES_FACIL),
+    normal: iaHoldemBasica,
+    dificil: iaHoldemExperta,
+  },
 } as const;

@@ -18,6 +18,7 @@
     ConfigBlackjack,
     ConfigGinRummy,
     ConfigRummy500,
+    ConfigHoldem,
     ConfigPiramide,
     ConfigGolf,
     ConfigTriPeaks,
@@ -87,6 +88,7 @@
   let blackjackConfig: Editable<ConfigBlackjack> = $state({ ...JUEGOS.blackjack.configPorDefecto });
   const ginRummyConfig: ConfigGinRummy = JUEGOS.ginRummy.configPorDefecto;
   let rummy500Config: Editable<ConfigRummy500> = $state({ ...JUEGOS.rummy500.configPorDefecto });
+  let holdemConfig: Editable<ConfigHoldem> = $state({ ...JUEGOS.holdem.configPorDefecto });
   let subastado: Editable<ConfigTuteSubastado> = $state({
     ...JUEGOS.tuteSubastado.configPorDefecto,
   });
@@ -139,6 +141,7 @@
       blackjack: blackjackConfig,
       ginRummy: ginRummyConfig,
       rummy500: rummy500Config,
+      holdem: holdemConfig,
     };
     if (conIA) guardarNivel(juego, nivel);
     empezar({ ...configs[juego] }, nivel);
@@ -283,6 +286,13 @@
         <legend>{T.opciones.jugadores}</legend>
         {#each [2, 3, 4, 5] as const as n (n)}
           <label><input type="radio" bind:group={remigioConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
+        {/each}
+      </fieldset>
+    {:else if juego === 'holdem'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [2, 3, 4, 5, 6] as const as n (n)}
+          <label><input type="radio" bind:group={holdemConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
         {/each}
       </fieldset>
     {:else if juego === 'rummy500'}

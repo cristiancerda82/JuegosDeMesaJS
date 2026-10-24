@@ -13,6 +13,7 @@
   import MesaBlackjack from '../mesas/MesaBlackjack.svelte';
   import MesaGinRummy from '../mesas/MesaGinRummy.svelte';
   import MesaRummy500 from '../mesas/MesaRummy500.svelte';
+  import MesaHoldem from '../mesas/MesaHoldem.svelte';
   import MesaRemigio from '../mesas/MesaRemigio.svelte';
   import MesaChinchon from '../mesas/MesaChinchon.svelte';
   import MesaCinquillo from '../mesas/MesaCinquillo.svelte';
@@ -102,6 +103,8 @@
     <MesaBurro sesion={partida.sesion} />
   {:else if partida.id === 'remigio'}
     <MesaRemigio sesion={partida.sesion} />
+  {:else if partida.id === 'holdem'}
+    <MesaHoldem sesion={partida.sesion} />
   {:else if partida.id === 'rummy500'}
     <MesaRummy500 sesion={partida.sesion} />
   {:else if partida.id === 'ginRummy'}

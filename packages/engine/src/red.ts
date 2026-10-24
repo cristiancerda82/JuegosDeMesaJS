@@ -27,6 +27,7 @@ import { CONFIG_PICAS_POR_DEFECTO, picas } from './juegos/picas';
 import { blackjack, CONFIG_BLACKJACK_POR_DEFECTO } from './juegos/blackjack';
 import { CONFIG_GIN_RUMMY_POR_DEFECTO, ginRummy } from './juegos/gin-rummy';
 import { CONFIG_RUMMY_500_POR_DEFECTO, rummy500 } from './juegos/rummy-500';
+import { CONFIG_HOLDEM_POR_DEFECTO, holdem } from './juegos/holdem';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -58,6 +59,7 @@ export const IDS_JUEGOS_EN_RED = [
   'blackjack',
   'ginRummy',
   'rummy500',
+  'holdem',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -114,6 +116,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   blackjack: entrada(blackjack, IAS.blackjack, CONFIG_BLACKJACK_POR_DEFECTO),
   ginRummy: entrada(ginRummy, IAS.ginRummy, CONFIG_GIN_RUMMY_POR_DEFECTO),
   rummy500: entrada(rummy500, IAS.rummy500, CONFIG_RUMMY_500_POR_DEFECTO),
+  holdem: entrada(holdem, IAS.holdem, CONFIG_HOLDEM_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

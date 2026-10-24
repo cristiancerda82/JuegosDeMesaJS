@@ -85,6 +85,9 @@ export const T = {
     blackjack: 'Blackjack',
     ginRummy: 'Gin Rummy',
     rummy500: 'Rummy 500',
+    holdem: 'Texas Hold’em',
+    holdemDesc:
+      'Póker sin límite de 2 a 6: apuesta, sube o retírate, y quédate con todas las fichas.',
     rummy500Desc:
       'De 2 a 4: baja combinaciones, añade a las de todos y llévate el descarte abierto. A 500.',
     ginRummyDesc:
@@ -555,6 +558,43 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  holdem: {
+    mano: (n: number) => `Mano ${n}`,
+    ciegas: (p: number, g: number) => `Ciegas ${p}/${g}`,
+    fichas: (n: number) => (n === 1 ? '1 ficha' : `${n} fichas`),
+    apuesta: (n: number) => `apuesta ${n}`,
+    botonTitulo: 'Botón',
+    eliminado: 'Eliminado',
+    retirado: 'Retirado',
+    allIn: 'All-in',
+    bote: (n: number) => `Bote: ${n}`,
+    boteN: (i: number, n: number) => `Bote ${i}: ${n}`,
+    tuTurno: 'Tu turno',
+    retirarse: 'Retirarse',
+    pasar: 'Pasar',
+    igualar: (n: number) => `Igualar ${n}`,
+    apostar: (n: number) => `Apostar ${n}`,
+    subir: (n: number) => `Subir a ${n}`,
+    cantidad: 'Cantidad',
+    minimo: 'Mín.',
+    medioBote: '½ bote',
+    boteAtajo: 'Bote',
+    allInAtajo: 'All-in',
+    accion: (quien: string, tipo: string, cantidad: number) => {
+      if (tipo === 'retirarse') return `${quien} se retira`;
+      if (tipo === 'pasar') return `${quien} pasa`;
+      if (tipo === 'igualar') return `${quien} iguala`;
+      return `${quien} sube a ${cantidad}`;
+    },
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    sinShowdown: (quien: string, n: number) =>
+      quien === 'Tú'
+        ? `Te llevas el bote (${n}) sin enseñar`
+        : `${quien} se lleva el bote (${n}) sin enseñar`,
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Clasificación',
   },
 
   rummy500: {
@@ -1314,6 +1354,7 @@ export const T = {
       blackjack: 'Cómo se juega al Blackjack',
       ginRummy: 'Cómo se juega al Gin Rummy',
       rummy500: 'Cómo se juega al Rummy 500',
+      holdem: 'Cómo se juega al Texas Hold’em',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -1818,6 +1859,43 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    holdem: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Un torneo de póker de 2 a 6 jugadores. Cada uno empieza con 100 fichas; quien se queda sin ellas queda eliminado, y gana el último que queda.',
+          'Las ciegas empiezan en 1/2 y suben cada 10 manos.',
+        ],
+      },
+      {
+        titulo: 'La mano',
+        texto: [
+          'Cada jugador recibe dos cartas tapadas. Hay cuatro rondas de apuestas: antes del flop, con el flop (tres cartas comunes), con el turn (una más) y con el river (la quinta).',
+          'En tu turno puedes retirarte, pasar si no hay nada que igualar, igualar o subir. Sin límite: puedes subir lo que quieras, hasta todas tus fichas (all-in). La subida mínima es la última subida de la ronda.',
+        ],
+      },
+      {
+        titulo: 'El showdown',
+        texto: [
+          'Si todos se retiran menos uno, ese se lleva el bote. Si no, se enseñan las cartas y gana la mejor mano de cinco cartas entre tus dos y las cinco comunes.',
+          'Si alguien va all-in, lo que los demás apuestan por encima va a un bote aparte que solo pueden ganar ellos.',
+        ],
+      },
+      {
+        titulo: 'Las manos',
+        texto: [
+          'De mayor a menor: escalera de color, póker, full, color, escalera, trío, doble pareja, pareja y carta alta. El As puede ir alto o bajo en una escalera (A-2-3-4-5).',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Juega pocas manos antes del flop y apuesta fuerte las buenas.',
+          'Fíjate en lo que te cuesta igualar frente a lo que hay en el bote: si es caro y tu mano es floja, retírate.',
         ],
       },
     ],

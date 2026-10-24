@@ -26,6 +26,12 @@ import {
   ginRummy,
   CONFIG_RUMMY_500_POR_DEFECTO,
   rummy500,
+  CONFIG_HOLDEM_POR_DEFECTO,
+  holdem,
+  type AccionHoldem,
+  type ConfigHoldem,
+  type EstadoHoldem,
+  type VistaHoldem,
   type AccionRummy500,
   type ConfigRummy500,
   type EstadoRummy500,
@@ -266,7 +272,8 @@ export type IdJuego =
   | 'picas'
   | 'blackjack'
   | 'ginRummy'
-  | 'rummy500';
+  | 'rummy500'
+  | 'holdem';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -301,6 +308,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'blackjack',
   'ginRummy',
   'rummy500',
+  'holdem',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -906,6 +914,26 @@ export const DEF_RUMMY_500: DefRummy500 = {
   },
 };
 
+export type DefHoldem = DefJuego<ConfigHoldem, EstadoHoldem, AccionHoldem, VistaHoldem>;
+
+/** Tiempo para ver cada acción de la IA en el Texas Hold'em. */
+const PAUSA_HOLDEM_MS = 700;
+
+export const DEF_HOLDEM: DefHoldem = {
+  id: 'holdem',
+  nombre: T.menu.holdem,
+  juego: holdem,
+  configPorDefecto: CONFIG_HOLDEM_POR_DEFECTO,
+  ia: IAS.holdem,
+  // El cierre de la mano lo detiene la propia mesa con el resumen.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return 0;
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    return accion.asiento !== despues.asiento ? PAUSA_HOLDEM_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -939,6 +967,7 @@ export const JUEGOS = {
   blackjack: DEF_BLACKJACK,
   ginRummy: DEF_GIN_RUMMY,
   rummy500: DEF_RUMMY_500,
+  holdem: DEF_HOLDEM,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

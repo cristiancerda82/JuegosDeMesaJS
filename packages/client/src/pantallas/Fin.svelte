@@ -7,6 +7,7 @@
   import ConteoMus from '../mesas/ConteoMus.svelte';
   import ResultadoChinchon from '../mesas/ResultadoChinchon.svelte';
   import ResumenGuinote from '../mesas/ResumenGuinote.svelte';
+  import ResumenHoldem from '../mesas/ResumenHoldem.svelte';
   import ResumenRummy500 from '../mesas/ResumenRummy500.svelte';
   import ResumenGinRummy from '../mesas/ResumenGinRummy.svelte';
   import ResumenBlackjack from '../mesas/ResumenBlackjack.svelte';
@@ -84,6 +85,7 @@
       partida.id !== 'blackjack' &&
       partida.id !== 'ginRummy' &&
       partida.id !== 'rummy500' &&
+      partida.id !== 'holdem' &&
       partida.sesion.vista.config.jugadores === 4,
   );
 
@@ -259,6 +261,25 @@
               <td data-testid="clasificacion-{a}">
                 {vista.eliminados[a] ? T.remigio.eliminado : T.remigio.puntos(vista.puntos[a]!)}
               </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'holdem'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const ganador = vista.eliminados.findIndex((x) => !x)}
+      {#if ultima}
+        <ResumenHoldem resultado={ultima} nombre={(a) => nombreChinchon(a, n)} />
+      {/if}
+      <table>
+        <caption>{T.holdem.clasificacion}</caption>
+        <tbody>
+          {#each [ganador, ...[...vista.eliminacion].reverse()] as a, i (a)}
+            <tr>
+              <th scope="row">{i + 1}.º</th>
+              <td data-testid="posicion-{a}">{nombreChinchon(a, n)}</td>
             </tr>
           {/each}
         </tbody>
