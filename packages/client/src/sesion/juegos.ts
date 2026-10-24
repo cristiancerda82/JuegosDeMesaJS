@@ -97,6 +97,13 @@ import {
   pistaGolf,
   CONFIG_TRIPEAKS_POR_DEFECTO,
   CONFIG_YUKON_POR_DEFECTO,
+  CONFIG_CANFIELD_POR_DEFECTO,
+  canfield,
+  pistaCanfield,
+  type AccionCanfield,
+  type ConfigCanfield,
+  type EstadoCanfield,
+  type VistaCanfield,
   yukon,
   pistaYukon,
   type AccionYukon,
@@ -244,6 +251,7 @@ export type IdJuego =
   | 'golf'
   | 'tripeaks'
   | 'yukon'
+  | 'canfield'
   | 'corazones'
   | 'burro'
   | 'pinacle'
@@ -277,6 +285,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'golf',
   'tripeaks',
   'yukon',
+  'canfield',
   'corazones',
   'burro',
   'pinacle',
@@ -353,6 +362,18 @@ export const DEF_GOLF: DefGolf = {
   ia: null,
   pausaTras: () => 0,
   pista: pistaGolf,
+};
+
+export type DefCanfield = DefJuego<ConfigCanfield, EstadoCanfield, AccionCanfield, VistaCanfield>;
+
+export const DEF_CANFIELD: DefCanfield = {
+  id: 'canfield',
+  nombre: T.menu.canfield,
+  juego: canfield,
+  configPorDefecto: CONFIG_CANFIELD_POR_DEFECTO,
+  ia: null,
+  pausaTras: () => 0,
+  pista: pistaCanfield,
 };
 
 export type DefYukon = DefJuego<ConfigYukon, EstadoYukon, AccionYukon, VistaYukon>;
@@ -902,6 +923,7 @@ export const JUEGOS = {
   golf: DEF_GOLF,
   tripeaks: DEF_TRIPEAKS,
   yukon: DEF_YUKON,
+  canfield: DEF_CANFIELD,
   corazones: DEF_CORAZONES,
   burro: DEF_BURRO,
   pinacle: DEF_PINACLE,

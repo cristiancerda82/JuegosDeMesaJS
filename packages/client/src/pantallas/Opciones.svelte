@@ -22,6 +22,7 @@
     ConfigGolf,
     ConfigTriPeaks,
     ConfigYukon,
+    ConfigCanfield,
     ConfigChinchon,
     ConfigCorazones,
     ConfigCinquillo,
@@ -71,6 +72,7 @@
   let golfConfig: Editable<ConfigGolf> = $state({ ...JUEGOS.golf.configPorDefecto });
   const tripeaksConfig: ConfigTriPeaks = JUEGOS.tripeaks.configPorDefecto;
   let yukonConfig: Editable<ConfigYukon> = $state({ ...JUEGOS.yukon.configPorDefecto });
+  let canfieldConfig: Editable<ConfigCanfield> = $state({ ...JUEGOS.canfield.configPorDefecto });
   let corazones: Editable<ConfigCorazones> = $state({ ...JUEGOS.corazones.configPorDefecto });
   let burro: Editable<ConfigBurro> = $state({ ...JUEGOS.burro.configPorDefecto });
   let pinacle: Editable<ConfigPinacle> = $state({ ...JUEGOS.pinacle.configPorDefecto });
@@ -121,6 +123,7 @@
       golf: golfConfig,
       tripeaks: tripeaksConfig,
       yukon: yukonConfig,
+      canfield: canfieldConfig,
       corazones,
       burro,
       pinacle,
@@ -178,6 +181,12 @@
             {v === null ? T.opciones.ilimitadas : T.opciones.vueltasN(v)}
           </label>
         {/each}
+      </fieldset>
+    {:else if juego === 'canfield'}
+      <fieldset>
+        <legend>{T.opciones.robo}</legend>
+        <label><input type="radio" bind:group={canfieldConfig.robo} value={3} /> {T.opciones.robo3}</label>
+        <label><input type="radio" bind:group={canfieldConfig.robo} value={1} /> {T.opciones.robo1}</label>
       </fieldset>
     {:else if juego === 'yukon'}
       <fieldset>

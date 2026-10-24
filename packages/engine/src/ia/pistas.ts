@@ -11,6 +11,7 @@ import {
   type VistaTriPeaks,
 } from '../juegos/tripeaks';
 import type { AccionYukon, VistaYukon } from '../juegos/yukon';
+import type { AccionCanfield, VistaCanfield } from '../juegos/canfield';
 
 /**
  * Pistas de los solitarios (spec pistas-solitarios): puntúan los movimientos legales con reglas
@@ -313,4 +314,30 @@ export function pistaYukon(
   acciones: readonly AccionYukon[],
 ): AccionYukon | null {
   return mejor(acciones, (a) => puntosYukon(vista, a));
+}
+
+// ── Canfield ─────────────────────────────────────────────────────────────────
+
+function puntosCanfield(v: VistaCanfield, a: AccionCanfield): number {
+  if (a.tipo !== 'mover' || a.desde[0] === 'f') return 0;
+  if (a.hasta[0] === 'f') return 100 + (a.desde === 'reserva' ? 20 : 0);
+  if (a.desde === 'reserva') return 70;
+  if (a.desde === 'descarte') return 40;
+  // Vaciar una columna mientras queda reserva saca una carta de la reserva.
+  const origen = v.columnas[indice(a.desde)]!;
+  if (a.cantidad === origen.length && v.reserva > 0) return 30;
+  return 0;
+}
+
+/** Pista del Canfield: un movimiento útil, o robar o reciclar si no hay ninguno. */
+export function pistaCanfield(
+  vista: VistaCanfield,
+  acciones: readonly AccionCanfield[],
+): AccionCanfield | null {
+  return (
+    mejor(acciones, (a) => puntosCanfield(vista, a)) ??
+    acciones.find((a) => a.tipo === 'robar') ??
+    acciones.find((a) => a.tipo === 'reciclar') ??
+    null
+  );
 }

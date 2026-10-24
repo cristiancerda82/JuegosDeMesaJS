@@ -10,7 +10,13 @@ import {
   pistaPiramide,
   pistaSpider,
   pistaYukon,
+  pistaCanfield,
 } from '../../src/ia/pistas';
+import {
+  canfield,
+  CONFIG_CANFIELD_POR_DEFECTO,
+  type EstadoCanfield,
+} from '../../src/juegos/canfield';
 import { CONFIG_YUKON_POR_DEFECTO, yukon, type EstadoYukon } from '../../src/juegos/yukon';
 import { CONFIG_GOLF_POR_DEFECTO, golf, type EstadoGolf } from '../../src/juegos/golf';
 import {
@@ -402,6 +408,59 @@ describe('pista del Yukon', () => {
   });
 });
 
+describe('pista del Canfield', () => {
+  function mesaCanfield(parcial: Partial<EstadoCanfield>): EstadoCanfield {
+    return {
+      config: CONFIG_CANFIELD_POR_DEFECTO,
+      base: 9,
+      reserva: [],
+      mazo: [],
+      descarte: [],
+      columnas: [[], [], [], []],
+      fundaciones: [[], [], [], []],
+      movimientos: 0,
+      historial: [],
+      abandonada: false,
+      ...parcial,
+    };
+  }
+  const pistaC = (e: EstadoCanfield) =>
+    pistaCanfield(canfield.vistaDe(e, 0), canfield.accionesLegales(e, 0));
+
+  it('prefiere subir a una fundación', () => {
+    const e = mesaCanfield({
+      reserva: ['picas-2'],
+      descarte: ['corazones-8'],
+      columnas: [['picas-9'], ['treboles-10'], ['diamantes-3'], ['diamantes-4']],
+    });
+    expect(pistaC(e)).toEqual({ tipo: 'mover', desde: 'c0', hasta: 'f0', cantidad: 1 });
+  });
+
+  it('la reserva antes que el descarte', () => {
+    const e = mesaCanfield({
+      reserva: ['picas-2', 'corazones-9'],
+      descarte: ['diamantes-9'],
+      columnas: [['treboles-10'], ['picas-10'], ['diamantes-3'], ['diamantes-4']],
+    });
+    expect(pistaC(e)).toMatchObject({ tipo: 'mover', desde: 'reserva' });
+  });
+
+  it('roba si no hay nada útil, y sin mazo ni descarte está atascado', () => {
+    const conMazo = mesaCanfield({
+      mazo: ['picas-2'],
+      reserva: ['corazones-5'],
+      columnas: [['treboles-10'], ['picas-10'], ['diamantes-3'], ['diamantes-4']],
+    });
+    expect(pistaC(conMazo)).toEqual({ tipo: 'robar' });
+    const sinNada = mesaCanfield({
+      reserva: ['corazones-5'],
+      columnas: [['treboles-10'], ['picas-10'], ['diamantes-3'], ['diamantes-4']],
+    });
+    expect(pistaC(sinNada)).toBeNull();
+    expect(atascado(canfield.accionesLegales(sinNada, 0))).toBe(true);
+  });
+});
+
 // ── Propiedades ──────────────────────────────────────────────────────────────
 
 describe('las pistas en partidas al azar', () => {
@@ -413,6 +472,7 @@ describe('las pistas en partidas al azar', () => {
     { juego: golf, config: CONFIG_GOLF_POR_DEFECTO, pista: pistaGolf },
     { juego: tripeaks, config: CONFIG_TRIPEAKS_POR_DEFECTO, pista: pistaTriPeaks },
     { juego: yukon, config: CONFIG_YUKON_POR_DEFECTO, pista: pistaYukon },
+    { juego: canfield, config: CONFIG_CANFIELD_POR_DEFECTO, pista: pistaCanfield },
   ] as unknown as {
     juego: Juego<unknown, unknown, { tipo: string }, unknown>;
     config: unknown;

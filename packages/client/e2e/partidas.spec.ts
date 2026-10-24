@@ -239,6 +239,7 @@ for (const juego of [
   'golf',
   'tripeaks',
   'yukon',
+  'canfield',
   'corazones',
   'burro',
   'pinacle',

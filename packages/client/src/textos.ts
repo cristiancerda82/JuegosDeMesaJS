@@ -36,6 +36,9 @@ export const T = {
     golf: 'Golf',
     tripeaks: 'TriPeaks',
     yukon: 'Yukon',
+    canfield: 'Canfield',
+    canfieldDesc:
+      'Solitario con reserva: las fundaciones empiezan por una carta al azar y dan la vuelta.',
     yukonDesc:
       'Solitario sin mazo: mueve grupos aunque no estén ordenados y sube los cuatro palos.',
     tripeaksDesc: 'Solitario: despeja tres picos subiendo o bajando una carta y encadena rachas.',
@@ -965,6 +968,12 @@ export const T = {
     ejemplo: 'Apuesta / bazas hechas → puntos',
   },
 
+  canfield: {
+    base: 'Base',
+    reserva: (n: number) => (n === 0 ? 'Reserva vacía' : `Reserva: ${n} cartas`),
+    reservaRotulo: 'Reserva',
+  },
+
   yukon: {
     porColores: 'Colores alternos',
     porPalo: 'Mismo palo',
@@ -1288,6 +1297,7 @@ export const T = {
       golf: 'Cómo se juega al Golf',
       tripeaks: 'Cómo se juega a TriPeaks',
       yukon: 'Cómo se juega al Yukon',
+      canfield: 'Cómo se juega al Canfield',
       corazones: 'Cómo se juega a los Corazones',
       pocha: 'Cómo se juega a la Pocha',
       mus: 'Cómo se juega al Mus',
@@ -2095,6 +2105,44 @@ export const T = {
         texto: [
           'Cuenta tus matadores antes de pujar: con dos o tres y unos cuantos triunfos, ya puedes jugar con rey.',
           'Llama el rey del palo en que tienes menos cartas: tu compañero te ganará esas bazas.',
+        ],
+      },
+    ],
+
+    canfield: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Subir las 52 cartas a las cuatro fundaciones, una por palo.',
+          'Las fundaciones no empiezan por el As: la primera carta que sale va a una fundación y su número es la base de las cuatro. Después de la K va el As, hasta completar 13 cartas.',
+        ],
+      },
+      {
+        titulo: 'La mesa',
+        texto: [
+          'Hay una reserva de 13 cartas, de la que solo ves la de arriba, cuatro columnas de una carta y el mazo.',
+          'Cuando una columna se queda vacía, la llena enseguida la carta de arriba de la reserva. Si la reserva ya está vacía, puedes poner ahí la carta que quieras.',
+        ],
+      },
+      {
+        titulo: 'Mover',
+        texto: [
+          'En las columnas se construye bajando y alternando colores, también con vuelta: una K puede ir sobre un As. Puedes mover una carta o un tramo ordenado.',
+          'La carta de arriba de la reserva y la del descarte se pueden jugar a las columnas y a las fundaciones. Haz doble toque en una carta para subirla directamente.',
+        ],
+      },
+      {
+        titulo: 'El mazo',
+        texto: [
+          'Roba de 3 en 3 (o de 1 en 1, si lo eliges en las opciones) y vuelve a pasar el descarte al mazo cuantas veces quieras.',
+          'Puedes deshacer, pedir una pista y, cuando no queda mazo, descarte ni reserva, autocompletar si todo puede subir.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Vacía la reserva cuanto antes: es lo que más cuesta del Canfield.',
+          'Una columna vacía saca una carta de la reserva, así que a veces compensa vaciarla.',
         ],
       },
     ],

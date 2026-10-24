@@ -38,6 +38,10 @@ import {
   type AccionTriPeaks,
   type ConfigTriPeaks,
   type AccionYukon,
+  type AccionCanfield,
+  type ConfigCanfield,
+  type EstadoCanfield,
+  type VistaCanfield,
   type ConfigYukon,
   type EstadoYukon,
   type VistaYukon,
@@ -158,6 +162,7 @@ import {
   DEF_GOLF,
   DEF_TRIPEAKS,
   DEF_YUKON,
+  DEF_CANFIELD,
   DEF_KLONDIKE,
   DEF_ESCOBA,
   DEF_TUTE,
@@ -215,6 +220,12 @@ export type SesionTuteSubastado = SesionMesa<
   EstadoTuteSubastado,
   AccionTuteSubastado,
   VistaTuteSubastado
+>;
+export type SesionCanfield = SesionMesa<
+  ConfigCanfield,
+  EstadoCanfield,
+  AccionCanfield,
+  VistaCanfield
 >;
 export type SesionYukon = SesionMesa<ConfigYukon, EstadoYukon, AccionYukon, VistaYukon>;
 export type SesionTriPeaks = SesionMesa<
@@ -300,6 +311,7 @@ export type Partida =
   | { readonly id: 'golf'; readonly sesion: SesionGolf }
   | { readonly id: 'tripeaks'; readonly sesion: SesionTriPeaks }
   | { readonly id: 'yukon'; readonly sesion: SesionYukon }
+  | { readonly id: 'canfield'; readonly sesion: SesionCanfield }
   | { readonly id: 'corazones'; readonly sesion: SesionCorazones }
   | { readonly id: 'burro'; readonly sesion: SesionBurro }
   | { readonly id: 'pinacle'; readonly sesion: SesionPinacle }
@@ -347,7 +359,8 @@ export type ConfigJuego =
   | ConfigPiramide
   | ConfigGolf
   | ConfigTriPeaks
-  | ConfigYukon;
+  | ConfigYukon
+  | ConfigCanfield;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -388,6 +401,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_TRIPEAKS);
     case 'yukon':
       return hacer(DEF_YUKON);
+    case 'canfield':
+      return hacer(DEF_CANFIELD);
     case 'corazones':
       return hacer(DEF_CORAZONES);
     case 'burro':

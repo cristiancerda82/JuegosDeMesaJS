@@ -10,6 +10,7 @@ export * from './motor/json';
 export * from './motor/aplicar';
 export * from './juegos/klondike';
 export * from './juegos/yukon';
+export * from './juegos/canfield';
 export * from './juegos/brisca';
 export * from './juegos/butifarra';
 export * from './juegos/tute';

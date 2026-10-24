@@ -46,7 +46,8 @@
       partida.id === 'piramide' ||
       partida.id === 'golf' ||
       partida.id === 'tripeaks' ||
-      partida.id === 'yukon'
+      partida.id === 'yukon' ||
+      partida.id === 'canfield'
     ) {
       return partida.sesion.vista.situacion === 'victoria' ? T.fin.solitarioGanado : T.fin.abandono;
     }
@@ -66,6 +67,7 @@
       partida.id !== 'golf' &&
       partida.id !== 'tripeaks' &&
       partida.id !== 'yukon' &&
+      partida.id !== 'canfield' &&
       partida.id !== 'chinchon' &&
       partida.id !== 'sieteYMedia' &&
       partida.id !== 'cinquillo' &&
@@ -104,7 +106,7 @@
   <div class="dialogo" role="dialog" aria-modal="true" aria-labelledby="fin-titulo" data-testid="fin">
     <h2 id="fin-titulo">{titulo}</h2>
 
-    {#if partida.id === 'klondike' || partida.id === 'yukon'}
+    {#if partida.id === 'klondike' || partida.id === 'yukon' || partida.id === 'canfield'}
       <p>{T.fin.resumenKlondike(partida.sesion.vista.movimientos, formatoTiempo(partida.sesion.tiempoMs()))}</p>
     {:else if partida.id === 'tripeaks'}
       {@const vista = partida.sesion.vista}
