@@ -81,6 +81,9 @@ export const T = {
     picas: 'Picas',
     blackjack: 'Blackjack',
     ginRummy: 'Gin Rummy',
+    rummy500: 'Rummy 500',
+    rummy500Desc:
+      'De 2 a 4: baja combinaciones, añade a las de todos y llévate el descarte abierto. A 500.',
     ginRummyDesc:
       'Duelo de combinaciones: cierra con pocos puntos sueltos o haz Gin, y llega a 100.',
     blackjackDesc: 'De 1 a 4 contra la banca: llega a 21 sin pasarte, dobla y separa.',
@@ -549,6 +552,46 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  rummy500: {
+    puntos: (n: number) => (n === 1 || n === -1 ? `${n} punto` : `${n} puntos`),
+    objetivo: 'A 500',
+    mano: (n: number) => `Mano ${n}`,
+    detalle: (cartas: number, puntos: number) =>
+      `${cartas === 1 ? '1 carta' : `${cartas} cartas`} · ${puntos} pts`,
+    robarMazo: 'Robar del mazo',
+    descarte: 'Descarte abierto',
+    descarteVacio: 'Descarte vacío',
+    cogerDesde: (carta: string, cuantas: number) =>
+      cuantas === 1 ? `Coger ${carta}` : `Coger desde ${carta} (${cuantas} cartas)`,
+    mesa: 'Combinaciones de la mesa',
+    sinCombinaciones: 'Aún no hay combinaciones en la mesa',
+    faseRobar: 'Roba del mazo o coge del descarte',
+    faseBajar: 'Baja, añade o descarta',
+    usaObligada: (carta: string) => `Tienes que bajar o añadir ${carta}`,
+    noEncaja: 'Esa carta no encaja en esa combinación',
+    dondeAs: '¿Dónde va el As?',
+    arriba: 'Arriba (después de la K)',
+    abajo: 'Abajo (antes del 2)',
+    bajar: 'Bajar',
+    descartar: 'Descartar',
+    limpiar: 'Quitar selección',
+    roba: (quien: string) => `${quien} roba del mazo`,
+    coge: (quien: string, n: number) =>
+      n === 1 ? `${quien} coge la carta del descarte` : `${quien} coge ${n} cartas del descarte`,
+    baja: (quien: string) => `${quien} baja una combinación`,
+    anade: (quien: string, carta: string) => `${quien} añade ${carta}`,
+    descarta: (quien: string, carta: string) => `${quien} descarta ${carta}`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    sinMazo: 'Se acabó el mazo',
+    cierra: (quien: string) => (quien === 'Tú' ? 'Has cerrado tú' : `Ha cerrado ${quien}`),
+    bajado: 'Bajado',
+    enMano: 'En mano',
+    manoCol: 'Mano',
+    total: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
   },
 
   ginRummy: {
@@ -1260,6 +1303,7 @@ export const T = {
       picas: 'Cómo se juega a Picas',
       blackjack: 'Cómo se juega al Blackjack',
       ginRummy: 'Cómo se juega al Gin Rummy',
+      rummy500: 'Cómo se juega al Rummy 500',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -1764,6 +1808,45 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    rummy500: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'De 2 a 4 jugadores, cada uno por su cuenta, con la baraja francesa. Se reparten 13 cartas a cada uno con 2 jugadores y 7 con 3 o 4.',
+          'Gana quien más puntos tenga cuando alguien llega a 500.',
+        ],
+      },
+      {
+        titulo: 'Combinaciones',
+        texto: [
+          'Grupos de 3 o 4 cartas del mismo número, o escaleras de 3 o más cartas seguidas del mismo palo. El As va abajo (A-2-3) o arriba (Q-K-A), pero no da la vuelta (K-A-2 no vale).',
+          'Puedes añadir cartas a cualquier combinación de la mesa, también a las de los demás: la cuarta de un grupo o la que alarga una escalera. Cada carta cuenta para quien la pone.',
+        ],
+      },
+      {
+        titulo: 'El turno',
+        texto: [
+          'Roba la carta de arriba del mazo, o coge cualquier carta del descarte (que está abierto) con todas las que tiene encima. Si te llevas más de una, tienes que bajar o añadir enseguida la de más abajo.',
+          'Después baja y añade lo que quieras y termina descartando una carta. La que coges sola de arriba del descarte no la puedes soltar en el mismo turno.',
+        ],
+      },
+      {
+        titulo: 'Fin de la mano',
+        texto: [
+          'La mano termina cuando alguien descarta su última carta (siempre tiene que quedarte una para descartar) o cuando se acaba el mazo.',
+          'Cada uno suma los puntos de lo que ha puesto en la mesa y resta los de lo que le queda en la mano. El As vale 15 (1 en A-2-3), las figuras 10 y el resto su número.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Baja pronto: lo que tengas en la mano cuando alguien cierre te resta.',
+          'Mira el descarte entero: a veces compensa llevarse muchas cartas por una que te deja bajar.',
+          'No sueltes cartas que encajen en la mesa: el siguiente se las apunta.',
         ],
       },
     ],

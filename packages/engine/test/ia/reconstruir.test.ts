@@ -25,6 +25,9 @@ import { blackjack, CONFIG_BLACKJACK_POR_DEFECTO } from '../../src/juegos/blackj
 import { iaGinRummyBasica } from '../../src/ia/gin-rummy-basica';
 import { reconstruirGinRummy } from '../../src/ia/reconstruir/gin-rummy';
 import { CONFIG_GIN_RUMMY_POR_DEFECTO, ginRummy } from '../../src/juegos/gin-rummy';
+import { iaRummy500Basica } from '../../src/ia/rummy-500-basica';
+import { reconstruirRummy500 } from '../../src/ia/reconstruir/rummy-500';
+import { CONFIG_RUMMY_500_POR_DEFECTO, rummy500 } from '../../src/juegos/rummy-500';
 import { reconstruirPicas } from '../../src/ia/reconstruir/picas';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
@@ -426,4 +429,9 @@ describirReconstruccion(blackjack, reconstruirBlackjack, {
 describirReconstruccion(ginRummy, reconstruirGinRummy, {
   configs: [CONFIG_GIN_RUMMY_POR_DEFECTO],
   base: iaGinRummyBasica,
+});
+
+describirReconstruccion(rummy500, reconstruirRummy500, {
+  configs: [CONFIG_RUMMY_500_POR_DEFECTO, { jugadores: 4 }],
+  base: iaRummy500Basica,
 });

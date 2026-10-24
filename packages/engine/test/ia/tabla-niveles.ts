@@ -21,6 +21,7 @@ import { CONFIG_OCHO_LOCO_POR_DEFECTO, ochoLoco } from '../../src/juegos/ocho-lo
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { blackjack, CONFIG_BLACKJACK_POR_DEFECTO } from '../../src/juegos/blackjack';
 import { CONFIG_GIN_RUMMY_POR_DEFECTO, ginRummy } from '../../src/juegos/gin-rummy';
+import { CONFIG_RUMMY_500_POR_DEFECTO, rummy500 } from '../../src/juegos/rummy-500';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -85,4 +86,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   // es por fichas (test de fuerza propio).
   entrada('Blackjack', blackjack, CONFIG_BLACKJACK_POR_DEFECTO, IAS.blackjack, 2, false),
   entrada('Gin Rummy', ginRummy, CONFIG_GIN_RUMMY_POR_DEFECTO, IAS.ginRummy, 2),
+  entrada('Rummy 500', rummy500, CONFIG_RUMMY_500_POR_DEFECTO, IAS.rummy500, 2),
 ];

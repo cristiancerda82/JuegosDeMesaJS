@@ -47,6 +47,7 @@ ull. */
     { id: 'piramide', desc: T.menu.piramideDesc, cartas: ['corazones-6', 'picas-7', 'diamantes-13'] },
     { id: 'brisca', desc: T.menu.briscaDesc, cartas: ['oros-1', 'copas-3', 'espadas-12'] },
     { id: 'tute', desc: T.menu.tuteDesc, cartas: ['bastos-12', 'oros-11', 'copas-12'] },
+    { id: 'rummy500', desc: T.menu.rummy500Desc, cartas: ['diamantes-4', 'diamantes-5', 'diamantes-6'] },
     { id: 'ginRummy', desc: T.menu.ginRummyDesc, cartas: ['picas-5', 'picas-6', 'picas-7'] },
     { id: 'blackjack', desc: T.menu.blackjackDesc, cartas: ['picas-1', 'corazones-13', 'treboles-10'] },
     { id: 'picas', desc: T.menu.picasDesc, cartas: ['picas-1', 'picas-13', 'corazones-1'] },

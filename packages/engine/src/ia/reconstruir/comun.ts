@@ -16,6 +16,21 @@ export class Ocultas<T> {
     return this.#cartas.splice(0, n);
   }
 
+  /** Saca estas cartas concretas (que tienen que estar entre las ocultas). */
+  sacar(cartas: readonly T[]): T[] {
+    for (const c of cartas) {
+      const i = this.#cartas.indexOf(c);
+      if (i < 0) throw new Error('Esa carta no está entre las ocultas');
+      this.#cartas.splice(i, 1);
+    }
+    return [...cartas];
+  }
+
+  /** Las que quedan, sin sacarlas. */
+  get todas(): readonly T[] {
+    return this.#cartas;
+  }
+
   get quedan(): number {
     return this.#cartas.length;
   }
