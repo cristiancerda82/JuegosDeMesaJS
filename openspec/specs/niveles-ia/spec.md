@@ -6,7 +6,7 @@ TBD - created by archiving change niveles-ia. Update Purpose after archive.
 ## Requirements
 
 ### Requirement: Tres niveles en cada juego contra la máquina
-Cada juego con IA (Brisca, Tute, Guiñote, Escoba, Chinchón, Siete y media, Cinquillo, Pocha, Mus, Corazones, Burro, Pinacle, Butifarra, Truc, Julepe, Remigio, Tute subastado, Cuatrola, Mentiroso, Ocho loco, Picas, Blackjack, Gin Rummy, Rummy 500 y Texas Hold'em) MUST ofrecer una IA para cada nivel: `facil`, `normal` y `dificil`. La IA `normal` MUST ser la IA básica del juego. Todos los niveles MUST cumplir las garantías generales de la IA:
+Cada juego con IA (Brisca, Tute, Guiñote, Escoba, Chinchón, Siete y media, Cinquillo, Pocha, Mus, Corazones, Burro, Pinacle, Butifarra, Truc, Julepe, Remigio, Tute subastado, Cuatrola, Mentiroso, Ocho loco, Picas, Blackjack, Gin Rummy, Rummy 500, Texas Hold'em y Culo) MUST ofrecer una IA para cada nivel: `facil`, `normal` y `dificil`. La IA `normal` MUST ser la IA básica del juego. Todos los niveles MUST cumplir las garantías generales de la IA:
 - deciden solo con la vista de su asiento;
 - eligen siempre una acción legal;
 - son reproducibles con su semilla;
@@ -43,7 +43,7 @@ Si una vista no tiene datos públicos suficientes para reconstruir el estado, se
 - quién ha pasado ya en el lance y cuántas cartas hay en el montón de descartes, sin cuáles (Mus).
 - cuántos jugadores han pasado seguidos sin poder robar y, de la última vez que robó cada uno, qué palo y qué número no tenía (Ocho loco).
 
-En la Escoba, las cartas recogidas siguen sin mostrarse (spec juego-escoba): la reconstrucción las reparte al azar con el número de cartas que se ve. En el Mus, las manos ajenas MUST cuadrar con lo declarado de pares y juego. En la Butifarra, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo, y la de uno que no falló pudiendo, sin triunfos. En el Truc, si se aceptó el envit, la mano de cada jugador cuyos puntos de envit se mostraron MUST dar esos puntos con sus cartas en mano y las que ya jugó. En el Julepe, las cartas descartadas y las del mazo son ocultas, y la carta de triunfo a la vista MUST seguir en la mano del repartidor. En el Remigio, la vista muestra todo el montón y las combinaciones de la mesa, y la reconstrucción reparte al azar entre las manos ajenas y el mazo solo las cartas que no se ven. En el Tute subastado, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo, y la de uno que tampoco jugó triunfo, sin triunfos. En la Cuatrola, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo (contando los matadores como triunfo, salvo los que el privilegio le dejaba guardar), y mientras el compañero esté oculto la carta llamada MUST quedar en la mano de uno de los otros tres, nunca en la del jugador. En Picas, la mano de un jugador que no siguió el palo de salida en una baza de la mano MUST quedar sin cartas de ese palo. En el Blackjack, la carta tapada de la banca y la baraja MUST repartirse al azar entre las cartas que no se ven; si la banca miró su carta tapada sin descubrirla, esa carta MUST ser una que no le dé blackjack. En el Ocho loco, quien robó por no poder jugar no tenía entonces ni ese palo, ni ese número, ni ochos: todas sus cartas menos una (la robada) MUST elegirse entre las que lo cumplen, y si las cartas ocultas no alcanzan para cumplirlo, se reparten sin esa restricción. En el Gin Rummy, el descarte entero es público, y las cartas que el rival cogió del descarte y no ha soltado MUST quedar en su mano; el resto de su mano y el mazo se reparten al azar entre las cartas que no se ven. En el Rummy 500, el descarte y las combinaciones de la mesa son públicos; las manos ajenas y el mazo se reparten al azar entre las cartas que no se ven.
+En la Escoba, las cartas recogidas siguen sin mostrarse (spec juego-escoba): la reconstrucción las reparte al azar con el número de cartas que se ve. En el Mus, las manos ajenas MUST cuadrar con lo declarado de pares y juego. En la Butifarra, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo, y la de uno que no falló pudiendo, sin triunfos. En el Truc, si se aceptó el envit, la mano de cada jugador cuyos puntos de envit se mostraron MUST dar esos puntos con sus cartas en mano y las que ya jugó. En el Julepe, las cartas descartadas y las del mazo son ocultas, y la carta de triunfo a la vista MUST seguir en la mano del repartidor. En el Remigio, la vista muestra todo el montón y las combinaciones de la mesa, y la reconstrucción reparte al azar entre las manos ajenas y el mazo solo las cartas que no se ven. En el Tute subastado, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo, y la de uno que tampoco jugó triunfo, sin triunfos. En la Cuatrola, la mano de un jugador que no siguió el palo de salida MUST quedar sin cartas de ese palo (contando los matadores como triunfo, salvo los que el privilegio le dejaba guardar), y mientras el compañero esté oculto la carta llamada MUST quedar en la mano de uno de los otros tres, nunca en la del jugador. En Picas, la mano de un jugador que no siguió el palo de salida en una baza de la mano MUST quedar sin cartas de ese palo. En el Blackjack, la carta tapada de la banca y la baraja MUST repartirse al azar entre las cartas que no se ven; si la banca miró su carta tapada sin descubrirla, esa carta MUST ser una que no le dé blackjack. En el Ocho loco, quien robó por no poder jugar no tenía entonces ni ese palo, ni ese número, ni ochos: todas sus cartas menos una (la robada) MUST elegirse entre las que lo cumplen, y si las cartas ocultas no alcanzan para cumplirlo, se reparten sin esa restricción. En el Gin Rummy, el descarte entero es público, y las cartas que el rival cogió del descarte y no ha soltado MUST quedar en su mano; el resto de su mano y el mazo se reparten al azar entre las cartas que no se ven. En el Rummy 500, el descarte y las combinaciones de la mesa son públicos; las manos ajenas y el mazo se reparten al azar entre las cartas que no se ven. En el Culo, todas las cartas jugadas son públicas y las manos ajenas se reparten al azar entre las cartas que no se ven; las cartas que el asiento dio en el intercambio y aún no se han jugado MUST quedar en la mano de quien las recibió.
 
 #### Scenario: La reconstrucción da la misma vista
 - **WHEN** en cualquier estado alcanzado en partidas al azar se reconstruye un estado desde la vista de un asiento
@@ -60,6 +60,10 @@ En la Escoba, las cartas recogidas siguen sin mostrarse (spec juego-escoba): la 
 #### Scenario: Envit mostrado en el Truc
 - **WHEN** en el Truc un rival mostró 33 puntos de envit y se reconstruye el estado
 - **THEN** sus cartas en mano, junto con las que ya jugó, suman 33 puntos de envit
+
+#### Scenario: Cartas dadas en el intercambio del Culo
+- **WHEN** en el Culo el presidente devolvió un 3 y un 4 al culo, el culo no los ha jugado y el presidente reconstruye el estado
+- **THEN** la mano reconstruida del culo tiene el 3 y el 4
 
 ### Requirement: Nivel difícil por simulación
 La IA difícil MUST decidir así:
@@ -108,6 +112,8 @@ En el Texas Hold'em no hay simulación de partidas ni reconstrucción: jugar el 
 - y a veces, con poca probabilidad y cuando nadie ha apostado, apuesta de farol.
 
 El azar de esas simulaciones y del farol sale de la semilla de la IA, así que la decisión es reproducible. Como en el resto de juegos, MUST ganar más partidas que la normal cuando se enfrentan.
+
+En el Culo, la IA difícil MUST simular solo las cartas que juega o si pasa, valorando el puesto en que acaba la mano. Como los palos no cuentan, MUST probar una sola jugada por cada valor y número de cartas. Las cartas que devuelve en el intercambio las MUST decidir como la normal.
 
 En cada juego con simulación, la IA difícil MUST ganar más partidas que la normal cuando se enfrentan.
 
@@ -182,3 +188,7 @@ En cada juego con simulación, la IA difícil MUST ganar más partidas que la no
 #### Scenario: El difícil del Mentiroso recuerda las cartas
 - **WHEN** en el Mentiroso se descubrieron 2 reinas que se llevó el asiento 1, la IA difícil tiene otra reina y el asiento 2 declara 2 reinas
 - **THEN** la IA difícil dice «¡Mentiroso!», porque solo puede quedar una reina fuera de su mano y de la del asiento 1
+
+#### Scenario: Intercambio del difícil en el Culo
+- **WHEN** la IA difícil del Culo es presidente y elige qué cartas devolver
+- **THEN** decide como la normal, sin simular
