@@ -6,7 +6,7 @@ TBD - created by archiving change niveles-ia. Update Purpose after archive.
 ## Requirements
 
 ### Requirement: Tres niveles en cada juego contra la máquina
-Cada juego con IA (Brisca, Tute, Guiñote, Escoba, Chinchón, Siete y media, Cinquillo, Pocha, Mus, Corazones, Burro, Pinacle, Butifarra, Truc, Julepe, Remigio, Tute subastado, Cuatrola, Mentiroso, Ocho loco, Picas, Blackjack, Gin Rummy y Rummy 500) MUST ofrecer una IA para cada nivel: `facil`, `normal` y `dificil`. La IA `normal` MUST ser la IA básica del juego. Todos los niveles MUST cumplir las garantías generales de la IA:
+Cada juego con IA (Brisca, Tute, Guiñote, Escoba, Chinchón, Siete y media, Cinquillo, Pocha, Mus, Corazones, Burro, Pinacle, Butifarra, Truc, Julepe, Remigio, Tute subastado, Cuatrola, Mentiroso, Ocho loco, Picas, Blackjack, Gin Rummy, Rummy 500 y Texas Hold'em) MUST ofrecer una IA para cada nivel: `facil`, `normal` y `dificil`. La IA `normal` MUST ser la IA básica del juego. Todos los niveles MUST cumplir las garantías generales de la IA:
 - deciden solo con la vista de su asiento;
 - eligen siempre una acción legal;
 - son reproducibles con su semilla;
@@ -34,7 +34,7 @@ En cada juego, la IA normal MUST ganar claramente más partidas que la fácil cu
 - **THEN** gana más partidas de las que le corresponderían si las dos fueran iguales
 
 ### Requirement: Reconstrucción de las cartas ocultas
-Cada juego con IA difícil (todos menos el Burro y el Mentiroso) MUST tener una función que, a partir de la vista de un asiento y de un azar, construya un estado completo del juego coherente con esa vista. Las cartas que el asiento no ve (las manos ajenas, el mazo y cualquier otra carta oculta) MUST repartirse al azar entre los sitios ocultos, respetando cuántas cartas hay en cada uno. Todo lo visible MUST quedar igual. La vista de ese asiento en el estado reconstruido MUST ser idéntica a la vista de partida.
+Cada juego con IA difícil (todos menos el Burro, el Mentiroso y el Texas Hold'em) MUST tener una función que, a partir de la vista de un asiento y de un azar, construya un estado completo del juego coherente con esa vista. Las cartas que el asiento no ve (las manos ajenas, el mazo y cualquier otra carta oculta) MUST repartirse al azar entre los sitios ocultos, respetando cuántas cartas hay en cada uno. Todo lo visible MUST quedar igual. La vista de ese asiento en el estado reconstruido MUST ser idéntica a la vista de partida.
 
 Si una vista no tiene datos públicos suficientes para reconstruir el estado, se MUST añadir a la vista lo que falte, siempre que no sea información oculta y que la spec del juego no lo prohíba. Se añaden:
 - las cartas ya jugadas en bazas de la mano (Brisca, Tute, Guiñote, Pocha, Corazones, Butifarra, Truc, Julepe, Tute subastado, Cuatrola y Picas);
@@ -101,6 +101,14 @@ En el Gin Rummy, como en el Remigio, la IA difícil MUST simular solo qué carta
 
 En el Rummy 500, como en el Remigio, la IA difícil MUST simular solo desde dónde roba (el mazo o una carta del descarte) y qué carta descarta cuando la normal descartaría. Lo que baja y añade lo MUST decidir como la normal. Como las manos son largas, MAY limitar cuántas jugadas se simulan y valorar lo que queda en ese punto.
 
+En el Texas Hold'em no hay simulación de partidas ni reconstrucción: jugar el resto de la mano con la IA normal no dice nada de lo que harían los rivales con sus cartas. La IA difícil MUST estimar su probabilidad de ganar (su equity) repartiendo al azar, un número fijo de veces, las cartas tapadas de los rivales que siguen en la mano (a quien ha apostado o subido en la ronda, entre las manos jugables, como haría un jugador) y las comunes que faltan, y comparando su mejor mano con las de ellos. Con esa probabilidad:
+- se retira si es menor que lo que le cuesta igualar frente al bote que quedaría (las probabilidades del bote);
+- iguala o pasa si llega;
+- apuesta o sube, entre medio bote y el bote, si es claramente mayor que la que le correspondería con todos iguales;
+- y a veces, con poca probabilidad y cuando nadie ha apostado, apuesta de farol.
+
+El azar de esas simulaciones y del farol sale de la semilla de la IA, así que la decisión es reproducible. Como en el resto de juegos, MUST ganar más partidas que la normal cuando se enfrentan.
+
 En cada juego con simulación, la IA difícil MUST ganar más partidas que la normal cuando se enfrentan.
 
 #### Scenario: Una sola acción legal
@@ -154,6 +162,10 @@ En cada juego con simulación, la IA difícil MUST ganar más partidas que la no
 #### Scenario: Qué simula el difícil del Rummy 500
 - **WHEN** la IA difícil del Rummy 500 puede bajar una combinación
 - **THEN** la baja como la normal, sin simular
+
+#### Scenario: Probabilidades del bote en el Texas Hold'em
+- **WHEN** la IA difícil del Texas Hold'em tiene que igualar 50 a un bote de 50 y estima que gana el 20 % de las veces
+- **THEN** se retira, porque necesitaría ganar al menos un tercio
 
 #### Scenario: Fuerza del difícil en el Blackjack
 - **WHEN** la IA difícil y la normal juegan solas 300 partidas de 20 manos con las mismas semillas
