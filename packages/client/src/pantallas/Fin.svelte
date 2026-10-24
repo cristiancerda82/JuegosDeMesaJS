@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { marcadorFinal, OBJETIVO_GIN_RUMMY } from '@juegos/engine';
+  import { clasificacionCulo, marcadorFinal, OBJETIVO_GIN_RUMMY } from '@juegos/engine';
   import { nombreNumerado } from '../mesas/bazas/asientos';
   import { bandoDe, porBando } from '../sesion/sesion-mesa';
   import type { Partida } from '../sesion/partida';
@@ -8,6 +8,7 @@
   import ResultadoChinchon from '../mesas/ResultadoChinchon.svelte';
   import ResumenGuinote from '../mesas/ResumenGuinote.svelte';
   import ResumenHoldem from '../mesas/ResumenHoldem.svelte';
+  import ResumenCulo from '../mesas/ResumenCulo.svelte';
   import ResumenRummy500 from '../mesas/ResumenRummy500.svelte';
   import ResumenGinRummy from '../mesas/ResumenGinRummy.svelte';
   import ResumenBlackjack from '../mesas/ResumenBlackjack.svelte';
@@ -86,6 +87,7 @@
       partida.id !== 'ginRummy' &&
       partida.id !== 'rummy500' &&
       partida.id !== 'holdem' &&
+      partida.id !== 'culo' &&
       partida.sesion.vista.config.jugadores === 4,
   );
 
@@ -265,6 +267,25 @@
           {/each}
         </tbody>
       </table>
+    {:else if partida.id === 'culo'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenCulo resultado={ultima} numero={vista.resultadosManos.length} nombre={(a) => nombreChinchon(a, n)} />
+        <table>
+          <caption>{T.culo.clasificacion}</caption>
+          <tbody>
+            {#each clasificacionCulo(vista.puntos, ultima.orden) as a, i (a)}
+              <tr>
+                <th scope="row">{i + 1}.º</th>
+                <td data-testid="posicion-{a}">{nombreChinchon(a, n)}</td>
+                <td data-testid="puntos-fin-{a}">{T.culo.puntos(vista.puntos[a]!)}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      {/if}
     {:else if partida.id === 'holdem'}
       {@const vista = partida.sesion.vista}
       {@const n = vista.config.jugadores}

@@ -541,6 +541,47 @@ test('Rummy 500 en red: dos humanos roban y descartan', async ({ browser }) => {
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Culo en red: dos humanos y una IA juegan una ronda', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'culo', (p) =>
+    p.getByLabel('3 jugadores', { exact: true }).check(),
+  );
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) {
+    await expect(p.locator('[data-testid="mano"] [data-carta]')).not.toHaveCount(0);
+  }
+  // Los dos ven los mismos cargos y el mismo número de cartas de cada uno.
+  await expect(ana.getByTestId('puesto-1')).toContainText('Luis');
+  await expect(luis.getByTestId('info-mano')).toHaveText(
+    await ana.getByTestId('info-mano').innerText(),
+  );
+  // Al primero de los dos al que le toque: si abre, juega su carta más baja y el otro la ve en la
+  // mesa; si tiene que superar, pasa y el otro lo ve en el aviso.
+  await expect(async () => {
+    expect(
+      (await ana.getByTestId('jugar').isVisible()) || (await luis.getByTestId('jugar').isVisible()),
+    ).toBe(true);
+  }).toPass({ timeout: 30_000 });
+  const [p, otro, nombreP] = (await ana.getByTestId('jugar').isVisible())
+    ? ([ana, luis, 'Ana'] as const)
+    : ([luis, ana, 'Luis'] as const);
+  if (await p.getByTestId('pasar').isVisible()) {
+    await p.getByTestId('pasar').click();
+    await expect(otro.getByTestId('aviso')).toContainText(`${nombreP} pasa`);
+  } else {
+    const carta = await p
+      .locator('[data-testid="mano"] [data-carta]')
+      .first()
+      .getAttribute('data-carta');
+    await p.locator('[data-testid="mano"] [data-carta]').first().click();
+    await p.getByTestId('jugar').click();
+    await expect(otro.getByTestId('mesa').locator(`[data-carta="${carta}"]`)).toBeVisible();
+  }
+});
+
 test('Texas Hold’em en red: dos humanos igualan y ven el flop', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

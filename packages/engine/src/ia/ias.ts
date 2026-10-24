@@ -31,6 +31,7 @@ import { SIMULABLE_PICAS } from './reconstruir/picas';
 import { SIMULABLE_BLACKJACK } from './reconstruir/blackjack';
 import { SIMULABLE_GIN_RUMMY } from './reconstruir/gin-rummy';
 import { SIMULABLE_RUMMY_500 } from './reconstruir/rummy-500';
+import { SIMULABLE_CULO } from './reconstruir/culo';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -44,6 +45,7 @@ import { iaPicasBasica } from './picas-basica';
 import { iaBlackjackBasica, iaBlackjackExperta } from './blackjack-basica';
 import { iaGinRummyBasica } from './gin-rummy-basica';
 import { iaRummy500Basica } from './rummy-500-basica';
+import { iaCuloBasica } from './culo-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -125,4 +127,6 @@ export const IAS = {
     normal: iaHoldemBasica,
     dificil: iaHoldemExperta,
   },
+  // El difícil simula qué juega; lo que devuelve en el intercambio, como la normal.
+  culo: niveles(iaCuloBasica, SIMULABLE_CULO),
 } as const;

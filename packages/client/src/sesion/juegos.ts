@@ -29,6 +29,12 @@ import {
   CONFIG_HOLDEM_POR_DEFECTO,
   holdem,
   type AccionHoldem,
+  CONFIG_CULO_POR_DEFECTO,
+  culo,
+  type AccionCulo,
+  type ConfigCulo,
+  type EstadoCulo,
+  type VistaCulo,
   type ConfigHoldem,
   type EstadoHoldem,
   type VistaHoldem,
@@ -273,7 +279,8 @@ export type IdJuego =
   | 'blackjack'
   | 'ginRummy'
   | 'rummy500'
-  | 'holdem';
+  | 'holdem'
+  | 'culo';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -309,6 +316,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'ginRummy',
   'rummy500',
   'holdem',
+  'culo',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -934,6 +942,30 @@ export const DEF_HOLDEM: DefHoldem = {
   },
 };
 
+export type DefCulo = DefJuego<ConfigCulo, EstadoCulo, AccionCulo, VistaCulo>;
+
+/** Tiempo para ver cada jugada de la IA en el Culo, y para ver que pasa. */
+const PAUSA_CULO_MS = 750;
+const PAUSA_PASE_CULO_MS = 400;
+
+export const DEF_CULO: DefCulo = {
+  id: 'culo',
+  nombre: T.menu.culo,
+  juego: culo,
+  configPorDefecto: CONFIG_CULO_POR_DEFECTO,
+  ia: IAS.culo,
+  // El cierre de la mano lo detiene la propia mesa con el resumen.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return 0;
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion || accion.asiento === despues.asiento) {
+      return 0;
+    }
+    if (accion.tipo === 'jugar') return PAUSA_CULO_MS;
+    return accion.tipo === 'pasar' ? PAUSA_PASE_CULO_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -968,6 +1000,7 @@ export const JUEGOS = {
   ginRummy: DEF_GIN_RUMMY,
   rummy500: DEF_RUMMY_500,
   holdem: DEF_HOLDEM,
+  culo: DEF_CULO,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

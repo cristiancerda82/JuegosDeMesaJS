@@ -86,6 +86,9 @@ export const T = {
     ginRummy: 'Gin Rummy',
     rummy500: 'Rummy 500',
     holdem: 'Texas Hold’em',
+    culo: 'Culo',
+    culoDesc:
+      'De 3 a 6: quítate las cartas jugando más alto que el anterior y sé el presidente, no el culo.',
     holdemDesc:
       'Póker sin límite de 2 a 6: apuesta, sube o retírate, y quédate con todas las fichas.',
     rummy500Desc:
@@ -558,6 +561,54 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  culo: {
+    mano: (n: number, de: number) => `Mano ${n} de ${de}`,
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    cargos: {
+      presidente: 'Presidente',
+      vicepresidente: 'Vicepresidente',
+      neutral: 'Neutral',
+      viceculo: 'Viceculo',
+      culo: 'Culo',
+    } as Record<string, string>,
+    pasa: 'Pasa',
+    puesto: (p: number) => `${p}.º`,
+    rondaLimpia: 'Ronda limpia: abre quien jugó el último',
+    abre: (quien: string) => (quien === 'Tú' ? 'Abres tú' : `Abre ${quien}`),
+    deQuien: (quien: string) => (quien === 'Tú' ? 'Tu jugada' : `De ${quien}`),
+    tuTurno: 'Tu turno',
+    tuTurnoAbrir: 'Tu turno: abre con cartas iguales',
+    tuTurnoSuperar: (n: number) =>
+      n === 1
+        ? 'Tu turno: supera con una carta más alta'
+        : `Tu turno: supera con ${n} cartas iguales más altas`,
+    jugar: 'Jugar',
+    pasar: 'Pasar',
+    devolver: (n: number) => (n === 1 ? 'Devolver 1 carta' : `Devolver ${n} cartas`),
+    eligeDevolver: (n: number) =>
+      n === 1 ? 'Elige la carta que devuelves' : `Elige las ${n} cartas que devuelves`,
+    esperaDevolver: (quien: string) => `${quien} elige qué cartas devolver`,
+    hasRecibido: 'Has recibido',
+    hasDado: 'Has dado',
+    teDevuelven: 'Te han devuelto',
+    hasDevuelto: 'Has devuelto',
+    accion: (quien: string, tipo: string, cuantas: number, corta: boolean) => {
+      if (tipo === 'pasar') return `${quien} pasa`;
+      if (tipo === 'devolver') return `${quien} ha devuelto`;
+      const que = cuantas === 1 ? 'una carta' : `${cuantas} cartas`;
+      return corta ? `${quien} corta con ${que}` : `${quien} juega ${que}`;
+    },
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
+    masPuntos: (n: number) => `+${n}`,
+    colPuesto: 'Puesto',
+    colCargo: 'Cargo',
+    colMano: 'Mano',
+    colTotal: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Clasificación',
   },
 
   holdem: {
@@ -1355,6 +1406,7 @@ export const T = {
       ginRummy: 'Cómo se juega al Gin Rummy',
       rummy500: 'Cómo se juega al Rummy 500',
       holdem: 'Cómo se juega al Texas Hold’em',
+      culo: 'Cómo se juega al Culo',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -1859,6 +1911,46 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    culo: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'De 3 a 6 jugadores, cada uno por su cuenta, con la baraja española de 40 cartas. En cada mano hay que quedarse sin cartas antes que los demás.',
+          'La partida dura 5 manos. Cada puesto da puntos: el último 0, el penúltimo 1, y así hasta el primero. Gana quien más puntos suma.',
+        ],
+      },
+      {
+        titulo: 'Las cartas',
+        texto: [
+          'De menor a mayor: 3, 4, 5, 6, 7, sota, caballo, rey, As y 2. Los palos no cuentan.',
+        ],
+      },
+      {
+        titulo: 'Las rondas',
+        texto: [
+          'Quien abre juega de 1 a 4 cartas del mismo valor. Los siguientes tienen que jugar el mismo número de cartas de un valor más alto, o pasar.',
+          'Pasar no te saca de la ronda: si te vuelve a tocar, puedes jugar. Cuando todos los demás pasan, la ronda se limpia y abre quien jugó el último.',
+          'Los doses cortan: limpian la ronda al instante y vuelve a abrir quien los jugó.',
+          'En la primera mano abre quien tiene el 3 de oros; en las siguientes, el culo.',
+        ],
+      },
+      {
+        titulo: 'Los cargos y el intercambio',
+        texto: [
+          'El primero en quedarse sin cartas es el presidente y el último el culo. Con 4 o más, el segundo es el vicepresidente y el penúltimo el viceculo.',
+          'Desde la segunda mano, el culo da sus 2 mejores cartas al presidente, que le devuelve 2 a su elección. El viceculo da su mejor carta al vicepresidente, que le devuelve 1.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Quítate pronto las cartas bajas, mejor por parejas o tríos, y no rompas los grupos si puedes evitarlo.',
+          'Guarda los doses para el final: cortar y abrir con tus últimas cartas es la forma más segura de salir.',
+          'Si eres presidente, devuelve las cartas sueltas más bajas.',
         ],
       },
     ],

@@ -28,6 +28,9 @@ import { CONFIG_GIN_RUMMY_POR_DEFECTO, ginRummy } from '../../src/juegos/gin-rum
 import { iaRummy500Basica } from '../../src/ia/rummy-500-basica';
 import { reconstruirRummy500 } from '../../src/ia/reconstruir/rummy-500';
 import { CONFIG_RUMMY_500_POR_DEFECTO, rummy500 } from '../../src/juegos/rummy-500';
+import { iaCuloBasica } from '../../src/ia/culo-basica';
+import { reconstruirCulo } from '../../src/ia/reconstruir/culo';
+import { CONFIG_CULO_POR_DEFECTO, culo } from '../../src/juegos/culo';
 import { reconstruirPicas } from '../../src/ia/reconstruir/picas';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
@@ -434,4 +437,36 @@ describirReconstruccion(ginRummy, reconstruirGinRummy, {
 describirReconstruccion(rummy500, reconstruirRummy500, {
   configs: [CONFIG_RUMMY_500_POR_DEFECTO, { jugadores: 4 }],
   base: iaRummy500Basica,
+});
+
+describirReconstruccion(culo, reconstruirCulo, {
+  configs: [CONFIG_CULO_POR_DEFECTO, { jugadores: 3 }, { jugadores: 6 }],
+  base: iaCuloBasica,
+  pasosMaximos: 500,
+});
+
+describe('Reconstrucción del Culo', () => {
+  it('lo que el presidente devolvió y el culo no ha jugado sigue en la mano del culo', () => {
+    // Juega la primera mano con la básica hasta el intercambio.
+    const e = culo.crear(CONFIG_CULO_POR_DEFECTO, 'reconstruir-culo');
+    if (!e.ok) throw new Error(e.error);
+    let estado = e.valor;
+    let azar = crearAzar('x');
+    while (estado.resultadosManos.length === 0) {
+      const acciones = culo.accionesLegales(estado, estado.turno);
+      const d = iaCuloBasica.decidir(culo.vistaDe(estado, estado.turno), acciones, azar);
+      azar = d.azar;
+      estado = culo.transicion(estado, estado.turno, d.accion);
+    }
+    const presidente = estado.turno;
+    const devueltas = estado.manos[presidente]!.slice(0, 2);
+    estado = culo.transicion(estado, presidente, { tipo: 'devolver', cartas: devueltas });
+    const culoAsiento = estado.intercambios[0]!.da;
+    const g = new Generador(crearAzar('culo'));
+    for (let i = 0; i < 10; i++) {
+      const r = reconstruirCulo(culo.vistaDe(estado, presidente), g.estado());
+      g.enteroHasta(1000);
+      expect(r.manos[culoAsiento]).toEqual(expect.arrayContaining(devueltas));
+    }
+  });
 });
