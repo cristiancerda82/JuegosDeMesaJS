@@ -12,7 +12,13 @@ import {
   pistaYukon,
   pistaCanfield,
   pistaCuarentaLadrones,
+  pistaScorpion,
 } from '../../src/ia/pistas';
+import {
+  CONFIG_SCORPION_POR_DEFECTO,
+  scorpion,
+  type EstadoScorpion,
+} from '../../src/juegos/scorpion';
 import {
   CONFIG_CUARENTA_LADRONES_POR_DEFECTO,
   cuarentaLadrones,
@@ -516,6 +522,56 @@ describe('pista de Cuarenta ladrones', () => {
   });
 });
 
+describe('pista del Scorpion', () => {
+  const k = (ids: string) => (ids === '' ? [] : (ids.split(' ') as IdCarta[]));
+  function mesaS(columnas: [string, string][], reserva = ''): EstadoScorpion {
+    return {
+      config: CONFIG_SCORPION_POR_DEFECTO,
+      columnas: Array.from({ length: 7 }, (_, i) => {
+        const [o, v] = columnas[i] ?? ['', ''];
+        return { ocultas: k(o), visibles: k(v) };
+      }),
+      reserva: k(reserva),
+      movimientos: 0,
+      historial: [],
+      abandonada: false,
+    };
+  }
+  const pistaS = (e: EstadoScorpion) =>
+    pistaScorpion(scorpion.vistaDe(e, 0), scorpion.accionesLegales(e, 0));
+
+  it('prefiere descubrir una carta tapada', () => {
+    const e = mesaS([
+      ['corazones-2', 'picas-6'],
+      ['', 'diamantes-9 picas-7'],
+      ['', 'diamantes-4'],
+      ['', 'diamantes-5 treboles-13'],
+    ]);
+    expect(pistaS(e)).toEqual({ tipo: 'mover', desde: 0, hasta: 1, cantidad: 1 });
+  });
+
+  it('no sugiere mover una carta que ya está sobre la siguiente de su palo', () => {
+    const e = mesaS([
+      ['', 'picas-7 picas-6'],
+      ['', 'treboles-7'],
+      ['', 'diamantes-2'],
+    ]);
+    // El 6 de picas no encaja en otro sitio; nada útil y sin reserva: nada.
+    expect(pistaS(e)).toBeNull();
+  });
+
+  it('sin nada útil, reparte la reserva', () => {
+    const e = mesaS(
+      [
+        ['', 'picas-7 picas-6'],
+        ['', 'treboles-3'],
+      ],
+      'corazones-5 corazones-9 diamantes-8',
+    );
+    expect(pistaS(e)).toEqual({ tipo: 'repartir' });
+  });
+});
+
 // ── Propiedades ──────────────────────────────────────────────────────────────
 
 describe('las pistas en partidas al azar', () => {
@@ -533,6 +589,7 @@ describe('las pistas en partidas al azar', () => {
       config: CONFIG_CUARENTA_LADRONES_POR_DEFECTO,
       pista: pistaCuarentaLadrones,
     },
+    { juego: scorpion, config: CONFIG_SCORPION_POR_DEFECTO, pista: pistaScorpion },
   ] as unknown as {
     juego: Juego<unknown, unknown, { tipo: string }, unknown>;
     config: unknown;

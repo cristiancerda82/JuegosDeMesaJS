@@ -60,6 +60,10 @@ import {
   type AccionYukon,
   type AccionCanfield,
   type AccionCuarentaLadrones,
+  type AccionScorpion,
+  type ConfigScorpion,
+  type EstadoScorpion,
+  type VistaScorpion,
   type ConfigCuarentaLadrones,
   type EstadoCuarentaLadrones,
   type VistaCuarentaLadrones,
@@ -193,6 +197,7 @@ import {
   DEF_YUKON,
   DEF_CANFIELD,
   DEF_CUARENTA_LADRONES,
+  DEF_SCORPION,
   DEF_KLONDIKE,
   DEF_ESCOBA,
   DEF_TUTE,
@@ -250,6 +255,12 @@ export type SesionTuteSubastado = SesionMesa<
   EstadoTuteSubastado,
   AccionTuteSubastado,
   VistaTuteSubastado
+>;
+export type SesionScorpion = SesionMesa<
+  ConfigScorpion,
+  EstadoScorpion,
+  AccionScorpion,
+  VistaScorpion
 >;
 export type SesionCuarentaLadrones = SesionMesa<
   ConfigCuarentaLadrones,
@@ -354,6 +365,7 @@ export type Partida =
   | { readonly id: 'yukon'; readonly sesion: SesionYukon }
   | { readonly id: 'canfield'; readonly sesion: SesionCanfield }
   | { readonly id: 'cuarentaLadrones'; readonly sesion: SesionCuarentaLadrones }
+  | { readonly id: 'scorpion'; readonly sesion: SesionScorpion }
   | { readonly id: 'corazones'; readonly sesion: SesionCorazones }
   | { readonly id: 'burro'; readonly sesion: SesionBurro }
   | { readonly id: 'pinacle'; readonly sesion: SesionPinacle }
@@ -413,7 +425,8 @@ export type ConfigJuego =
   | ConfigTriPeaks
   | ConfigYukon
   | ConfigCanfield
-  | ConfigCuarentaLadrones;
+  | ConfigCuarentaLadrones
+  | ConfigScorpion;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -458,6 +471,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_CANFIELD);
     case 'cuarentaLadrones':
       return hacer(DEF_CUARENTA_LADRONES);
+    case 'scorpion':
+      return hacer(DEF_SCORPION);
     case 'corazones':
       return hacer(DEF_CORAZONES);
     case 'burro':

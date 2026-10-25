@@ -12,6 +12,7 @@ import {
 } from '../juegos/tripeaks';
 import type { AccionYukon, VistaYukon } from '../juegos/yukon';
 import type { AccionCanfield, VistaCanfield } from '../juegos/canfield';
+import type { AccionScorpion, VistaScorpion } from '../juegos/scorpion';
 import type { AccionCuarentaLadrones, VistaCuarentaLadrones } from '../juegos/cuarenta-ladrones';
 
 /**
@@ -367,6 +368,39 @@ export function pistaCuarentaLadrones(
   return (
     mejor(acciones, (a) => puntosLadrones(vista, a)) ??
     acciones.find((a) => a.tipo === 'robar') ??
+    null
+  );
+}
+
+// ── Scorpion ─────────────────────────────────────────────────────────────────
+
+function puntosScorpion(v: VistaScorpion, a: AccionScorpion): number {
+  if (a.tipo !== 'mover') return 0;
+  const origen = v.columnas[a.desde]!;
+  const destino = v.columnas[a.hasta]!;
+  const quedan = origen.visibles.length - a.cantidad;
+  const carta = origen.visibles[quedan]!;
+  const encima = origen.visibles[quedan - 1];
+  const descubre = quedan === 0 && origen.ocultas > 0;
+  if (destino.visibles.length === 0) {
+    // Una K a una columna vacía sirve si deja algo atrás.
+    return descubre ? 80 : quedan > 0 ? 30 : 0;
+  }
+  // Si ya estaba sobre la siguiente de su palo, moverla no gana nada.
+  const yaUnida =
+    encima !== undefined && palo(encima) === palo(carta) && valor(encima) === valor(carta) + 1;
+  const vacia = quedan === 0 && origen.ocultas === 0;
+  return (descubre ? 80 : 0) + (yaUnida ? 0 : 40) + (vacia ? 20 : 0);
+}
+
+/** Pista del Scorpion: un movimiento útil, o repartir la reserva si no hay ninguno. */
+export function pistaScorpion(
+  vista: VistaScorpion,
+  acciones: readonly AccionScorpion[],
+): AccionScorpion | null {
+  return (
+    mejor(acciones, (a) => puntosScorpion(vista, a)) ??
+    acciones.find((a) => a.tipo === 'repartir') ??
     null
   );
 }

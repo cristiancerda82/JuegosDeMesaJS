@@ -133,6 +133,13 @@ import {
   CONFIG_CUARENTA_LADRONES_POR_DEFECTO,
   cuarentaLadrones,
   pistaCuarentaLadrones,
+  CONFIG_SCORPION_POR_DEFECTO,
+  scorpion,
+  pistaScorpion,
+  type AccionScorpion,
+  type ConfigScorpion,
+  type EstadoScorpion,
+  type VistaScorpion,
   type AccionCuarentaLadrones,
   type ConfigCuarentaLadrones,
   type EstadoCuarentaLadrones,
@@ -290,6 +297,7 @@ export type IdJuego =
   | 'yukon'
   | 'canfield'
   | 'cuarentaLadrones'
+  | 'scorpion'
   | 'corazones'
   | 'burro'
   | 'pinacle'
@@ -330,6 +338,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'yukon',
   'canfield',
   'cuarentaLadrones',
+  'scorpion',
   'corazones',
   'burro',
   'pinacle',
@@ -411,6 +420,18 @@ export const DEF_GOLF: DefGolf = {
   ia: null,
   pausaTras: () => 0,
   pista: pistaGolf,
+};
+
+export type DefScorpion = DefJuego<ConfigScorpion, EstadoScorpion, AccionScorpion, VistaScorpion>;
+
+export const DEF_SCORPION: DefScorpion = {
+  id: 'scorpion',
+  nombre: T.menu.scorpion,
+  juego: scorpion,
+  configPorDefecto: CONFIG_SCORPION_POR_DEFECTO,
+  ia: null,
+  pausaTras: () => 0,
+  pista: pistaScorpion,
 };
 
 export type DefCuarentaLadrones = DefJuego<
@@ -1086,6 +1107,7 @@ export const JUEGOS = {
   yukon: DEF_YUKON,
   canfield: DEF_CANFIELD,
   cuarentaLadrones: DEF_CUARENTA_LADRONES,
+  scorpion: DEF_SCORPION,
   corazones: DEF_CORAZONES,
   burro: DEF_BURRO,
   pinacle: DEF_PINACLE,

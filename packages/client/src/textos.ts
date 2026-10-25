@@ -38,6 +38,9 @@ export const T = {
     yukon: 'Yukon',
     canfield: 'Canfield',
     cuarentaLadrones: 'Cuarenta ladrones',
+    scorpion: 'Scorpion',
+    scorpionDesc:
+      'Solitario de una baraja: mueve cualquier carta con las de encima sobre la siguiente de su palo, y forma las cuatro escaleras.',
     cuarentaLadronesDesc:
       'Solitario de dos barajas: diez columnas por palo, ocho fundaciones y una sola vuelta al mazo.',
     canfieldDesc:
@@ -1164,6 +1167,11 @@ export const T = {
     ejemplo: 'Apuesta / bazas hechas → puntos',
   },
 
+  scorpion: {
+    reserva: (n: number) => (n === 0 ? 'Reserva repartida' : `Reserva: ${n} cartas`),
+    repartirReserva: 'Repartir la reserva',
+  },
+
   canfield: {
     base: 'Base',
     reserva: (n: number) => (n === 0 ? 'Reserva vacía' : `Reserva: ${n} cartas`),
@@ -1495,6 +1503,7 @@ export const T = {
       yukon: 'Cómo se juega al Yukon',
       canfield: 'Cómo se juega al Canfield',
       cuarentaLadrones: 'Cómo se juega a Cuarenta ladrones',
+      scorpion: 'Cómo se juega al Scorpion',
       corazones: 'Cómo se juega a los Corazones',
       pocha: 'Cómo se juega a la Pocha',
       mus: 'Cómo se juega al Mus',
@@ -2496,6 +2505,41 @@ export const T = {
         texto: [
           'Cuenta tus matadores antes de pujar: con dos o tres y unos cuantos triunfos, ya puedes jugar con rey.',
           'Llama el rey del palo en que tienes menos cartas: tu compañero te ganará esas bazas.',
+        ],
+      },
+    ],
+
+    scorpion: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Con una baraja francesa, hay que formar en la mesa las cuatro escaleras, una por palo, de la K al As.',
+        ],
+      },
+      {
+        titulo: 'El reparto',
+        texto: [
+          'Hay 7 columnas de 7 cartas. En las 4 primeras, las 3 de abajo están tapadas. Las 3 cartas que sobran forman la reserva.',
+        ],
+      },
+      {
+        titulo: 'Mover',
+        texto: [
+          'Puedes mover cualquier carta descubierta, con todas las que tenga encima aunque estén desordenadas, sobre la siguiente de su palo: el 6 de picas sobre el 7 de picas.',
+          'En una columna vacía solo puede ir una K, con lo que lleve encima. Cuando una carta tapada queda arriba, se descubre sola.',
+        ],
+      },
+      {
+        titulo: 'La reserva',
+        texto: [
+          'Cuando quieras, toca la reserva para repartirla: pone una carta encima de cada una de las 3 primeras columnas. Solo se reparte una vez.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Lo primero es descubrir las cartas tapadas: busca los movimientos que las dejan arriba.',
+          'Una columna vacía es valiosa: guárdala para una K que tenga debajo cartas que necesitas.',
         ],
       },
     ],

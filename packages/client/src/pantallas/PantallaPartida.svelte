@@ -36,6 +36,7 @@
   import MesaYukon from '../mesas/MesaYukon.svelte';
   import MesaCanfield from '../mesas/MesaCanfield.svelte';
   import MesaCuarentaLadrones from '../mesas/MesaCuarentaLadrones.svelte';
+  import MesaScorpion from '../mesas/MesaScorpion.svelte';
   import MesaTute from '../mesas/MesaTute.svelte';
   import type { Partida } from '../sesion/partida';
   import { T } from '../textos';
@@ -86,6 +87,8 @@
 
   {#if partida.id === 'klondike'}
     <MesaKlondike sesion={partida.sesion} />
+  {:else if partida.id === 'scorpion'}
+    <MesaScorpion sesion={partida.sesion} />
   {:else if partida.id === 'cuarentaLadrones'}
     <MesaCuarentaLadrones sesion={partida.sesion} />
   {:else if partida.id === 'canfield'}

@@ -241,6 +241,7 @@ for (const juego of [
   'yukon',
   'canfield',
   'cuarentaLadrones',
+  'scorpion',
   'corazones',
   'burro',
   'pinacle',

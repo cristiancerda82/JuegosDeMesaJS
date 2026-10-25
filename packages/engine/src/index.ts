@@ -28,6 +28,7 @@ export * from './juegos/canasta';
 export * from './juegos/cuarenta-ladrones';
 export * from './juegos/whist';
 export * from './juegos/sevens';
+export * from './juegos/scorpion';
 export * from './juegos/holdem';
 export * from './juegos/truc';
 export * from './juegos/julepe';
