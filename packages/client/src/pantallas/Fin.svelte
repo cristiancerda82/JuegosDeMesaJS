@@ -9,6 +9,7 @@
   import ResumenGuinote from '../mesas/ResumenGuinote.svelte';
   import ResumenHoldem from '../mesas/ResumenHoldem.svelte';
   import ResumenCulo from '../mesas/ResumenCulo.svelte';
+  import ResumenCanasta from '../mesas/ResumenCanasta.svelte';
   import ResumenRummy500 from '../mesas/ResumenRummy500.svelte';
   import ResumenGinRummy from '../mesas/ResumenGinRummy.svelte';
   import ResumenBlackjack from '../mesas/ResumenBlackjack.svelte';
@@ -264,6 +265,20 @@
                 {vista.eliminados[a] ? T.remigio.eliminado : T.remigio.puntos(vista.puntos[a]!)}
               </td>
             </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'canasta'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenCanasta resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} />
+      {/if}
+      <table>
+        <caption>{T.canasta.clasificacion}</caption>
+        <tbody>
+          {#each lados as lado, i (lado)}
+            <tr><th scope="row">{lado}</th><td data-testid="puntos-{i}">{porBando(vista.puntos, yo)[i]}</td></tr>
           {/each}
         </tbody>
       </table>

@@ -24,6 +24,7 @@ import { CONFIG_GIN_RUMMY_POR_DEFECTO, ginRummy } from '../../src/juegos/gin-rum
 import { CONFIG_RUMMY_500_POR_DEFECTO, rummy500 } from '../../src/juegos/rummy-500';
 import { CONFIG_HOLDEM_POR_DEFECTO, holdem } from '../../src/juegos/holdem';
 import { CONFIG_CULO_POR_DEFECTO, culo } from '../../src/juegos/culo';
+import { canasta, CONFIG_CANASTA_POR_DEFECTO } from '../../src/juegos/canasta';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -92,4 +93,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   // No simula partidas, pero su difícil (por equity) tiene que ganar a la normal.
   entrada("Texas Hold'em", holdem, CONFIG_HOLDEM_POR_DEFECTO, IAS.holdem, 4),
   entrada('Culo', culo, CONFIG_CULO_POR_DEFECTO, IAS.culo, 4),
+  entrada('Canasta', canasta, CONFIG_CANASTA_POR_DEFECTO, IAS.canasta, 'bandos'),
 ];

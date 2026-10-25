@@ -32,6 +32,12 @@ import {
   CONFIG_CULO_POR_DEFECTO,
   culo,
   type AccionCulo,
+  CONFIG_CANASTA_POR_DEFECTO,
+  canasta,
+  type AccionCanasta,
+  type ConfigCanasta,
+  type EstadoCanasta,
+  type VistaCanasta,
   type ConfigCulo,
   type EstadoCulo,
   type VistaCulo,
@@ -280,7 +286,8 @@ export type IdJuego =
   | 'ginRummy'
   | 'rummy500'
   | 'holdem'
-  | 'culo';
+  | 'culo'
+  | 'canasta';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -317,6 +324,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'rummy500',
   'holdem',
   'culo',
+  'canasta',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -966,6 +974,26 @@ export const DEF_CULO: DefCulo = {
   },
 };
 
+export type DefCanasta = DefJuego<ConfigCanasta, EstadoCanasta, AccionCanasta, VistaCanasta>;
+
+/** Tiempo para ver cada jugada de la IA en la Canasta. */
+const PAUSA_CANASTA_MS = 650;
+
+export const DEF_CANASTA: DefCanasta = {
+  id: 'canasta',
+  nombre: T.menu.canasta,
+  juego: canasta,
+  configPorDefecto: CONFIG_CANASTA_POR_DEFECTO,
+  ia: IAS.canasta,
+  // El cierre de la mano lo detiene la propia mesa con el resumen.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return 0;
+    return accion.asiento !== despues.asiento ? PAUSA_CANASTA_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1001,6 +1029,7 @@ export const JUEGOS = {
   rummy500: DEF_RUMMY_500,
   holdem: DEF_HOLDEM,
   culo: DEF_CULO,
+  canasta: DEF_CANASTA,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

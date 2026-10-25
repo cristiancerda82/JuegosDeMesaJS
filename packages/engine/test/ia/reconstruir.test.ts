@@ -31,6 +31,9 @@ import { CONFIG_RUMMY_500_POR_DEFECTO, rummy500 } from '../../src/juegos/rummy-5
 import { iaCuloBasica } from '../../src/ia/culo-basica';
 import { reconstruirCulo } from '../../src/ia/reconstruir/culo';
 import { CONFIG_CULO_POR_DEFECTO, culo } from '../../src/juegos/culo';
+import { iaCanastaBasica } from '../../src/ia/canasta-basica';
+import { reconstruirCanasta } from '../../src/ia/reconstruir/canasta';
+import { canasta, CONFIG_CANASTA_POR_DEFECTO } from '../../src/juegos/canasta';
 import { reconstruirPicas } from '../../src/ia/reconstruir/picas';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
@@ -469,4 +472,10 @@ describe('Reconstrucción del Culo', () => {
       expect(r.manos[culoAsiento]).toEqual(expect.arrayContaining(devueltas));
     }
   });
+});
+
+describirReconstruccion(canasta, reconstruirCanasta, {
+  configs: [CONFIG_CANASTA_POR_DEFECTO],
+  base: iaCanastaBasica,
+  partidas: 4,
 });

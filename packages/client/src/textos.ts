@@ -87,6 +87,9 @@ export const T = {
     rummy500: 'Rummy 500',
     holdem: 'Texas Hold’em',
     culo: 'Culo',
+    canasta: 'Canasta',
+    canastaDesc:
+      'En parejas con dos barajas y comodines: haz canastas de siete, llévate el pozo y llega a 5.000.',
     culoDesc:
       'De 3 a 6: quítate las cartas jugando más alto que el anterior y sé el presidente, no el culo.',
     holdemDesc:
@@ -561,6 +564,58 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  canasta: {
+    puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
+    mano: (n: number) => `Mano ${n} · a 5.000`,
+    minimo: (n: number) => `Primera bajada: ${n}`,
+    faltaMinimo: (n: number) => `Te faltan ${n} para la primera bajada`,
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    robar: 'Robar',
+    cogerPozo: 'Coger el pozo',
+    acabar: 'Acabar la mano',
+    bajar: 'Bajar',
+    descartar: 'Descartar',
+    deshacer: 'Deshacer',
+    limpiar: 'Quitar selección',
+    faseRobar: 'Tu turno: roba del mazo',
+    faseRobarPozo: 'Tu turno: roba, o marca las cartas para coger el pozo',
+    faseBajar: 'Baja o añade cartas, y descarta',
+    tapado: 'Pozo tapado',
+    congelado: 'Pozo congelado',
+    congeladoParaTi: 'Congelado hasta tu primera bajada',
+    treses: (n: number) => (n === 1 ? '1 tres rojo' : `${n} treses rojos`),
+    sinCombinaciones: 'Sin combinaciones',
+    combinacion: (valor: string, n: number) => `${n} cartas de ${valor}`,
+    limpia: 'limpia',
+    sucia: 'sucia',
+    roba: (quien: string) => `${quien} roba del mazo`,
+    seLleva: (quien: string) => `${quien} se lleva el pozo`,
+    baja: (quien: string) => `${quien} baja`,
+    anade: (quien: string) => `${quien} añade`,
+    deshace: (quien: string) => `${quien} deshace su bajada`,
+    acaba: (quien: string) => `${quien} acaba la mano`,
+    descarta: (quien: string, carta: string) => `${quien} descarta ${carta}`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    mazoAgotado: 'Se acabó el mazo',
+    cierra: (quien: string) => (quien === 'Tú' ? 'Has cerrado' : `Cierra ${quien}`),
+    enMesa: 'Cartas bajadas',
+    canastas: 'Canastas',
+    tresesRojos: 'Treses rojos',
+    premioCierre: 'Cerrar',
+    enMano: 'En la mano',
+    totalMano: 'Total de la mano',
+    acumulado: 'Marcador',
+    detalleCanastas: (limpias: number, sucias: number) =>
+      [
+        limpias > 0 ? `${limpias} limpia${limpias > 1 ? 's' : ''}` : '',
+        sucias > 0 ? `${sucias} sucia${sucias > 1 ? 's' : ''}` : '',
+      ]
+        .filter(Boolean)
+        .join(' y '),
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Marcador final',
   },
 
   culo: {
@@ -1407,6 +1462,7 @@ export const T = {
       rummy500: 'Cómo se juega al Rummy 500',
       holdem: 'Cómo se juega al Texas Hold’em',
       culo: 'Cómo se juega al Culo',
+      canasta: 'Cómo se juega a la Canasta',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -1911,6 +1967,51 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    canasta: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Cuatro jugadores en dos parejas, con dos barajas francesas y cuatro jokers. Se juega a 5.000 puntos: la pareja que llega primero gana.',
+          'Los puntos se ganan bajando combinaciones de cartas del mismo valor, y sobre todo canastas: combinaciones de siete cartas.',
+        ],
+      },
+      {
+        titulo: 'El turno',
+        texto: [
+          'Roba una carta del mazo o llévate el pozo entero. Después baja combinaciones o añade cartas a las de tu pareja, y termina descartando una carta.',
+          'Una combinación tiene 3 o más cartas del mismo valor, al menos dos naturales y como mucho tres comodines (jokers y doses). Una canasta de siete sin comodines es limpia (500) y con comodines, sucia (300).',
+        ],
+      },
+      {
+        titulo: 'La primera bajada',
+        texto: [
+          'La primera vez que tu pareja baja en cada mano, lo que bajes en ese turno tiene que sumar un mínimo: 50 al empezar, 90 desde 1.500 y 120 desde 3.000 (15 si vais en negativo).',
+          'Mientras no llegues al mínimo puedes deshacer lo que has bajado.',
+        ],
+      },
+      {
+        titulo: 'El pozo',
+        texto: [
+          'Para llevarte el pozo tienes que bajar en el momento la carta de arriba con cartas de tu mano. Si está congelado (tiene un comodín, o tu pareja aún no ha bajado), necesitas dos naturales de ese valor.',
+          'Con un 3 negro o un comodín arriba no se puede coger: descartar un 3 negro tapa el pozo para el siguiente.',
+        ],
+      },
+      {
+        titulo: 'Los treses rojos y cerrar',
+        texto: [
+          'Los treses rojos se bajan solos y valen 100 (800 los cuatro), a favor si tu pareja ha bajado y en contra si no.',
+          'Para quedarte sin cartas y cerrar, tu pareja necesita al menos una canasta. Cerrar vale 100. Al final, lo que queda en la mano resta.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'El pozo grande vale mucho: guarda parejas para poder llevártelo, y congélalo con un comodín si los rivales lo van a coger.',
+          'No descartes cartas del valor de las combinaciones de los rivales.',
         ],
       },
     ],

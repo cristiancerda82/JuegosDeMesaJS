@@ -541,6 +541,31 @@ test('Rummy 500 en red: dos humanos roban y descartan', async ({ browser }) => {
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Canasta en red: dos humanos roban y descartan', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'canasta');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(11);
+
+  // Empieza Ana (asiento 0) y después Luis (asiento 1): cada uno roba y descarta su primera carta.
+  for (const [p, otro] of [
+    [ana, luis],
+    [luis, ana],
+  ] as const) {
+    await p.getByTestId('robar').click({ timeout: 30_000 });
+    const primera = p.locator('[data-testid="mano"] .carta-mano').first();
+    const carta = await primera.getAttribute('data-carta');
+    await primera.click({ position: { x: 6, y: 6 } });
+    await p.getByTestId('descartar').click();
+    await expect(otro.getByTestId('pozo').locator('.arriba')).toHaveAttribute('data-carta', carta!);
+  }
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Culo en red: dos humanos y una IA juegan una ronda', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

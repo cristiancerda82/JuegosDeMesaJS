@@ -20,6 +20,7 @@
     ConfigRummy500,
     ConfigHoldem,
     ConfigCulo,
+    ConfigCanasta,
     ConfigPiramide,
     ConfigGolf,
     ConfigTriPeaks,
@@ -91,6 +92,7 @@
   let rummy500Config: Editable<ConfigRummy500> = $state({ ...JUEGOS.rummy500.configPorDefecto });
   let holdemConfig: Editable<ConfigHoldem> = $state({ ...JUEGOS.holdem.configPorDefecto });
   let culoConfig: Editable<ConfigCulo> = $state({ ...JUEGOS.culo.configPorDefecto });
+  let canastaConfig: Editable<ConfigCanasta> = $state({ ...JUEGOS.canasta.configPorDefecto });
   let subastado: Editable<ConfigTuteSubastado> = $state({
     ...JUEGOS.tuteSubastado.configPorDefecto,
   });
@@ -145,6 +147,7 @@
       rummy500: rummy500Config,
       holdem: holdemConfig,
       culo: culoConfig,
+      canasta: canastaConfig,
     };
     if (conIA) guardarNivel(juego, nivel);
     empezar({ ...configs[juego] }, nivel);
