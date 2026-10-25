@@ -37,6 +37,9 @@ import { canasta, CONFIG_CANASTA_POR_DEFECTO } from '../../src/juegos/canasta';
 import { iaWhistBasica } from '../../src/ia/whist-basica';
 import { reconstruirWhist } from '../../src/ia/reconstruir/whist';
 import { CONFIG_WHIST_POR_DEFECTO, whist } from '../../src/juegos/whist';
+import { iaSevensBasica } from '../../src/ia/sevens-basica';
+import { reconstruirSevens } from '../../src/ia/reconstruir/sevens';
+import { CONFIG_SEVENS_POR_DEFECTO, sevens } from '../../src/juegos/sevens';
 import { reconstruirPicas } from '../../src/ia/reconstruir/picas';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
@@ -501,4 +504,9 @@ describe('Reconstrucción del Whist', () => {
       expect(rec.manos[e.repartidor]).toContain(e.cartaTriunfo);
     }
   });
+});
+
+describirReconstruccion(sevens, reconstruirSevens, {
+  configs: [CONFIG_SEVENS_POR_DEFECTO, { jugadores: 3 }, { jugadores: 6 }],
+  base: iaSevensBasica,
 });

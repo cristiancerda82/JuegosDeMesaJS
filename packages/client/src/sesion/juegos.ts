@@ -38,6 +38,12 @@ import {
   CONFIG_WHIST_POR_DEFECTO,
   whist,
   type AccionWhist,
+  CONFIG_SEVENS_POR_DEFECTO,
+  sevens,
+  type AccionSevens,
+  type ConfigSevens,
+  type EstadoSevens,
+  type VistaSevens,
   type ConfigWhist,
   type EstadoWhist,
   type VistaWhist,
@@ -302,7 +308,8 @@ export type IdJuego =
   | 'holdem'
   | 'culo'
   | 'canasta'
-  | 'whist';
+  | 'whist'
+  | 'sevens';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -342,6 +349,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'culo',
   'canasta',
   'whist',
+  'sevens',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1043,6 +1051,22 @@ export const DEF_WHIST: DefWhist = {
   },
 };
 
+export type DefSevens = DefJuego<ConfigSevens, EstadoSevens, AccionSevens, VistaSevens>;
+
+export const DEF_SEVENS: DefSevens = {
+  id: 'sevens',
+  nombre: T.menu.sevens,
+  juego: sevens,
+  configPorDefecto: CONFIG_SEVENS_POR_DEFECTO,
+  ia: IAS.sevens,
+  // El cierre de la mano lo detiene la propia mesa con el panel de resultado.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    return accion.asiento !== despues.asiento ? PAUSA_CINQUILLO_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1081,6 +1105,7 @@ export const JUEGOS = {
   culo: DEF_CULO,
   canasta: DEF_CANASTA,
   whist: DEF_WHIST,
+  sevens: DEF_SEVENS,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

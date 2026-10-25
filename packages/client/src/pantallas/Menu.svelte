@@ -49,6 +49,7 @@ ull. */
     { id: 'piramide', desc: T.menu.piramideDesc, cartas: ['corazones-6', 'picas-7', 'diamantes-13'] },
     { id: 'brisca', desc: T.menu.briscaDesc, cartas: ['oros-1', 'copas-3', 'espadas-12'] },
     { id: 'tute', desc: T.menu.tuteDesc, cartas: ['bastos-12', 'oros-11', 'copas-12'] },
+    { id: 'sevens', desc: T.menu.sevensDesc, cartas: ['diamantes-7', 'diamantes-8', 'diamantes-6'] },
     { id: 'whist', desc: T.menu.whistDesc, cartas: ['picas-1', 'corazones-13', 'treboles-12'] },
     { id: 'canasta', desc: T.menu.canastaDesc, cartas: ['comodin-1', 'corazones-3', 'picas-1'] },
     { id: 'culo', desc: T.menu.culoDesc, cartas: ['oros-2', 'copas-1', 'espadas-3'] },

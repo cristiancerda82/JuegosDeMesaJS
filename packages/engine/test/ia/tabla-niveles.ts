@@ -26,6 +26,7 @@ import { CONFIG_HOLDEM_POR_DEFECTO, holdem } from '../../src/juegos/holdem';
 import { CONFIG_CULO_POR_DEFECTO, culo } from '../../src/juegos/culo';
 import { canasta, CONFIG_CANASTA_POR_DEFECTO } from '../../src/juegos/canasta';
 import { CONFIG_WHIST_POR_DEFECTO, whist } from '../../src/juegos/whist';
+import { CONFIG_SEVENS_POR_DEFECTO, sevens } from '../../src/juegos/sevens';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -96,4 +97,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Culo', culo, CONFIG_CULO_POR_DEFECTO, IAS.culo, 4),
   entrada('Canasta', canasta, CONFIG_CANASTA_POR_DEFECTO, IAS.canasta, 'bandos'),
   entrada('Whist', whist, CONFIG_WHIST_POR_DEFECTO, IAS.whist, 'bandos'),
+  entrada('Sevens', sevens, CONFIG_SEVENS_POR_DEFECTO, IAS.sevens, 4),
 ];

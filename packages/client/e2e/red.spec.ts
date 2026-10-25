@@ -541,6 +541,41 @@ test('Rummy 500 en red: dos humanos roban y descartan', async ({ browser }) => {
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Sevens en red: dos humanos ven las mismas escaleras', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'sevens', (p) =>
+    p.getByLabel('3 jugadores', { exact: true }).check(),
+  );
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).not.toHaveCount(0);
+  // Si uno de los dos humanos tiene el 7 de diamantes, abre con él; si no, abre la IA. Al final,
+  // los dos lo ven en la mesa.
+  const siete = (p: Page) =>
+    p.locator('[data-testid="mano"] .carta-mano.jugable[data-carta="diamantes-7"]');
+  const enMesa = (p: Page) => p.getByTestId('fila-diamantes').locator('[data-carta="diamantes-7"]');
+  await expect
+    .poll(
+      async () =>
+        (await siete(ana).isVisible()) ||
+        (await siete(luis).isVisible()) ||
+        (await enMesa(ana).isVisible()),
+      { timeout: 30_000 },
+    )
+    .toBe(true);
+  for (const p of [ana, luis]) {
+    if (await siete(p).isVisible()) {
+      await siete(p).click({ position: { x: 8, y: 8 } });
+      await p.getByTestId('mesa').click();
+    }
+  }
+  for (const p of [ana, luis]) await expect(enMesa(p)).toBeVisible({ timeout: 30_000 });
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Whist en red: dos humanos juegan en la misma baza', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

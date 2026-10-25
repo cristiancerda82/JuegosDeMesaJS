@@ -34,6 +34,7 @@ import { SIMULABLE_RUMMY_500 } from './reconstruir/rummy-500';
 import { SIMULABLE_CULO } from './reconstruir/culo';
 import { SIMULABLE_CANASTA } from './reconstruir/canasta';
 import { SIMULABLE_WHIST } from './reconstruir/whist';
+import { SIMULABLE_SEVENS } from './reconstruir/sevens';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -50,6 +51,7 @@ import { iaRummy500Basica } from './rummy-500-basica';
 import { iaCuloBasica } from './culo-basica';
 import { iaCanastaBasica } from './canasta-basica';
 import { iaWhistBasica } from './whist-basica';
+import { iaSevensBasica } from './sevens-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -136,4 +138,5 @@ export const IAS = {
   // Como en el Pinacle: el difícil simula robar o llevarse el pozo y el descarte.
   canasta: niveles(iaCanastaBasica, SIMULABLE_CANASTA),
   whist: niveles(iaWhistBasica, SIMULABLE_WHIST),
+  sevens: niveles(iaSevensBasica, SIMULABLE_SEVENS),
 } as const;

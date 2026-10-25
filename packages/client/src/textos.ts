@@ -92,6 +92,9 @@ export const T = {
     culo: 'Culo',
     canasta: 'Canasta',
     whist: 'Whist',
+    sevens: 'Sevens',
+    sevensDesc:
+      'El dominó de cartas, de 3 a 6: escaleras por palo desde los sietes; quien no puede, pasa.',
     whistDesc:
       'El clásico inglés de bazas por parejas: el triunfo lo marca la última carta y se juega al mejor de tres.',
     canastaDesc:
@@ -570,6 +573,26 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  sevens: {
+    mesa: 'Mesa',
+    paso: 'Paso',
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
+    juega: (quien: string, carta: string) =>
+      quien === 'Tú' ? `Juegas ${carta}` : `${quien} juega ${carta}`,
+    pasa: (quien: string) => (quien === 'Tú' ? 'Pasas' : `${quien} pasa`),
+    tuTurno: 'Tu turno: juega una carta',
+    sinJugada: 'No tienes jugada: pasa',
+    salida: 'Sale el 7 de diamantes',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    ganaMano: (quien: string) =>
+      quien === 'Tú' ? '¡Te has quedado sin cartas!' : `Gana la mano: ${quien}`,
+    quedan: 'Le quedan',
+    totalPartida: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos (menos es mejor)',
   },
 
   whist: {
@@ -1492,6 +1515,7 @@ export const T = {
       culo: 'Cómo se juega al Culo',
       canasta: 'Cómo se juega a la Canasta',
       whist: 'Cómo se juega al Whist',
+      sevens: 'Cómo se juega al Sevens',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -1996,6 +2020,36 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    sevens: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'De 3 a 6 jugadores, cada uno por su cuenta, con la baraja francesa de 52 cartas. Hay que quedarse sin cartas antes que nadie.',
+          'Al acabar cada mano, los demás suman un punto por cada carta que les queda. Cuando alguien llega a 50, gana quien menos puntos tiene.',
+        ],
+      },
+      {
+        titulo: 'Las escaleras',
+        texto: [
+          'Abre la mano quien tiene el 7 de diamantes. Cada palo forma en la mesa una escalera que empieza por su 7.',
+          'Puedes poner el 7 de un palo que aún no está, o alargar una escalera con la carta siguiente: hacia arriba hasta la K y hacia abajo hasta el As.',
+        ],
+      },
+      {
+        titulo: 'Jugar o pasar',
+        texto: [
+          'Si puedes jugar, tienes que hacerlo. Si no tienes ninguna carta que encaje, pasas.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Guarda las cartas que abren camino a los rivales y juega primero las que te acercan otras tuyas.',
+          'Los sietes de palos donde tienes pocas cartas pueden esperar: abrirlos ayuda a los demás.',
         ],
       },
     ],
