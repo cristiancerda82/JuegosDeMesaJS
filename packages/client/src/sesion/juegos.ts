@@ -118,6 +118,13 @@ import {
   CONFIG_CANFIELD_POR_DEFECTO,
   canfield,
   pistaCanfield,
+  CONFIG_CUARENTA_LADRONES_POR_DEFECTO,
+  cuarentaLadrones,
+  pistaCuarentaLadrones,
+  type AccionCuarentaLadrones,
+  type ConfigCuarentaLadrones,
+  type EstadoCuarentaLadrones,
+  type VistaCuarentaLadrones,
   type AccionCanfield,
   type ConfigCanfield,
   type EstadoCanfield,
@@ -270,6 +277,7 @@ export type IdJuego =
   | 'tripeaks'
   | 'yukon'
   | 'canfield'
+  | 'cuarentaLadrones'
   | 'corazones'
   | 'burro'
   | 'pinacle'
@@ -307,6 +315,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'tripeaks',
   'yukon',
   'canfield',
+  'cuarentaLadrones',
   'corazones',
   'burro',
   'pinacle',
@@ -386,6 +395,23 @@ export const DEF_GOLF: DefGolf = {
   ia: null,
   pausaTras: () => 0,
   pista: pistaGolf,
+};
+
+export type DefCuarentaLadrones = DefJuego<
+  ConfigCuarentaLadrones,
+  EstadoCuarentaLadrones,
+  AccionCuarentaLadrones,
+  VistaCuarentaLadrones
+>;
+
+export const DEF_CUARENTA_LADRONES: DefCuarentaLadrones = {
+  id: 'cuarentaLadrones',
+  nombre: T.menu.cuarentaLadrones,
+  juego: cuarentaLadrones,
+  configPorDefecto: CONFIG_CUARENTA_LADRONES_POR_DEFECTO,
+  ia: null,
+  pausaTras: () => 0,
+  pista: pistaCuarentaLadrones,
 };
 
 export type DefCanfield = DefJuego<ConfigCanfield, EstadoCanfield, AccionCanfield, VistaCanfield>;
@@ -1012,6 +1038,7 @@ export const JUEGOS = {
   tripeaks: DEF_TRIPEAKS,
   yukon: DEF_YUKON,
   canfield: DEF_CANFIELD,
+  cuarentaLadrones: DEF_CUARENTA_LADRONES,
   corazones: DEF_CORAZONES,
   burro: DEF_BURRO,
   pinacle: DEF_PINACLE,

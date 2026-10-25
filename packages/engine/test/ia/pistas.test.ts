@@ -11,7 +11,14 @@ import {
   pistaSpider,
   pistaYukon,
   pistaCanfield,
+  pistaCuarentaLadrones,
 } from '../../src/ia/pistas';
+import {
+  CONFIG_CUARENTA_LADRONES_POR_DEFECTO,
+  cuarentaLadrones,
+  type CartaLadrones,
+  type EstadoCuarentaLadrones,
+} from '../../src/juegos/cuarenta-ladrones';
 import {
   canfield,
   CONFIG_CANFIELD_POR_DEFECTO,
@@ -461,6 +468,54 @@ describe('pista del Canfield', () => {
   });
 });
 
+describe('pista de Cuarenta ladrones', () => {
+  const k = (ids: string) =>
+    ids === '' ? [] : ids.split(' ').map((x) => `${x}#0` as CartaLadrones);
+  function mesaL(
+    columnas: string[],
+    parcial: Partial<EstadoCuarentaLadrones> = {},
+  ): EstadoCuarentaLadrones {
+    return {
+      config: CONFIG_CUARENTA_LADRONES_POR_DEFECTO,
+      mazo: [],
+      descarte: [],
+      columnas: Array.from({ length: 10 }, (_, i) => k(columnas[i] ?? 'diamantes-13')),
+      fundaciones: Array.from({ length: 8 }, () => []),
+      movimientos: 0,
+      historial: [],
+      abandonada: false,
+      ...parcial,
+    };
+  }
+  const pistaL = (e: EstadoCuarentaLadrones) =>
+    pistaCuarentaLadrones(cuarentaLadrones.vistaDe(e, 0), cuarentaLadrones.accionesLegales(e, 0));
+
+  it('prefiere subir a una fundación', () => {
+    const e = mesaL(['picas-1', 'treboles-9', 'treboles-8'], { descarte: k('corazones-8') });
+    expect(pistaL(e)).toEqual({ tipo: 'mover', desde: 'c0', hasta: 'f0', cantidad: 1 });
+  });
+
+  it('vacía una columna si no hay nada que subir ni descarte que encaje', () => {
+    const e = mesaL(['picas-9 treboles-8', 'treboles-9', 'corazones-5'], { mazo: k('picas-4') });
+    // El 8 de tréboles puede ir sobre el 9 de tréboles, pero no vacía nada; el 5 de corazones no
+    // encaja. Ninguna columna se vacía: roba.
+    expect(pistaL(e)).toEqual({ tipo: 'robar' });
+    const f = mesaL(['treboles-8', 'treboles-9', 'corazones-5'], { mazo: k('picas-4') });
+    expect(pistaL(f)).toEqual({ tipo: 'mover', desde: 'c0', hasta: 'c1', cantidad: 1 });
+  });
+
+  it('saca la carta del descarte antes que vaciar una columna', () => {
+    const e = mesaL(['treboles-8', 'treboles-9', 'corazones-5'], { descarte: k('corazones-4') });
+    expect(pistaL(e)).toMatchObject({ desde: 'descarte' });
+  });
+
+  it('sin nada útil ni mazo, no sugiere nada y está atascado', () => {
+    const e = mesaL(['picas-9', 'corazones-5']);
+    expect(pistaL(e)).toBeNull();
+    expect(atascado(cuarentaLadrones.accionesLegales(e, 0))).toBe(true);
+  });
+});
+
 // ── Propiedades ──────────────────────────────────────────────────────────────
 
 describe('las pistas en partidas al azar', () => {
@@ -473,6 +528,11 @@ describe('las pistas en partidas al azar', () => {
     { juego: tripeaks, config: CONFIG_TRIPEAKS_POR_DEFECTO, pista: pistaTriPeaks },
     { juego: yukon, config: CONFIG_YUKON_POR_DEFECTO, pista: pistaYukon },
     { juego: canfield, config: CONFIG_CANFIELD_POR_DEFECTO, pista: pistaCanfield },
+    {
+      juego: cuarentaLadrones,
+      config: CONFIG_CUARENTA_LADRONES_POR_DEFECTO,
+      pista: pistaCuarentaLadrones,
+    },
   ] as unknown as {
     juego: Juego<unknown, unknown, { tipo: string }, unknown>;
     config: unknown;

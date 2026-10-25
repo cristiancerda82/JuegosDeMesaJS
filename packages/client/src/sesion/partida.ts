@@ -51,6 +51,10 @@ import {
   type ConfigTriPeaks,
   type AccionYukon,
   type AccionCanfield,
+  type AccionCuarentaLadrones,
+  type ConfigCuarentaLadrones,
+  type EstadoCuarentaLadrones,
+  type VistaCuarentaLadrones,
   type ConfigCanfield,
   type EstadoCanfield,
   type VistaCanfield,
@@ -178,6 +182,7 @@ import {
   DEF_TRIPEAKS,
   DEF_YUKON,
   DEF_CANFIELD,
+  DEF_CUARENTA_LADRONES,
   DEF_KLONDIKE,
   DEF_ESCOBA,
   DEF_TUTE,
@@ -235,6 +240,12 @@ export type SesionTuteSubastado = SesionMesa<
   EstadoTuteSubastado,
   AccionTuteSubastado,
   VistaTuteSubastado
+>;
+export type SesionCuarentaLadrones = SesionMesa<
+  ConfigCuarentaLadrones,
+  EstadoCuarentaLadrones,
+  AccionCuarentaLadrones,
+  VistaCuarentaLadrones
 >;
 export type SesionCanfield = SesionMesa<
   ConfigCanfield,
@@ -330,6 +341,7 @@ export type Partida =
   | { readonly id: 'tripeaks'; readonly sesion: SesionTriPeaks }
   | { readonly id: 'yukon'; readonly sesion: SesionYukon }
   | { readonly id: 'canfield'; readonly sesion: SesionCanfield }
+  | { readonly id: 'cuarentaLadrones'; readonly sesion: SesionCuarentaLadrones }
   | { readonly id: 'corazones'; readonly sesion: SesionCorazones }
   | { readonly id: 'burro'; readonly sesion: SesionBurro }
   | { readonly id: 'pinacle'; readonly sesion: SesionPinacle }
@@ -384,7 +396,8 @@ export type ConfigJuego =
   | ConfigGolf
   | ConfigTriPeaks
   | ConfigYukon
-  | ConfigCanfield;
+  | ConfigCanfield
+  | ConfigCuarentaLadrones;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -427,6 +440,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_YUKON);
     case 'canfield':
       return hacer(DEF_CANFIELD);
+    case 'cuarentaLadrones':
+      return hacer(DEF_CUARENTA_LADRONES);
     case 'corazones':
       return hacer(DEF_CORAZONES);
     case 'burro':

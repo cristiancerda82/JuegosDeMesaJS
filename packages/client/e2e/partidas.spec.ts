@@ -240,6 +240,7 @@ for (const juego of [
   'tripeaks',
   'yukon',
   'canfield',
+  'cuarentaLadrones',
   'corazones',
   'burro',
   'pinacle',

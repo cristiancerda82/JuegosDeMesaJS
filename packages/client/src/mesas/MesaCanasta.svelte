@@ -216,7 +216,7 @@
       </div>
       <div class="pila" class:robable={cogerPozo !== undefined} class:congelado={vista.congelado} data-testid="pozo">
         {#if arriba}
-          {#if vista.pozo.length > 1}<div class="debajo"><Carta id={basePinacle(vista.pozo.at(-2)!)} /></div>{/if}
+          {#if vista.pozo.length > 1}<div class="debajo" data-carta={vista.pozo.at(-2)}><Carta id={basePinacle(vista.pozo.at(-2)!)} /></div>{/if}
           <div class="arriba" data-carta={arriba}><Carta id={basePinacle(arriba)} /></div>
           <span class="cuenta" aria-hidden="true" data-testid="cartas-pozo">{vista.pozo.length}</span>
         {/if}

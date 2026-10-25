@@ -26,6 +26,7 @@
     ConfigTriPeaks,
     ConfigYukon,
     ConfigCanfield,
+    ConfigCuarentaLadrones,
     ConfigChinchon,
     ConfigCorazones,
     ConfigCinquillo,
@@ -76,6 +77,9 @@
   const tripeaksConfig: ConfigTriPeaks = JUEGOS.tripeaks.configPorDefecto;
   let yukonConfig: Editable<ConfigYukon> = $state({ ...JUEGOS.yukon.configPorDefecto });
   let canfieldConfig: Editable<ConfigCanfield> = $state({ ...JUEGOS.canfield.configPorDefecto });
+  let cuarentaLadronesConfig: Editable<ConfigCuarentaLadrones> = $state({
+    ...JUEGOS.cuarentaLadrones.configPorDefecto,
+  });
   let corazones: Editable<ConfigCorazones> = $state({ ...JUEGOS.corazones.configPorDefecto });
   let burro: Editable<ConfigBurro> = $state({ ...JUEGOS.burro.configPorDefecto });
   let pinacle: Editable<ConfigPinacle> = $state({ ...JUEGOS.pinacle.configPorDefecto });
@@ -130,6 +134,7 @@
       tripeaks: tripeaksConfig,
       yukon: yukonConfig,
       canfield: canfieldConfig,
+      cuarentaLadrones: cuarentaLadronesConfig,
       corazones,
       burro,
       pinacle,

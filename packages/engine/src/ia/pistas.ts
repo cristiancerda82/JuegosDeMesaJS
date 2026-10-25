@@ -12,6 +12,7 @@ import {
 } from '../juegos/tripeaks';
 import type { AccionYukon, VistaYukon } from '../juegos/yukon';
 import type { AccionCanfield, VistaCanfield } from '../juegos/canfield';
+import type { AccionCuarentaLadrones, VistaCuarentaLadrones } from '../juegos/cuarenta-ladrones';
 
 /**
  * Pistas de los solitarios (spec pistas-solitarios): puntúan los movimientos legales con reglas
@@ -338,6 +339,34 @@ export function pistaCanfield(
     mejor(acciones, (a) => puntosCanfield(vista, a)) ??
     acciones.find((a) => a.tipo === 'robar') ??
     acciones.find((a) => a.tipo === 'reciclar') ??
+    null
+  );
+}
+
+// ── Cuarenta ladrones ────────────────────────────────────────────────────────
+
+function puntosLadrones(v: VistaCuarentaLadrones, a: AccionCuarentaLadrones): number {
+  if (a.tipo !== 'mover') return 0;
+  if (a.hasta[0] === 'f') return 100;
+  const destino = v.columnas[indice(a.hasta)]!;
+  if (a.desde === 'descarte') return destino.length > 0 ? 60 : 15;
+  const origen = v.columnas[indice(a.desde)]!;
+  // Vaciar una columna deja sitio para cualquier carta.
+  if (a.cantidad === origen.length) return destino.length > 0 ? 50 : 0;
+  const destapada = origen[origen.length - a.cantidad - 1]!;
+  const fundaciones = v.fundaciones.map((f) => f.map(baseSpider));
+  if (subeAFundacion(baseSpider(destapada), fundaciones)) return destino.length > 0 ? 40 : 20;
+  return 0;
+}
+
+/** Pista de Cuarenta ladrones: un movimiento útil, o robar si no hay ninguno. */
+export function pistaCuarentaLadrones(
+  vista: VistaCuarentaLadrones,
+  acciones: readonly AccionCuarentaLadrones[],
+): AccionCuarentaLadrones | null {
+  return (
+    mejor(acciones, (a) => puntosLadrones(vista, a)) ??
+    acciones.find((a) => a.tipo === 'robar') ??
     null
   );
 }

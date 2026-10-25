@@ -37,6 +37,9 @@ export const T = {
     tripeaks: 'TriPeaks',
     yukon: 'Yukon',
     canfield: 'Canfield',
+    cuarentaLadrones: 'Cuarenta ladrones',
+    cuarentaLadronesDesc:
+      'Solitario de dos barajas: diez columnas por palo, ocho fundaciones y una sola vuelta al mazo.',
     canfieldDesc:
       'Solitario con reserva: las fundaciones empiezan por una carta al azar y dan la vuelta.',
     yukonDesc:
@@ -1444,6 +1447,7 @@ export const T = {
       tripeaks: 'Cómo se juega a TriPeaks',
       yukon: 'Cómo se juega al Yukon',
       canfield: 'Cómo se juega al Canfield',
+      cuarentaLadrones: 'Cómo se juega a Cuarenta ladrones',
       corazones: 'Cómo se juega a los Corazones',
       pocha: 'Cómo se juega a la Pocha',
       mus: 'Cómo se juega al Mus',
@@ -2376,6 +2380,43 @@ export const T = {
         texto: [
           'Cuenta tus matadores antes de pujar: con dos o tres y unos cuantos triunfos, ya puedes jugar con rey.',
           'Llama el rey del palo en que tienes menos cartas: tu compañero te ganará esas bazas.',
+        ],
+      },
+    ],
+
+    cuarentaLadrones: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con dos barajas francesas. Hay que subir las 104 cartas a las 8 fundaciones: dos por palo, del As a la K.',
+        ],
+      },
+      {
+        titulo: 'Las columnas',
+        texto: [
+          'Al empezar hay 10 columnas de 4 cartas, todas a la vista. Sobre cada carta va la de un número menos y del mismo palo: el 7 de picas sobre el 8 de picas.',
+          'En una columna vacía puede ir cualquier carta.',
+        ],
+      },
+      {
+        titulo: 'Mover',
+        texto: [
+          'Se mueve una carta cada vez: la última de una columna o la de arriba del descarte.',
+          'Para ahorrar pasos, puedes mover un grupo ordenado del mismo palo si podrías hacerlo carta a carta usando las columnas vacías: con una vacía, dos cartas; con dos, cuatro…',
+        ],
+      },
+      {
+        titulo: 'El mazo',
+        texto: [
+          'Toca el mazo para pasar una carta al descarte. El mazo solo se pasa una vez: cuando se acaba, no vuelve.',
+          'Haz doble toque en una carta para subirla a una fundación. Si te atascas, pide una pista o deshaz movimientos.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Las columnas vacías valen oro: no las llenes con cualquier cosa.',
+          'Antes de robar, mira si puedes mover algo: cada carta del mazo solo pasa una vez.',
         ],
       },
     ],

@@ -25,6 +25,7 @@ export * from './juegos/gin-rummy';
 export * from './juegos/rummy-500';
 export * from './juegos/culo';
 export * from './juegos/canasta';
+export * from './juegos/cuarenta-ladrones';
 export * from './juegos/holdem';
 export * from './juegos/truc';
 export * from './juegos/julepe';

@@ -561,7 +561,15 @@ test('Canasta en red: dos humanos roban y descartan', async ({ browser }) => {
     const carta = await primera.getAttribute('data-carta');
     await primera.click({ position: { x: 6, y: 6 } });
     await p.getByTestId('descartar').click();
-    await expect(otro.getByTestId('pozo').locator('.arriba')).toHaveAttribute('data-carta', carta!);
+    // La IA del asiento siguiente puede jugar enseguida: la carta queda arriba o justo debajo, o
+    // la IA se lleva el pozo.
+    await expect(
+      otro
+        .getByTestId('pozo')
+        .locator(`[data-carta="${carta}"]`)
+        .or(otro.getByTestId('aviso').filter({ hasText: 'se lleva el pozo' }))
+        .first(),
+    ).toBeVisible();
   }
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
