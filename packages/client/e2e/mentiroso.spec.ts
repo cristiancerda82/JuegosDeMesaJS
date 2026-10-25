@@ -44,7 +44,9 @@ test('bajar dos cartas y después desconfiar de un rival', async ({ page }) => {
 
   await bajar(page, 2);
   await expect(cartasMano(page)).toHaveCount(11);
-  await expect(page.getByTestId('ultima-bajada')).toHaveText('Tú: 2 Ases');
+  // En modo rápido el rival de la izquierda puede bajar enseguida: la última bajada que se ve es
+  // la nuestra o ya la suya.
+  await expect(page.getByTestId('ultima-bajada')).toHaveText(/^(Tú: 2 Ases|Rival \d+: .+)$/);
 
   // Cuando vuelve a tocar, el rival de la izquierda acaba de bajar: se le desconfía.
   await esperarTurno(page);

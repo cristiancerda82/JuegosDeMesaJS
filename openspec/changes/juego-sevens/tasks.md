@@ -22,4 +22,4 @@
 - [x] 4.1 E2E: abrir con el 7 de diamantes, alargar una escalera, pasar, el resumen de la mano y una partida completa contra la IA
 - [x] 4.2 E2E: 6 jugadores en 360 × 640 sin scroll horizontal, retomar una partida guardada y la guía en el recorrido de las guías
 - [x] 4.3 E2E: sala de Sevens en red con dos navegadores
-- [ ] 4.4 Ejecutar todos los tests (motor, servidor, cliente y E2E), la comprobación de tipos, el lint, el formato y `openspec validate --strict`
+- [x] 4.4 Ejecutar todos los tests (motor, servidor, cliente y E2E), la comprobación de tipos, el lint, el formato y `openspec validate --strict`
