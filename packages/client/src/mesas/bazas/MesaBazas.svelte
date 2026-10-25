@@ -149,7 +149,7 @@
 
   <div class="centro">
     {#if vista.mazo > 0 || vista.muestra !== null}
-      <MazoYMuestra mazo={vista.mazo} muestra={vista.muestra} />
+      <MazoYMuestra mazo={vista.mazo} muestra={vista.muestra} rotulo={vista.rotuloMuestra ?? null} />
     {/if}
     <Tapete
       jugadas={enMesa}

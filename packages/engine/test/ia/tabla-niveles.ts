@@ -25,6 +25,7 @@ import { CONFIG_RUMMY_500_POR_DEFECTO, rummy500 } from '../../src/juegos/rummy-5
 import { CONFIG_HOLDEM_POR_DEFECTO, holdem } from '../../src/juegos/holdem';
 import { CONFIG_CULO_POR_DEFECTO, culo } from '../../src/juegos/culo';
 import { canasta, CONFIG_CANASTA_POR_DEFECTO } from '../../src/juegos/canasta';
+import { CONFIG_WHIST_POR_DEFECTO, whist } from '../../src/juegos/whist';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -94,4 +95,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada("Texas Hold'em", holdem, CONFIG_HOLDEM_POR_DEFECTO, IAS.holdem, 4),
   entrada('Culo', culo, CONFIG_CULO_POR_DEFECTO, IAS.culo, 4),
   entrada('Canasta', canasta, CONFIG_CANASTA_POR_DEFECTO, IAS.canasta, 'bandos'),
+  entrada('Whist', whist, CONFIG_WHIST_POR_DEFECTO, IAS.whist, 'bandos'),
 ];

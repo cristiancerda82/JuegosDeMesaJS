@@ -91,6 +91,9 @@ export const T = {
     holdem: 'Texas Hold’em',
     culo: 'Culo',
     canasta: 'Canasta',
+    whist: 'Whist',
+    whistDesc:
+      'El clásico inglés de bazas por parejas: el triunfo lo marca la última carta y se juega al mejor de tres.',
     canastaDesc:
       'En parejas con dos barajas y comodines: haz canastas de siete, llévate el pozo y llega a 5.000.',
     culoDesc:
@@ -567,6 +570,27 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  whist: {
+    reparte: 'Reparte',
+    cartaTriunfo: 'Carta del triunfo',
+    bazasDe: (n: number) => (n === 1 ? '1 baza' : `${n} bazas`),
+    triunfo: (palo: string) =>
+      `Triunfo: ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[palo]}`,
+    bazasPareja: (lado: string, n: number) => `${lado}: ${n === 1 ? '1 baza' : `${n} bazas`}`,
+    puntos: (lado: string, puntos: number, juegos: number) =>
+      `${lado}: ${puntos} de 5 · ${juegos === 1 ? '1 juego' : `${juegos} juegos`}`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    parejaCol: 'Pareja',
+    bazasCol: 'Bazas',
+    manoCol: 'Mano',
+    juegoCol: 'Juego',
+    juegosCol: 'Juegos',
+    ganaJuego: (lado: string) => `${lado}: ¡ganáis un juego!`,
+    juegos: (n: number) => (n === 1 ? '1 juego' : `${n} juegos`),
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Juegos ganados',
   },
 
   canasta: {
@@ -1467,6 +1491,7 @@ export const T = {
       holdem: 'Cómo se juega al Texas Hold’em',
       culo: 'Cómo se juega al Culo',
       canasta: 'Cómo se juega a la Canasta',
+      whist: 'Cómo se juega al Whist',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -1971,6 +1996,43 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    whist: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Cuatro jugadores en dos parejas: tu compañero se sienta enfrente. Se juega con la baraja francesa de 52 cartas y se trata de hacer bazas.',
+          'La partida se juega al mejor de tres juegos, y cada juego se gana al llegar a 5 puntos.',
+        ],
+      },
+      {
+        titulo: 'El triunfo',
+        texto: [
+          'Cada jugador recibe 13 cartas. La última es para el repartidor y se enseña: su palo es el triunfo de la mano.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Sale el jugador a la izquierda del repartidor. Hay que seguir el palo de salida si se puede; si no, se juega cualquier carta.',
+          'Gana la baza el triunfo más alto o, si no hay triunfos, la carta más alta del palo de salida (el As es la más alta). Quien la gana sale en la siguiente.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'Al acabar la mano, la pareja que ha hecho más de 6 bazas suma 1 punto por cada baza de más: con 9 bazas, 3 puntos.',
+          'La primera pareja que llega a 5 gana el juego; los puntos que sobren se pierden y el juego siguiente empieza de 0.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Si tu compañero ya gana la baza, no se la quites: juega una carta baja.',
+          'Sal de tu palo más largo y guarda los triunfos para fallar las cartas buenas de los rivales.',
         ],
       },
     ],

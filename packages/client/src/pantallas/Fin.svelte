@@ -10,6 +10,7 @@
   import ResumenHoldem from '../mesas/ResumenHoldem.svelte';
   import ResumenCulo from '../mesas/ResumenCulo.svelte';
   import ResumenCanasta from '../mesas/ResumenCanasta.svelte';
+  import ResumenWhist from '../mesas/ResumenWhist.svelte';
   import ResumenRummy500 from '../mesas/ResumenRummy500.svelte';
   import ResumenGinRummy from '../mesas/ResumenGinRummy.svelte';
   import ResumenBlackjack from '../mesas/ResumenBlackjack.svelte';
@@ -268,6 +269,19 @@
               </td>
             </tr>
           {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'whist'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenWhist resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} />
+      {/if}
+      <table>
+        <caption>{T.whist.clasificacion}</caption>
+        <tbody>
+          <tr><th scope="row">{lados[0]}</th><td data-testid="juegos-fin-0">{T.whist.juegos(vista.juegos[mio])}</td></tr>
+          <tr><th scope="row">{lados[1]}</th><td data-testid="juegos-fin-1">{T.whist.juegos(vista.juegos[1 - mio]!)}</td></tr>
         </tbody>
       </table>
     {:else if partida.id === 'canasta'}

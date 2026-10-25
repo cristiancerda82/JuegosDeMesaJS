@@ -34,6 +34,9 @@ import { CONFIG_CULO_POR_DEFECTO, culo } from '../../src/juegos/culo';
 import { iaCanastaBasica } from '../../src/ia/canasta-basica';
 import { reconstruirCanasta } from '../../src/ia/reconstruir/canasta';
 import { canasta, CONFIG_CANASTA_POR_DEFECTO } from '../../src/juegos/canasta';
+import { iaWhistBasica } from '../../src/ia/whist-basica';
+import { reconstruirWhist } from '../../src/ia/reconstruir/whist';
+import { CONFIG_WHIST_POR_DEFECTO, whist } from '../../src/juegos/whist';
 import { reconstruirPicas } from '../../src/ia/reconstruir/picas';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
@@ -478,4 +481,24 @@ describirReconstruccion(canasta, reconstruirCanasta, {
   configs: [CONFIG_CANASTA_POR_DEFECTO],
   base: iaCanastaBasica,
   partidas: 4,
+});
+
+describirReconstruccion(whist, reconstruirWhist, {
+  configs: [CONFIG_WHIST_POR_DEFECTO],
+  base: iaWhistBasica,
+});
+
+describe('Reconstrucción del Whist', () => {
+  it('la carta del triunfo sigue en la mano del repartidor', () => {
+    const r = whist.crear(CONFIG_WHIST_POR_DEFECTO, 'triunfo');
+    if (!r.ok) throw new Error(r.error);
+    const e = r.valor;
+    const otro = (e.repartidor + 1) % 4;
+    const g = new Generador(crearAzar('w'));
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirWhist(whist.vistaDe(e, otro), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.manos[e.repartidor]).toContain(e.cartaTriunfo);
+    }
+  });
 });

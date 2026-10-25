@@ -35,6 +35,12 @@ import {
   CONFIG_CANASTA_POR_DEFECTO,
   canasta,
   type AccionCanasta,
+  CONFIG_WHIST_POR_DEFECTO,
+  whist,
+  type AccionWhist,
+  type ConfigWhist,
+  type EstadoWhist,
+  type VistaWhist,
   type ConfigCanasta,
   type EstadoCanasta,
   type VistaCanasta,
@@ -295,7 +301,8 @@ export type IdJuego =
   | 'rummy500'
   | 'holdem'
   | 'culo'
-  | 'canasta';
+  | 'canasta'
+  | 'whist';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -334,6 +341,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'holdem',
   'culo',
   'canasta',
+  'whist',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1020,6 +1028,21 @@ export const DEF_CANASTA: DefCanasta = {
   },
 };
 
+export type DefWhist = DefJuego<ConfigWhist, EstadoWhist, AccionWhist, VistaWhist>;
+
+export const DEF_WHIST: DefWhist = {
+  id: 'whist',
+  nombre: T.menu.whist,
+  juego: whist,
+  configPorDefecto: CONFIG_WHIST_POR_DEFECTO,
+  ia: IAS.whist,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1057,6 +1080,7 @@ export const JUEGOS = {
   holdem: DEF_HOLDEM,
   culo: DEF_CULO,
   canasta: DEF_CANASTA,
+  whist: DEF_WHIST,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

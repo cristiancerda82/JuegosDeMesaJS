@@ -18,6 +18,10 @@ import {
   type AccionHoldem,
   type AccionCulo,
   type AccionCanasta,
+  type AccionWhist,
+  type ConfigWhist,
+  type EstadoWhist,
+  type VistaWhist,
   type ConfigCanasta,
   type EstadoCanasta,
   type VistaCanasta,
@@ -176,6 +180,7 @@ import {
   DEF_HOLDEM,
   DEF_CULO,
   DEF_CANASTA,
+  DEF_WHIST,
   DEF_SPIDER,
   DEF_PIRAMIDE,
   DEF_GOLF,
@@ -267,6 +272,7 @@ export type SesionPiramide = SesionMesa<
   AccionPiramide,
   VistaPiramide
 >;
+export type SesionWhist = SesionMesa<ConfigWhist, EstadoWhist, AccionWhist, VistaWhist>;
 export type SesionCanasta = SesionMesa<ConfigCanasta, EstadoCanasta, AccionCanasta, VistaCanasta>;
 export type SesionCulo = SesionMesa<ConfigCulo, EstadoCulo, AccionCulo, VistaCulo>;
 export type SesionHoldem = SesionMesa<ConfigHoldem, EstadoHoldem, AccionHoldem, VistaHoldem>;
@@ -359,7 +365,8 @@ export type Partida =
   | { readonly id: 'rummy500'; readonly sesion: SesionRummy500 }
   | { readonly id: 'holdem'; readonly sesion: SesionHoldem }
   | { readonly id: 'culo'; readonly sesion: SesionCulo }
-  | { readonly id: 'canasta'; readonly sesion: SesionCanasta };
+  | { readonly id: 'canasta'; readonly sesion: SesionCanasta }
+  | { readonly id: 'whist'; readonly sesion: SesionWhist };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -392,6 +399,7 @@ export type ConfigJuego =
   | ConfigHoldem
   | ConfigCulo
   | ConfigCanasta
+  | ConfigWhist
   | ConfigPiramide
   | ConfigGolf
   | ConfigTriPeaks
@@ -478,6 +486,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_CULO);
     case 'canasta':
       return hacer(DEF_CANASTA);
+    case 'whist':
+      return hacer(DEF_WHIST);
   }
 }
 

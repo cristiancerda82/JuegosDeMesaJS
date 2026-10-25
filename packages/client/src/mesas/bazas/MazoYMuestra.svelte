@@ -7,9 +7,11 @@
     /** Cartas boca abajo (sin contar la muestra). */
     mazo: number;
     muestra: IdCarta | null;
+    /** Texto bajo la muestra en vez de la cuenta del mazo (el Whist no tiene mazo). */
+    rotulo?: string | null;
   }
 
-  let { mazo, muestra }: Props = $props();
+  let { mazo, muestra, rotulo = null }: Props = $props();
 </script>
 
 <div class="mazo" data-zona="mazo">
@@ -22,7 +24,7 @@
     <div class="monton"><Carta /></div>
   {/if}
   <span class="cuenta" data-testid="cartas-mazo">
-    {T.brisca.enMazo(mazo + (muestra === null ? 0 : 1))}
+    {rotulo ?? T.brisca.enMazo(mazo + (muestra === null ? 0 : 1))}
   </span>
 </div>
 

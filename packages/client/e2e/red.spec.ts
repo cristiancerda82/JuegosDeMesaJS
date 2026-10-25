@@ -541,6 +541,35 @@ test('Rummy 500 en red: dos humanos roban y descartan', async ({ browser }) => {
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Whist en red: dos humanos juegan en la misma baza', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'whist');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(13);
+  await expect(luis.getByTestId('triunfo')).toHaveText(
+    await ana.getByTestId('triunfo').innerText(),
+  );
+
+  // Sale Ana (asiento 0) y después juega Luis (asiento 1); cada uno ve la carta del otro.
+  for (const [p, otro] of [
+    [ana, luis],
+    [luis, ana],
+  ] as const) {
+    const carta = p.locator('[data-testid="mano"] .carta-mano.jugable').first();
+    await carta.waitFor({ timeout: 30_000 });
+    const id = await carta.getAttribute('data-carta');
+    // La esquina de la carta queda a la vista aunque las cartas se solapen.
+    await carta.click({ position: { x: 8, y: 8 } });
+    await p.getByTestId('mesa').click();
+    await expect(otro.getByTestId('mesa').locator(`[data-carta="${id}"]`)).toBeVisible();
+  }
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Canasta en red: dos humanos roban y descartan', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

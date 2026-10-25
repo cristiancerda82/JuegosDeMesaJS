@@ -21,6 +21,7 @@
     ConfigHoldem,
     ConfigCulo,
     ConfigCanasta,
+    ConfigWhist,
     ConfigPiramide,
     ConfigGolf,
     ConfigTriPeaks,
@@ -97,6 +98,7 @@
   let holdemConfig: Editable<ConfigHoldem> = $state({ ...JUEGOS.holdem.configPorDefecto });
   let culoConfig: Editable<ConfigCulo> = $state({ ...JUEGOS.culo.configPorDefecto });
   let canastaConfig: Editable<ConfigCanasta> = $state({ ...JUEGOS.canasta.configPorDefecto });
+  let whistConfig: Editable<ConfigWhist> = $state({ ...JUEGOS.whist.configPorDefecto });
   let subastado: Editable<ConfigTuteSubastado> = $state({
     ...JUEGOS.tuteSubastado.configPorDefecto,
   });
@@ -153,6 +155,7 @@
       holdem: holdemConfig,
       culo: culoConfig,
       canasta: canastaConfig,
+      whist: whistConfig,
     };
     if (conIA) guardarNivel(juego, nivel);
     empezar({ ...configs[juego] }, nivel);

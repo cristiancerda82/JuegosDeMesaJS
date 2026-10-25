@@ -78,6 +78,8 @@ export interface VistaBazas {
   readonly cartasEnMano: readonly number[];
   readonly mazo: number;
   readonly muestra: IdCarta | null;
+  /** Texto bajo la muestra en vez de la cuenta del mazo; por defecto, la cuenta. */
+  readonly rotuloMuestra?: string | null;
   readonly mesa: readonly CartaJugada[];
   readonly turno: Asiento | null;
   readonly bazas: readonly number[];
