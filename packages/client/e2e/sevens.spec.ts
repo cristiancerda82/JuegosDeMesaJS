@@ -55,7 +55,8 @@ test('alargar una escalera y pasar cuando no hay jugada', async ({ page }) => {
     if (await page.getByTestId('panel-mano').isVisible()) break;
     if (await page.getByTestId('paso').isVisible()) {
       await page.getByTestId('paso').click();
-      await expect(page.getByTestId('aviso')).toContainText('Pasas');
+      // En modo rápido el aviso de un rival puede pisar enseguida el «Pasas».
+      await expect(page.getByTestId('aviso')).toHaveText(/^(Pasas|Rival \d+ .+)/);
       pasado = true;
       continue;
     }

@@ -18,4 +18,4 @@
 
 - [x] 4.1 E2E: mover una carta con las de encima, un movimiento rechazado, la K a una columna vacía, repartir la reserva, deshacer, abandonar, y ganar una partida jugando desde la UI
 - [x] 4.2 E2E: la mesa en 360 × 640 sin scroll horizontal, retomar una partida guardada y la guía en el recorrido de las guías
-- [ ] 4.3 Ejecutar todos los tests (motor, servidor, cliente y E2E), la comprobación de tipos, el lint, el formato y `openspec validate --strict`
+- [x] 4.3 Ejecutar todos los tests (motor, servidor, cliente y E2E), la comprobación de tipos, el lint, el formato y `openspec validate --strict`
