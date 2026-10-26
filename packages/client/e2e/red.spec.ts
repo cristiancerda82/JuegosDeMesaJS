@@ -606,6 +606,32 @@ test('Casino en red: dos humanos ven la misma mesa', async ({ browser }) => {
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Durak en red: el ataque de uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'durak');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(6);
+  await expect(luis.getByTestId('triunfo')).toHaveText(
+    await ana.getByTestId('triunfo').innerText(),
+  );
+
+  // Ataca quien tiene el triunfo más bajo; el otro ve su carta en la mesa.
+  const ataca = (await ana.locator('.carta-mano.jugable').first().isVisible()) ? ana : luis;
+  const otro = ataca === ana ? luis : ana;
+  const carta = ataca.locator('[data-testid="mano"] .carta-mano.jugable').first();
+  await carta.waitFor({ timeout: 30_000 });
+  const id = await carta.getAttribute('data-carta');
+  await carta.click({ position: { x: 6, y: 8 } });
+  await ataca.getByTestId('mesa').click();
+  await expect(otro.getByTestId('par-0').locator(`[data-carta="${id}"]`)).toBeVisible();
+  await expect(otro.getByTestId('tomar')).toBeVisible();
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Whist en red: dos humanos juegan en la misma baza', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

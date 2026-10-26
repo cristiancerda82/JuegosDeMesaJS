@@ -84,6 +84,7 @@
       partida.id !== 'cinquillo' &&
       partida.id !== 'sevens' &&
       partida.id !== 'casino' &&
+      partida.id !== 'durak' &&
       partida.id !== 'pocha' &&
       partida.id !== 'mus' &&
       partida.id !== 'corazones' &&
@@ -292,6 +293,23 @@
             <tr>
               <th scope="row">{nombreChinchon(a, n)}</th>
               <td data-testid="total-{a}">{vista.totales[a]}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'durak'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      <p class="durak" data-testid="quien-durak">
+        {vista.durak === null ? T.durak.sinDurak : T.durak.esDurak(nombreChinchon(vista.durak, n))}
+      </p>
+      <table>
+        <caption>{T.durak.ordenSalida}</caption>
+        <tbody>
+          {#each vista.salidos as a, i (a)}
+            <tr>
+              <th scope="row">{i + 1}.º</th>
+              <td data-testid="salida-{i}">{nombreChinchon(a, n)}</td>
             </tr>
           {/each}
         </tbody>

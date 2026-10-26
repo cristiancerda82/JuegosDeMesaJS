@@ -43,6 +43,9 @@ import { CONFIG_SEVENS_POR_DEFECTO, sevens } from '../../src/juegos/sevens';
 import { iaCasinoBasica } from '../../src/ia/casino-basica';
 import { reconstruirCasino } from '../../src/ia/reconstruir/casino';
 import { casino, CONFIG_CASINO_POR_DEFECTO, type EstadoCasino } from '../../src/juegos/casino';
+import { iaDurakBasica } from '../../src/ia/durak-basica';
+import { reconstruirDurak } from '../../src/ia/reconstruir/durak';
+import { CONFIG_DURAK_POR_DEFECTO, durak } from '../../src/juegos/durak';
 import { reconstruirPicas } from '../../src/ia/reconstruir/picas';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
@@ -549,6 +552,30 @@ describe('Reconstrucción del Casino', () => {
       const rec = reconstruirCasino(casino.vistaDe(e, 0), g.estado());
       g.enteroHasta(1000);
       expect(rec.manos[1]!.some((c) => c.endsWith('-8'))).toBe(true);
+    }
+  });
+});
+
+describirReconstruccion(durak, reconstruirDurak, {
+  configs: [CONFIG_DURAK_POR_DEFECTO, { jugadores: 3 }, { jugadores: 6 }],
+  base: iaDurakBasica,
+});
+
+describe('Reconstrucción del Durak', () => {
+  it('las cartas que se llevó un rival siguen en su mano', () => {
+    const r = durak.crear(CONFIG_DURAK_POR_DEFECTO, 'tomar');
+    if (!r.ok) throw new Error(r.error);
+    let e = r.valor;
+    const atacante = e.atacante;
+    const carta = e.manos[atacante]![0]!;
+    e = durak.transicion(e, atacante, { tipo: 'atacar', carta });
+    e = durak.transicion(e, e.defensor, { tipo: 'tomar' });
+    const g = new Generador(crearAzar('d'));
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirDurak(durak.vistaDe(e, atacante), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.manos[1 - atacante]).toContain(carta);
+      expect(rec.mazo.at(-1)).toBe(e.cartaTriunfo);
     }
   });
 });

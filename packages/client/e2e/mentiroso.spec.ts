@@ -21,7 +21,7 @@ async function bajar(page: Page, n: number) {
           .click({ position: { x: 6, y: 6 } });
       }
       await expect(page.getByTestId('bajar')).toHaveText(`Bajar ${i + 1}`, { timeout: 1_000 });
-    }).toPass();
+    }).toPass({ timeout: 10_000 });
   }
   await page.getByTestId('bajar').click();
 }
@@ -74,7 +74,9 @@ test('partida de Mentiroso completa contra la IA', async ({ page }) => {
       await page.getByTestId('creer').click();
       continue;
     }
-    await bajar(page, 1);
+    // Si justo entonces un rival se queda sin cartas, sale la pregunta de si se le cree y ya no
+    // se puede bajar: se vuelve a mirar qué toca.
+    await bajar(page, 1).catch(() => {});
   }
   await expect(fin).toBeVisible();
   await expect(fin.getByTestId('sin-cartas')).toBeVisible();

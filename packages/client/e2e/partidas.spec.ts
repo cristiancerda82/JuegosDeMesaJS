@@ -263,6 +263,7 @@ for (const juego of [
   'whist',
   'sevens',
   'casino',
+  'durak',
 ] as const) {
   test(`la guía de ${juego} se abre desde las opciones y desde la partida`, async ({ page }) => {
     // Semilla fija: con alguna al azar, la primera mano de la Siete y media termina sola y su

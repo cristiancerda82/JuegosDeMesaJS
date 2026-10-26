@@ -27,6 +27,10 @@ import {
   type ConfigCasino,
   type EstadoCasino,
   type VistaCasino,
+  type AccionDurak,
+  type ConfigDurak,
+  type EstadoDurak,
+  type VistaDurak,
   type ConfigWhist,
   type EstadoWhist,
   type VistaWhist,
@@ -195,6 +199,7 @@ import {
   DEF_WHIST,
   DEF_SEVENS,
   DEF_CASINO,
+  DEF_DURAK,
   DEF_SPIDER,
   DEF_PIRAMIDE,
   DEF_GOLF,
@@ -293,6 +298,7 @@ export type SesionPiramide = SesionMesa<
   AccionPiramide,
   VistaPiramide
 >;
+export type SesionDurak = SesionMesa<ConfigDurak, EstadoDurak, AccionDurak, VistaDurak>;
 export type SesionCasino = SesionMesa<ConfigCasino, EstadoCasino, AccionCasino, VistaCasino>;
 export type SesionSevens = SesionMesa<ConfigSevens, EstadoSevens, AccionSevens, VistaSevens>;
 export type SesionWhist = SesionMesa<ConfigWhist, EstadoWhist, AccionWhist, VistaWhist>;
@@ -392,7 +398,8 @@ export type Partida =
   | { readonly id: 'canasta'; readonly sesion: SesionCanasta }
   | { readonly id: 'whist'; readonly sesion: SesionWhist }
   | { readonly id: 'sevens'; readonly sesion: SesionSevens }
-  | { readonly id: 'casino'; readonly sesion: SesionCasino };
+  | { readonly id: 'casino'; readonly sesion: SesionCasino }
+  | { readonly id: 'durak'; readonly sesion: SesionDurak };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -434,7 +441,8 @@ export type ConfigJuego =
   | ConfigCanfield
   | ConfigCuarentaLadrones
   | ConfigScorpion
-  | ConfigCasino;
+  | ConfigCasino
+  | ConfigDurak;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -523,6 +531,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_SEVENS);
     case 'casino':
       return hacer(DEF_CASINO);
+    case 'durak':
+      return hacer(DEF_DURAK);
   }
 }
 

@@ -19,6 +19,7 @@
   import MesaWhist from '../mesas/MesaWhist.svelte';
   import MesaSevens from '../mesas/MesaSevens.svelte';
   import MesaCasino from '../mesas/MesaCasino.svelte';
+  import MesaDurak from '../mesas/MesaDurak.svelte';
   import MesaRemigio from '../mesas/MesaRemigio.svelte';
   import MesaChinchon from '../mesas/MesaChinchon.svelte';
   import MesaCinquillo from '../mesas/MesaCinquillo.svelte';
@@ -118,6 +119,8 @@
     <MesaSevens sesion={partida.sesion} />
   {:else if partida.id === 'casino'}
     <MesaCasino sesion={partida.sesion} />
+  {:else if partida.id === 'durak'}
+    <MesaDurak sesion={partida.sesion} />
   {:else if partida.id === 'whist'}
     <MesaWhist sesion={partida.sesion} />
   {:else if partida.id === 'canasta'}

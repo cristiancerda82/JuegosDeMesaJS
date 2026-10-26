@@ -24,6 +24,7 @@
     ConfigWhist,
     ConfigSevens,
     ConfigCasino,
+    ConfigDurak,
     ConfigPiramide,
     ConfigGolf,
     ConfigTriPeaks,
@@ -105,6 +106,7 @@
   let whistConfig: Editable<ConfigWhist> = $state({ ...JUEGOS.whist.configPorDefecto });
   let sevensConfig: Editable<ConfigSevens> = $state({ ...JUEGOS.sevens.configPorDefecto });
   let casinoConfig: Editable<ConfigCasino> = $state({ ...JUEGOS.casino.configPorDefecto });
+  let durakConfig: Editable<ConfigDurak> = $state({ ...JUEGOS.durak.configPorDefecto });
   let subastado: Editable<ConfigTuteSubastado> = $state({
     ...JUEGOS.tuteSubastado.configPorDefecto,
   });
@@ -164,6 +166,7 @@
       canasta: canastaConfig,
       whist: whistConfig,
       sevens: sevensConfig,
+      durak: durakConfig,
       // Las parejas, solo con 4 jugadores.
       casino: { ...casinoConfig, parejas: casinoConfig.jugadores === 4 && casinoConfig.parejas },
     };
@@ -310,6 +313,13 @@
         <legend>{T.opciones.jugadores}</legend>
         {#each [2, 3, 4, 5] as const as n (n)}
           <label><input type="radio" bind:group={remigioConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
+        {/each}
+      </fieldset>
+    {:else if juego === 'durak'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [2, 3, 4, 5, 6] as const as n (n)}
+          <label><input type="radio" bind:group={durakConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
         {/each}
       </fieldset>
     {:else if juego === 'casino'}

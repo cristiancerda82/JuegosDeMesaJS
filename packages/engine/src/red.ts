@@ -33,6 +33,7 @@ import { canasta, CONFIG_CANASTA_POR_DEFECTO } from './juegos/canasta';
 import { CONFIG_WHIST_POR_DEFECTO, whist } from './juegos/whist';
 import { CONFIG_SEVENS_POR_DEFECTO, sevens } from './juegos/sevens';
 import { casino, CONFIG_CASINO_POR_DEFECTO } from './juegos/casino';
+import { CONFIG_DURAK_POR_DEFECTO, durak } from './juegos/durak';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -70,6 +71,7 @@ export const IDS_JUEGOS_EN_RED = [
   'whist',
   'sevens',
   'casino',
+  'durak',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -132,6 +134,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   whist: entrada(whist, IAS.whist, CONFIG_WHIST_POR_DEFECTO),
   sevens: entrada(sevens, IAS.sevens, CONFIG_SEVENS_POR_DEFECTO),
   casino: entrada(casino, IAS.casino, CONFIG_CASINO_POR_DEFECTO),
+  durak: entrada(durak, IAS.durak, CONFIG_DURAK_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

@@ -97,6 +97,9 @@ export const T = {
     whist: 'Whist',
     sevens: 'Sevens',
     casino: 'Casino',
+    durak: 'Durak',
+    durakDesc:
+      'El clásico ruso de atacar y defender, de 2 a 6: el último que se queda con cartas es el tonto.',
     casinoDesc:
       'Recoge por número y por suma, construye montones y llévate el 10♦ y el 2♠: partida a 21.',
     sevensDesc:
@@ -580,6 +583,33 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  durak: {
+    mesa: 'Mesa',
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    ataca: 'Ataca',
+    defiende: 'Defiende',
+    salido: 'Ha salido',
+    triunfo: (palo: string) =>
+      `Triunfo: ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[palo]}`,
+    enMazo: (n: number) => (n === 1 ? 'Queda 1 carta en el mazo' : `Quedan ${n} cartas en el mazo`),
+    descarte: (n: number) => `Descarte: ${n}`,
+    tomar: 'Me las llevo',
+    paso: 'Paso',
+    tuAtaque: 'Atacas: juega una carta',
+    tuDefensa: 'Defiendes: gana la carta o llévatelas',
+    echar: 'Puedes echar otra carta del mismo número',
+    hasSalido: '¡Has salido! Ya estás a salvo',
+    ataque: (quien: string, carta: string) =>
+      quien === 'Tú' ? `Atacas con ${carta}` : `${quien} ataca con ${carta}`,
+    defensa: (quien: string, carta: string) =>
+      quien === 'Tú' ? `Ganas con ${carta}` : `${quien} gana con ${carta}`,
+    seLasLleva: (quien: string) => (quien === 'Tú' ? 'Te las llevas' : `${quien} se las lleva`),
+    pasa: (quien: string) => (quien === 'Tú' ? 'Pasas' : `${quien} pasa`),
+    esDurak: (quien: string) => (quien === 'Tú' ? '¡Eres el durak!' : `${quien} es el durak`),
+    sinDurak: 'Empate: nadie es el durak',
+    ordenSalida: 'Orden de salida',
   },
 
   casino: {
@@ -1565,6 +1595,7 @@ export const T = {
       whist: 'Cómo se juega al Whist',
       sevens: 'Cómo se juega al Sevens',
       casino: 'Cómo se juega al Casino',
+      durak: 'Cómo se juega al Durak',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2069,6 +2100,37 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    durak: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'De 2 a 6 jugadores, cada uno por su cuenta, con una baraja francesa de 36 cartas: del 6 al As, y el As es la más alta. Hay que quedarse sin cartas: el último que se queda con ellas es el durak, el tonto, y pierde.',
+          'Cada uno recibe 6 cartas. La última del mazo se pone boca arriba debajo de él y marca el triunfo.',
+        ],
+      },
+      {
+        titulo: 'Atacar y defender',
+        texto: [
+          'Empieza quien tiene el triunfo más bajo, atacando al de su izquierda con una carta cualquiera. El defensor tiene que ganarla con una más alta del mismo palo o con un triunfo, o llevarse las cartas de la mesa.',
+          'Cuando ha ganado todo lo que hay, los demás pueden echar más cartas de un número que ya esté en la mesa, empezando por el atacante. Como mucho hay 6 ataques por ronda.',
+        ],
+      },
+      {
+        titulo: 'Fin de la ronda',
+        texto: [
+          'Si el defensor lo gana todo, las cartas van al descarte y él ataca después. Si se las lleva, pierde su turno de atacar.',
+          'Después todos roban hasta tener 6, el defensor el último. Con el mazo vacío, quien se queda sin cartas sale y ya está a salvo.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Guarda los triunfos para el final: con el mazo vacío deciden la partida.',
+          'Ataca con números que tengas repetidos, para echar después la pareja. A veces conviene llevarse cartas bajas al principio en vez de gastar un triunfo alto.',
         ],
       },
     ],

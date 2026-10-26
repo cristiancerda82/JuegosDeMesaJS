@@ -42,6 +42,12 @@ import {
   sevens,
   CONFIG_CASINO_POR_DEFECTO,
   casino,
+  CONFIG_DURAK_POR_DEFECTO,
+  durak,
+  type AccionDurak,
+  type ConfigDurak,
+  type EstadoDurak,
+  type VistaDurak,
   type AccionCasino,
   type ConfigCasino,
   type EstadoCasino,
@@ -324,7 +330,8 @@ export type IdJuego =
   | 'canasta'
   | 'whist'
   | 'sevens'
-  | 'casino';
+  | 'casino'
+  | 'durak';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -367,6 +374,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'whist',
   'sevens',
   'casino',
+  'durak',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1115,6 +1123,25 @@ export const DEF_CASINO: DefCasino = {
   },
 };
 
+export type DefDurak = DefJuego<ConfigDurak, EstadoDurak, AccionDurak, VistaDurak>;
+
+/** Tiempo para ver cómo se cierra una ronda (al descarte o a la mano del defensor). */
+const PAUSA_RONDA_DURAK_MS = 1000;
+
+export const DEF_DURAK: DefDurak = {
+  id: 'durak',
+  nombre: T.menu.durak,
+  juego: durak,
+  configPorDefecto: CONFIG_DURAK_POR_DEFECTO,
+  ia: IAS.durak,
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    if (antes.mesa.length > 0 && despues.mesa.length === 0) return PAUSA_RONDA_DURAK_MS;
+    return accion.asiento !== despues.asiento ? PAUSA_RIVAL_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1156,6 +1183,7 @@ export const JUEGOS = {
   whist: DEF_WHIST,
   sevens: DEF_SEVENS,
   casino: DEF_CASINO,
+  durak: DEF_DURAK,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */
