@@ -40,6 +40,9 @@ import { CONFIG_WHIST_POR_DEFECTO, whist } from '../../src/juegos/whist';
 import { iaSevensBasica } from '../../src/ia/sevens-basica';
 import { reconstruirSevens } from '../../src/ia/reconstruir/sevens';
 import { CONFIG_SEVENS_POR_DEFECTO, sevens } from '../../src/juegos/sevens';
+import { iaCasinoBasica } from '../../src/ia/casino-basica';
+import { reconstruirCasino } from '../../src/ia/reconstruir/casino';
+import { casino, CONFIG_CASINO_POR_DEFECTO, type EstadoCasino } from '../../src/juegos/casino';
 import { reconstruirPicas } from '../../src/ia/reconstruir/picas';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
@@ -509,4 +512,43 @@ describe('Reconstrucción del Whist', () => {
 describirReconstruccion(sevens, reconstruirSevens, {
   configs: [CONFIG_SEVENS_POR_DEFECTO, { jugadores: 3 }, { jugadores: 6 }],
   base: iaSevensBasica,
+});
+
+describirReconstruccion(casino, reconstruirCasino, {
+  configs: [
+    CONFIG_CASINO_POR_DEFECTO,
+    { jugadores: 3, parejas: false },
+    { jugadores: 4, parejas: true },
+  ],
+  base: iaCasinoBasica,
+});
+
+describe('Reconstrucción del Casino', () => {
+  it('el dueño de una construcción ajena tiene una carta de su valor', () => {
+    const r = casino.crear(CONFIG_CASINO_POR_DEFECTO, 'construccion');
+    if (!r.ok) throw new Error(r.error);
+    const e: EstadoCasino = {
+      ...r.valor,
+      mesa: [
+        {
+          tipo: 'construccion',
+          id: 1,
+          valor: 8,
+          cartas: ['picas-5', 'picas-3'],
+          duenio: 1,
+          multiple: false,
+        },
+      ],
+      manos: [
+        r.valor.manos[0]!.filter((c) => !c.endsWith('-8')),
+        ['treboles-8', 'corazones-2', 'corazones-3'],
+      ],
+    };
+    const g = new Generador(crearAzar('c'));
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirCasino(casino.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.manos[1]!.some((c) => c.endsWith('-8'))).toBe(true);
+    }
+  });
 });

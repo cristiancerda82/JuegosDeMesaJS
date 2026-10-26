@@ -40,6 +40,12 @@ import {
   type AccionWhist,
   CONFIG_SEVENS_POR_DEFECTO,
   sevens,
+  CONFIG_CASINO_POR_DEFECTO,
+  casino,
+  type AccionCasino,
+  type ConfigCasino,
+  type EstadoCasino,
+  type VistaCasino,
   type AccionSevens,
   type ConfigSevens,
   type EstadoSevens,
@@ -317,7 +323,8 @@ export type IdJuego =
   | 'culo'
   | 'canasta'
   | 'whist'
-  | 'sevens';
+  | 'sevens'
+  | 'casino';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -359,6 +366,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'canasta',
   'whist',
   'sevens',
+  'casino',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1088,6 +1096,25 @@ export const DEF_SEVENS: DefSevens = {
   },
 };
 
+export type DefCasino = DefJuego<ConfigCasino, EstadoCasino, AccionCasino, VistaCasino>;
+
+export const DEF_CASINO: DefCasino = {
+  id: 'casino',
+  nombre: T.menu.casino,
+  juego: casino,
+  configPorDefecto: CONFIG_CASINO_POR_DEFECTO,
+  ia: IAS.casino,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada jugada de un rival.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion || accion.asiento === despues.asiento) {
+      return 0;
+    }
+    if (accion.barrida) return PAUSA_ESCOBA_MS;
+    return accion.accion.tipo === 'recoger' ? PAUSA_JUGADA_MS : PAUSA_RIVAL_MS;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1128,6 +1155,7 @@ export const JUEGOS = {
   canasta: DEF_CANASTA,
   whist: DEF_WHIST,
   sevens: DEF_SEVENS,
+  casino: DEF_CASINO,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

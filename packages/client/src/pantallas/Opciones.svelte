@@ -23,6 +23,7 @@
     ConfigCanasta,
     ConfigWhist,
     ConfigSevens,
+    ConfigCasino,
     ConfigPiramide,
     ConfigGolf,
     ConfigTriPeaks,
@@ -103,6 +104,7 @@
   let canastaConfig: Editable<ConfigCanasta> = $state({ ...JUEGOS.canasta.configPorDefecto });
   let whistConfig: Editable<ConfigWhist> = $state({ ...JUEGOS.whist.configPorDefecto });
   let sevensConfig: Editable<ConfigSevens> = $state({ ...JUEGOS.sevens.configPorDefecto });
+  let casinoConfig: Editable<ConfigCasino> = $state({ ...JUEGOS.casino.configPorDefecto });
   let subastado: Editable<ConfigTuteSubastado> = $state({
     ...JUEGOS.tuteSubastado.configPorDefecto,
   });
@@ -162,6 +164,8 @@
       canasta: canastaConfig,
       whist: whistConfig,
       sevens: sevensConfig,
+      // Las parejas, solo con 4 jugadores.
+      casino: { ...casinoConfig, parejas: casinoConfig.jugadores === 4 && casinoConfig.parejas },
     };
     if (conIA) guardarNivel(juego, nivel);
     empezar({ ...configs[juego] }, nivel);
@@ -307,6 +311,16 @@
         {#each [2, 3, 4, 5] as const as n (n)}
           <label><input type="radio" bind:group={remigioConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
         {/each}
+      </fieldset>
+    {:else if juego === 'casino'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [2, 3, 4] as const as n (n)}
+          <label><input type="radio" bind:group={casinoConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
+        {/each}
+        {#if casinoConfig.jugadores === 4}
+          <label><input type="checkbox" bind:checked={casinoConfig.parejas} data-testid="parejas" /> {T.opciones.enParejas}</label>
+        {/if}
       </fieldset>
     {:else if juego === 'sevens'}
       <fieldset>

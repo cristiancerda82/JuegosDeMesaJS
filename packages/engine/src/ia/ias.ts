@@ -35,6 +35,7 @@ import { SIMULABLE_CULO } from './reconstruir/culo';
 import { SIMULABLE_CANASTA } from './reconstruir/canasta';
 import { SIMULABLE_WHIST } from './reconstruir/whist';
 import { SIMULABLE_SEVENS } from './reconstruir/sevens';
+import { SIMULABLE_CASINO } from './reconstruir/casino';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -52,6 +53,7 @@ import { iaCuloBasica } from './culo-basica';
 import { iaCanastaBasica } from './canasta-basica';
 import { iaWhistBasica } from './whist-basica';
 import { iaSevensBasica } from './sevens-basica';
+import { iaCasinoBasica } from './casino-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -139,4 +141,5 @@ export const IAS = {
   canasta: niveles(iaCanastaBasica, SIMULABLE_CANASTA),
   whist: niveles(iaWhistBasica, SIMULABLE_WHIST),
   sevens: niveles(iaSevensBasica, SIMULABLE_SEVENS),
+  casino: niveles(iaCasinoBasica, SIMULABLE_CASINO),
 } as const;

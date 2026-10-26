@@ -576,6 +576,36 @@ test('Sevens en red: dos humanos ven las mismas escaleras', async ({ browser }) 
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Casino en red: dos humanos ven la misma mesa', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'casino');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(4);
+  const mesa = (p: Page) =>
+    p
+      .getByTestId('mesa')
+      .locator('[data-carta]')
+      .evaluateAll((els) => els.map((el) => el.getAttribute('data-carta')).sort());
+
+  // Juega Ana (asiento 0) y después Luis (asiento 1): la primera jugada de su primera carta.
+  for (const [p, otro] of [
+    [ana, luis],
+    [luis, ana],
+  ] as const) {
+    const carta = p.locator('[data-testid="mano"] .carta-mano.jugable').first();
+    await carta.waitFor({ timeout: 30_000 });
+    await carta.click({ position: { x: 6, y: 8 } });
+    await p.getByTestId('jugada-0').click();
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(3);
+    await expect.poll(() => mesa(otro)).toEqual(await mesa(p));
+  }
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Whist en red: dos humanos juegan en la misma baza', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

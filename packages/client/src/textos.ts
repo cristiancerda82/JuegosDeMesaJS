@@ -96,6 +96,9 @@ export const T = {
     canasta: 'Canasta',
     whist: 'Whist',
     sevens: 'Sevens',
+    casino: 'Casino',
+    casinoDesc:
+      'Recoge por número y por suma, construye montones y llévate el 10♦ y el 2♠: partida a 21.',
     sevensDesc:
       'El dominó de cartas, de 3 a 6: escaleras por palo desde los sietes; quien no puede, pasa.',
     whistDesc:
@@ -157,6 +160,7 @@ export const T = {
     vueltasN: (n: number) => (n === 0 ? 'Ninguna' : n === 1 ? '1 vuelta' : `${n} vueltas`),
     jugadores: 'Jugadores',
     dosJugadores: '2 jugadores',
+    enParejas: 'En parejas (tu compañero, enfrente)',
     manosJulepe: 'Duración',
     manosJulepeN: (n: number) => `${n} manos`,
     pasadas: 'Pasadas por el mazo',
@@ -576,6 +580,41 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  casino: {
+    mesa: 'Mesa',
+    recogidas: (n: number) => (n === 1 ? '1 carta recogida' : `${n} cartas recogidas`),
+    barridas: (n: number) => (n === 1 ? '1 barrida' : `${n} barridas`),
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
+    construccion: (valor: number) => `Construcción de ${valor}`,
+    multiple: 'múltiple',
+    de: (quien: string) => (quien === 'Tú' ? 'tuya' : `de ${quien}`),
+    tuTurno: 'Tu turno: toca una carta',
+    recoger: (n: number) => `Recoger (${n === 1 ? '1 carta' : `${n} cartas`})`,
+    construir: (valor: number) => `Construir ${valor}`,
+    subir: (valor: number) => `Subir a ${valor}`,
+    hacerMultiple: (valor: number) => `Hacer múltiple de ${valor}`,
+    dejar: 'Dejar en la mesa',
+    recoge: (quien: string, n: number) =>
+      `${quien === 'Tú' ? 'Recoges' : `${quien} recoge`} ${n === 1 ? '1 carta' : `${n} cartas`}`,
+    barrida: (quien: string) => (quien === 'Tú' ? '¡Barrida!' : `¡Barrida de ${quien}!`),
+    construye: (quien: string, valor: number) =>
+      quien === 'Tú' ? `Construyes ${valor}` : `${quien} construye ${valor}`,
+    deja: (quien: string, carta: string) =>
+      quien === 'Tú' ? `Dejas ${carta}` : `${quien} deja ${carta}`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    conceptoCartas: 'Más cartas',
+    conceptoPicas: 'Más picas',
+    bigCasino: '10♦ (Big Casino)',
+    littleCasino: '2♠ (Little Casino)',
+    ases: 'Ases',
+    barridasConcepto: 'Barridas',
+    totalMano: 'Mano',
+    totalPartida: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos (a 21)',
   },
 
   sevens: {
@@ -1525,6 +1564,7 @@ export const T = {
       canasta: 'Cómo se juega a la Canasta',
       whist: 'Cómo se juega al Whist',
       sevens: 'Cómo se juega al Sevens',
+      casino: 'Cómo se juega al Casino',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2029,6 +2069,43 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    casino: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'De 2 a 4 jugadores con la baraja francesa de 52 cartas; con 4 se puede jugar en parejas. Se trata de recoger cartas de la mesa, sobre todo las que dan puntos.',
+          'Cada uno recibe 4 cartas y se ponen 4 boca arriba en la mesa. Cuando todos se quedan sin cartas, se reparten otras 4 hasta acabar el mazo. Gana quien llega antes a 21 puntos.',
+        ],
+      },
+      {
+        titulo: 'Recoger',
+        texto: [
+          'En tu turno juegas una carta. El As vale 1 y del 2 al 10, su número. Con ella recoges las cartas iguales de la mesa, las combinaciones que suman su valor (un 8 recoge un 5 con un 3) y las construcciones de ese valor.',
+          'Las figuras (J, Q y K) solo recogen otra igual. Si al recoger dejas la mesa vacía, haces barrida.',
+        ],
+      },
+      {
+        titulo: 'Construir',
+        texto: [
+          'También puedes juntar tu carta con cartas de la mesa en un montón con un valor, si tienes en la mano otra carta de ese valor para recogerlo después: con un 3 sobre un 5, teniendo un 8, construyes un 8.',
+          'Puedes subir una construcción, también la de un rival (un 2 sobre un 6 la sube a 8), o hacerla múltiple añadiéndole cartas que sumen lo mismo; una múltiple ya no se sube. Mientras tengas una construcción en la mesa, no puedes dejar cartas sin más.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'Al acabar la mano, lo que queda en la mesa es del último que recogió. Más cartas: 3 puntos. Más picas: 1. El 10 de diamantes (Big Casino): 2. El 2 de picas (Little Casino): 1. Cada As: 1. Cada barrida: 1.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Construye para asegurarte cartas que nadie más puede llevarse, pero vigila: un rival puede subir tu construcción y quitártela.',
+          'No dejes en la mesa Ases, picas ni los dos Casinos si puedes evitarlo.',
         ],
       },
     ],

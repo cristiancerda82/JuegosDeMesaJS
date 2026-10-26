@@ -12,6 +12,8 @@
   import ResumenCanasta from '../mesas/ResumenCanasta.svelte';
   import ResumenWhist from '../mesas/ResumenWhist.svelte';
   import ResumenSevens from '../mesas/ResumenSevens.svelte';
+  import ResumenCasino from '../mesas/ResumenCasino.svelte';
+  import { nombresBandoCasino } from '../mesas/casino';
   import ResumenRummy500 from '../mesas/ResumenRummy500.svelte';
   import ResumenGinRummy from '../mesas/ResumenGinRummy.svelte';
   import ResumenBlackjack from '../mesas/ResumenBlackjack.svelte';
@@ -81,6 +83,7 @@
       partida.id !== 'sieteYMedia' &&
       partida.id !== 'cinquillo' &&
       partida.id !== 'sevens' &&
+      partida.id !== 'casino' &&
       partida.id !== 'pocha' &&
       partida.id !== 'mus' &&
       partida.id !== 'corazones' &&
@@ -289,6 +292,24 @@
             <tr>
               <th scope="row">{nombreChinchon(a, n)}</th>
               <td data-testid="total-{a}">{vista.totales[a]}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'casino'}
+      {@const vista = partida.sesion.vista}
+      {@const nombres = nombresBandoCasino(vista.config, yo, partida.sesion.red)}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenCasino resultado={ultima} {nombres} />
+      {/if}
+      <table>
+        <caption>{T.casino.clasificacion}</caption>
+        <tbody>
+          {#each nombres.map((_, b) => b).sort((a, b) => vista.puntos[b]! - vista.puntos[a]!) as b (b)}
+            <tr>
+              <th scope="row">{nombres[b]}</th>
+              <td data-testid="total-{b}">{vista.puntos[b]}</td>
             </tr>
           {/each}
         </tbody>
