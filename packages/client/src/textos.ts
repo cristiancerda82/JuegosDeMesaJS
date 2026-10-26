@@ -98,6 +98,9 @@ export const T = {
     sevens: 'Sevens',
     casino: 'Casino',
     durak: 'Durak',
+    euchre: 'Euchre',
+    euchreDesc:
+      'Bazas por parejas con 24 cartas: pide el triunfo, juega solo y aprovecha las jotas, que mandan. A 10 puntos.',
     durakDesc:
       'El clásico ruso de atacar y defender, de 2 a 6: el último que se queda con cartas es el tonto.',
     casinoDesc:
@@ -583,6 +586,52 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  euchre: {
+    reparte: 'Reparte',
+    deja: 'Deja la mano',
+    cartaVuelta: 'Carta vuelta',
+    sinTriunfo: 'Se elige el triunfo',
+    triunfo: (palo: string) =>
+      `Triunfo: ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[palo]}`,
+    paloCorto: (palo: string) =>
+      (
+        ({
+          picas: '♠ Picas',
+          corazones: '♥ Corazones',
+          diamantes: '♦ Diamantes',
+          treboles: '♣ Tréboles',
+        }) as Record<string, string>
+      )[palo]!,
+    elige: (quien: string, solo: boolean) =>
+      `${quien === 'Tú' ? 'Eliges tú' : `Elige ${quien}`}${solo ? ' (solo)' : ''}`,
+    pareja: (lado: string, bazas: number, puntos: number) =>
+      `${lado}: ${bazas === 1 ? '1 baza' : `${bazas} bazas`} · ${puntos} de 10`,
+    bazasDe: (n: number) => (n === 1 ? '1 baza' : `${n} bazas`),
+    pedir: 'Pedir',
+    pedirSolo: 'Pedir solo',
+    soloSufijo: 'solo',
+    paso: 'Paso',
+    tuPrimera: 'Tu turno: ¿pides la carta vuelta?',
+    tuSegunda: 'Tu turno: nombra un palo o pasa',
+    tuDescarte: 'Descártate de una carta',
+    pide: (quien: string, solo: boolean) =>
+      `${quien === 'Tú' ? 'Pides' : `${quien} pide`} el triunfo${solo ? ' y juega solo' : ''}`,
+    nombra: (quien: string, palo: string, solo: boolean) =>
+      `${quien === 'Tú' ? 'Nombras' : `${quien} nombra`} ${palo}${solo ? ' y juega solo' : ''}`,
+    pasa: (quien: string) => (quien === 'Tú' ? 'Pasas' : `${quien} pasa`),
+    seDescarta: (quien: string) => (quien === 'Tú' ? 'Te descartas' : `${quien} se descarta`),
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    eligio: (quien: string, palo: string, solo: boolean) =>
+      `${quien === 'Tú' ? 'Elegiste' : `Eligió ${quien}`}: ${palo}${solo ? ', solo' : ''}`,
+    euchre: '¡Euchre! Quien eligió el triunfo no llegó a 3 bazas',
+    parejaCol: 'Pareja',
+    bazasCol: 'Bazas',
+    manoCol: 'Mano',
+    totalCol: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos (a 10)',
   },
 
   durak: {
@@ -1596,6 +1645,7 @@ export const T = {
       sevens: 'Cómo se juega al Sevens',
       casino: 'Cómo se juega al Casino',
       durak: 'Cómo se juega al Durak',
+      euchre: 'Cómo se juega al Euchre',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2100,6 +2150,44 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    euchre: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Cuatro jugadores en dos parejas: tu compañero se sienta enfrente. Se juega con 24 cartas de la baraja francesa, del 9 al As, y se trata de hacer al menos 3 de las 5 bazas de cada mano.',
+          'Gana la pareja que llega antes a 10 puntos.',
+        ],
+      },
+      {
+        titulo: 'Elegir el triunfo',
+        texto: [
+          'Cada uno recibe 5 cartas y se pone una boca arriba: la carta vuelta. Por turno, cada jugador puede pedir su palo como triunfo; si alguien lo pide, el repartidor se queda la carta vuelta y se descarta de otra.',
+          'Si todos pasan, hay una segunda vuelta para nombrar cualquier otro palo. Si vuelven a pasar todos, se reparte de nuevo. Quien elige el triunfo puede jugar solo: su compañero deja la mano.',
+        ],
+      },
+      {
+        titulo: 'Las jotas',
+        texto: [
+          'La J del triunfo es la carta más alta. La segunda es la J del otro palo del mismo color, que pasa a ser del triunfo: con corazones de triunfo, la J de diamantes es un corazón. Después van el As, el K, la Q, el 10 y el 9.',
+          'Hay que seguir el palo de salida si se puede, y la baza la gana el triunfo más alto o la carta más alta del palo de salida.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'Si la pareja que eligió el triunfo hace 3 o 4 bazas, gana 1 punto; si hace las 5, 2 puntos, o 4 si jugaba solo.',
+          'Si hace menos de 3, es un euchre: los rivales ganan 2 puntos.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Pide con las dos jotas o con tres triunfos buenos. Si el repartidor es rival, recuerda que la carta vuelta se la queda él.',
+          'Si tu compañero eligió el triunfo, no gastes tus triunfos en bazas que ya lleva él.',
         ],
       },
     ],

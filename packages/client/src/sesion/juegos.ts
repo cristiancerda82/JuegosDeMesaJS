@@ -44,6 +44,12 @@ import {
   casino,
   CONFIG_DURAK_POR_DEFECTO,
   durak,
+  CONFIG_EUCHRE_POR_DEFECTO,
+  euchre,
+  type AccionEuchre,
+  type ConfigEuchre,
+  type EstadoEuchre,
+  type VistaEuchre,
   type AccionDurak,
   type ConfigDurak,
   type EstadoDurak,
@@ -331,7 +337,8 @@ export type IdJuego =
   | 'whist'
   | 'sevens'
   | 'casino'
-  | 'durak';
+  | 'durak'
+  | 'euchre';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -375,6 +382,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'sevens',
   'casino',
   'durak',
+  'euchre',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1142,6 +1150,26 @@ export const DEF_DURAK: DefDurak = {
   },
 };
 
+export type DefEuchre = DefJuego<ConfigEuchre, EstadoEuchre, AccionEuchre, VistaEuchre>;
+
+export const DEF_EUCHRE: DefEuchre = {
+  id: 'euchre',
+  nombre: T.menu.euchre,
+  juego: euchre,
+  configPorDefecto: CONFIG_EUCHRE_POR_DEFECTO,
+  ia: IAS.euchre,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada baza y cada
+  // decisión de un rival al elegir el triunfo.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const accion = despues.ultimaAccion;
+    const eligiendo =
+      accion !== null && accion !== antes.ultimaAccion && accion.accion.tipo !== 'jugar';
+    if (eligiendo && accion.asiento !== despues.asiento) return PAUSA_RIVAL_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1184,6 +1212,7 @@ export const JUEGOS = {
   sevens: DEF_SEVENS,
   casino: DEF_CASINO,
   durak: DEF_DURAK,
+  euchre: DEF_EUCHRE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

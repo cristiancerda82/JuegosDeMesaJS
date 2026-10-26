@@ -25,6 +25,7 @@
     ConfigSevens,
     ConfigCasino,
     ConfigDurak,
+    ConfigEuchre,
     ConfigPiramide,
     ConfigGolf,
     ConfigTriPeaks,
@@ -107,6 +108,7 @@
   let sevensConfig: Editable<ConfigSevens> = $state({ ...JUEGOS.sevens.configPorDefecto });
   let casinoConfig: Editable<ConfigCasino> = $state({ ...JUEGOS.casino.configPorDefecto });
   let durakConfig: Editable<ConfigDurak> = $state({ ...JUEGOS.durak.configPorDefecto });
+  let euchreConfig: Editable<ConfigEuchre> = $state({ ...JUEGOS.euchre.configPorDefecto });
   let subastado: Editable<ConfigTuteSubastado> = $state({
     ...JUEGOS.tuteSubastado.configPorDefecto,
   });
@@ -167,6 +169,7 @@
       whist: whistConfig,
       sevens: sevensConfig,
       durak: durakConfig,
+      euchre: euchreConfig,
       // Las parejas, solo con 4 jugadores.
       casino: { ...casinoConfig, parejas: casinoConfig.jugadores === 4 && casinoConfig.parejas },
     };

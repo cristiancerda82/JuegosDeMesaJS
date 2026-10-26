@@ -632,6 +632,25 @@ test('Durak en red: el ataque de uno lo ve el otro', async ({ browser }) => {
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Euchre en red: los dos ven el triunfo que pide uno', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'euchre');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(5);
+
+  // Habla primero Ana (a la izquierda del repartidor): pide la carta vuelta.
+  await ana.getByTestId('pedir').click();
+  const triunfo = ana.getByTestId('triunfo');
+  await expect(triunfo).toContainText('Triunfo');
+  await expect(luis.getByTestId('triunfo')).toHaveText(await triunfo.innerText());
+  await expect(luis.getByTestId('elige')).toContainText('Ana');
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Whist en red: dos humanos juegan en la misma baza', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

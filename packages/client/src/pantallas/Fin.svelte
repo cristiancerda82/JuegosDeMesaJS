@@ -1,6 +1,6 @@
 <script lang="ts">
   import { clasificacionCulo, marcadorFinal, OBJETIVO_GIN_RUMMY } from '@juegos/engine';
-  import { nombreNumerado } from '../mesas/bazas/asientos';
+  import { nombreAsiento, nombreNumerado } from '../mesas/bazas/asientos';
   import { bandoDe, porBando } from '../sesion/sesion-mesa';
   import type { Partida } from '../sesion/partida';
   import DesgloseEscoba from '../mesas/DesgloseEscoba.svelte';
@@ -13,6 +13,7 @@
   import ResumenWhist from '../mesas/ResumenWhist.svelte';
   import ResumenSevens from '../mesas/ResumenSevens.svelte';
   import ResumenCasino from '../mesas/ResumenCasino.svelte';
+  import ResumenEuchre from '../mesas/ResumenEuchre.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
   import ResumenRummy500 from '../mesas/ResumenRummy500.svelte';
   import ResumenGinRummy from '../mesas/ResumenGinRummy.svelte';
@@ -330,6 +331,24 @@
               <td data-testid="total-{b}">{vista.puntos[b]}</td>
             </tr>
           {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'euchre'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenEuchre
+          resultado={ultima}
+          lados={[lados[0]!, lados[1]!]}
+          bando={mio}
+          nombre={(a) => nombreAsiento(a, 4, yo, partida.sesion.red)}
+        />
+      {/if}
+      <table>
+        <caption>{T.euchre.clasificacion}</caption>
+        <tbody>
+          <tr><th scope="row">{lados[0]}</th><td data-testid="puntos-fin-0">{vista.puntos[mio]}</td></tr>
+          <tr><th scope="row">{lados[1]}</th><td data-testid="puntos-fin-1">{vista.puntos[1 - mio]}</td></tr>
         </tbody>
       </table>
     {:else if partida.id === 'whist'}

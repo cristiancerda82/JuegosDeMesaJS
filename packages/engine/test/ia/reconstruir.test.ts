@@ -46,6 +46,9 @@ import { casino, CONFIG_CASINO_POR_DEFECTO, type EstadoCasino } from '../../src/
 import { iaDurakBasica } from '../../src/ia/durak-basica';
 import { reconstruirDurak } from '../../src/ia/reconstruir/durak';
 import { CONFIG_DURAK_POR_DEFECTO, durak } from '../../src/juegos/durak';
+import { iaEuchreBasica } from '../../src/ia/euchre-basica';
+import { reconstruirEuchre } from '../../src/ia/reconstruir/euchre';
+import { CONFIG_EUCHRE_POR_DEFECTO, euchre } from '../../src/juegos/euchre';
 import { reconstruirPicas } from '../../src/ia/reconstruir/picas';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
@@ -576,6 +579,32 @@ describe('Reconstrucción del Durak', () => {
       g.enteroHasta(1000);
       expect(rec.manos[1 - atacante]).toContain(carta);
       expect(rec.mazo.at(-1)).toBe(e.cartaTriunfo);
+    }
+  });
+});
+
+describirReconstruccion(euchre, reconstruirEuchre, {
+  configs: [CONFIG_EUCHRE_POR_DEFECTO],
+  base: iaEuchreBasica,
+});
+
+describe('Reconstrucción del Euchre', () => {
+  it('la carta vuelta que recogió el repartidor sigue en su mano', () => {
+    const r = euchre.crear(CONFIG_EUCHRE_POR_DEFECTO, 'vuelta');
+    if (!r.ok) throw new Error(r.error);
+    let e = euchre.transicion(r.valor, 0, { tipo: 'pedir', solo: false });
+    const repartidor = e.repartidor;
+    e = euchre.transicion(e, repartidor, {
+      tipo: 'descartar',
+      carta: e.manos[repartidor]!.find((c) => c !== e.cartaVuelta)!,
+    });
+    const g = new Generador(crearAzar('e'));
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirEuchre(euchre.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.manos[repartidor]).toContain(e.cartaVuelta);
+      expect(rec.manos[repartidor]).toHaveLength(5);
+      expect(rec.descarte).not.toBeNull();
     }
   });
 });
