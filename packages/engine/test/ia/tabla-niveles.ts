@@ -31,6 +31,7 @@ import { casino, CONFIG_CASINO_POR_DEFECTO } from '../../src/juegos/casino';
 import { CONFIG_DURAK_POR_DEFECTO, durak } from '../../src/juegos/durak';
 import { CONFIG_EUCHRE_POR_DEFECTO, euchre } from '../../src/juegos/euchre';
 import { bigTwo, CONFIG_BIG_TWO_POR_DEFECTO } from '../../src/juegos/big-two';
+import { CONFIG_CRIBBAGE_POR_DEFECTO, cribbage } from '../../src/juegos/cribbage';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -106,4 +107,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Durak', durak, CONFIG_DURAK_POR_DEFECTO, IAS.durak, 2),
   entrada('Euchre', euchre, CONFIG_EUCHRE_POR_DEFECTO, IAS.euchre, 'bandos'),
   entrada('Big Two', bigTwo, CONFIG_BIG_TWO_POR_DEFECTO, IAS.bigTwo, 4),
+  entrada('Cribbage', cribbage, CONFIG_CRIBBAGE_POR_DEFECTO, IAS.cribbage, 2),
 ];

@@ -22,6 +22,7 @@
   import MesaDurak from '../mesas/MesaDurak.svelte';
   import MesaEuchre from '../mesas/MesaEuchre.svelte';
   import MesaBigTwo from '../mesas/MesaBigTwo.svelte';
+  import MesaCribbage from '../mesas/MesaCribbage.svelte';
   import MesaRemigio from '../mesas/MesaRemigio.svelte';
   import MesaChinchon from '../mesas/MesaChinchon.svelte';
   import MesaCinquillo from '../mesas/MesaCinquillo.svelte';
@@ -127,6 +128,8 @@
     <MesaEuchre sesion={partida.sesion} />
   {:else if partida.id === 'bigTwo'}
     <MesaBigTwo sesion={partida.sesion} />
+  {:else if partida.id === 'cribbage'}
+    <MesaCribbage sesion={partida.sesion} />
   {:else if partida.id === 'whist'}
     <MesaWhist sesion={partida.sesion} />
   {:else if partida.id === 'canasta'}

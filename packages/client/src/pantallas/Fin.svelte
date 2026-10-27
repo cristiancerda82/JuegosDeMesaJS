@@ -15,6 +15,7 @@
   import ResumenCasino from '../mesas/ResumenCasino.svelte';
   import ResumenEuchre from '../mesas/ResumenEuchre.svelte';
   import ResumenBigTwo from '../mesas/ResumenBigTwo.svelte';
+  import ResumenCribbage from '../mesas/ResumenCribbage.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
   import ResumenRummy500 from '../mesas/ResumenRummy500.svelte';
   import ResumenGinRummy from '../mesas/ResumenGinRummy.svelte';
@@ -88,6 +89,7 @@
       partida.id !== 'casino' &&
       partida.id !== 'durak' &&
       partida.id !== 'bigTwo' &&
+      partida.id !== 'cribbage' &&
       partida.id !== 'pocha' &&
       partida.id !== 'mus' &&
       partida.id !== 'corazones' &&
@@ -331,6 +333,23 @@
             <tr>
               <th scope="row">{nombres[b]}</th>
               <td data-testid="total-{b}">{vista.puntos[b]}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'cribbage'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenCribbage resultado={ultima} nombre={(a) => nombreChinchon(a, 2)} />
+      {/if}
+      <table>
+        <caption>{T.cribbage.clasificacion}</caption>
+        <tbody>
+          {#each [yo, 1 - yo] as a (a)}
+            <tr>
+              <th scope="row">{nombreChinchon(a, 2)}</th>
+              <td data-testid="total-{a}">{vista.puntos[a]}</td>
             </tr>
           {/each}
         </tbody>

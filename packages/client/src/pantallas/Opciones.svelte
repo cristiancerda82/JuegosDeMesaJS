@@ -27,6 +27,7 @@
     ConfigDurak,
     ConfigEuchre,
     ConfigBigTwo,
+    ConfigCribbage,
     ConfigPiramide,
     ConfigGolf,
     ConfigTriPeaks,
@@ -111,6 +112,7 @@
   let durakConfig: Editable<ConfigDurak> = $state({ ...JUEGOS.durak.configPorDefecto });
   let euchreConfig: Editable<ConfigEuchre> = $state({ ...JUEGOS.euchre.configPorDefecto });
   let bigTwoConfig: Editable<ConfigBigTwo> = $state({ ...JUEGOS.bigTwo.configPorDefecto });
+  let cribbageConfig: Editable<ConfigCribbage> = $state({ ...JUEGOS.cribbage.configPorDefecto });
   let subastado: Editable<ConfigTuteSubastado> = $state({
     ...JUEGOS.tuteSubastado.configPorDefecto,
   });
@@ -173,6 +175,7 @@
       durak: durakConfig,
       euchre: euchreConfig,
       bigTwo: bigTwoConfig,
+      cribbage: cribbageConfig,
       // Las parejas, solo con 4 jugadores.
       casino: { ...casinoConfig, parejas: casinoConfig.jugadores === 4 && casinoConfig.parejas },
     };

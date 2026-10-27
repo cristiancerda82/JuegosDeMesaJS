@@ -52,6 +52,9 @@ import { CONFIG_EUCHRE_POR_DEFECTO, euchre } from '../../src/juegos/euchre';
 import { iaBigTwoBasica } from '../../src/ia/big-two-basica';
 import { reconstruirBigTwo } from '../../src/ia/reconstruir/big-two';
 import { bigTwo, CONFIG_BIG_TWO_POR_DEFECTO } from '../../src/juegos/big-two';
+import { iaCribbageBasica } from '../../src/ia/cribbage-basica';
+import { reconstruirCribbage } from '../../src/ia/reconstruir/cribbage';
+import { CONFIG_CRIBBAGE_POR_DEFECTO, cribbage } from '../../src/juegos/cribbage';
 import { reconstruirPicas } from '../../src/ia/reconstruir/picas';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
@@ -615,4 +618,26 @@ describe('Reconstrucción del Euchre', () => {
 describirReconstruccion(bigTwo, reconstruirBigTwo, {
   configs: [CONFIG_BIG_TWO_POR_DEFECTO],
   base: iaBigTwoBasica,
+});
+
+describirReconstruccion(cribbage, reconstruirCribbage, {
+  configs: [CONFIG_CRIBBAGE_POR_DEFECTO],
+  base: iaCribbageBasica,
+});
+
+describe('Reconstrucción del Cribbage', () => {
+  it('las cartas que echó el jugador siguen en el crib', () => {
+    const r = cribbage.crear(CONFIG_CRIBBAGE_POR_DEFECTO, 'crib');
+    if (!r.ok) throw new Error(r.error);
+    const echar = cribbage.accionesLegales(r.valor, 0)[0]!;
+    let e = cribbage.transicion(r.valor, 0, echar);
+    e = cribbage.transicion(e, 1, cribbage.accionesLegales(e, 1)[0]!);
+    const g = new Generador(crearAzar('c'));
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirCribbage(cribbage.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.echadas[0]).toEqual(e.echadas[0]);
+      expect(rec.echadas[1]).toHaveLength(2);
+    }
+  });
 });

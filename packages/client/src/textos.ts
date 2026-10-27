@@ -100,6 +100,9 @@ export const T = {
     durak: 'Durak',
     euchre: 'Euchre',
     bigTwo: 'Big Two',
+    cribbage: 'Cribbage',
+    cribbageDesc:
+      'El clásico inglés para dos: quinces, parejas y escaleras al jugar y al contar, hasta 121.',
     bigTwoDesc:
       'Suelta sueltas, parejas, tríos y jugadas de póker que superen a las de la mesa; el 2 manda. A 50 puntos.',
     euchreDesc:
@@ -589,6 +592,51 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  cribbage: {
+    mesa: 'Mesa',
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    reparte: 'Reparte',
+    crib: 'Crib',
+    cribDe: (quien: string) => (quien === 'Tú' ? 'Tu crib' : `Crib de ${quien}`),
+    starter: 'Starter',
+    cuenta: (n: number) => `Cuenta: ${n}`,
+    alCrib: 'Al crib',
+    go: 'Go',
+    echa: 'Echa 2 cartas al crib',
+    tuTurno: 'Tu turno: juega una carta',
+    sinCarta: 'No te cabe ninguna: di «Go»',
+    puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
+    motivos: {
+      quince: '15',
+      treintaYUno: '31',
+      pareja: 'pareja',
+      trio: 'trío',
+      poker: 'póker',
+      escalera: 'escalera',
+      go: 'go',
+      ultima: 'última carta',
+      talones: 'J de starter',
+    } as Record<string, string>,
+    anota: (quien: string, motivos: string, n: number) =>
+      `${quien === 'Tú' ? 'Sumas' : `${quien} suma`} ${n} (${motivos})`,
+    juega: (quien: string, carta: string) =>
+      quien === 'Tú' ? `Juegas ${carta}` : `${quien} juega ${carta}`,
+    dice: (quien: string) => (quien === 'Tú' ? 'Dices go' : `${quien} dice go`),
+    echaAviso: (quien: string) => (quien === 'Tú' ? 'Echas al crib' : `${quien} echa al crib`),
+    finMano: (n: number) => `Recuento de la mano ${n}`,
+    manoDe: (quien: string) => (quien === 'Tú' ? 'Tu mano' : `Mano de ${quien}`),
+    quinces: 'Quinces',
+    parejas: 'Parejas',
+    escaleras: 'Escaleras',
+    color: 'Color',
+    nobs: 'Nobs',
+    total: 'Total',
+    juegoCartas: 'Al jugar las cartas',
+    totales: 'Totales',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos (a 121)',
   },
 
   bigTwo: {
@@ -1685,6 +1733,7 @@ export const T = {
       durak: 'Cómo se juega al Durak',
       euchre: 'Cómo se juega al Euchre',
       bigTwo: 'Cómo se juega al Big Two',
+      cribbage: 'Cómo se juega al Cribbage',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2189,6 +2238,36 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    cribbage: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Dos jugadores con la baraja francesa. Se suman puntos al jugar las cartas y al contar la mano, y gana el primero que llega a 121, aunque sea a mitad de mano.',
+          'Cada uno recibe 6 cartas y echa 2 al crib, una mano extra que cuenta para el que reparte. Después se descubre el starter, que cuenta para todas las manos; si es una J, el que reparte suma 2.',
+        ],
+      },
+      {
+        titulo: 'Jugar las cartas',
+        texto: [
+          'Por turnos, cada uno juega una carta y se suma su valor (el As 1, las figuras 10) sin pasar de 31. Sumas 2 si llegas a 15 o a 31, 2 por pareja con la carta anterior (6 por trío, 12 por póker) y 1 por carta si las últimas forman una escalera de 3 o más, aunque estén desordenadas.',
+          'Si no te cabe ninguna carta, dices «go» y el otro sigue mientras pueda; el último en jugar suma 1. La cuenta vuelve a 0, y la última carta de la mano también suma 1.',
+        ],
+      },
+      {
+        titulo: 'El recuento',
+        texto: [
+          'Al acabar se cuentan, con el starter: primero la mano del que no reparte, después la del que reparte y al final su crib. Cada combinación que suma 15 vale 2; cada pareja, 2; cada escalera, 1 por carta; el color, 4 (5 con el starter; en el crib, solo 5), y la J del palo del starter, 1.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Guarda los cincos y las parejas, y si el crib es del otro, no le eches cincos ni cartas que sumen 15.',
+          'Al jugar, evita dejar la cuenta en 5 o en 21: un 10 del otro le da 15 o 31.',
         ],
       },
     ],

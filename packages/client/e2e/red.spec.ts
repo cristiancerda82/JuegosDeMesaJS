@@ -694,6 +694,34 @@ test('Big Two en red: lo que juega uno lo ve el otro', async ({ browser }) => {
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Cribbage en red: los dos echan al crib y ven la misma mesa', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'cribbage');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(6);
+
+  // Echa primero Ana (no reparte) y después Luis; los dos ven el mismo starter.
+  for (const p of [ana, luis]) {
+    await p.getByTestId('al-crib').waitFor({ timeout: 30_000 });
+    const cartas = p.locator('[data-testid="mano"] .carta-mano');
+    await cartas.nth(0).click();
+    await cartas.nth(1).click();
+    await p.getByTestId('al-crib').click();
+    await expect(cartas).toHaveCount(4);
+  }
+  const starter = ana.getByTestId('starter');
+  await expect(starter).toBeVisible();
+  await expect(luis.getByTestId('starter')).toHaveAttribute(
+    'data-carta',
+    (await starter.getAttribute('data-carta'))!,
+  );
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Whist en red: dos humanos juegan en la misma baza', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

@@ -48,6 +48,12 @@ import {
   euchre,
   CONFIG_BIG_TWO_POR_DEFECTO,
   bigTwo,
+  CONFIG_CRIBBAGE_POR_DEFECTO,
+  cribbage,
+  type AccionCribbage,
+  type ConfigCribbage,
+  type EstadoCribbage,
+  type VistaCribbage,
   type AccionBigTwo,
   type ConfigBigTwo,
   type EstadoBigTwo,
@@ -345,7 +351,8 @@ export type IdJuego =
   | 'casino'
   | 'durak'
   | 'euchre'
-  | 'bigTwo';
+  | 'bigTwo'
+  | 'cribbage';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -391,6 +398,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'durak',
   'euchre',
   'bigTwo',
+  'cribbage',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1194,6 +1202,26 @@ export const DEF_BIG_TWO: DefBigTwo = {
   },
 };
 
+export type DefCribbage = DefJuego<ConfigCribbage, EstadoCribbage, AccionCribbage, VistaCribbage>;
+
+/** Tiempo para ver la carta y los puntos de una jugada con puntos. */
+const PAUSA_PUNTOS_CRIBBAGE_MS = 1000;
+
+export const DEF_CRIBBAGE: DefCribbage = {
+  id: 'cribbage',
+  nombre: T.menu.cribbage,
+  juego: cribbage,
+  configPorDefecto: CONFIG_CRIBBAGE_POR_DEFECTO,
+  ia: IAS.cribbage,
+  // El cierre de la mano lo detiene la propia mesa con el recuento; aquí, cada jugada del rival.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    if (accion.puntos.length > 0) return PAUSA_PUNTOS_CRIBBAGE_MS;
+    return accion.asiento !== despues.asiento ? PAUSA_RIVAL_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1238,6 +1266,7 @@ export const JUEGOS = {
   durak: DEF_DURAK,
   euchre: DEF_EUCHRE,
   bigTwo: DEF_BIG_TWO,
+  cribbage: DEF_CRIBBAGE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */
