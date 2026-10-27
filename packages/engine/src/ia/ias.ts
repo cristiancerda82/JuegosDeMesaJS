@@ -41,6 +41,7 @@ import { SIMULABLE_EUCHRE } from './reconstruir/euchre';
 import { SIMULABLE_BIG_TWO } from './reconstruir/big-two';
 import { SIMULABLE_CRIBBAGE } from './reconstruir/cribbage';
 import { SIMULABLE_BELOTE } from './reconstruir/belote';
+import { SIMULABLE_SCHNAPSEN } from './reconstruir/schnapsen';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -64,6 +65,7 @@ import { iaEuchreBasica } from './euchre-basica';
 import { iaBigTwoBasica } from './big-two-basica';
 import { iaCribbageBasica } from './cribbage-basica';
 import { iaBeloteBasica } from './belote-basica';
+import { iaSchnapsenBasica } from './schnapsen-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -157,4 +159,5 @@ export const IAS = {
   bigTwo: niveles(iaBigTwoBasica, SIMULABLE_BIG_TWO),
   cribbage: niveles(iaCribbageBasica, SIMULABLE_CRIBBAGE),
   belote: niveles(iaBeloteBasica, SIMULABLE_BELOTE),
+  schnapsen: niveles(iaSchnapsenBasica, SIMULABLE_SCHNAPSEN),
 } as const;

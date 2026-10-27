@@ -101,6 +101,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    schnapsen: 'Schnapsen',
+    schnapsenDesc:
+      'El clásico austriaco para dos con 20 cartas: canta, cambia la J, cierra el mazo y llega a 66 antes que el rival.',
     belote: 'Belote',
     beloteDesc:
       'El clásico francés por parejas con 32 cartas: toma el triunfo, donde mandan la J y el 9, y canta belote. A 501.',
@@ -595,6 +598,42 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  schnapsen: {
+    reparte: 'Reparte',
+    puntosYBazas: (puntos: number, bazas: number) =>
+      `${puntos} puntos · ${bazas === 1 ? '1 baza' : `${bazas} bazas`}`,
+    triunfo: (palo: string) =>
+      `Triunfo: ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[palo]}`,
+    cerrado: 'Cerrado',
+    cerradoPor: (quien: string) =>
+      quien === 'Tú' ? 'Has cerrado el mazo' : `${quien} ha cerrado el mazo`,
+    marcador: (mios: number, suyos: number) => `Partida: ${mios} a ${suyos} (a 7)`,
+    cambiar: 'Cambiar la J',
+    cerrar: 'Cerrar',
+    cantar: (puntos: number, palo: string) =>
+      `Cantar ${puntos} ${({ picas: '♠', corazones: '♥', diamantes: '♦', treboles: '♣' } as Record<string, string>)[palo]}`,
+    cambia: (quien: string) =>
+      quien === 'Tú'
+        ? 'Cambias la J por la carta vuelta'
+        : `${quien} cambia la J por la carta vuelta`,
+    canta: (quien: string, puntos: number, palo: string) =>
+      `${quien === 'Tú' ? 'Cantas' : `${quien} canta`} ${puntos} en ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[palo]}`,
+    cierra: (quien: string) => (quien === 'Tú' ? 'Cierras el mazo' : `${quien} cierra el mazo`),
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    gana: (quien: string, motivo: '66' | 'ultima' | 'cierre', cerro: string | null) => {
+      const gana = quien === 'Tú' ? 'Ganas' : `Gana ${quien}`;
+      if (motivo === '66') return `${gana}: llega a 66${cerro ? ` con el mazo cerrado` : ''}`;
+      if (motivo === 'ultima') return `${gana}: nadie llega a 66 y hace la última baza`;
+      return `${gana}: ${cerro === 'Tú' ? 'cerraste' : `${cerro} cerró`} el mazo y no llegó a 66`;
+    },
+    puntosCol: 'Puntos',
+    bazasCol: 'Bazas',
+    partidaCol: 'Partida',
+    totalCol: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos de partida (a 7)',
   },
 
   belote: {
@@ -1781,6 +1820,7 @@ export const T = {
       bigTwo: 'Cómo se juega al Big Two',
       cribbage: 'Cómo se juega al Cribbage',
       belote: 'Cómo se juega al Belote',
+      schnapsen: 'Cómo se juega al Schnapsen',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2285,6 +2325,53 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    schnapsen: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Un juego de bazas para dos con 20 cartas de la baraja francesa: As, 10, K, Q y J de cada palo. Gana la mano quien llega antes a 66 puntos.',
+          'Cada mano da 1, 2 o 3 puntos de partida, y gana la partida quien llega antes a 7.',
+        ],
+      },
+      {
+        titulo: 'Las cartas',
+        texto: [
+          'El orden es As (11 puntos), 10 (10), K (4), Q (3) y J (2). La carta vuelta, boca arriba bajo el mazo, marca el triunfo.',
+          'La baza la gana el triunfo más alto o, si no hay, la más alta del palo de salida. Tras cada baza roba primero quien la ganó.',
+        ],
+      },
+      {
+        titulo: 'Con el mazo abierto',
+        texto: [
+          'Mientras quedan cartas en el mazo se puede jugar cualquier carta, sin seguir el palo.',
+          'Al salir, si tienes la J del triunfo puedes cambiarla por la carta vuelta.',
+          'Al salir, si tienes el K y la Q de un palo puedes cantarlos: 20 puntos, o 40 en el triunfo. Después sales con uno de los dos. Los puntos del cante cuentan cuando hayas ganado alguna baza.',
+        ],
+      },
+      {
+        titulo: 'Cerrar el mazo',
+        texto: [
+          'Al salir puedes cerrar el mazo: ya no se roba y se juega como cuando el mazo se acaba, con reglas estrictas.',
+          'Con reglas estrictas hay que seguir el palo y ganar la baza si se puede; sin el palo, hay que fallar con triunfo.',
+          'Si cierras, tienes que llegar a 66. Si no lo consigues, gana la mano el rival.',
+        ],
+      },
+      {
+        titulo: 'Los puntos de partida',
+        texto: [
+          'Quien gana la mano se apunta 3 si el rival no hizo ninguna baza, 2 si hizo menos de 33 puntos y 1 si no.',
+          'Si nadie llega a 66 con el mazo agotado, gana quien hace la última baza. Si quien cerró no llega, el rival se apunta 2, o 3 si no tenía bazas al cerrar.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Con el mazo abierto, sal con cartas bajas y guarda los triunfos y las parejas para cantar.',
+          'Cierra el mazo cuando tengas los 66 casi asegurados, sobre todo si el rival aún no ha hecho bazas.',
         ],
       },
     ],

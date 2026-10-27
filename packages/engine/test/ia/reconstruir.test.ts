@@ -58,6 +58,15 @@ import { CONFIG_CRIBBAGE_POR_DEFECTO, cribbage } from '../../src/juegos/cribbage
 import { iaBeloteBasica } from '../../src/ia/belote-basica';
 import { reconstruirBelote } from '../../src/ia/reconstruir/belote';
 import { belote, CONFIG_BELOTE_POR_DEFECTO, esReyODamaDelTriunfo } from '../../src/juegos/belote';
+import { iaSchnapsenBasica } from '../../src/ia/schnapsen-basica';
+import { reconstruirSchnapsen } from '../../src/ia/reconstruir/schnapsen';
+import {
+  BARAJA_SCHNAPSEN,
+  CONFIG_SCHNAPSEN_POR_DEFECTO,
+  damaDe,
+  schnapsen,
+  type EstadoSchnapsen,
+} from '../../src/juegos/schnapsen';
 import { reconstruirPicas } from '../../src/ia/reconstruir/picas';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
@@ -673,6 +682,41 @@ describe('Reconstrucción del Belote', () => {
         expect(rec.manos[0]!.includes(e.cartaVuelta)).toBe(vuelta);
       }
       return;
+    }
+  });
+});
+
+describirReconstruccion(schnapsen, reconstruirSchnapsen, {
+  configs: [CONFIG_SCHNAPSEN_POR_DEFECTO],
+  base: iaSchnapsenBasica,
+});
+
+describe('Reconstrucción del Schnapsen', () => {
+  it('el rival que cantó guarda la otra carta de la pareja', () => {
+    const r = schnapsen.crear(CONFIG_SCHNAPSEN_POR_DEFECTO, 'cante');
+    if (!r.ok) throw new Error(r.error);
+    // El 1 tiene el K y la Q de picas, canta y sale con el K.
+    const e0 = r.valor;
+    const picas = ['picas-13', 'picas-12'] as const;
+    const resto = BARAJA_SCHNAPSEN.filter(
+      (c) => !(picas as readonly string[]).includes(c) && c !== 'corazones-1',
+    );
+    let e: EstadoSchnapsen = {
+      ...e0,
+      manos: [resto.slice(0, 5), [...picas, ...resto.slice(5, 8)]],
+      mazo: resto.slice(8, 17),
+      cartaVuelta: 'corazones-1',
+      triunfo: 'corazones',
+      turno: 1,
+    };
+    e = schnapsen.transicion(e, 1, { tipo: 'cantar', palo: 'picas' });
+    e = schnapsen.transicion(e, 1, { tipo: 'jugar', carta: 'picas-13' });
+    const g = new Generador(crearAzar('s'));
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirSchnapsen(schnapsen.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.manos[1]).toContain(damaDe('picas'));
+      expect(rec.manos[1]).toHaveLength(e.manos[1]!.length);
     }
   });
 });
