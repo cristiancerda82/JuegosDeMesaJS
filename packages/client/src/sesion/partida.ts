@@ -35,6 +35,10 @@ import {
   type ConfigEuchre,
   type EstadoEuchre,
   type VistaEuchre,
+  type AccionBigTwo,
+  type ConfigBigTwo,
+  type EstadoBigTwo,
+  type VistaBigTwo,
   type ConfigWhist,
   type EstadoWhist,
   type VistaWhist,
@@ -205,6 +209,7 @@ import {
   DEF_CASINO,
   DEF_DURAK,
   DEF_EUCHRE,
+  DEF_BIG_TWO,
   DEF_SPIDER,
   DEF_PIRAMIDE,
   DEF_GOLF,
@@ -303,6 +308,7 @@ export type SesionPiramide = SesionMesa<
   AccionPiramide,
   VistaPiramide
 >;
+export type SesionBigTwo = SesionMesa<ConfigBigTwo, EstadoBigTwo, AccionBigTwo, VistaBigTwo>;
 export type SesionEuchre = SesionMesa<ConfigEuchre, EstadoEuchre, AccionEuchre, VistaEuchre>;
 export type SesionDurak = SesionMesa<ConfigDurak, EstadoDurak, AccionDurak, VistaDurak>;
 export type SesionCasino = SesionMesa<ConfigCasino, EstadoCasino, AccionCasino, VistaCasino>;
@@ -406,7 +412,8 @@ export type Partida =
   | { readonly id: 'sevens'; readonly sesion: SesionSevens }
   | { readonly id: 'casino'; readonly sesion: SesionCasino }
   | { readonly id: 'durak'; readonly sesion: SesionDurak }
-  | { readonly id: 'euchre'; readonly sesion: SesionEuchre };
+  | { readonly id: 'euchre'; readonly sesion: SesionEuchre }
+  | { readonly id: 'bigTwo'; readonly sesion: SesionBigTwo };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -450,7 +457,8 @@ export type ConfigJuego =
   | ConfigScorpion
   | ConfigCasino
   | ConfigDurak
-  | ConfigEuchre;
+  | ConfigEuchre
+  | ConfigBigTwo;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -543,6 +551,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_DURAK);
     case 'euchre':
       return hacer(DEF_EUCHRE);
+    case 'bigTwo':
+      return hacer(DEF_BIG_TWO);
   }
 }
 

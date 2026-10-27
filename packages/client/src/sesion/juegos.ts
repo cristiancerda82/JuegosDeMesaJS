@@ -46,6 +46,12 @@ import {
   durak,
   CONFIG_EUCHRE_POR_DEFECTO,
   euchre,
+  CONFIG_BIG_TWO_POR_DEFECTO,
+  bigTwo,
+  type AccionBigTwo,
+  type ConfigBigTwo,
+  type EstadoBigTwo,
+  type VistaBigTwo,
   type AccionEuchre,
   type ConfigEuchre,
   type EstadoEuchre,
@@ -338,7 +344,8 @@ export type IdJuego =
   | 'sevens'
   | 'casino'
   | 'durak'
-  | 'euchre';
+  | 'euchre'
+  | 'bigTwo';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -383,6 +390,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'casino',
   'durak',
   'euchre',
+  'bigTwo',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1170,6 +1178,22 @@ export const DEF_EUCHRE: DefEuchre = {
   },
 };
 
+export type DefBigTwo = DefJuego<ConfigBigTwo, EstadoBigTwo, AccionBigTwo, VistaBigTwo>;
+
+export const DEF_BIG_TWO: DefBigTwo = {
+  id: 'bigTwo',
+  nombre: T.menu.bigTwo,
+  juego: bigTwo,
+  configPorDefecto: CONFIG_BIG_TWO_POR_DEFECTO,
+  ia: IAS.bigTwo,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada jugada de un rival.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    return accion.asiento !== despues.asiento ? PAUSA_RIVAL_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1213,6 +1237,7 @@ export const JUEGOS = {
   casino: DEF_CASINO,
   durak: DEF_DURAK,
   euchre: DEF_EUCHRE,
+  bigTwo: DEF_BIG_TWO,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

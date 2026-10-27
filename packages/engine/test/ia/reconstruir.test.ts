@@ -49,6 +49,9 @@ import { CONFIG_DURAK_POR_DEFECTO, durak } from '../../src/juegos/durak';
 import { iaEuchreBasica } from '../../src/ia/euchre-basica';
 import { reconstruirEuchre } from '../../src/ia/reconstruir/euchre';
 import { CONFIG_EUCHRE_POR_DEFECTO, euchre } from '../../src/juegos/euchre';
+import { iaBigTwoBasica } from '../../src/ia/big-two-basica';
+import { reconstruirBigTwo } from '../../src/ia/reconstruir/big-two';
+import { bigTwo, CONFIG_BIG_TWO_POR_DEFECTO } from '../../src/juegos/big-two';
 import { reconstruirPicas } from '../../src/ia/reconstruir/picas';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
@@ -607,4 +610,9 @@ describe('Reconstrucción del Euchre', () => {
       expect(rec.descarte).not.toBeNull();
     }
   });
+});
+
+describirReconstruccion(bigTwo, reconstruirBigTwo, {
+  configs: [CONFIG_BIG_TWO_POR_DEFECTO],
+  base: iaBigTwoBasica,
 });

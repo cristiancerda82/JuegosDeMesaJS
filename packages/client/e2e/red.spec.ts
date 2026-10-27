@@ -651,6 +651,49 @@ test('Euchre en red: los dos ven el triunfo que pide uno', async ({ browser }) =
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Big Two en red: lo que juega uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'bigTwo');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(13);
+
+  // El primero de los dos al que le toca juega su carta jugable más baja si puede, o pasa; el
+  // otro ve que le queda una carta menos.
+  const jugar = (p: Page) => p.getByTestId('jugar');
+  await expect
+    .poll(async () => (await jugar(ana).isVisible()) || (await jugar(luis).isVisible()), {
+      timeout: 30_000,
+    })
+    .toBe(true);
+  for (let i = 0; i < 30; i++) {
+    const p = (await jugar(ana).isVisible()) ? ana : (await jugar(luis).isVisible()) ? luis : null;
+    if (p === null) {
+      await ana.waitForTimeout(300);
+      continue;
+    }
+    const otro = p === ana ? luis : ana;
+    const asiento = p === ana ? 0 : 1;
+    const jugable = p.locator('.carta-mano.jugable').first();
+    if ((await p.getByTestId('paso').isVisible()) || !(await jugable.isVisible())) {
+      await p.getByTestId('paso').click();
+      continue;
+    }
+    await jugable.click();
+    if (!(await jugar(p).isEnabled())) {
+      await p.getByTestId('paso').click();
+      continue;
+    }
+    await jugar(p).click();
+    await expect(otro.getByTestId(`cartas-${asiento}`)).toHaveText('12 cartas');
+    break;
+  }
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Whist en red: dos humanos juegan en la misma baza', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

@@ -99,6 +99,9 @@ export const T = {
     casino: 'Casino',
     durak: 'Durak',
     euchre: 'Euchre',
+    bigTwo: 'Big Two',
+    bigTwoDesc:
+      'Suelta sueltas, parejas, tríos y jugadas de póker que superen a las de la mesa; el 2 manda. A 50 puntos.',
     euchreDesc:
       'Bazas por parejas con 24 cartas: pide el triunfo, juega solo y aprovecha las jotas, que mandan. A 10 puntos.',
     durakDesc:
@@ -586,6 +589,41 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  bigTwo: {
+    mesa: 'Mesa',
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
+    pasa: 'Pasa',
+    tipos: {
+      suelta: 'Suelta',
+      pareja: 'Pareja',
+      trio: 'Trío',
+      escalera: 'Escalera',
+      color: 'Color',
+      full: 'Full',
+      poker: 'Póker',
+      escaleraColor: 'Escalera de color',
+    } as Record<string, string>,
+    deQuien: (tipo: string, quien: string) => `${tipo} de ${quien === 'Tú' ? 'ti' : quien}`,
+    mesaVacia: 'Mesa vacía: sale quien tiene la mano',
+    jugar: 'Jugar',
+    paso: 'Paso',
+    tuSalidaTres: 'Sales tú: tu jugada tiene que llevar el 3♦',
+    tuSalida: 'Sales tú: juega lo que quieras',
+    tuTurno: 'Supera la jugada de la mesa o pasa',
+    juega: (quien: string, tipo: string) =>
+      quien === 'Tú' ? `Juegas: ${tipo.toLowerCase()}` : `${quien} juega: ${tipo.toLowerCase()}`,
+    pasaAviso: (quien: string) => (quien === 'Tú' ? 'Pasas' : `${quien} pasa`),
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    ganaMano: (quien: string) =>
+      quien === 'Tú' ? '¡Te has quedado sin cartas!' : `Gana la mano: ${quien}`,
+    quedan: 'Le quedan',
+    puntosMano: 'Puntos',
+    totalPartida: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos (menos es mejor)',
   },
 
   euchre: {
@@ -1646,6 +1684,7 @@ export const T = {
       casino: 'Cómo se juega al Casino',
       durak: 'Cómo se juega al Durak',
       euchre: 'Cómo se juega al Euchre',
+      bigTwo: 'Cómo se juega al Big Two',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2150,6 +2189,43 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    bigTwo: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Cuatro jugadores, cada uno por su cuenta, con la baraja francesa entera: 13 cartas cada uno. Hay que quedarse sin cartas antes que nadie.',
+          'Al acabar cada mano, los demás suman un punto por cada carta que les queda (el doble con 10 o más, el triple con 13). Cuando alguien llega a 50, gana quien menos puntos tiene.',
+        ],
+      },
+      {
+        titulo: 'El orden',
+        texto: [
+          'De menor a mayor: 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, A y 2. A igual número desempata el palo: ♦, ♣, ♥ y ♠, de menor a mayor.',
+        ],
+      },
+      {
+        titulo: 'Las jugadas',
+        texto: [
+          'Puedes soltar una carta, una pareja, un trío o una jugada de 5. Las de 5, de menor a mayor: escalera (5 números seguidos, sin dar la vuelta), color (5 del mismo palo), full (trío y pareja), póker (cuatro iguales y otra) y escalera de color.',
+          'Una jugada solo se supera con otra del mismo número de cartas y más alta.',
+        ],
+      },
+      {
+        titulo: 'Las rondas',
+        texto: [
+          'Empieza quien tiene el 3♦, y su primera jugada tiene que llevarlo. Por turno, cada uno supera la jugada de la mesa o pasa; pasar no impide jugar después.',
+          'Cuando los otros tres pasan seguidos, quien hizo la última jugada sale con lo que quiera.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Suelta pronto tus cartas bajas en parejas o jugadas de 5, y guarda los 2 para recuperar la salida cuando haga falta.',
+          'Si a un rival le quedan pocas cartas, no le dejes salir con sueltas: juega fuerte.',
         ],
       },
     ],
