@@ -18,6 +18,7 @@
   import ResumenCribbage from '../mesas/ResumenCribbage.svelte';
   import ResumenBelote from '../mesas/ResumenBelote.svelte';
   import ResumenSchnapsen from '../mesas/ResumenSchnapsen.svelte';
+  import ResumenSkat from '../mesas/ResumenSkat.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
   import ResumenRummy500 from '../mesas/ResumenRummy500.svelte';
   import ResumenGinRummy from '../mesas/ResumenGinRummy.svelte';
@@ -370,6 +371,21 @@
               <th scope="row">{nombreChinchon(a, 4)}</th>
               <td data-testid="total-{a}">{vista.totales[a]}</td>
             </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'skat'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const nombre = (a: number) => nombreAsiento(a, 3, yo, partida.sesion.red)}
+      {#if ultima}
+        <ResumenSkat resultado={ultima} {yo} {nombre} />
+      {/if}
+      <table>
+        <caption>{T.skat.clasificacion}</caption>
+        <tbody>
+          {#each [0, 1, 2].sort((a, b) => vista.puntos[b]! - vista.puntos[a]!) as a (a)}
+            <tr><th scope="row">{nombre(a)}</th><td data-testid="puntos-fin-{a}">{vista.puntos[a]}</td></tr>
           {/each}
         </tbody>
       </table>

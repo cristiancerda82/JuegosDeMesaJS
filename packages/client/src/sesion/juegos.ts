@@ -54,6 +54,12 @@ import {
   belote,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
   schnapsen,
+  CONFIG_SKAT_POR_DEFECTO,
+  skat,
+  type AccionSkat,
+  type ConfigSkat,
+  type EstadoSkat,
+  type VistaSkat,
   type AccionSchnapsen,
   type ConfigSchnapsen,
   type EstadoSchnapsen,
@@ -366,7 +372,8 @@ export type IdJuego =
   | 'bigTwo'
   | 'cribbage'
   | 'belote'
-  | 'schnapsen';
+  | 'schnapsen'
+  | 'skat';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -415,6 +422,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'cribbage',
   'belote',
   'schnapsen',
+  'skat',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1283,6 +1291,26 @@ export const DEF_SCHNAPSEN: DefSchnapsen = {
   },
 };
 
+export type DefSkat = DefJuego<ConfigSkat, EstadoSkat, AccionSkat, VistaSkat>;
+
+export const DEF_SKAT: DefSkat = {
+  id: 'skat',
+  nombre: T.menu.skat,
+  juego: skat,
+  configPorDefecto: CONFIG_SKAT_POR_DEFECTO,
+  ia: IAS.skat,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada baza y cada
+  // decisión de un rival en la subasta, con el Skat o al declarar.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const accion = despues.ultimaAccion;
+    const decide =
+      accion !== null && accion !== antes.ultimaAccion && accion.accion.tipo !== 'jugar';
+    if (decide && accion.asiento !== despues.asiento) return PAUSA_RIVAL_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1330,6 +1358,7 @@ export const JUEGOS = {
   cribbage: DEF_CRIBBAGE,
   belote: DEF_BELOTE,
   schnapsen: DEF_SCHNAPSEN,
+  skat: DEF_SKAT,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

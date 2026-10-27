@@ -764,6 +764,22 @@ test('Schnapsen en red: lo que juega uno lo ve el otro', async ({ browser }) => 
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Skat en red: los dos ven la misma subasta', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'skat');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(10);
+
+  // Puja primero Mittelhand, que es Luis: pasa, y los dos lo ven.
+  await luis.getByTestId('paso').click();
+  await expect(ana.getByTestId('aviso')).toContainText('Luis pasa');
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Whist en red: dos humanos juegan en la misma baza', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

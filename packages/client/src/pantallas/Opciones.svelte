@@ -30,6 +30,7 @@
     ConfigCribbage,
     ConfigBelote,
     ConfigSchnapsen,
+    ConfigSkat,
     ConfigPiramide,
     ConfigGolf,
     ConfigTriPeaks,
@@ -117,6 +118,7 @@
   let cribbageConfig: Editable<ConfigCribbage> = $state({ ...JUEGOS.cribbage.configPorDefecto });
   let beloteConfig: Editable<ConfigBelote> = $state({ ...JUEGOS.belote.configPorDefecto });
   let schnapsenConfig: Editable<ConfigSchnapsen> = $state({ ...JUEGOS.schnapsen.configPorDefecto });
+  let skatConfig: Editable<ConfigSkat> = $state({ ...JUEGOS.skat.configPorDefecto });
   let subastado: Editable<ConfigTuteSubastado> = $state({
     ...JUEGOS.tuteSubastado.configPorDefecto,
   });
@@ -182,6 +184,7 @@
       cribbage: cribbageConfig,
       belote: beloteConfig,
       schnapsen: schnapsenConfig,
+      skat: skatConfig,
       // Las parejas, solo con 4 jugadores.
       casino: { ...casinoConfig, parejas: casinoConfig.jugadores === 4 && casinoConfig.parejas },
     };
@@ -597,6 +600,13 @@
           <input type="checkbox" bind:checked={sieteYMedia.pagoDoble} />
           {T.opciones.pagoDobleDesc}
         </label>
+      </fieldset>
+    {:else if juego === 'skat'}
+      <fieldset>
+        <legend>{T.opciones.rondas}</legend>
+        {#each [1, 2, 3] as n (n)}
+          <label><input type="radio" bind:group={skatConfig.rondas} value={n} /> {T.opciones.rondasN(n)}</label>
+        {/each}
       </fieldset>
     {:else if juego === 'guinote'}
       <fieldset>

@@ -101,6 +101,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    skat: 'Skat',
+    skatDesc:
+      'El gran juego alemán para tres: puja, coge el Skat y juega solo contra los otros dos un palo, un Grand o un Nulo.',
     schnapsen: 'Schnapsen',
     schnapsenDesc:
       'El clásico austriaco para dos con 20 cartas: canta, cambia la J, cierra el mazo y llega a 66 antes que el rival.',
@@ -232,6 +235,8 @@ export const T = {
       'En el arrastre, obliga a superar la baza aunque ya la vaya ganando tu compañero.',
     puntosPartida: 'Partida',
     puntosN: (n: number) => `A ${n} puntos`,
+    rondas: 'Rondas',
+    rondasN: (n: number) => `${n === 1 ? '1 ronda' : `${n} rondas`} (${3 * n} manos)`,
     capturaObligatoria: 'Recoger es obligatorio',
     capturaObligatoriaDesc: 'Si la carta que juegas puede sumar 15, tienes que recoger.',
     escobaInicial: 'Escoba del que reparte',
@@ -598,6 +603,85 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  skat: {
+    solista: 'Solista',
+    reparte: 'Reparte',
+    puntosPartida: (n: number) => `${n} pts`,
+    juego: (juego: string) =>
+      (
+        ({
+          picas: '♠ Picas',
+          corazones: '♥ Corazones',
+          diamantes: '♦ Diamantes',
+          treboles: '♣ Tréboles',
+          grand: 'Grand',
+          nulo: 'Nulo',
+        }) as Record<string, string>
+      )[juego]!,
+    subasta: (pujador: string, escucha: string, valor: number, tramo: number) =>
+      tramo === 3
+        ? `Nadie ha pujado: ${pujador === 'Tú' ? 'puedes' : `${pujador} puede`} jugar con 18`
+        : `${pujador === 'Tú' ? 'Pujas' : `${pujador} puja`} a ${escucha === 'Tú' ? 'ti' : escucha}${valor > 0 ? ` · van ${valor}` : ''}`,
+    eligiendo: (quien: string, puja: number) =>
+      `${quien === 'Tú' ? 'Eres el solista' : `${quien} es el solista`} con ${puja}`,
+    juegaSolista: (quien: string, juego: string, mano: boolean, anuncio: string, puja: number) => {
+      const extras = [
+        mano ? 'de mano' : '',
+        anuncio === 'ninguno'
+          ? ''
+          : (
+              {
+                schneider: 'schneider anunciado',
+                schwarz: 'schwarz anunciado',
+                ouvert: 'ouvert',
+              } as Record<string, string>
+            )[anuncio]!,
+      ].filter((x) => x !== '');
+      return `${quien === 'Tú' ? 'Juegas' : `${quien} juega`} ${juego}${extras.length > 0 ? ` (${extras.join(', ')})` : ''} · puja ${puja}`;
+    },
+    bandos: (solista: number, defensores: number) =>
+      `Solista ${solista} · Defensores ${defensores}`,
+    cartasDe: (quien: string) => `Cartas de ${quien}:`,
+    tuSkat: 'Tu Skat:',
+    elSkat: 'Skat:',
+    jugarCon: (n: number) => `Juego con ${n}`,
+    si: (valor: number) => `Sí, ${valor}`,
+    paso: 'Paso',
+    cogerSkat: 'Coger el Skat',
+    deMano: 'Jugar de mano',
+    anuncio: 'Anuncio',
+    nombreAnuncio: (a: string) =>
+      (
+        ({
+          ninguno: 'Sin anuncio',
+          schneider: 'Schneider',
+          schwarz: 'Schwarz',
+          ouvert: 'Ouvert',
+        }) as Record<string, string>
+      )[a]!,
+    nuloOuvert: 'Nulo ouvert',
+    descartate: 'Descártate de 2 cartas: toca una y después la mesa',
+    puja: (quien: string, valor: number) =>
+      `${quien === 'Tú' ? 'Pujas' : `${quien} puja`} ${valor}`,
+    acepta: (quien: string, valor: number) =>
+      `${quien === 'Tú' ? 'Aceptas' : `${quien} acepta`} ${valor}`,
+    pasa: (quien: string) => (quien === 'Tú' ? 'Pasas' : `${quien} pasa`),
+    cogeSkat: (quien: string) => (quien === 'Tú' ? 'Coges el Skat' : `${quien} coge el Skat`),
+    seDescarta: (quien: string) => (quien === 'Tú' ? 'Te descartas' : `${quien} se descarta`),
+    declara: (quien: string, juego: string, mano: boolean, anuncio: string) =>
+      `${quien === 'Tú' ? 'Juegas' : `${quien} juega`} ${juego}${mano ? ' de mano' : ''}${anuncio === 'ninguno' ? '' : ` (${anuncio})`}`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    puntosCartas: 'Puntos del solista',
+    multiplicador: 'Multiplicador',
+    conSin: (con: boolean, n: number) => `${con ? 'con' : 'sin'} ${n}`,
+    bazasSolista: 'Bazas del solista',
+    valor: 'Valor',
+    resultado: (quien: string, gana: boolean, pasado: boolean, delta: number) =>
+      `${quien === 'Tú' ? (gana ? 'Ganas' : 'Pierdes') : `${quien} ${gana ? 'gana' : 'pierde'}`}${pasado ? ' (se pasó en la puja)' : ''}: ${delta > 0 ? '+' : ''}${delta}`,
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos de la partida',
   },
 
   schnapsen: {
@@ -1821,6 +1905,7 @@ export const T = {
       cribbage: 'Cómo se juega al Cribbage',
       belote: 'Cómo se juega al Belote',
       schnapsen: 'Cómo se juega al Schnapsen',
+      skat: 'Cómo se juega al Skat',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2325,6 +2410,54 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    skat: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Tres jugadores con 32 cartas de la baraja francesa, del 7 al As. En cada mano, uno juega solo (el solista) contra los otros dos.',
+          'El solista suma el valor de su juego si gana y resta el doble si pierde. Tras las rondas elegidas, gana quien tiene más puntos.',
+        ],
+      },
+      {
+        titulo: 'La subasta',
+        texto: [
+          'Cada uno recibe 10 cartas y quedan 2 boca abajo: el Skat. El de la izquierda del repartidor es Vorhand, el siguiente Mittelhand y el repartidor Hinterhand.',
+          'Mittelhand puja a Vorhand (18, 20, 22, 23, 24, 27…) y Vorhand responde «sí» o pasa. El que queda se enfrenta a Hinterhand. Quien gana es el solista.',
+          'Si nadie puja, Vorhand puede jugar con 18 o pasar, y se reparte de nuevo.',
+        ],
+      },
+      {
+        titulo: 'El Skat y el juego',
+        texto: [
+          'El solista puede coger el Skat y descartarse de 2 cartas, o jugar de mano sin mirarlo. Los puntos del Skat son suyos.',
+          'Después elige el juego: un palo de triunfo, Grand (solo las J son triunfo) o Nulo (no hacer ninguna baza). Jugando de mano puede anunciar schneider, schwarz u ouvert.',
+        ],
+      },
+      {
+        titulo: 'Las cartas y las bazas',
+        texto: [
+          'Las cuatro J son los triunfos más altos: J♣, J♠, J♥ y J♦. Después van el As, el 10, el K, la Q, el 9, el 8 y el 7. Las J cuentan como triunfo, no como su palo.',
+          'Hay que seguir el palo de salida si se puede, pero no hay obligación de fallar. Las cartas valen As 11, 10 10, K 4, Q 3 y J 2: 120 en total.',
+          'En Nulo no hay triunfo y el orden es A, K, Q, J, 10, 9, 8 y 7.',
+        ],
+      },
+      {
+        titulo: 'Ganar y el valor del juego',
+        texto: [
+          'El solista gana con 61 puntos o más. Si el perdedor hace 30 o menos es schneider, y si no hace ninguna baza, schwarz.',
+          'El valor es la base (♦ 9, ♥ 10, ♠ 11, ♣ 12, Grand 24) por el multiplicador: las J seguidas que tiene o le faltan desde la de tréboles, más 1 por el juego y 1 por mano, schneider, schwarz y cada anuncio. El Nulo vale 23, 35 de mano, 46 ouvert o 59 ouvert de mano.',
+          'Si el juego vale menos de lo pujado, el solista pierde.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Puja con J y un palo largo, o con varias J y Ases para un Grand. Calcula el valor antes de seguir subiendo.',
+          'Como defensor, si tu compañero va ganando la baza y juegas el último, échale tus cartas de más puntos.',
         ],
       },
     ],

@@ -60,6 +60,9 @@ import { reconstruirBelote } from '../../src/ia/reconstruir/belote';
 import { belote, CONFIG_BELOTE_POR_DEFECTO, esReyODamaDelTriunfo } from '../../src/juegos/belote';
 import { iaSchnapsenBasica } from '../../src/ia/schnapsen-basica';
 import { reconstruirSchnapsen } from '../../src/ia/reconstruir/schnapsen';
+import { iaSkatBasica } from '../../src/ia/skat-basica';
+import { reconstruirSkat } from '../../src/ia/reconstruir/skat';
+import { CONFIG_SKAT_POR_DEFECTO, skat } from '../../src/juegos/skat';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -717,6 +720,33 @@ describe('Reconstrucción del Schnapsen', () => {
       g.enteroHasta(1000);
       expect(rec.manos[1]).toContain(damaDe('picas'));
       expect(rec.manos[1]).toHaveLength(e.manos[1]!.length);
+    }
+  });
+});
+
+describirReconstruccion(skat, reconstruirSkat, {
+  configs: [CONFIG_SKAT_POR_DEFECTO],
+  base: iaSkatBasica,
+});
+
+describe('Reconstrucción del Skat', () => {
+  it('el solista que se descartó conoce el Skat', () => {
+    const r = skat.crear(CONFIG_SKAT_POR_DEFECTO, 'descarte');
+    if (!r.ok) throw new Error(r.error);
+    let e = r.valor;
+    // Mittelhand puja 18, Vorhand acepta, Mittelhand y Hinterhand pasan.
+    for (const a of ['pujar', 'aceptar', 'pasar', 'pasar'] as const) {
+      e = skat.transicion(e, e.turno, { tipo: a });
+    }
+    const solista = e.solista!;
+    e = skat.transicion(e, solista, { tipo: 'cogerSkat' });
+    e = skat.transicion(e, solista, { tipo: 'descartar', carta: e.manos[solista]![0]! });
+    e = skat.transicion(e, solista, { tipo: 'descartar', carta: e.manos[solista]![0]! });
+    const g = new Generador(crearAzar('k'));
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirSkat(skat.vistaDe(e, solista), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.skat).toEqual(e.skat);
     }
   });
 });
