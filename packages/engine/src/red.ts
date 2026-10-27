@@ -40,6 +40,7 @@ import { CONFIG_CRIBBAGE_POR_DEFECTO, cribbage } from './juegos/cribbage';
 import { belote, CONFIG_BELOTE_POR_DEFECTO } from './juegos/belote';
 import { CONFIG_SCHNAPSEN_POR_DEFECTO, schnapsen } from './juegos/schnapsen';
 import { CONFIG_SKAT_POR_DEFECTO, skat } from './juegos/skat';
+import { CONFIG_OH_HELL_POR_DEFECTO, ohHell } from './juegos/oh-hell';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -84,6 +85,7 @@ export const IDS_JUEGOS_EN_RED = [
   'belote',
   'schnapsen',
   'skat',
+  'ohHell',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -153,6 +155,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   belote: entrada(belote, IAS.belote, CONFIG_BELOTE_POR_DEFECTO),
   schnapsen: entrada(schnapsen, IAS.schnapsen, CONFIG_SCHNAPSEN_POR_DEFECTO),
   skat: entrada(skat, IAS.skat, CONFIG_SKAT_POR_DEFECTO),
+  ohHell: entrada(ohHell, IAS.ohHell, CONFIG_OH_HELL_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

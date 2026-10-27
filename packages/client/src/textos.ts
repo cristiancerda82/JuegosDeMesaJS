@@ -101,6 +101,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    ohHell: 'Oh Hell',
+    ohHellDesc:
+      'De 3 a 7 jugadores: acierta exactamente cuántas bazas harás en manos que menguan hasta 1 carta y vuelven a crecer.',
     skat: 'Skat',
     skatDesc:
       'El gran juego alemán para tres: puja, coge el Skat y juega solo contra los otros dos un palo, un Grand o un Nulo.',
@@ -603,6 +606,34 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  ohHell: {
+    rivalN: (n: number) => `Rival ${n}`,
+    triunfo: (palo: string) =>
+      `Triunfo: ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[palo]}`,
+    mano: (n: number, total: number, cartas: number) =>
+      `Mano ${n} de ${total} · ${cartas === 1 ? '1 carta' : `${cartas} cartas`}`,
+    detalle: (apuesta: number | null, bazas: number, puntos: number) =>
+      apuesta === null ? `${puntos} pts` : `apuesta ${apuesta} · bazas ${bazas} · ${puntos} pts`,
+    apuestaTitulo: '¿Cuántas bazas harás?',
+    noPuedes: (n: number) => `Repartes tú: no puedes apostar ${n}`,
+    apuesta: (quien: string, n: number) => {
+      const bazas = n === 1 ? '1 baza' : `${n} bazas`;
+      return quien === 'Tú' ? `Apuestas ${bazas}` : `${quien} apuesta ${bazas}`;
+    },
+    sumaApuestas: (suma: number, cartas: number) => `Apostadas ${suma} de ${cartas}`,
+    reparte: (quien: string) => (quien === 'Tú' ? 'Repartes tú' : `Reparte ${quien}`),
+    finMano: (n: number, total: number) => `Fin de la mano ${n} de ${total}`,
+    jugador: 'Jugador',
+    apuestaCol: 'Apuesta',
+    bazasCol: 'Bazas',
+    puntosCol: 'Mano',
+    totalCol: 'Total',
+    acierto: 'Acierta',
+    fallo: 'Falla',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
   },
 
   skat: {
@@ -1906,6 +1937,7 @@ export const T = {
       belote: 'Cómo se juega al Belote',
       schnapsen: 'Cómo se juega al Schnapsen',
       skat: 'Cómo se juega al Skat',
+      ohHell: 'Cómo se juega al Oh Hell',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2410,6 +2442,51 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    ohHell: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'De 3 a 7 jugadores, cada uno por su cuenta, con la baraja francesa de 52. En cada mano tienes que acertar exactamente cuántas bazas harás.',
+          'Gana quien tenga más puntos al acabar la última mano.',
+        ],
+      },
+      {
+        titulo: 'Las manos',
+        texto: [
+          'La primera mano reparte todas las cartas posibles dejando una (17 con 3 jugadores, 12 con 4, 10 con 5, 8 con 6 y 7 con 7). Cada mano reparte una carta menos hasta llegar a 1, y después vuelven a subir hasta el máximo.',
+          'Tras repartir se pone boca arriba la siguiente carta: su palo es el triunfo.',
+        ],
+      },
+      {
+        titulo: 'Las apuestas',
+        texto: [
+          'Desde la izquierda del repartidor, cada uno dice cuántas bazas hará, de 0 a las cartas de la mano.',
+          'El repartidor apuesta el último y no puede elegir el número que haría que la suma de las apuestas fuera igual a las cartas repartidas: siempre falla alguien.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Sale el de la izquierda del repartidor. Hay que seguir el palo de salida si se puede; si no, se juega cualquier carta, sin obligación de fallar.',
+          'La baza la gana el triunfo más alto o, si no hay, la carta más alta del palo de salida. El As es la carta más alta de cada palo.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'Si haces exactamente las bazas que apostaste, sumas 10 más lo apostado: apostar 0 y no hacer ninguna vale 10.',
+          'Si haces más o menos, no sumas nada.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
+          'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
         ],
       },
     ],

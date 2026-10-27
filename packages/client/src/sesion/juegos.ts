@@ -56,6 +56,12 @@ import {
   schnapsen,
   CONFIG_SKAT_POR_DEFECTO,
   skat,
+  CONFIG_OH_HELL_POR_DEFECTO,
+  ohHell,
+  type AccionOhHell,
+  type ConfigOhHell,
+  type EstadoOhHell,
+  type VistaOhHell,
   type AccionSkat,
   type ConfigSkat,
   type EstadoSkat,
@@ -373,7 +379,8 @@ export type IdJuego =
   | 'cribbage'
   | 'belote'
   | 'schnapsen'
-  | 'skat';
+  | 'skat'
+  | 'ohHell';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -423,6 +430,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'belote',
   'schnapsen',
   'skat',
+  'ohHell',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1311,6 +1319,26 @@ export const DEF_SKAT: DefSkat = {
   },
 };
 
+export type DefOhHell = DefJuego<ConfigOhHell, EstadoOhHell, AccionOhHell, VistaOhHell>;
+
+export const DEF_OH_HELL: DefOhHell = {
+  id: 'ohHell',
+  nombre: T.menu.ohHell,
+  juego: ohHell,
+  configPorDefecto: CONFIG_OH_HELL_POR_DEFECTO,
+  ia: IAS.ohHell,
+  // El cierre de la mano lo detiene la propia mesa con el resultado; aquí, cada apuesta de un
+  // rival y cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const apostador = despues.apuestas.findIndex(
+      (a, i) => a !== null && antes.apuestas[i] === null,
+    );
+    if (apostador !== -1 && apostador !== despues.asiento) return PAUSA_APUESTA_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1359,6 +1387,7 @@ export const JUEGOS = {
   belote: DEF_BELOTE,
   schnapsen: DEF_SCHNAPSEN,
   skat: DEF_SKAT,
+  ohHell: DEF_OH_HELL,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

@@ -63,6 +63,9 @@ import { reconstruirSchnapsen } from '../../src/ia/reconstruir/schnapsen';
 import { iaSkatBasica } from '../../src/ia/skat-basica';
 import { reconstruirSkat } from '../../src/ia/reconstruir/skat';
 import { CONFIG_SKAT_POR_DEFECTO, skat } from '../../src/juegos/skat';
+import { iaOhHellBasica } from '../../src/ia/oh-hell-basica';
+import { reconstruirOhHell } from '../../src/ia/reconstruir/oh-hell';
+import { CONFIG_OH_HELL_POR_DEFECTO, ohHell } from '../../src/juegos/oh-hell';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -747,6 +750,32 @@ describe('Reconstrucción del Skat', () => {
       const rec = reconstruirSkat(skat.vistaDe(e, solista), g.estado());
       g.enteroHasta(1000);
       expect(rec.skat).toEqual(e.skat);
+    }
+  });
+});
+
+describirReconstruccion(ohHell, reconstruirOhHell, {
+  configs: [{ jugadores: 3 }, CONFIG_OH_HELL_POR_DEFECTO, { jugadores: 7 }],
+  base: iaOhHellBasica,
+});
+
+describe('Reconstrucción del Oh Hell', () => {
+  it('quien no siguió un palo no lo tiene en la mano reconstruida', () => {
+    const r = ohHell.crear(CONFIG_OH_HELL_POR_DEFECTO, 'fallo');
+    if (!r.ok) throw new Error(r.error);
+    let e = r.valor;
+    // Apuestas y bazas con la primera acción legal hasta que alguien no sigue el palo.
+    let pasos = 0;
+    while (!e.fallos.some((f, a) => a !== 0 && f.length > 0) && pasos++ < 500) {
+      e = ohHell.transicion(e, e.turno, ohHell.accionesLegales(e, e.turno)[0]!);
+    }
+    const quien = e.fallos.findIndex((f, a) => a !== 0 && f.length > 0);
+    const palo = e.fallos[quien]![0]!;
+    const g = new Generador(crearAzar('o'));
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirOhHell(ohHell.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.manos[quien]!.some((c) => c.startsWith(palo))).toBe(false);
     }
   });
 });

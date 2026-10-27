@@ -55,6 +55,10 @@ import {
   type ConfigSkat,
   type EstadoSkat,
   type VistaSkat,
+  type AccionOhHell,
+  type ConfigOhHell,
+  type EstadoOhHell,
+  type VistaOhHell,
   type ConfigWhist,
   type EstadoWhist,
   type VistaWhist,
@@ -230,6 +234,7 @@ import {
   DEF_BELOTE,
   DEF_SCHNAPSEN,
   DEF_SKAT,
+  DEF_OH_HELL,
   DEF_SPIDER,
   DEF_PIRAMIDE,
   DEF_GOLF,
@@ -328,6 +333,7 @@ export type SesionPiramide = SesionMesa<
   AccionPiramide,
   VistaPiramide
 >;
+export type SesionOhHell = SesionMesa<ConfigOhHell, EstadoOhHell, AccionOhHell, VistaOhHell>;
 export type SesionSkat = SesionMesa<ConfigSkat, EstadoSkat, AccionSkat, VistaSkat>;
 export type SesionSchnapsen = SesionMesa<
   ConfigSchnapsen,
@@ -451,7 +457,8 @@ export type Partida =
   | { readonly id: 'cribbage'; readonly sesion: SesionCribbage }
   | { readonly id: 'belote'; readonly sesion: SesionBelote }
   | { readonly id: 'schnapsen'; readonly sesion: SesionSchnapsen }
-  | { readonly id: 'skat'; readonly sesion: SesionSkat };
+  | { readonly id: 'skat'; readonly sesion: SesionSkat }
+  | { readonly id: 'ohHell'; readonly sesion: SesionOhHell };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -500,7 +507,8 @@ export type ConfigJuego =
   | ConfigCribbage
   | ConfigBelote
   | ConfigSchnapsen
-  | ConfigSkat;
+  | ConfigSkat
+  | ConfigOhHell;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -603,6 +611,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_SCHNAPSEN);
     case 'skat':
       return hacer(DEF_SKAT);
+    case 'ohHell':
+      return hacer(DEF_OH_HELL);
   }
 }
 

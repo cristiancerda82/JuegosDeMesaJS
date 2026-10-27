@@ -26,6 +26,7 @@
   import MesaBelote from '../mesas/MesaBelote.svelte';
   import MesaSchnapsen from '../mesas/MesaSchnapsen.svelte';
   import MesaSkat from '../mesas/MesaSkat.svelte';
+  import MesaOhHell from '../mesas/MesaOhHell.svelte';
   import MesaRemigio from '../mesas/MesaRemigio.svelte';
   import MesaChinchon from '../mesas/MesaChinchon.svelte';
   import MesaCinquillo from '../mesas/MesaCinquillo.svelte';
@@ -139,6 +140,8 @@
     <MesaSchnapsen sesion={partida.sesion} />
   {:else if partida.id === 'skat'}
     <MesaSkat sesion={partida.sesion} />
+  {:else if partida.id === 'ohHell'}
+    <MesaOhHell sesion={partida.sesion} />
   {:else if partida.id === 'whist'}
     <MesaWhist sesion={partida.sesion} />
   {:else if partida.id === 'canasta'}
