@@ -55,6 +55,9 @@ import { bigTwo, CONFIG_BIG_TWO_POR_DEFECTO } from '../../src/juegos/big-two';
 import { iaCribbageBasica } from '../../src/ia/cribbage-basica';
 import { reconstruirCribbage } from '../../src/ia/reconstruir/cribbage';
 import { CONFIG_CRIBBAGE_POR_DEFECTO, cribbage } from '../../src/juegos/cribbage';
+import { iaBeloteBasica } from '../../src/ia/belote-basica';
+import { reconstruirBelote } from '../../src/ia/reconstruir/belote';
+import { belote, CONFIG_BELOTE_POR_DEFECTO, esReyODamaDelTriunfo } from '../../src/juegos/belote';
 import { reconstruirPicas } from '../../src/ia/reconstruir/picas';
 import { CONFIG_PICAS_POR_DEFECTO, picas } from '../../src/juegos/picas';
 import { reconstruirOchoLoco } from '../../src/ia/reconstruir/ocho-loco';
@@ -638,6 +641,38 @@ describe('Reconstrucción del Cribbage', () => {
       g.enteroHasta(1000);
       expect(rec.echadas[0]).toEqual(e.echadas[0]);
       expect(rec.echadas[1]).toHaveLength(2);
+    }
+  });
+});
+
+describirReconstruccion(belote, reconstruirBelote, {
+  configs: [CONFIG_BELOTE_POR_DEFECTO],
+  base: iaBeloteBasica,
+});
+
+describe('Reconstrucción del Belote', () => {
+  it('quien anunció «Belote» guarda la otra carta, y quien tomó, la carta vuelta', () => {
+    // Busca una mano en la que un rival del 0 anuncie «Belote».
+    for (let i = 0; ; i++) {
+      const r = belote.crear(CONFIG_BELOTE_POR_DEFECTO, `belote-${i}`);
+      if (!r.ok) throw new Error(r.error);
+      let e = belote.transicion(r.valor, 0, { tipo: 'tomar' });
+      const tiene = e.belote;
+      if (tiene === null || tiene % 2 === 0) continue;
+      while (e.anuncios.length === 0)
+        e = belote.transicion(e, e.turno, belote.accionesLegales(e, e.turno)[0]!);
+      if (e.anuncios.length !== 1 || e.resultadosManos.length > 0) continue;
+      const otra = e.manos[tiene]!.find((c) => esReyODamaDelTriunfo(c, e.triunfo))!;
+      const vuelta = e.manos[0]!.includes(e.cartaVuelta);
+      const g = new Generador(crearAzar('b'));
+      for (let k = 0; k < 10; k++) {
+        const rec = reconstruirBelote(belote.vistaDe(e, 0), g.estado());
+        g.enteroHasta(1000);
+        expect(rec.manos[tiene]).toContain(otra);
+        expect(rec.belote).toBe(tiene);
+        expect(rec.manos[0]!.includes(e.cartaVuelta)).toBe(vuelta);
+      }
+      return;
     }
   });
 });

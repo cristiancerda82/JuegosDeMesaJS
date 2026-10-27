@@ -722,6 +722,27 @@ test('Cribbage en red: los dos echan al crib y ven la misma mesa', async ({ brow
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Belote en red: los dos ven el triunfo que toma uno', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'belote');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(5);
+
+  // Habla primero Ana (a la izquierda del repartidor): toma la carta vuelta.
+  await ana.getByTestId('tomar').click();
+  const triunfo = ana.getByTestId('triunfo');
+  await expect(triunfo).toContainText('Triunfo');
+  await expect(luis.getByTestId('triunfo')).toHaveText(await triunfo.innerText());
+  await expect(luis.getByTestId('elige')).toContainText('Ana');
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(8);
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Whist en red: dos humanos juegan en la misma baza', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

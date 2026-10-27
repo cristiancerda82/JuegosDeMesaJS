@@ -101,6 +101,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    belote: 'Belote',
+    beloteDesc:
+      'El clásico francés por parejas con 32 cartas: toma el triunfo, donde mandan la J y el 9, y canta belote. A 501.',
     cribbageDesc:
       'El clásico inglés para dos: quinces, parejas y escaleras al jugar y al contar, hasta 121.',
     bigTwoDesc:
@@ -592,6 +595,49 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  belote: {
+    reparte: 'Reparte',
+    tomo: 'Eligió el triunfo',
+    cartaVuelta: 'Carta vuelta',
+    sinTriunfo: 'Se elige el triunfo',
+    triunfo: (palo: string) =>
+      `Triunfo: ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[palo]}`,
+    paloCorto: (palo: string) =>
+      (
+        ({
+          picas: '♠ Picas',
+          corazones: '♥ Corazones',
+          diamantes: '♦ Diamantes',
+          treboles: '♣ Tréboles',
+        }) as Record<string, string>
+      )[palo]!,
+    elige: (quien: string) => (quien === 'Tú' ? 'Eliges tú' : `Elige ${quien}`),
+    pareja: (lado: string, bazas: number, puntos: number) =>
+      `${lado}: ${bazas} en bazas · ${puntos} de 501`,
+    tomar: 'Tomo',
+    paso: 'Paso',
+    toma: (quien: string) =>
+      quien === 'Tú' ? 'Tomas la carta vuelta' : `${quien} toma la carta vuelta`,
+    nombra: (quien: string, palo: string) =>
+      `${quien === 'Tú' ? 'Nombras' : `${quien} nombra`} ${palo}`,
+    pasa: (quien: string) => (quien === 'Tú' ? 'Pasas' : `${quien} pasa`),
+    anuncia: (quien: string, tipo: 'belote' | 'rebelote') =>
+      `${quien === 'Tú' ? 'Dices' : `${quien} dice`} «${tipo === 'belote' ? 'Belote' : 'Rebelote'}»`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    eligio: (quien: string, palo: string) =>
+      `${quien === 'Tú' ? 'Elegiste' : `Eligió ${quien}`}: ${palo}`,
+    dentro: '¡Dentro! Quien eligió el triunfo hizo menos puntos y los rivales se apuntan 162',
+    capot: (lado: string) => `¡Capot! ${lado} hacen las 8 bazas y se apuntan 252`,
+    parejaCol: 'Pareja',
+    cartasCol: 'Cartas',
+    ultimasCol: 'Últimas',
+    beloteCol: 'Belote',
+    manoCol: 'Mano',
+    totalCol: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos (a 501)',
   },
 
   cribbage: {
@@ -1734,6 +1780,7 @@ export const T = {
       euchre: 'Cómo se juega al Euchre',
       bigTwo: 'Cómo se juega al Big Two',
       cribbage: 'Cómo se juega al Cribbage',
+      belote: 'Cómo se juega al Belote',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2238,6 +2285,52 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    belote: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Cuatro jugadores en dos parejas: tu compañero se sienta enfrente. Se juega con 32 cartas de la baraja francesa, del 7 al As, y se trata de hacer con tu pareja más puntos que la otra en las bazas.',
+          'Gana la pareja que tiene más puntos al terminar una mano en la que alguna llega a 501.',
+        ],
+      },
+      {
+        titulo: 'Elegir el triunfo',
+        texto: [
+          'Cada uno recibe 5 cartas y se pone una boca arriba: la carta vuelta. Por turno, cada jugador puede tomarla, y su palo es el triunfo. Si todos pasan, hay una segunda vuelta para nombrar cualquier otro palo; si vuelven a pasar todos, se reparte de nuevo.',
+          'Quien elige el triunfo se lleva la carta vuelta y 2 cartas más, y los demás 3: todos acaban con 8.',
+        ],
+      },
+      {
+        titulo: 'Las cartas',
+        texto: [
+          'En el triunfo mandan la J (20 puntos) y el 9 (14), y después el As (11), el 10 (10), el K (4), la Q (3), el 8 y el 7.',
+          'En los demás palos el orden es As (11), 10 (10), K (4), Q (3), J (2), 9, 8 y 7. Las cartas suman 152 puntos, y la última baza vale 10 más.',
+        ],
+      },
+      {
+        titulo: 'Jugar las bazas',
+        texto: [
+          'Hay que seguir el palo de salida. Si se sale de triunfo, hay que montar: jugar un triunfo más alto si se tiene.',
+          'Si no tienes el palo, tienes que fallar con un triunfo (montando si ya hay otro), salvo que la baza la vaya ganando tu compañero.',
+          'Si tienes el K y la Q del triunfo, al jugarlos dices «Belote» y «Rebelote» y tu pareja suma 20.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'La pareja que eligió el triunfo tiene que hacer al menos tantos puntos como la otra. Si lo consigue, cada pareja se apunta los suyos.',
+          'Si no, está dentro: los rivales se apuntan los 162. Si una pareja hace las 8 bazas, es capot y se apunta 252.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Toma con la J o el 9 del triunfo y al menos dos triunfos más. Los Ases de otros palos ayudan mucho.',
+          'Cuando la baza ya es de tu compañero y juegas el último, échale tus cartas de más valor.',
         ],
       },
     ],

@@ -28,6 +28,7 @@
     ConfigEuchre,
     ConfigBigTwo,
     ConfigCribbage,
+    ConfigBelote,
     ConfigPiramide,
     ConfigGolf,
     ConfigTriPeaks,
@@ -113,6 +114,7 @@
   let euchreConfig: Editable<ConfigEuchre> = $state({ ...JUEGOS.euchre.configPorDefecto });
   let bigTwoConfig: Editable<ConfigBigTwo> = $state({ ...JUEGOS.bigTwo.configPorDefecto });
   let cribbageConfig: Editable<ConfigCribbage> = $state({ ...JUEGOS.cribbage.configPorDefecto });
+  let beloteConfig: Editable<ConfigBelote> = $state({ ...JUEGOS.belote.configPorDefecto });
   let subastado: Editable<ConfigTuteSubastado> = $state({
     ...JUEGOS.tuteSubastado.configPorDefecto,
   });
@@ -176,6 +178,7 @@
       euchre: euchreConfig,
       bigTwo: bigTwoConfig,
       cribbage: cribbageConfig,
+      belote: beloteConfig,
       // Las parejas, solo con 4 jugadores.
       casino: { ...casinoConfig, parejas: casinoConfig.jugadores === 4 && casinoConfig.parejas },
     };

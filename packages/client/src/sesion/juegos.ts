@@ -50,6 +50,12 @@ import {
   bigTwo,
   CONFIG_CRIBBAGE_POR_DEFECTO,
   cribbage,
+  CONFIG_BELOTE_POR_DEFECTO,
+  belote,
+  type AccionBelote,
+  type ConfigBelote,
+  type EstadoBelote,
+  type VistaBelote,
   type AccionCribbage,
   type ConfigCribbage,
   type EstadoCribbage,
@@ -352,7 +358,8 @@ export type IdJuego =
   | 'durak'
   | 'euchre'
   | 'bigTwo'
-  | 'cribbage';
+  | 'cribbage'
+  | 'belote';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -399,6 +406,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'euchre',
   'bigTwo',
   'cribbage',
+  'belote',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1222,6 +1230,26 @@ export const DEF_CRIBBAGE: DefCribbage = {
   },
 };
 
+export type DefBelote = DefJuego<ConfigBelote, EstadoBelote, AccionBelote, VistaBelote>;
+
+export const DEF_BELOTE: DefBelote = {
+  id: 'belote',
+  nombre: T.menu.belote,
+  juego: belote,
+  configPorDefecto: CONFIG_BELOTE_POR_DEFECTO,
+  ia: IAS.belote,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada baza y cada
+  // decisión de un rival al elegir el triunfo.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const accion = despues.ultimaAccion;
+    const eligiendo =
+      accion !== null && accion !== antes.ultimaAccion && accion.accion.tipo !== 'jugar';
+    if (eligiendo && accion.asiento !== despues.asiento) return PAUSA_RIVAL_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1267,6 +1295,7 @@ export const JUEGOS = {
   euchre: DEF_EUCHRE,
   bigTwo: DEF_BIG_TWO,
   cribbage: DEF_CRIBBAGE,
+  belote: DEF_BELOTE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

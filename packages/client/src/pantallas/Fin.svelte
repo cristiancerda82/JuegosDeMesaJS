@@ -16,6 +16,7 @@
   import ResumenEuchre from '../mesas/ResumenEuchre.svelte';
   import ResumenBigTwo from '../mesas/ResumenBigTwo.svelte';
   import ResumenCribbage from '../mesas/ResumenCribbage.svelte';
+  import ResumenBelote from '../mesas/ResumenBelote.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
   import ResumenRummy500 from '../mesas/ResumenRummy500.svelte';
   import ResumenGinRummy from '../mesas/ResumenGinRummy.svelte';
@@ -369,6 +370,24 @@
               <td data-testid="total-{a}">{vista.totales[a]}</td>
             </tr>
           {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'belote'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenBelote
+          resultado={ultima}
+          lados={[lados[0]!, lados[1]!]}
+          bando={mio}
+          nombre={(a) => nombreAsiento(a, 4, yo, partida.sesion.red)}
+        />
+      {/if}
+      <table>
+        <caption>{T.belote.clasificacion}</caption>
+        <tbody>
+          <tr><th scope="row">{lados[0]}</th><td data-testid="puntos-fin-0">{vista.puntos[mio]}</td></tr>
+          <tr><th scope="row">{lados[1]}</th><td data-testid="puntos-fin-1">{vista.puntos[1 - mio]}</td></tr>
         </tbody>
       </table>
     {:else if partida.id === 'euchre'}

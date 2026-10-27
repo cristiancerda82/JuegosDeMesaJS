@@ -43,6 +43,10 @@ import {
   type ConfigCribbage,
   type EstadoCribbage,
   type VistaCribbage,
+  type AccionBelote,
+  type ConfigBelote,
+  type EstadoBelote,
+  type VistaBelote,
   type ConfigWhist,
   type EstadoWhist,
   type VistaWhist,
@@ -215,6 +219,7 @@ import {
   DEF_EUCHRE,
   DEF_BIG_TWO,
   DEF_CRIBBAGE,
+  DEF_BELOTE,
   DEF_SPIDER,
   DEF_PIRAMIDE,
   DEF_GOLF,
@@ -313,6 +318,7 @@ export type SesionPiramide = SesionMesa<
   AccionPiramide,
   VistaPiramide
 >;
+export type SesionBelote = SesionMesa<ConfigBelote, EstadoBelote, AccionBelote, VistaBelote>;
 export type SesionCribbage = SesionMesa<
   ConfigCribbage,
   EstadoCribbage,
@@ -425,7 +431,8 @@ export type Partida =
   | { readonly id: 'durak'; readonly sesion: SesionDurak }
   | { readonly id: 'euchre'; readonly sesion: SesionEuchre }
   | { readonly id: 'bigTwo'; readonly sesion: SesionBigTwo }
-  | { readonly id: 'cribbage'; readonly sesion: SesionCribbage };
+  | { readonly id: 'cribbage'; readonly sesion: SesionCribbage }
+  | { readonly id: 'belote'; readonly sesion: SesionBelote };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -471,7 +478,8 @@ export type ConfigJuego =
   | ConfigDurak
   | ConfigEuchre
   | ConfigBigTwo
-  | ConfigCribbage;
+  | ConfigCribbage
+  | ConfigBelote;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -568,6 +576,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_BIG_TWO);
     case 'cribbage':
       return hacer(DEF_CRIBBAGE);
+    case 'belote':
+      return hacer(DEF_BELOTE);
   }
 }
 
