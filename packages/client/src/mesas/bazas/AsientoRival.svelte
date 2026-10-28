@@ -13,9 +13,25 @@
     activo: boolean;
     /** Carta de la mano que todos ven (la carta de triunfo del repartidor en el Tute de 4). */
     visible?: IdCarta | null;
+    /** Mano entera boca arriba (el muerto del Bridge), en vez de los dorsos. */
+    abiertas?: readonly IdCarta[] | null;
+    /** Cartas de la mano boca arriba que puede jugar el jugador. */
+    jugableAbierta?: (carta: IdCarta) => boolean;
+    jugarAbierta?: (carta: IdCarta) => void;
   }
 
-  let { asiento, lado, nombre, detalle, cartas, activo, visible = null }: Props = $props();
+  let {
+    asiento,
+    lado,
+    nombre,
+    detalle,
+    cartas,
+    activo,
+    visible = null,
+    abiertas = null,
+    jugableAbierta = () => false,
+    jugarAbierta = () => {},
+  }: Props = $props();
 
   const dorsos = $derived(visible === null ? cartas : Math.max(0, cartas - 1));
 </script>
@@ -25,13 +41,29 @@
     {nombre}
     <small>{detalle}</small>
   </div>
-  <div class="mano-rival" data-zona="mano-{asiento}">
-    {#if visible !== null}
+  <div class="mano-rival" class:abierta={abiertas !== null} data-zona="mano-{asiento}">
+    {#if abiertas !== null}
+      {#each abiertas as id (id)}
+        <button
+          type="button"
+          class="dorso carta-abierta"
+          class:jugable={jugableAbierta(id)}
+          disabled={!jugableAbierta(id)}
+          data-carta={id}
+          data-testid="abierta-{id}"
+          onclick={() => jugarAbierta(id)}
+        >
+          <Carta {id} />
+        </button>
+      {/each}
+    {:else if visible !== null}
       <div class="dorso" data-carta={visible}><Carta id={visible} /></div>
     {/if}
-    {#each { length: dorsos }, k (k)}
-      <div class="dorso"><Carta /></div>
-    {/each}
+    {#if abiertas === null}
+      {#each { length: dorsos }, k (k)}
+        <div class="dorso"><Carta /></div>
+      {/each}
+    {/if}
   </div>
 </div>
 
@@ -133,5 +165,42 @@
   .derecha .dorso + .dorso {
     margin-left: 0;
     margin-top: calc(var(--ancho-rival) * var(--solape-rival-lateral, -1));
+  }
+
+  /* La mano boca arriba deja ver la esquina de cada carta; arriba, un poco más grande. */
+  .abierta .dorso + .dorso {
+    margin-left: calc(var(--ancho-abierta, var(--ancho-rival)) * -0.5);
+  }
+
+  .arriba .abierta {
+    --ancho-rival: var(--ancho-abierta, min(11vw, 8dvh, 60px));
+  }
+
+  .izquierda .abierta .dorso + .dorso,
+  .derecha .abierta .dorso + .dorso {
+    margin-left: 0;
+    margin-top: calc(var(--ancho-rival) * -1.05);
+  }
+
+  .carta-abierta {
+    padding: 0;
+    border: none;
+    background: none;
+    border-radius: 7%;
+    cursor: default;
+  }
+
+  .carta-abierta:disabled {
+    opacity: 1;
+  }
+
+  .carta-abierta.jugable {
+    cursor: pointer;
+    outline: 2px solid var(--resalte);
+    z-index: 1;
+  }
+
+  .carta-abierta.jugable:hover {
+    translate: 0 -6px;
   }
 </style>

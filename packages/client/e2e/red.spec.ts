@@ -816,6 +816,24 @@ test('Spite and Malice en red: el descarte de uno lo ve el otro', async ({ brows
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Bridge en red: la puja de uno la ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'bridge');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(13);
+
+  // Puja primero Ana (reparte el asiento 0) y Luis ve su puja en la subasta.
+  await ana.getByTestId('puja-1-treboles').click();
+  await expect(luis.getByTestId('subasta')).toContainText('1 ♣');
+  await luis.getByTestId('puja-1-corazones').click();
+  await expect(ana.getByTestId('subasta')).toContainText('1 ♥');
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Whist en red: dos humanos juegan en la misma baza', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

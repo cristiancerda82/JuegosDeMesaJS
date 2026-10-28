@@ -28,6 +28,11 @@
     jugar: (carta: IdCarta) => void;
     /** Carta de la mano de un rival que todos ven. */
     cartaVisible?: (asiento: Asiento) => IdCarta | null;
+    /** Mano entera de un rival boca arriba (el muerto del Bridge). */
+    manoAbierta?: (asiento: Asiento) => readonly IdCarta[] | null;
+    /** Cartas de esa mano que puede jugar el jugador, y cómo jugarlas. */
+    jugableAbierta?: (carta: IdCarta) => boolean;
+    jugarAbierta?: (carta: IdCarta) => void;
     /** Aviso propio del juego; si es `null`, se usan los de baza y fin de mano. */
     aviso?: string | null;
     detalleAviso?: Snippet | undefined;
@@ -47,6 +52,9 @@
     jugable,
     jugar,
     cartaVisible = () => null,
+    manoAbierta = () => null,
+    jugableAbierta = () => false,
+    jugarAbierta = () => {},
     aviso = null,
     detalleAviso,
     info,
@@ -138,6 +146,9 @@
       cartas={vista.cartasEnMano[asiento] ?? 0}
       activo={activo(asiento)}
       visible={cartaVisible(asiento)}
+      abiertas={manoAbierta(asiento)}
+      {jugableAbierta}
+      {jugarAbierta}
     />
   {/snippet}
   {#if deArriba.length > 0}

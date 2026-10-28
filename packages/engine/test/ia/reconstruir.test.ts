@@ -69,6 +69,9 @@ import { CONFIG_OH_HELL_POR_DEFECTO, ohHell } from '../../src/juegos/oh-hell';
 import { iaSpiteMaliceBasica } from '../../src/ia/spite-malice-basica';
 import { reconstruirSpiteMalice } from '../../src/ia/reconstruir/spite-malice';
 import { CONFIG_SPITE_MALICE_POR_DEFECTO, spiteMalice } from '../../src/juegos/spite-malice';
+import { iaBridgeBasica } from '../../src/ia/bridge-basica';
+import { reconstruirBridge } from '../../src/ia/reconstruir/bridge';
+import { bridge, CONFIG_BRIDGE_POR_DEFECTO, type EstadoBridge } from '../../src/juegos/bridge';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -803,5 +806,33 @@ describe('Reconstrucción del Spite and Malice', () => {
       debajo.add(rec.montones[0]![0]!);
     }
     expect(debajo.size).toBeGreaterThan(1);
+  });
+});
+
+describirReconstruccion(bridge, reconstruirBridge, {
+  configs: [CONFIG_BRIDGE_POR_DEFECTO],
+  base: iaBridgeBasica,
+});
+
+describe('Reconstrucción del Bridge', () => {
+  it('el defensor ve el muerto y solo cambian las manos del declarante y de su compañero', () => {
+    const r = bridge.crear(CONFIG_BRIDGE_POR_DEFECTO, 'muerto');
+    if (!r.ok) throw new Error(r.error);
+    let e: EstadoBridge = r.valor;
+    // 1 sin triunfo del 0 y pasan todos: declara el 0, el muerto es el 2 y sale el 1.
+    e = bridge.transicion(e, 0, { tipo: 'pujar', nivel: 1, denominacion: 'sinTriunfo' });
+    for (const a of [1, 2, 3]) e = bridge.transicion(e, a, { tipo: 'pasar' });
+    e = bridge.transicion(e, 1, bridge.accionesLegales(e, 1)[0]!);
+    const g = new Generador(crearAzar('b'));
+    const delDeclarante = new Set<string>();
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirBridge(bridge.vistaDe(e, 3), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.manos[2]).toEqual(e.manos[2]);
+      expect(rec.manos[3]).toEqual(e.manos[3]);
+      expect(rec.manos[0]).toHaveLength(13);
+      delDeclarante.add([...rec.manos[0]!].sort().join());
+    }
+    expect(delDeclarante.size).toBeGreaterThan(1);
   });
 });

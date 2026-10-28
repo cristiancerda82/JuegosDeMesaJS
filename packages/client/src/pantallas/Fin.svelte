@@ -19,6 +19,7 @@
   import ResumenBelote from '../mesas/ResumenBelote.svelte';
   import ResumenSchnapsen from '../mesas/ResumenSchnapsen.svelte';
   import ResumenSkat from '../mesas/ResumenSkat.svelte';
+  import ResumenBridge from '../mesas/ResumenBridge.svelte';
   import ResumenOhHell from '../mesas/ResumenOhHell.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
   import ResumenRummy500 from '../mesas/ResumenRummy500.svelte';
@@ -76,7 +77,8 @@
 
   // En el Chinchón y la Siete y media cada uno juega por su cuenta: no hay parejas.
   const parejas = $derived(
-    partida.id !== 'klondike' &&
+    partida.id === 'bridge' ||
+    (partida.id !== 'klondike' &&
       partida.id !== 'freecell' &&
       partida.id !== 'spider' &&
       partida.id !== 'piramide' &&
@@ -110,7 +112,7 @@
       partida.id !== 'rummy500' &&
       partida.id !== 'holdem' &&
       partida.id !== 'culo' &&
-      partida.sesion.vista.config.jugadores === 4,
+      partida.sesion.vista.config.jugadores === 4),
   );
 
   /** En el Chinchón: nombres por asiento y clasificación por puntos. */
@@ -435,6 +437,21 @@
           {#each [yo, yo === 0 ? 1 : 0] as a, i (a)}
             <tr><th scope="row">{nombre(a)}</th><td data-testid="puntos-fin-{i}">{vista.puntos[a]}</td></tr>
           {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'bridge'}
+      {@const vista = partida.sesion.vista}
+      <ResumenBridge
+        resultados={vista.resultadosManos}
+        lados={[lados[0]!, lados[1]!]}
+        bando={mio}
+        nombre={(a) => nombreAsiento(a, 4, yo, partida.sesion.red)}
+      />
+      <table>
+        <caption>{T.bridge.clasificacion}</caption>
+        <tbody>
+          <tr><th scope="row">{lados[0]}</th><td data-testid="puntos-fin-0">{vista.puntos[mio]}</td></tr>
+          <tr><th scope="row">{lados[1]}</th><td data-testid="puntos-fin-1">{vista.puntos[1 - mio]}</td></tr>
         </tbody>
       </table>
     {:else if partida.id === 'belote'}

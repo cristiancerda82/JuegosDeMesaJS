@@ -56,6 +56,13 @@ import {
   schnapsen,
   CONFIG_SKAT_POR_DEFECTO,
   skat,
+  actorBridge,
+  bridge,
+  CONFIG_BRIDGE_POR_DEFECTO,
+  type AccionBridge,
+  type ConfigBridge,
+  type EstadoBridge,
+  type VistaBridge,
   CONFIG_OH_HELL_POR_DEFECTO,
   ohHell,
   CONFIG_SPITE_MALICE_POR_DEFECTO,
@@ -387,7 +394,8 @@ export type IdJuego =
   | 'schnapsen'
   | 'skat'
   | 'ohHell'
-  | 'spiteMalice';
+  | 'spiteMalice'
+  | 'bridge';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -439,6 +447,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'skat',
   'ohHell',
   'spiteMalice',
+  'bridge',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1368,6 +1377,26 @@ export const DEF_SPITE_MALICE: DefSpiteMalice = {
   },
 };
 
+export type DefBridge = DefJuego<ConfigBridge, EstadoBridge, AccionBridge, VistaBridge>;
+
+export const DEF_BRIDGE: DefBridge = {
+  id: 'bridge',
+  nombre: T.menu.bridge,
+  juego: bridge,
+  configPorDefecto: CONFIG_BRIDGE_POR_DEFECTO,
+  ia: IAS.bridge,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada declaración de la
+  // IA en la subasta y cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (antes.fase === 'subasta' && antes.turno !== null) {
+      const actor = actorBridge({ fase: antes.fase, turno: antes.turno, contrato: antes.contrato });
+      return actor !== despues.asiento ? PAUSA_SUBASTA_MS : 0;
+    }
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1418,6 +1447,7 @@ export const JUEGOS = {
   skat: DEF_SKAT,
   ohHell: DEF_OH_HELL,
   spiteMalice: DEF_SPITE_MALICE,
+  bridge: DEF_BRIDGE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

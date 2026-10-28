@@ -12,6 +12,22 @@ const fichasConSigno = (n: number) =>
  * Todos los textos visibles del cliente, en español. Centralizados aquí por si hace falta
  * traducir más adelante (design: no hay sistema de traducción todavía).
  */
+/** Denominaciones del Bridge: símbolo y nombre. */
+const DENOMINACION_BRIDGE: Record<string, string> = {
+  treboles: '♣',
+  diamantes: '♦',
+  corazones: '♥',
+  picas: '♠',
+  sinTriunfo: 'ST',
+};
+const DENOMINACION_LARGA_BRIDGE: Record<string, string> = {
+  treboles: 'tréboles',
+  diamantes: 'diamantes',
+  corazones: 'corazones',
+  picas: 'picas',
+  sinTriunfo: 'sin triunfo',
+};
+
 export const T = {
   app: { titulo: 'Juegos de mesa', subtitulo: 'Naipes para jugar en cualquier parte' },
 
@@ -101,6 +117,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    bridge: 'Bridge',
+    bridgeDesc:
+      'El gran juego de parejas: subasta un contrato, juega con el muerto a la vista y suma mangas y slams en el Chicago.',
     spiteMalice: 'Spite and Malice',
     spiteMaliceDesc:
       'Carrera para dos: vacía tu montón antes que el rival subiendo escaleras del As a la Q, con los reyes de comodín.',
@@ -242,6 +261,8 @@ export const T = {
     puntosPartida: 'Partida',
     puntosN: (n: number) => `A ${n} puntos`,
     rondas: 'Rondas',
+    ciclos: 'Ciclos de Chicago',
+    ciclosN: (n: number) => `${n === 1 ? '1 ciclo' : `${n} ciclos`} (${4 * n} manos)`,
     rondasN: (n: number) => `${n === 1 ? '1 ronda' : `${n} rondas`} (${3 * n} manos)`,
     capturaObligatoria: 'Recoger es obligatorio',
     capturaObligatoriaDesc: 'Si la carta que juegas puede sumar 15, tienes que recoger.',
@@ -1023,6 +1044,44 @@ export const T = {
     totalPartida: 'Total',
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos (menos es mejor)',
+  },
+
+  bridge: {
+    reparte: 'Reparte',
+    declara: 'Declara',
+    muerto: 'Muerto',
+    denominacion: (d: string) => DENOMINACION_BRIDGE[d]!,
+    denominacionLarga: (d: string) => DENOMINACION_LARGA_BRIDGE[d]!,
+    puja: (nivel: number, d: string) => `${nivel} ${DENOMINACION_BRIDGE[d]!}`,
+    pasar: 'Paso',
+    doblar: 'Doblo',
+    redoblar: 'Redoblo',
+    doblado: (n: number) => (n === 2 ? ' XX' : n === 1 ? ' X' : ''),
+    contrato: (texto: string, quien: string) => `Contrato: ${texto} · declara ${quien}`,
+    subasta: 'Subasta',
+    tuPuja: 'Tu declaración',
+    vulnerables: (nosotros: boolean, ellos: boolean) =>
+      nosotros && ellos
+        ? 'Vulnerables: todos'
+        : nosotros
+          ? 'Vulnerables: nosotros'
+          : ellos
+            ? 'Vulnerables: ellos'
+            : 'Vulnerables: nadie',
+    bazasPareja: (lado: string, n: number) => `${lado}: ${n === 1 ? '1 baza' : `${n} bazas`}`,
+    marcador: (nosotros: number, ellos: number) => `Puntos ${nosotros} – ${ellos}`,
+    mano: (n: number, total: number) => `Mano ${n} de ${total}`,
+    jugandoMuerto: 'Juegas por el muerto',
+    repartoRepetido: 'Pasan los cuatro: se reparte de nuevo',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    manoCol: 'Mano',
+    contratoCol: 'Contrato',
+    resultadoCol: 'Resultado',
+    resultado: (diferencia: number) =>
+      diferencia === 0 ? 'Cumplido' : diferencia > 0 ? `+${diferencia}` : `${diferencia}`,
+    porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
   },
 
   whist: {
@@ -1962,6 +2021,7 @@ export const T = {
       skat: 'Cómo se juega al Skat',
       ohHell: 'Cómo se juega al Oh Hell',
       spiteMalice: 'Cómo se juega al Spite and Malice',
+      bridge: 'Cómo se juega al Bridge',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2549,6 +2609,60 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    bridge: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Cuatro jugadores en dos parejas: tu compañero se sienta enfrente. Se juega con la baraja francesa de 52 y cada uno recibe 13 cartas.',
+          'Cada mano, las parejas pujan por un contrato y después se juegan las 13 bazas. Gana la pareja con más puntos al acabar el Chicago (4 manos por ciclo).',
+        ],
+      },
+      {
+        titulo: 'La subasta',
+        texto: [
+          'Empieza el repartidor. Cada puja dice cuántas bazas por encima de 6 se compromete a hacer tu pareja (de 1 a 7) y en qué denominación: ♣, ♦, ♥, ♠ o ST (sin triunfo), de menor a mayor.',
+          'Cada puja tiene que ser más alta que la anterior: de más nivel, o del mismo nivel con una denominación mayor. También puedes pasar, doblar la puja del rival o redoblar si te doblan.',
+          'La subasta acaba con tres pases seguidos tras una puja. Si pasan los cuatro, se reparte de nuevo.',
+        ],
+      },
+      {
+        titulo: 'El declarante y el muerto',
+        texto: [
+          'Juega el contrato el de la pareja ganadora que nombró primero su denominación: es el declarante. Sale el jugador a su izquierda.',
+          'Tras la primera carta, el compañero del declarante pone su mano boca arriba: es el muerto. El declarante juega las cartas de las dos manos.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Hay que seguir el palo de salida si se puede; si no, se juega cualquier carta. Gana el triunfo más alto o, si no hay, la carta más alta del palo de salida (el As es la más alta).',
+          'En sin triunfo no hay triunfos: siempre gana la carta más alta del palo de salida.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'Si cumples, cada baza del contrato vale 20 en ♣ y ♦, 30 en ♥ y ♠, y en sin triunfo 40 la primera y 30 las demás. Con 100 o más es manga: 300 de premio, o 500 si eres vulnerable; si no, es un parcial y vale 50.',
+          'Los slams dan más: 500 o 750 el pequeño (nivel 6) y 1000 o 1500 el grande (nivel 7). Las bazas de más suman lo que vale una baza.',
+          'Si no cumples, el rival suma 50 por cada baza que falte, o 100 si eres vulnerable. Doblar y redoblar multiplican los puntos y las multas.',
+        ],
+      },
+      {
+        titulo: 'Chicago y vulnerabilidad',
+        texto: [
+          'Cada ciclo tiene 4 manos: en la primera no es vulnerable nadie, en la segunda y la tercera la pareja del repartidor, y en la cuarta las dos.',
+          'Ser vulnerable da más premio por las mangas y los slams, pero las multas también son mayores.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Cuenta tus puntos de honores: As 4, K 3, Q 2 y J 1. Con 12 o más puedes abrir; con 15–17 y una mano equilibrada, 1 ST.',
+          'Entre los dos, 25 puntos suelen dar manga (3 ST o 4 en un mayor con 8 cartas entre los dos) y 33, pequeño slam.',
         ],
       },
     ],

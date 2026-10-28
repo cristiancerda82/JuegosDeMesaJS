@@ -42,6 +42,7 @@ import { CONFIG_SCHNAPSEN_POR_DEFECTO, schnapsen } from './juegos/schnapsen';
 import { CONFIG_SKAT_POR_DEFECTO, skat } from './juegos/skat';
 import { CONFIG_OH_HELL_POR_DEFECTO, ohHell } from './juegos/oh-hell';
 import { CONFIG_SPITE_MALICE_POR_DEFECTO, spiteMalice } from './juegos/spite-malice';
+import { bridge, CONFIG_BRIDGE_POR_DEFECTO } from './juegos/bridge';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -88,6 +89,7 @@ export const IDS_JUEGOS_EN_RED = [
   'skat',
   'ohHell',
   'spiteMalice',
+  'bridge',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -159,6 +161,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   skat: entrada(skat, IAS.skat, CONFIG_SKAT_POR_DEFECTO),
   ohHell: entrada(ohHell, IAS.ohHell, CONFIG_OH_HELL_POR_DEFECTO),
   spiteMalice: entrada(spiteMalice, IAS.spiteMalice, CONFIG_SPITE_MALICE_POR_DEFECTO),
+  bridge: entrada(bridge, IAS.bridge, CONFIG_BRIDGE_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>
