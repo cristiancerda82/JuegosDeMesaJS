@@ -50,6 +50,7 @@ ull. */
     { id: 'piramide', desc: T.menu.piramideDesc, cartas: ['corazones-6', 'picas-7', 'diamantes-13'] },
     { id: 'brisca', desc: T.menu.briscaDesc, cartas: ['oros-1', 'copas-3', 'espadas-12'] },
     { id: 'tute', desc: T.menu.tuteDesc, cartas: ['bastos-12', 'oros-11', 'copas-12'] },
+    { id: 'spiteMalice', desc: T.menu.spiteMaliceDesc, cartas: ['picas-1', 'corazones-2', 'treboles-13'] },
     { id: 'ohHell', desc: T.menu.ohHellDesc, cartas: ['picas-1', 'corazones-13', 'diamantes-2'] },
     { id: 'skat', desc: T.menu.skatDesc, cartas: ['treboles-11', 'picas-11', 'corazones-1'] },
     { id: 'schnapsen', desc: T.menu.schnapsenDesc, cartas: ['corazones-13', 'corazones-12', 'corazones-1'] },

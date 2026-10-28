@@ -796,6 +796,26 @@ test('Oh Hell en red: la apuesta de uno la ve el otro', async ({ browser }) => {
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Spite and Malice en red: el descarte de uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'spiteMalice');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(5);
+
+  // Empieza Ana: descarta la primera carta de su mano en su primer descarte.
+  const carta = (await ana.getByTestId('mano-0').getAttribute('data-carta'))!;
+  await ana.getByTestId('mano-0').click();
+  await ana.getByTestId('descarte-propio-0').click();
+  await expect(luis.getByTestId('descarte-rival-0').locator(`[aria-label]`).first()).toBeVisible();
+  await expect(luis.getByTestId('aviso')).toContainText('descarta');
+  expect(carta).not.toBe('');
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Whist en red: dos humanos juegan en la misma baza', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

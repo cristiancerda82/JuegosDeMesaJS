@@ -32,6 +32,7 @@
     ConfigSchnapsen,
     ConfigSkat,
     ConfigOhHell,
+    ConfigSpiteMalice,
     ConfigPiramide,
     ConfigGolf,
     ConfigTriPeaks,
@@ -121,6 +122,9 @@
   let schnapsenConfig: Editable<ConfigSchnapsen> = $state({ ...JUEGOS.schnapsen.configPorDefecto });
   let skatConfig: Editable<ConfigSkat> = $state({ ...JUEGOS.skat.configPorDefecto });
   let ohHellConfig: Editable<ConfigOhHell> = $state({ ...JUEGOS.ohHell.configPorDefecto });
+  let spiteMaliceConfig: Editable<ConfigSpiteMalice> = $state({
+    ...JUEGOS.spiteMalice.configPorDefecto,
+  });
   let subastado: Editable<ConfigTuteSubastado> = $state({
     ...JUEGOS.tuteSubastado.configPorDefecto,
   });
@@ -188,6 +192,7 @@
       schnapsen: schnapsenConfig,
       skat: skatConfig,
       ohHell: ohHellConfig,
+      spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.
       casino: { ...casinoConfig, parejas: casinoConfig.jugadores === 4 && casinoConfig.parejas },
     };

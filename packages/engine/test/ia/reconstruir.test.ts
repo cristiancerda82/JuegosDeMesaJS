@@ -66,6 +66,9 @@ import { CONFIG_SKAT_POR_DEFECTO, skat } from '../../src/juegos/skat';
 import { iaOhHellBasica } from '../../src/ia/oh-hell-basica';
 import { reconstruirOhHell } from '../../src/ia/reconstruir/oh-hell';
 import { CONFIG_OH_HELL_POR_DEFECTO, ohHell } from '../../src/juegos/oh-hell';
+import { iaSpiteMaliceBasica } from '../../src/ia/spite-malice-basica';
+import { reconstruirSpiteMalice } from '../../src/ia/reconstruir/spite-malice';
+import { CONFIG_SPITE_MALICE_POR_DEFECTO, spiteMalice } from '../../src/juegos/spite-malice';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -777,5 +780,28 @@ describe('Reconstrucción del Oh Hell', () => {
       g.enteroHasta(1000);
       expect(rec.manos[quien]!.some((c) => c.startsWith(palo))).toBe(false);
     }
+  });
+});
+
+describirReconstruccion(spiteMalice, reconstruirSpiteMalice, {
+  configs: [CONFIG_SPITE_MALICE_POR_DEFECTO],
+  base: iaSpiteMaliceBasica,
+});
+
+describe('Reconstrucción del Spite and Malice', () => {
+  it('la carta de arriba del montón propio es la que se ve y las de debajo cambian', () => {
+    const r = spiteMalice.crear(CONFIG_SPITE_MALICE_POR_DEFECTO, 'monton');
+    if (!r.ok) throw new Error(r.error);
+    const e = r.valor;
+    const g = new Generador(crearAzar('m'));
+    const debajo = new Set<string>();
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirSpiteMalice(spiteMalice.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.montones[0]!.at(-1)).toBe(e.montones[0]!.at(-1));
+      expect(rec.montones[0]).toHaveLength(20);
+      debajo.add(rec.montones[0]![0]!);
+    }
+    expect(debajo.size).toBeGreaterThan(1);
   });
 });

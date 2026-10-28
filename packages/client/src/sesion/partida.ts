@@ -59,6 +59,10 @@ import {
   type ConfigOhHell,
   type EstadoOhHell,
   type VistaOhHell,
+  type AccionSpiteMalice,
+  type ConfigSpiteMalice,
+  type EstadoSpiteMalice,
+  type VistaSpiteMalice,
   type ConfigWhist,
   type EstadoWhist,
   type VistaWhist,
@@ -235,6 +239,7 @@ import {
   DEF_SCHNAPSEN,
   DEF_SKAT,
   DEF_OH_HELL,
+  DEF_SPITE_MALICE,
   DEF_SPIDER,
   DEF_PIRAMIDE,
   DEF_GOLF,
@@ -332,6 +337,12 @@ export type SesionPiramide = SesionMesa<
   EstadoPiramide,
   AccionPiramide,
   VistaPiramide
+>;
+export type SesionSpiteMalice = SesionMesa<
+  ConfigSpiteMalice,
+  EstadoSpiteMalice,
+  AccionSpiteMalice,
+  VistaSpiteMalice
 >;
 export type SesionOhHell = SesionMesa<ConfigOhHell, EstadoOhHell, AccionOhHell, VistaOhHell>;
 export type SesionSkat = SesionMesa<ConfigSkat, EstadoSkat, AccionSkat, VistaSkat>;
@@ -458,7 +469,8 @@ export type Partida =
   | { readonly id: 'belote'; readonly sesion: SesionBelote }
   | { readonly id: 'schnapsen'; readonly sesion: SesionSchnapsen }
   | { readonly id: 'skat'; readonly sesion: SesionSkat }
-  | { readonly id: 'ohHell'; readonly sesion: SesionOhHell };
+  | { readonly id: 'ohHell'; readonly sesion: SesionOhHell }
+  | { readonly id: 'spiteMalice'; readonly sesion: SesionSpiteMalice };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -508,7 +520,8 @@ export type ConfigJuego =
   | ConfigBelote
   | ConfigSchnapsen
   | ConfigSkat
-  | ConfigOhHell;
+  | ConfigOhHell
+  | ConfigSpiteMalice;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -613,6 +626,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_SKAT);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
+    case 'spiteMalice':
+      return hacer(DEF_SPITE_MALICE);
   }
 }
 

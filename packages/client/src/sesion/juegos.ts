@@ -58,6 +58,12 @@ import {
   skat,
   CONFIG_OH_HELL_POR_DEFECTO,
   ohHell,
+  CONFIG_SPITE_MALICE_POR_DEFECTO,
+  spiteMalice,
+  type AccionSpiteMalice,
+  type ConfigSpiteMalice,
+  type EstadoSpiteMalice,
+  type VistaSpiteMalice,
   type AccionOhHell,
   type ConfigOhHell,
   type EstadoOhHell,
@@ -380,7 +386,8 @@ export type IdJuego =
   | 'belote'
   | 'schnapsen'
   | 'skat'
-  | 'ohHell';
+  | 'ohHell'
+  | 'spiteMalice';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -431,6 +438,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'schnapsen',
   'skat',
   'ohHell',
+  'spiteMalice',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1339,6 +1347,27 @@ export const DEF_OH_HELL: DefOhHell = {
   },
 };
 
+export type DefSpiteMalice = DefJuego<
+  ConfigSpiteMalice,
+  EstadoSpiteMalice,
+  AccionSpiteMalice,
+  VistaSpiteMalice
+>;
+
+export const DEF_SPITE_MALICE: DefSpiteMalice = {
+  id: 'spiteMalice',
+  nombre: T.menu.spiteMalice,
+  juego: spiteMalice,
+  configPorDefecto: CONFIG_SPITE_MALICE_POR_DEFECTO,
+  ia: IAS.spiteMalice,
+  // Cada jugada del rival, para verla.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    return accion.asiento !== despues.asiento ? PAUSA_RIVAL_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1388,6 +1417,7 @@ export const JUEGOS = {
   schnapsen: DEF_SCHNAPSEN,
   skat: DEF_SKAT,
   ohHell: DEF_OH_HELL,
+  spiteMalice: DEF_SPITE_MALICE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

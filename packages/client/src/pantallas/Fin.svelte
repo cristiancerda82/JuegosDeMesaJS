@@ -376,6 +376,19 @@
           {/each}
         </tbody>
       </table>
+    {:else if partida.id === 'spiteMalice'}
+      {@const vista = partida.sesion.vista}
+      <table data-testid="montones-fin">
+        <caption>{T.spite.clasificacion}</caption>
+        <tbody>
+          {#each [yo, yo === 0 ? 1 : 0] as a, i (a)}
+            <tr>
+              <th scope="row">{nombreAsiento(a, 2, yo, partida.sesion.red)}</th>
+              <td data-testid="monton-fin-{i}">{vista.montones[a]!.cartas}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
     {:else if partida.id === 'ohHell'}
       {@const vista = partida.sesion.vista}
       {@const n = vista.config.jugadores}

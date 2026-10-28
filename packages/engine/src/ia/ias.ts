@@ -44,6 +44,7 @@ import { SIMULABLE_BELOTE } from './reconstruir/belote';
 import { SIMULABLE_SCHNAPSEN } from './reconstruir/schnapsen';
 import { SIMULABLE_SKAT } from './reconstruir/skat';
 import { SIMULABLE_OH_HELL } from './reconstruir/oh-hell';
+import { SIMULABLE_SPITE_MALICE } from './reconstruir/spite-malice';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -70,6 +71,7 @@ import { iaBeloteBasica } from './belote-basica';
 import { iaSchnapsenBasica } from './schnapsen-basica';
 import { iaSkatBasica } from './skat-basica';
 import { iaOhHellBasica } from './oh-hell-basica';
+import { iaSpiteMaliceBasica } from './spite-malice-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -166,4 +168,5 @@ export const IAS = {
   schnapsen: niveles(iaSchnapsenBasica, SIMULABLE_SCHNAPSEN),
   skat: niveles(iaSkatBasica, SIMULABLE_SKAT),
   ohHell: niveles(iaOhHellBasica, SIMULABLE_OH_HELL),
+  spiteMalice: niveles(iaSpiteMaliceBasica, SIMULABLE_SPITE_MALICE),
 } as const;

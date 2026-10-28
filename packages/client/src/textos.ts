@@ -101,6 +101,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    spiteMalice: 'Spite and Malice',
+    spiteMaliceDesc:
+      'Carrera para dos: vacía tu montón antes que el rival subiendo escaleras del As a la Q, con los reyes de comodín.',
     ohHell: 'Oh Hell',
     ohHellDesc:
       'De 3 a 7 jugadores: acierta exactamente cuántas bazas harás en manos que menguan hasta 1 carta y vuelven a crecer.',
@@ -606,6 +609,26 @@ export const T = {
     sinCartas: (quien: string) =>
       quien === 'Tú' ? 'Te has quedado sin cartas' : `${quien} se ha quedado sin cartas`,
     quedan: 'Cartas que les quedan',
+  },
+
+  spite: {
+    enMano: (n: number) => (n === 1 ? '1 carta en la mano' : `${n} cartas en la mano`),
+    mazo: 'Mazo',
+    escalera: (n: number, valor: number) =>
+      valor === 0 ? `Escalera ${n}, libre` : `Escalera ${n}, va por el ${valor}`,
+    va: (valor: number) => `${valor}`,
+    completas: (n: number) =>
+      n === 0 ? 'Ninguna escalera completa' : `${n} cartas en escaleras completas`,
+    turnoDe: (quien: string) => `Turno de ${quien}`,
+    elige: 'Tu turno: toca una carta de tu mano, tu montón o un descarte',
+    destino: 'Ahora toca la escalera donde la juegas',
+    destinoMano: 'Ahora toca una escalera, o uno de tus descartes para terminar',
+    pasar: 'Pasar',
+    pasa: (quien: string) => `${quien} pasa`,
+    descarta: (quien: string, carta: string) => `${quien} descarta ${carta.toLowerCase()}`,
+    juega: (quien: string, carta: string, monton: boolean) =>
+      `${quien} juega ${carta.toLowerCase()}${monton ? ' de su montón' : ''}`,
+    clasificacion: 'Cartas que quedan en el montón',
   },
 
   ohHell: {
@@ -1938,6 +1961,7 @@ export const T = {
       schnapsen: 'Cómo se juega al Schnapsen',
       skat: 'Cómo se juega al Skat',
       ohHell: 'Cómo se juega al Oh Hell',
+      spiteMalice: 'Cómo se juega al Spite and Malice',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2442,6 +2466,44 @@ export const T = {
         texto: [
           'Cuenta tus Ases, tus Treses y tus cantes antes de pujar: es mejor pujar poco y cumplir que pujar mucho y pagar a los tres.',
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
+        ],
+      },
+    ],
+
+    spiteMalice: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Una carrera para dos con dos barajas francesas. Cada uno tiene un montón de 20 cartas con la de arriba a la vista: gana quien lo vacía antes.',
+        ],
+      },
+      {
+        titulo: 'Las escaleras',
+        texto: [
+          'En el centro hay hasta 4 escaleras comunes. Se empiezan con un As y suben de una en una: 2, 3, 4… hasta la Q. Cuando una llega a la Q, sale de la mesa.',
+          'Los K son comodines: valen la carta que haga falta, también para empezar una escalera.',
+        ],
+      },
+      {
+        titulo: 'Tu turno',
+        texto: [
+          'Al empezar robas hasta tener 5 cartas. Después juegas a las escaleras todas las cartas que quieras: de tu mano, la de arriba de tu montón o la de arriba de tus descartes. Si vacías la mano, robas otras 5.',
+          'El turno termina cuando descartas una carta de la mano en uno de tus 4 descartes.',
+          'Para jugar, toca la carta y después la escalera o el descarte.',
+        ],
+      },
+      {
+        titulo: 'El mazo',
+        texto: [
+          'Cuando el mazo se acaba, las escaleras completas se barajan y forman uno nuevo. Si no hay ninguna y nadie puede mover, la partida termina en empate.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Busca cadenas: juega las cartas de la mano y de tus descartes que dejen una escalera justo antes de la carta de tu montón.',
+          'Mira la carta del montón del rival y no le dejes la escalera en el número anterior. Guarda los K para cuando te hagan falta.',
+          'Descarta en escalera descendente (un 9 sobre un 10) para poder jugar luego varias seguidas.',
         ],
       },
     ],
