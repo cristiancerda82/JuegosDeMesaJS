@@ -27,6 +27,7 @@
   import MesaSchnapsen from '../mesas/MesaSchnapsen.svelte';
   import MesaSkat from '../mesas/MesaSkat.svelte';
   import MesaBridge from '../mesas/MesaBridge.svelte';
+  import MesaPesca from '../mesas/MesaPesca.svelte';
   import MesaOhHell from '../mesas/MesaOhHell.svelte';
   import MesaSpiteMalice from '../mesas/MesaSpiteMalice.svelte';
   import MesaRemigio from '../mesas/MesaRemigio.svelte';
@@ -144,6 +145,8 @@
     <MesaSkat sesion={partida.sesion} />
   {:else if partida.id === 'bridge'}
     <MesaBridge sesion={partida.sesion} />
+  {:else if partida.id === 'pesca'}
+    <MesaPesca sesion={partida.sesion} />
   {:else if partida.id === 'ohHell'}
     <MesaOhHell sesion={partida.sesion} />
   {:else if partida.id === 'spiteMalice'}

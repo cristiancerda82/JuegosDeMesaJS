@@ -32,6 +32,7 @@
     ConfigSchnapsen,
     ConfigSkat,
     ConfigBridge,
+    ConfigPesca,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -123,6 +124,7 @@
   let schnapsenConfig: Editable<ConfigSchnapsen> = $state({ ...JUEGOS.schnapsen.configPorDefecto });
   let skatConfig: Editable<ConfigSkat> = $state({ ...JUEGOS.skat.configPorDefecto });
   let bridgeConfig: Editable<ConfigBridge> = $state({ ...JUEGOS.bridge.configPorDefecto });
+  let pescaConfig: Editable<ConfigPesca> = $state({ ...JUEGOS.pesca.configPorDefecto });
   let ohHellConfig: Editable<ConfigOhHell> = $state({ ...JUEGOS.ohHell.configPorDefecto });
   let spiteMaliceConfig: Editable<ConfigSpiteMalice> = $state({
     ...JUEGOS.spiteMalice.configPorDefecto,
@@ -194,6 +196,7 @@
       schnapsen: schnapsenConfig,
       skat: skatConfig,
       bridge: bridgeConfig,
+      pesca: pescaConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.
@@ -617,6 +620,13 @@
         <legend>{T.opciones.jugadores}</legend>
         {#each [3, 4, 5, 6, 7] as n (n)}
           <label><input type="radio" bind:group={ohHellConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
+        {/each}
+      </fieldset>
+    {:else if juego === 'pesca'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [2, 3, 4, 5, 6] as n (n)}
+          <label><input type="radio" bind:group={pescaConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
         {/each}
       </fieldset>
     {:else if juego === 'bridge'}

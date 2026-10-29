@@ -816,6 +816,22 @@ test('Spite and Malice en red: el descarte de uno lo ve el otro', async ({ brows
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Pesca en red: la petición de uno la ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'pesca');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) await expect(p.getByTestId('mar')).toBeVisible();
+
+  // Empieza Ana (asiento 0): pide su primer valor a Luis y Luis ve la petición.
+  await ana.locator('[data-testid^="valor-"]').first().click();
+  await ana.getByTestId('asiento-1').click();
+  await expect(luis.getByTestId('aviso')).toContainText('Ana te pide');
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Bridge en red: la puja de uno la ve el otro', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

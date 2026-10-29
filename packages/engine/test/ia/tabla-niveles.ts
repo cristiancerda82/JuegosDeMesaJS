@@ -38,6 +38,7 @@ import { CONFIG_SKAT_POR_DEFECTO, skat } from '../../src/juegos/skat';
 import { CONFIG_OH_HELL_POR_DEFECTO, ohHell } from '../../src/juegos/oh-hell';
 import { CONFIG_SPITE_MALICE_POR_DEFECTO, spiteMalice } from '../../src/juegos/spite-malice';
 import { bridge, CONFIG_BRIDGE_POR_DEFECTO } from '../../src/juegos/bridge';
+import { CONFIG_PESCA_POR_DEFECTO, pesca } from '../../src/juegos/pesca';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -120,4 +121,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Oh Hell', ohHell, CONFIG_OH_HELL_POR_DEFECTO, IAS.ohHell, 4),
   entrada('Spite and Malice', spiteMalice, CONFIG_SPITE_MALICE_POR_DEFECTO, IAS.spiteMalice, 2),
   entrada('Bridge', bridge, CONFIG_BRIDGE_POR_DEFECTO, IAS.bridge, 'bandos'),
+  entrada('Pesca', pesca, CONFIG_PESCA_POR_DEFECTO, IAS.pesca, 4),
 ];

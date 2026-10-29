@@ -97,6 +97,7 @@
       partida.id !== 'bigTwo' &&
       partida.id !== 'cribbage' &&
       partida.id !== 'ohHell' &&
+      partida.id !== 'pesca' &&
       partida.id !== 'pocha' &&
       partida.id !== 'mus' &&
       partida.id !== 'corazones' &&
@@ -436,6 +437,20 @@
         <tbody>
           {#each [yo, yo === 0 ? 1 : 0] as a, i (a)}
             <tr><th scope="row">{nombre(a)}</th><td data-testid="puntos-fin-{i}">{vista.puntos[a]}</td></tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'pesca'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      <table data-testid="cuartetos-fin">
+        <caption>{T.pesca.clasificacion}</caption>
+        <tbody>
+          {#each Array.from({ length: n }, (_, a) => a).sort((a, b) => vista.cuartetos[b]!.length - vista.cuartetos[a]!.length) as a (a)}
+            <tr>
+              <th scope="row">{nombreChinchon(a, n)}</th>
+              <td data-testid="total-{a}">{vista.cuartetos[a]!.length}</td>
+            </tr>
           {/each}
         </tbody>
       </table>

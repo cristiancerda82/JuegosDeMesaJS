@@ -57,6 +57,12 @@ import {
   CONFIG_SKAT_POR_DEFECTO,
   skat,
   actorBridge,
+  pesca,
+  CONFIG_PESCA_POR_DEFECTO,
+  type AccionPesca,
+  type ConfigPesca,
+  type EstadoPesca,
+  type VistaPesca,
   bridge,
   CONFIG_BRIDGE_POR_DEFECTO,
   type AccionBridge,
@@ -395,7 +401,8 @@ export type IdJuego =
   | 'skat'
   | 'ohHell'
   | 'spiteMalice'
-  | 'bridge';
+  | 'bridge'
+  | 'pesca';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -448,6 +455,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'ohHell',
   'spiteMalice',
   'bridge',
+  'pesca',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1397,6 +1405,26 @@ export const DEF_BRIDGE: DefBridge = {
   },
 };
 
+export type DefPesca = DefJuego<ConfigPesca, EstadoPesca, AccionPesca, VistaPesca>;
+
+/** Tiempo para leer lo que pide un jugador de la IA y lo que pasa. */
+const PAUSA_PETICION_MS = 1000;
+
+export const DEF_PESCA: DefPesca = {
+  id: 'pesca',
+  nombre: T.menu.pesca,
+  juego: pesca,
+  configPorDefecto: CONFIG_PESCA_POR_DEFECTO,
+  ia: IAS.pesca,
+  // Cada petición de otro jugador, para leer el aviso.
+  pausaTras(antes, despues) {
+    const nuevas = despues.registro.slice(antes.registro.length);
+    return nuevas.some((r) => r.tipo === 'pedir' && r.asiento !== despues.asiento)
+      ? PAUSA_PETICION_MS
+      : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1448,6 +1476,7 @@ export const JUEGOS = {
   ohHell: DEF_OH_HELL,
   spiteMalice: DEF_SPITE_MALICE,
   bridge: DEF_BRIDGE,
+  pesca: DEF_PESCA,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

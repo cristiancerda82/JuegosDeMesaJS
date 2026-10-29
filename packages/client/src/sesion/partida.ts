@@ -56,6 +56,10 @@ import {
   type EstadoSkat,
   type VistaSkat,
   type AccionBridge,
+  type AccionPesca,
+  type ConfigPesca,
+  type EstadoPesca,
+  type VistaPesca,
   type ConfigBridge,
   type EstadoBridge,
   type VistaBridge,
@@ -243,6 +247,7 @@ import {
   DEF_SCHNAPSEN,
   DEF_SKAT,
   DEF_BRIDGE,
+  DEF_PESCA,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
   DEF_SPIDER,
@@ -350,6 +355,7 @@ export type SesionSpiteMalice = SesionMesa<
   VistaSpiteMalice
 >;
 export type SesionOhHell = SesionMesa<ConfigOhHell, EstadoOhHell, AccionOhHell, VistaOhHell>;
+export type SesionPesca = SesionMesa<ConfigPesca, EstadoPesca, AccionPesca, VistaPesca>;
 export type SesionBridge = SesionMesa<ConfigBridge, EstadoBridge, AccionBridge, VistaBridge>;
 export type SesionSkat = SesionMesa<ConfigSkat, EstadoSkat, AccionSkat, VistaSkat>;
 export type SesionSchnapsen = SesionMesa<
@@ -477,7 +483,8 @@ export type Partida =
   | { readonly id: 'skat'; readonly sesion: SesionSkat }
   | { readonly id: 'ohHell'; readonly sesion: SesionOhHell }
   | { readonly id: 'spiteMalice'; readonly sesion: SesionSpiteMalice }
-  | { readonly id: 'bridge'; readonly sesion: SesionBridge };
+  | { readonly id: 'bridge'; readonly sesion: SesionBridge }
+  | { readonly id: 'pesca'; readonly sesion: SesionPesca };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -529,7 +536,8 @@ export type ConfigJuego =
   | ConfigSkat
   | ConfigOhHell
   | ConfigSpiteMalice
-  | ConfigBridge;
+  | ConfigBridge
+  | ConfigPesca;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -634,6 +642,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_SKAT);
     case 'bridge':
       return hacer(DEF_BRIDGE);
+    case 'pesca':
+      return hacer(DEF_PESCA);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':

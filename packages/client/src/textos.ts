@@ -13,6 +13,41 @@ const fichasConSigno = (n: number) =>
  * traducir más adelante (design: no hay sistema de traducción todavía).
  */
 /** Denominaciones del Bridge: símbolo y nombre. */
+/** Valores de la Pesca: en la mano y en plural. */
+const VALOR_PESCA = ['', 'A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+const VALORES_PESCA_PLURAL = [
+  '',
+  'ases',
+  'doses',
+  'treses',
+  'cuatros',
+  'cincos',
+  'seises',
+  'sietes',
+  'ochos',
+  'nueves',
+  'dieces',
+  'jotas',
+  'damas',
+  'reyes',
+];
+const VALORES_PESCA_SINGULAR = [
+  '',
+  'un as',
+  'un dos',
+  'un tres',
+  'un cuatro',
+  'un cinco',
+  'un seis',
+  'un siete',
+  'un ocho',
+  'un nueve',
+  'un diez',
+  'una jota',
+  'una dama',
+  'un rey',
+];
+
 const DENOMINACION_BRIDGE: Record<string, string> = {
   treboles: '♣',
   diamantes: '♦',
@@ -117,6 +152,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    pesca: 'Pesca',
+    pescaDesc:
+      'De 2 a 6 jugadores: pide cartas a los rivales y reúne cuartetos. Si no las tienen, ¡a pescar!',
     bridge: 'Bridge',
     bridgeDesc:
       'El gran juego de parejas: subasta un contrato, juega con el muerto a la vista y suma mangas y slams en el Chicago.',
@@ -1044,6 +1082,41 @@ export const T = {
     totalPartida: 'Total',
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos (menos es mejor)',
+  },
+
+  pesca: {
+    valor: (v: number) => VALOR_PESCA[v]!,
+    valores: (v: number) => VALORES_PESCA_PLURAL[v]!,
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    cuartetos: (n: number) => (n === 1 ? '1 cuarteto' : `${n} cuartetos`),
+    mar: (n: number) => `Mar: ${n}`,
+    eligeValor: 'Elige un valor de tu mano',
+    eligeRival: (v: number) => `¿A quién le pides ${VALORES_PESCA_PLURAL[v]!}?`,
+    pide: (quien: string, a: string, v: number) =>
+      quien === 'Tú'
+        ? `Pides ${VALORES_PESCA_PLURAL[v]!} a ${a}`
+        : a === 'Tú'
+          ? `${quien} te pide ${VALORES_PESCA_PLURAL[v]!}`
+          : `${quien} pide ${VALORES_PESCA_PLURAL[v]!} a ${a}`,
+    da: (a: string, n: number, v: number) => {
+      const cartas = n === 1 ? VALORES_PESCA_SINGULAR[v]! : `${n} ${VALORES_PESCA_PLURAL[v]!}`;
+      return a === 'Tú' ? `das ${cartas}` : `${a} da ${cartas}`;
+    },
+    aPescar: '¡A pescar!',
+    pesca: (quien: string, v: number) =>
+      quien === 'Tú'
+        ? `pescas ${VALORES_PESCA_SINGULAR[v]!}`
+        : `pesca ${VALORES_PESCA_SINGULAR[v]!}`,
+    marVacio: 'el mar está vacío',
+    cuarteto: (quien: string, v: number) =>
+      quien === 'Tú'
+        ? `¡Cuarteto de ${VALORES_PESCA_PLURAL[v]!}!`
+        : `${quien}: cuarteto de ${VALORES_PESCA_PLURAL[v]!}`,
+    roba: (quien: string) =>
+      quien === 'Tú' ? 'Sin cartas: robas del mar' : `${quien} se queda sin cartas y roba del mar`,
+    tuTurno: 'Tu turno',
+    turnoDe: (quien: string) => `Turno de ${quien}`,
+    clasificacion: 'Cuartetos',
   },
 
   bridge: {
@@ -2022,6 +2095,7 @@ export const T = {
       ohHell: 'Cómo se juega al Oh Hell',
       spiteMalice: 'Cómo se juega al Spite and Malice',
       bridge: 'Cómo se juega al Bridge',
+      pesca: 'Cómo se juega a la Pesca',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2609,6 +2683,43 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    pesca: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'De 2 a 6 jugadores, cada uno por su cuenta, con la baraja francesa de 52. Hay que reunir cuartetos: las cuatro cartas de un mismo valor.',
+          'Gana quien tenga más cuartetos cuando se hayan bajado los 13.',
+        ],
+      },
+      {
+        titulo: 'El reparto',
+        texto: [
+          'Con 2 o 3 jugadores se reparten 7 cartas a cada uno; con 4 a 6, 5. El resto forma el mar, boca abajo.',
+        ],
+      },
+      {
+        titulo: 'Pedir',
+        texto: [
+          'En tu turno pides a un rival todas las cartas de un valor del que tengas al menos una: toca el valor en tu mano y después al rival.',
+          'Si tiene, te las da todas y vuelves a pedir. Si no, te dice «¡A pescar!» y robas una carta del mar: si es del valor que pediste, la enseñas y sigues; si no, le toca al de tu izquierda.',
+        ],
+      },
+      {
+        titulo: 'Cuartetos y cartas',
+        texto: [
+          'En cuanto reúnes las cuatro cartas de un valor, las bajas delante de ti.',
+          'Si te quedas sin cartas, robas una del mar y sigues; si el mar está vacío, quedas fuera hasta el final.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Fíjate en lo que piden los demás: quien pide un valor lo tiene. Si luego te toca a ti, pídeselo.',
+          'Quien dijo «¡A pescar!» no tenía ese valor; no se lo pidas hasta que vuelva a robar.',
         ],
       },
     ],

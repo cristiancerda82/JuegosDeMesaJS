@@ -72,6 +72,9 @@ import { CONFIG_SPITE_MALICE_POR_DEFECTO, spiteMalice } from '../../src/juegos/s
 import { iaBridgeBasica } from '../../src/ia/bridge-basica';
 import { reconstruirBridge } from '../../src/ia/reconstruir/bridge';
 import { bridge, CONFIG_BRIDGE_POR_DEFECTO, type EstadoBridge } from '../../src/juegos/bridge';
+import { iaPescaBasica } from '../../src/ia/pesca-basica';
+import { reconstruirPesca } from '../../src/ia/reconstruir/pesca';
+import { CONFIG_PESCA_POR_DEFECTO, pesca, type EstadoPesca } from '../../src/juegos/pesca';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -834,5 +837,33 @@ describe('Reconstrucción del Bridge', () => {
       delDeclarante.add([...rec.manos[0]!].sort().join());
     }
     expect(delDeclarante.size).toBeGreaterThan(1);
+  });
+});
+
+describirReconstruccion(pesca, reconstruirPesca, {
+  configs: [2, 4, 6].map((jugadores) => ({ ...CONFIG_PESCA_POR_DEFECTO, jugadores })),
+  base: iaPescaBasica,
+});
+
+describe('Reconstrucción de la Pesca', () => {
+  it('quien pidió un valor y no lo ha perdido lo tiene en la mano reconstruida', () => {
+    const r = pesca.crear({ jugadores: 3 }, 'sabido');
+    if (!r.ok) throw new Error(r.error);
+    let e: EstadoPesca = r.valor;
+    // Se juega con la primera acción legal hasta que le toca al 2: el 1 ya ha pedido.
+    while (e.turno !== 2) {
+      e = pesca.transicion(e, e.turno, pesca.accionesLegales(e, e.turno)[0]!);
+    }
+    const pidio = e.registro.findLast((x) => x.tipo === 'pedir' && x.asiento === 1);
+    if (!pidio || pidio.tipo !== 'pedir') throw new Error('El 1 no ha pedido');
+    const delValor = (cs: readonly string[]) =>
+      cs.some((c) => Number(c.split('-')[1]) === pidio.valor);
+    expect(delValor(e.manos[1]!)).toBe(true);
+    const g = new Generador(crearAzar('p'));
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirPesca(pesca.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      expect(delValor(rec.manos[1]!)).toBe(true);
+    }
   });
 });

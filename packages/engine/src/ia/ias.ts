@@ -46,6 +46,7 @@ import { SIMULABLE_SKAT } from './reconstruir/skat';
 import { SIMULABLE_OH_HELL } from './reconstruir/oh-hell';
 import { SIMULABLE_SPITE_MALICE } from './reconstruir/spite-malice';
 import { SIMULABLE_BRIDGE } from './reconstruir/bridge';
+import { SIMULABLE_PESCA } from './reconstruir/pesca';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -74,6 +75,7 @@ import { iaSkatBasica } from './skat-basica';
 import { iaOhHellBasica } from './oh-hell-basica';
 import { iaSpiteMaliceBasica } from './spite-malice-basica';
 import { iaBridgeBasica } from './bridge-basica';
+import { iaPescaBasica } from './pesca-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -172,4 +174,5 @@ export const IAS = {
   ohHell: niveles(iaOhHellBasica, SIMULABLE_OH_HELL),
   spiteMalice: niveles(iaSpiteMaliceBasica, SIMULABLE_SPITE_MALICE),
   bridge: niveles(iaBridgeBasica, SIMULABLE_BRIDGE),
+  pesca: niveles(iaPescaBasica, SIMULABLE_PESCA),
 } as const;
