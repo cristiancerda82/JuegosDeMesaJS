@@ -43,6 +43,7 @@
     ConfigCanfield,
     ConfigCuarentaLadrones,
     ConfigScorpion,
+    ConfigBelleLucie,
     ConfigChinchon,
     ConfigCorazones,
     ConfigCinquillo,
@@ -94,6 +95,7 @@
   let yukonConfig: Editable<ConfigYukon> = $state({ ...JUEGOS.yukon.configPorDefecto });
   let canfieldConfig: Editable<ConfigCanfield> = $state({ ...JUEGOS.canfield.configPorDefecto });
   let scorpionConfig: Editable<ConfigScorpion> = $state({ ...JUEGOS.scorpion.configPorDefecto });
+  let belleLucieConfig: Editable<ConfigBelleLucie> = $state({ ...JUEGOS.belleLucie.configPorDefecto });
   let cuarentaLadronesConfig: Editable<ConfigCuarentaLadrones> = $state({
     ...JUEGOS.cuarentaLadrones.configPorDefecto,
   });
@@ -170,6 +172,7 @@
       canfield: canfieldConfig,
       cuarentaLadrones: cuarentaLadronesConfig,
       scorpion: scorpionConfig,
+      belleLucie: belleLucieConfig,
       corazones,
       burro,
       pinacle,

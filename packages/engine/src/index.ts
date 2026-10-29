@@ -29,6 +29,7 @@ export * from './juegos/cuarenta-ladrones';
 export * from './juegos/whist';
 export * from './juegos/sevens';
 export * from './juegos/scorpion';
+export * from './juegos/belle-lucie';
 export * from './juegos/casino';
 export * from './juegos/durak';
 export * from './juegos/euchre';

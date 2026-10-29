@@ -215,6 +215,13 @@ import {
   CONFIG_SCORPION_POR_DEFECTO,
   scorpion,
   pistaScorpion,
+  belleLucie,
+  pistaBelleLucie,
+  CONFIG_BELLE_LUCIE_POR_DEFECTO,
+  type AccionBelleLucie,
+  type ConfigBelleLucie,
+  type EstadoBelleLucie,
+  type VistaBelleLucie,
   type AccionScorpion,
   type ConfigScorpion,
   type EstadoScorpion,
@@ -409,7 +416,8 @@ export type IdJuego =
   | 'spiteMalice'
   | 'bridge'
   | 'pesca'
-  | 'kingsCorner';
+  | 'kingsCorner'
+  | 'belleLucie';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -464,6 +472,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'bridge',
   'pesca',
   'kingsCorner',
+  'belleLucie',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -537,6 +546,23 @@ export const DEF_SCORPION: DefScorpion = {
   ia: null,
   pausaTras: () => 0,
   pista: pistaScorpion,
+};
+
+export type DefBelleLucie = DefJuego<
+  ConfigBelleLucie,
+  EstadoBelleLucie,
+  AccionBelleLucie,
+  VistaBelleLucie
+>;
+
+export const DEF_BELLE_LUCIE: DefBelleLucie = {
+  id: 'belleLucie',
+  nombre: T.menu.belleLucie,
+  juego: belleLucie,
+  configPorDefecto: CONFIG_BELLE_LUCIE_POR_DEFECTO,
+  ia: null,
+  pausaTras: () => 0,
+  pista: pistaBelleLucie,
 };
 
 export type DefCuarentaLadrones = DefJuego<
@@ -1474,6 +1500,7 @@ export const JUEGOS = {
   canfield: DEF_CANFIELD,
   cuarentaLadrones: DEF_CUARENTA_LADRONES,
   scorpion: DEF_SCORPION,
+  belleLucie: DEF_BELLE_LUCIE,
   corazones: DEF_CORAZONES,
   burro: DEF_BURRO,
   pinacle: DEF_PINACLE,

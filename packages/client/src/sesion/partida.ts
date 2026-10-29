@@ -113,6 +113,10 @@ import {
   type AccionCanfield,
   type AccionCuarentaLadrones,
   type AccionScorpion,
+  type AccionBelleLucie,
+  type ConfigBelleLucie,
+  type EstadoBelleLucie,
+  type VistaBelleLucie,
   type ConfigScorpion,
   type EstadoScorpion,
   type VistaScorpion,
@@ -263,6 +267,7 @@ import {
   DEF_CANFIELD,
   DEF_CUARENTA_LADRONES,
   DEF_SCORPION,
+  DEF_BELLE_LUCIE,
   DEF_KLONDIKE,
   DEF_ESCOBA,
   DEF_TUTE,
@@ -320,6 +325,12 @@ export type SesionTuteSubastado = SesionMesa<
   EstadoTuteSubastado,
   AccionTuteSubastado,
   VistaTuteSubastado
+>;
+export type SesionBelleLucie = SesionMesa<
+  ConfigBelleLucie,
+  EstadoBelleLucie,
+  AccionBelleLucie,
+  VistaBelleLucie
 >;
 export type SesionScorpion = SesionMesa<
   ConfigScorpion,
@@ -464,6 +475,7 @@ export type Partida =
   | { readonly id: 'canfield'; readonly sesion: SesionCanfield }
   | { readonly id: 'cuarentaLadrones'; readonly sesion: SesionCuarentaLadrones }
   | { readonly id: 'scorpion'; readonly sesion: SesionScorpion }
+  | { readonly id: 'belleLucie'; readonly sesion: SesionBelleLucie }
   | { readonly id: 'corazones'; readonly sesion: SesionCorazones }
   | { readonly id: 'burro'; readonly sesion: SesionBurro }
   | { readonly id: 'pinacle'; readonly sesion: SesionPinacle }
@@ -538,6 +550,7 @@ export type ConfigJuego =
   | ConfigCanfield
   | ConfigCuarentaLadrones
   | ConfigScorpion
+  | ConfigBelleLucie
   | ConfigCasino
   | ConfigDurak
   | ConfigEuchre
@@ -597,6 +610,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_CUARENTA_LADRONES);
     case 'scorpion':
       return hacer(DEF_SCORPION);
+    case 'belleLucie':
+      return hacer(DEF_BELLE_LUCIE);
     case 'corazones':
       return hacer(DEF_CORAZONES);
     case 'burro':

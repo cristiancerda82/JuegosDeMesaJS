@@ -242,6 +242,7 @@ for (const juego of [
   'canfield',
   'cuarentaLadrones',
   'scorpion',
+  'belleLucie',
   'corazones',
   'burro',
   'pinacle',

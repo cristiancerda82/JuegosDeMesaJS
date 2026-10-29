@@ -13,6 +13,12 @@ import {
 import type { AccionYukon, VistaYukon } from '../juegos/yukon';
 import type { AccionCanfield, VistaCanfield } from '../juegos/canfield';
 import type { AccionScorpion, VistaScorpion } from '../juegos/scorpion';
+import {
+  encajaBelleLucie,
+  subeBelleLucie,
+  type AccionBelleLucie,
+  type VistaBelleLucie,
+} from '../juegos/belle-lucie';
 import type { AccionCuarentaLadrones, VistaCuarentaLadrones } from '../juegos/cuarenta-ladrones';
 
 /**
@@ -401,6 +407,42 @@ export function pistaScorpion(
   return (
     mejor(acciones, (a) => puntosScorpion(vista, a)) ??
     acciones.find((a) => a.tipo === 'repartir') ??
+    null
+  );
+}
+
+// ── La Belle Lucie ───────────────────────────────────────────────────────────
+
+function puntosBelleLucie(v: VistaBelleLucie, a: AccionBelleLucie): number {
+  if (a.tipo === 'fundacion') return 100;
+  if (a.tipo !== 'mover') return 0;
+  const carta = v.abanicos[a.desde]!.at(-1)!;
+  const queda = v.abanicos[a.desde]!.at(-2);
+  if (queda === undefined) return 10;
+  if (subeBelleLucie(v.fundaciones, queda)) return 60;
+  // Los topes tras el movimiento: en el destino, la carta movida.
+  const topes = v.abanicos.map((x, i) =>
+    i === a.desde ? undefined : i === a.hasta ? carta : x.at(-1),
+  );
+  return topes.some((t) => t !== undefined && encajaBelleLucie(queda, t)) ? 30 : 0;
+}
+
+/**
+ * Pista de La Belle Lucie: subir a las fundaciones o mover dejando libre una carta útil; si no,
+ * la merci con una carta que suba, o rebarajar.
+ */
+export function pistaBelleLucie(
+  vista: VistaBelleLucie,
+  acciones: readonly AccionBelleLucie[],
+): AccionBelleLucie | null {
+  return (
+    mejor(acciones, (a) => puntosBelleLucie(vista, a)) ??
+    acciones.find(
+      (a) =>
+        a.tipo === 'merci' &&
+        subeBelleLucie(vista.fundaciones, vista.abanicos[a.abanico]![a.indice]!),
+    ) ??
+    acciones.find((a) => a.tipo === 'rebarajar') ??
     null
   );
 }

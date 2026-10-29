@@ -13,12 +13,18 @@ import {
   pistaCanfield,
   pistaCuarentaLadrones,
   pistaScorpion,
+  pistaBelleLucie,
 } from '../../src/ia/pistas';
 import {
   CONFIG_SCORPION_POR_DEFECTO,
   scorpion,
   type EstadoScorpion,
 } from '../../src/juegos/scorpion';
+import {
+  belleLucie,
+  CONFIG_BELLE_LUCIE_POR_DEFECTO,
+  type EstadoBelleLucie,
+} from '../../src/juegos/belle-lucie';
 import {
   CONFIG_CUARENTA_LADRONES_POR_DEFECTO,
   cuarentaLadrones,
@@ -572,6 +578,48 @@ describe('pista del Scorpion', () => {
   });
 });
 
+describe('pista de La Belle Lucie', () => {
+  const k = (ids: string) => (ids === '' ? [] : (ids.split(' ') as IdCarta[]));
+  function mesaL(abanicos: string[], parcial: Partial<EstadoBelleLucie> = {}): EstadoBelleLucie {
+    const r = belleLucie.crear(CONFIG_BELLE_LUCIE_POR_DEFECTO, 'pista');
+    if (!r.ok) throw new Error(r.error);
+    return {
+      ...r.valor,
+      abanicos: abanicos.map(k),
+      fundaciones: { picas: 0, corazones: 0, diamantes: 0, treboles: 0 },
+      ...parcial,
+    };
+  }
+  const pistaL = (e: EstadoBelleLucie) =>
+    pistaBelleLucie(belleLucie.vistaDe(e, 0), belleLucie.accionesLegales(e, 0));
+
+  it('prefiere subir a la fundación', () => {
+    const e = mesaL(['picas-6 corazones-1', 'picas-7 diamantes-5', 'diamantes-6 treboles-9']);
+    expect(pistaL(e)).toEqual({ tipo: 'fundacion', abanico: 0 });
+  });
+
+  it('mueve si deja libre una carta que sube', () => {
+    const e = mesaL(['corazones-1 picas-6', 'picas-7', 'treboles-9']);
+    expect(pistaL(e)).toEqual({ tipo: 'mover', desde: 0, hasta: 1 });
+  });
+
+  it('sin nada útil, rebaraja; tras el último, la merci con una carta que sube', () => {
+    const e = mesaL(['treboles-5 corazones-1 picas-9', 'diamantes-8']);
+    expect(pistaL(e)).toEqual({ tipo: 'rebarajar' });
+    const sinRebarajes = { ...e, rebarajes: 0, merci: 'disponible' as const };
+    expect(pistaL(sinRebarajes)).toEqual({ tipo: 'merci', abanico: 0, indice: 1 });
+  });
+
+  it('sin movimientos, rebarajes ni merci, la partida está atascada', () => {
+    const e = mesaL(['treboles-5 corazones-2 picas-9', 'diamantes-8'], {
+      rebarajes: 0,
+      merci: 'usada',
+    });
+    expect(pistaL(e)).toBeNull();
+    expect(atascado(belleLucie.accionesLegales(e, 0))).toBe(true);
+  });
+});
+
 // ── Propiedades ──────────────────────────────────────────────────────────────
 
 describe('las pistas en partidas al azar', () => {
@@ -590,6 +638,7 @@ describe('las pistas en partidas al azar', () => {
       pista: pistaCuarentaLadrones,
     },
     { juego: scorpion, config: CONFIG_SCORPION_POR_DEFECTO, pista: pistaScorpion },
+    { juego: belleLucie, config: CONFIG_BELLE_LUCIE_POR_DEFECTO, pista: pistaBelleLucie },
   ] as unknown as {
     juego: Juego<unknown, unknown, { tipo: string }, unknown>;
     config: unknown;

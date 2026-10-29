@@ -89,6 +89,9 @@ export const T = {
     yukon: 'Yukon',
     canfield: 'Canfield',
     cuarentaLadrones: 'Cuarenta ladrones',
+    belleLucie: 'La Belle Lucie',
+    belleLucieDesc:
+      'Solitario de 18 abanicos con todas las cartas a la vista: sube los palos del As al K con dos rebarajes y una merci.',
     scorpion: 'Scorpion',
     scorpionDesc:
       'Solitario de una baraja: mueve cualquier carta con las de encima sobre la siguiente de su palo, y forma las cuatro escaleras.',
@@ -1753,6 +1756,13 @@ export const T = {
     ejemplo: 'Apuesta / bazas hechas → puntos',
   },
 
+  belleLucie: {
+    rebarajar: (n: number) => (n === 1 ? 'Rebarajar (1)' : `Rebarajar (${n})`),
+    merci: 'Merci',
+    eligeMerci: 'Toca una carta de debajo de un abanico para ponerla arriba',
+    fundacion: (palo: string) => `Fundación de ${palo}`,
+  },
+
   scorpion: {
     reserva: (n: number) => (n === 0 ? 'Reserva repartida' : `Reserva: ${n} cartas`),
     repartirReserva: 'Repartir la reserva',
@@ -2090,6 +2100,7 @@ export const T = {
       canfield: 'Cómo se juega al Canfield',
       cuarentaLadrones: 'Cómo se juega a Cuarenta ladrones',
       scorpion: 'Cómo se juega al Scorpion',
+      belleLucie: 'Cómo se juega a La Belle Lucie',
       corazones: 'Cómo se juega a los Corazones',
       pocha: 'Cómo se juega a la Pocha',
       mus: 'Cómo se juega al Mus',
@@ -3634,6 +3645,42 @@ export const T = {
         texto: [
           'Cuenta tus matadores antes de pujar: con dos o tres y unos cuantos triunfos, ya puedes jugar con rey.',
           'Llama el rey del palo en que tienes menos cartas: tu compañero te ganará esas bazas.',
+        ],
+      },
+    ],
+
+    belleLucie: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Un solitario con la baraja francesa de 52. Hay que subir todas las cartas a las 4 fundaciones, una por palo, del As al K.',
+        ],
+      },
+      {
+        titulo: 'Los abanicos',
+        texto: [
+          'Las cartas se reparten boca arriba en 18 abanicos: 17 de 3 cartas y uno de 1. Solo se puede mover la carta de arriba de cada abanico.',
+        ],
+      },
+      {
+        titulo: 'Mover',
+        texto: [
+          'La carta de arriba de un abanico puede subir a su fundación si es la siguiente, o ir sobre la de arriba de otro abanico si es la siguiente más baja del mismo palo: el 6 de picas sobre el 7 de picas.',
+          'Toca la carta y después el destino; tocándola dos veces sube a su fundación. Los abanicos vacíos no se rellenan.',
+        ],
+      },
+      {
+        titulo: 'Rebarajes y merci',
+        texto: [
+          'Dos veces por partida puedes rebarajar: se recogen las cartas de los abanicos, se barajan y se reparten de nuevo de tres en tres.',
+          'Después del último rebaraje tienes una merci: toca «Merci» y después una carta de debajo de un abanico para ponerla arriba.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Antes de mover, mira qué carta queda debajo: lo mejor es liberar un As o la siguiente de una fundación.',
+          'Una carta del mismo palo encima de otra más baja la bloquea; rebaraja cuando ya no puedas deshacer esos nudos.',
         ],
       },
     ],
