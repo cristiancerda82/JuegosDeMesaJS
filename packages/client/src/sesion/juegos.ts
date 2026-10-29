@@ -57,6 +57,12 @@ import {
   CONFIG_SKAT_POR_DEFECTO,
   skat,
   actorBridge,
+  bezique,
+  CONFIG_BEZIQUE_POR_DEFECTO,
+  type AccionBezique,
+  type ConfigBezique,
+  type EstadoBezique,
+  type VistaBezique,
   kingsCorner,
   CONFIG_KINGS_CORNER_POR_DEFECTO,
   type AccionKingsCorner,
@@ -417,7 +423,8 @@ export type IdJuego =
   | 'bridge'
   | 'pesca'
   | 'kingsCorner'
-  | 'belleLucie';
+  | 'belleLucie'
+  | 'bezique';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -473,6 +480,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'pesca',
   'kingsCorner',
   'belleLucie',
+  'bezique',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1480,6 +1488,24 @@ export const DEF_KINGS_CORNER: DefKingsCorner = {
   },
 };
 
+export type DefBezique = DefJuego<ConfigBezique, EstadoBezique, AccionBezique, VistaBezique>;
+
+export const DEF_BEZIQUE: DefBezique = {
+  id: 'bezique',
+  nombre: T.menu.bezique,
+  juego: bezique,
+  configPorDefecto: CONFIG_BEZIQUE_POR_DEFECTO,
+  ia: IAS.bezique,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada cante del rival y
+  // cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const cante = despues.cantes.length > antes.cantes.length ? PAUSA_CANTE_MS : 0;
+    const baza = despues.ultimaBaza !== antes.ultimaBaza && despues.ultimaBaza !== null;
+    return Math.max(cante, baza ? PAUSA_BAZA_MS : 0);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1534,6 +1560,7 @@ export const JUEGOS = {
   bridge: DEF_BRIDGE,
   pesca: DEF_PESCA,
   kingsCorner: DEF_KINGS_CORNER,
+  bezique: DEF_BEZIQUE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

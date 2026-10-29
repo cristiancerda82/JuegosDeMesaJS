@@ -48,6 +48,25 @@ const VALORES_PESCA_SINGULAR = [
   'un rey',
 ];
 
+/** Nombres de las combinaciones del Bezique. */
+const CANTES_BEZIQUE: Record<string, string> = {
+  bezique: 'Bézique',
+  dobleBezique: 'Doble bézique',
+  cuatroJ: 'Cuatro J',
+  cuatroQ: 'Cuatro Q',
+  cuatroK: 'Cuatro K',
+  cuatroA: 'Cuatro A',
+  escalera: 'Escalera',
+  siete: 'El 7 de triunfo',
+  cambio: 'Cambio del 7',
+};
+const SIMBOLO_PALO: Record<string, string> = {
+  picas: '♠',
+  corazones: '♥',
+  diamantes: '♦',
+  treboles: '♣',
+};
+
 const DENOMINACION_BRIDGE: Record<string, string> = {
   treboles: '♣',
   diamantes: '♦',
@@ -155,6 +174,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    bezique: 'Bezique',
+    beziqueDesc:
+      'Para dos con 64 cartas: bazas, matrimonios, cuartetos y el bézique de la dama de picas y la sota de diamantes, a 1.000 puntos.',
     kingsCorner: 'Kings in the Corner',
     kingsCornerDesc:
       'De 2 a 4 jugadores: escaleras descendentes de colores alternos en cruz, con los reyes en las esquinas. Gana quien se queda antes sin cartas.',
@@ -1088,6 +1110,33 @@ export const T = {
     totalPartida: 'Total',
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos (menos es mejor)',
+  },
+
+  bezique: {
+    reparte: 'Reparte',
+    puntosMano: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
+    triunfo: (palo: string) =>
+      `Triunfo: ${SIMBOLO_PALO[palo]!} ${palo === 'treboles' ? 'tréboles' : palo}`,
+    marcador: (yo: number, rival: number) => `Partida ${yo} – ${rival}`,
+    ultimas: 'Últimas bazas',
+    cantadasDe: (quien: string) => `Cantadas de ${quien}:`,
+    nombreCante: (cante: string, palo: string | null) =>
+      cante === 'matrimonio' ? `Matrimonio de ${SIMBOLO_PALO[palo!]!}` : CANTES_BEZIQUE[cante]!,
+    cante: (cante: string, palo: string | null, puntos: number) =>
+      `${cante === 'matrimonio' ? `Matrimonio de ${SIMBOLO_PALO[palo!]!}` : CANTES_BEZIQUE[cante]!} · ${puntos}`,
+    canta: (quien: string, cante: string, palo: string | null, puntos: number) =>
+      `${quien}: ${cante === 'matrimonio' ? `matrimonio de ${SIMBOLO_PALO[palo!]!}` : CANTES_BEZIQUE[cante]!.toLowerCase()} · ${puntos}`,
+    cambiar: 'Cambiar el 7 · 10',
+    noCantar: 'No cantar',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    jugadorCol: 'Jugador',
+    cantesCol: 'Cantes',
+    brisquesCol: 'Brisques',
+    ultimaCol: 'Última',
+    manoCol: 'Mano',
+    totalCol: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
   },
 
   kings: {
@@ -2135,6 +2184,7 @@ export const T = {
       bridge: 'Cómo se juega al Bridge',
       pesca: 'Cómo se juega a la Pesca',
       kingsCorner: 'Cómo se juega a Kings in the Corner',
+      bezique: 'Cómo se juega al Bezique',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2722,6 +2772,51 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    bezique: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Para dos jugadores, con dos barajas de piquet: 64 cartas, del 7 al As de cada palo, dos copias de cada una. El orden es A, 10, K, Q, J, 9, 8 y 7.',
+          'Se suman puntos cantando combinaciones y ganando Ases y dieces en las bazas. Gana quien llega antes a 1.000 puntos.',
+        ],
+      },
+      {
+        titulo: 'El reparto y el triunfo',
+        texto: [
+          'Cada uno recibe 8 cartas y la siguiente se vuelve: su palo es el triunfo. Si es un 7, el que reparte suma 10. El resto forma el mazo.',
+        ],
+      },
+      {
+        titulo: 'Las bazas con mazo',
+        texto: [
+          'Mientras quede mazo puedes jugar cualquier carta: no hace falta seguir el palo. Gana el triunfo más alto o la carta más alta del palo de salida; si son iguales, gana la primera.',
+          'Tras cada baza roba primero el que la ganó y después el otro. La última carta del mazo es para el ganador y la vuelta para el otro.',
+        ],
+      },
+      {
+        titulo: 'Los cantes',
+        texto: [
+          'Quien gana una baza puede cantar una combinación: matrimonio (K y Q del mismo palo) 20, o 40 si es de triunfo; bézique (Q de picas y J de diamantes) 40; doble bézique 500; cuatro J 40, cuatro Q 60, cuatro K 80 y cuatro A 100; escalera de triunfo (A, 10, K, Q y J) 250.',
+          'Las cartas cantadas quedan boca arriba, pero siguen en tu mano. Cada cante necesita al menos una carta nueva, y una carta no vale dos veces para el mismo tipo de combinación.',
+          'En vez de cantar, puedes declarar el 7 de triunfo (10) o cambiarlo por la carta vuelta (10).',
+        ],
+      },
+      {
+        titulo: 'Las últimas bazas',
+        texto: [
+          'Cuando se acaba el mazo se juegan las 8 últimas bazas, sin cantes: hay que seguir el palo y ganar si se puede; si no tienes el palo, fallar con triunfo. La última baza vale 10.',
+          'Al acabar la mano, cada As y cada 10 ganado en las bazas vale 10 (las brisques).',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Guarda los K, las Q, la Q de picas y la J de diamantes: con ellos se canta. Gana bazas para poder cantar.',
+          'No regales Ases ni dieces mientras quede mazo: guárdalos para las últimas bazas.',
         ],
       },
     ],

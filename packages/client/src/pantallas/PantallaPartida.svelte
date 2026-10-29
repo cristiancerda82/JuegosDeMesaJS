@@ -29,6 +29,7 @@
   import MesaBridge from '../mesas/MesaBridge.svelte';
   import MesaPesca from '../mesas/MesaPesca.svelte';
   import MesaKingsCorner from '../mesas/MesaKingsCorner.svelte';
+  import MesaBezique from '../mesas/MesaBezique.svelte';
   import MesaOhHell from '../mesas/MesaOhHell.svelte';
   import MesaSpiteMalice from '../mesas/MesaSpiteMalice.svelte';
   import MesaRemigio from '../mesas/MesaRemigio.svelte';
@@ -153,6 +154,8 @@
     <MesaPesca sesion={partida.sesion} />
   {:else if partida.id === 'kingsCorner'}
     <MesaKingsCorner sesion={partida.sesion} />
+  {:else if partida.id === 'bezique'}
+    <MesaBezique sesion={partida.sesion} />
   {:else if partida.id === 'ohHell'}
     <MesaOhHell sesion={partida.sesion} />
   {:else if partida.id === 'spiteMalice'}

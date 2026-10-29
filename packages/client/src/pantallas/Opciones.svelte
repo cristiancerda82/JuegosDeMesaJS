@@ -34,6 +34,7 @@
     ConfigBridge,
     ConfigPesca,
     ConfigKingsCorner,
+    ConfigBezique,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -129,6 +130,7 @@
   let bridgeConfig: Editable<ConfigBridge> = $state({ ...JUEGOS.bridge.configPorDefecto });
   let pescaConfig: Editable<ConfigPesca> = $state({ ...JUEGOS.pesca.configPorDefecto });
   let kingsConfig: Editable<ConfigKingsCorner> = $state({ ...JUEGOS.kingsCorner.configPorDefecto });
+  let beziqueConfig: Editable<ConfigBezique> = $state({ ...JUEGOS.bezique.configPorDefecto });
   let ohHellConfig: Editable<ConfigOhHell> = $state({ ...JUEGOS.ohHell.configPorDefecto });
   let spiteMaliceConfig: Editable<ConfigSpiteMalice> = $state({
     ...JUEGOS.spiteMalice.configPorDefecto,
@@ -203,6 +205,7 @@
       bridge: bridgeConfig,
       pesca: pescaConfig,
       kingsCorner: kingsConfig,
+      bezique: beziqueConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.

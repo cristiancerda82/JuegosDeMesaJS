@@ -19,6 +19,7 @@
   import ResumenBelote from '../mesas/ResumenBelote.svelte';
   import ResumenSchnapsen from '../mesas/ResumenSchnapsen.svelte';
   import ResumenSkat from '../mesas/ResumenSkat.svelte';
+  import ResumenBezique from '../mesas/ResumenBezique.svelte';
   import ResumenBridge from '../mesas/ResumenBridge.svelte';
   import ResumenOhHell from '../mesas/ResumenOhHell.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
@@ -101,6 +102,7 @@
       partida.id !== 'ohHell' &&
       partida.id !== 'pesca' &&
       partida.id !== 'kingsCorner' &&
+      partida.id !== 'bezique' &&
       partida.id !== 'pocha' &&
       partida.id !== 'mus' &&
       partida.id !== 'corazones' &&
@@ -440,6 +442,21 @@
         <tbody>
           {#each [yo, yo === 0 ? 1 : 0] as a, i (a)}
             <tr><th scope="row">{nombre(a)}</th><td data-testid="puntos-fin-{i}">{vista.puntos[a]}</td></tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'bezique'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const nombre = (a: number) => nombreAsiento(a, 2, yo, partida.sesion.red)}
+      {#if ultima}
+        <ResumenBezique resultado={ultima} {yo} {nombre} />
+      {/if}
+      <table data-testid="puntos-bezique">
+        <caption>{T.bezique.clasificacion}</caption>
+        <tbody>
+          {#each [yo, yo === 0 ? 1 : 0] as a, i (a)}
+            <tr><th scope="row">{nombre(a)}</th><td data-testid="puntos-fin-{i}">{vista.puntos[a as 0 | 1]}</td></tr>
           {/each}
         </tbody>
       </table>

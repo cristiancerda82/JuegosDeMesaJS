@@ -11,9 +11,20 @@
     grupo?: (carta: IdCarta) => number | null;
     /** Zona de destino de la mano (p. ej. para soltar ahí la carta robada). */
     destino?: string | undefined;
+    /** Cartas que se marcan (las cantadas del Bezique); con copias, se marcan tantas como haya. */
+    marcadas?: readonly IdCarta[];
   }
 
-  let { cartas, jugable, interaccion, grupo = () => null, destino }: Props = $props();
+  let { cartas, jugable, interaccion, grupo = () => null, destino, marcadas = [] }: Props = $props();
+
+  /** Con dos barajas hay cartas repetidas: cada copia lleva su número. */
+  const conCopia = $derived(
+    cartas.map((id, i) => {
+      const copia = cartas.slice(0, i).filter((c) => c === id).length;
+      const marcada = copia < marcadas.filter((c) => c === id).length;
+      return { id, clave: `${id}#${copia}`, marcada };
+    }),
+  );
 
   const COLORES_GRUPO = ['#f2c14e', '#52b788', '#6aa9ff', '#ff8fab'];
 </script>
@@ -29,7 +40,7 @@
   data-testid="mano"
   data-destino={destino}
 >
-  {#each cartas as id (id)}
+  {#each conCopia as { id, clave, marcada } (clave)}
     {@const g = grupo(id)}
     <div class="ranura">
       <div
@@ -37,6 +48,7 @@
         class:jugable={jugable(id)}
         class:seleccionada={interaccion.seleccion === id}
         class:en-grupo={g !== null}
+        class:marcada
         style:--color-grupo={g === null ? null : COLORES_GRUPO[g % COLORES_GRUPO.length]}
         data-grupo={g}
         data-carta={id}
@@ -92,6 +104,17 @@
   .carta-mano.seleccionada {
     outline: 3px solid var(--resalte);
     z-index: 2;
+  }
+
+  /* Carta cantada: boca arriba en la mesa, aunque sigue en la mano. */
+  .carta-mano.marcada::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 9%;
+    border: 3px solid var(--acento);
+    pointer-events: none;
+    z-index: 1;
   }
 
   .mano.legal {

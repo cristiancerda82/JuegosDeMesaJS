@@ -33,6 +33,8 @@
     /** Cartas de esa mano que puede jugar el jugador, y cómo jugarlas. */
     jugableAbierta?: (carta: IdCarta) => boolean;
     jugarAbierta?: (carta: IdCarta) => void;
+    /** Cartas de la mano propia que se marcan (las cantadas del Bezique). */
+    marcadas?: readonly IdCarta[];
     /** Aviso propio del juego; si es `null`, se usan los de baza y fin de mano. */
     aviso?: string | null;
     detalleAviso?: Snippet | undefined;
@@ -55,6 +57,7 @@
     manoAbierta = () => null,
     jugableAbierta = () => false,
     jugarAbierta = () => {},
+    marcadas = [],
     aviso = null,
     detalleAviso,
     info,
@@ -180,7 +183,7 @@
       <span class="turno" role="status" data-testid="turno">{turno}</span>
       {@render acciones?.(() => interaccion.cancelar())}
     </div>
-    <ManoPropia cartas={vista.miMano ?? []} {jugable} {interaccion} />
+    <ManoPropia cartas={vista.miMano ?? []} {jugable} {interaccion} {marcadas} />
   </div>
 </div>
 

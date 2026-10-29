@@ -45,6 +45,7 @@ import { CONFIG_SPITE_MALICE_POR_DEFECTO, spiteMalice } from './juegos/spite-mal
 import { bridge, CONFIG_BRIDGE_POR_DEFECTO } from './juegos/bridge';
 import { CONFIG_PESCA_POR_DEFECTO, pesca } from './juegos/pesca';
 import { CONFIG_KINGS_CORNER_POR_DEFECTO, kingsCorner } from './juegos/kings-corner';
+import { bezique, CONFIG_BEZIQUE_POR_DEFECTO } from './juegos/bezique';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -94,6 +95,7 @@ export const IDS_JUEGOS_EN_RED = [
   'bridge',
   'pesca',
   'kingsCorner',
+  'bezique',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -168,6 +170,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   bridge: entrada(bridge, IAS.bridge, CONFIG_BRIDGE_POR_DEFECTO),
   pesca: entrada(pesca, IAS.pesca, CONFIG_PESCA_POR_DEFECTO),
   kingsCorner: entrada(kingsCorner, IAS.kingsCorner, CONFIG_KINGS_CORNER_POR_DEFECTO),
+  bezique: entrada(bezique, IAS.bezique, CONFIG_BEZIQUE_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

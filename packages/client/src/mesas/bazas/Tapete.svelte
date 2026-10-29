@@ -33,7 +33,7 @@
   onclick={() => interaccion.tocarDestino('mesa')}
   onkeydown={() => {}}
 >
-  {#each jugadas as jugada (jugada.carta)}
+  {#each jugadas as jugada (`${jugada.asiento}-${jugada.carta}`)}
     <div
       class="jugada {lado(jugada.asiento, jugadores, yo)}"
       data-carta={jugada.carta}

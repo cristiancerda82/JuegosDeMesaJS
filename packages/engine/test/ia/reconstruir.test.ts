@@ -78,6 +78,9 @@ import { CONFIG_PESCA_POR_DEFECTO, pesca, type EstadoPesca } from '../../src/jue
 import { iaKingsCornerBasica } from '../../src/ia/kings-corner-basica';
 import { reconstruirKingsCorner } from '../../src/ia/reconstruir/kings-corner';
 import { CONFIG_KINGS_CORNER_POR_DEFECTO, kingsCorner } from '../../src/juegos/kings-corner';
+import { iaBeziqueBasica } from '../../src/ia/bezique-basica';
+import { reconstruirBezique } from '../../src/ia/reconstruir/bezique';
+import { bezique, type EstadoBezique } from '../../src/juegos/bezique';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -874,4 +877,28 @@ describe('Reconstrucción de la Pesca', () => {
 describirReconstruccion(kingsCorner, reconstruirKingsCorner, {
   configs: [2, 4].map((jugadores) => ({ ...CONFIG_KINGS_CORNER_POR_DEFECTO, jugadores })),
   base: iaKingsCornerBasica,
+});
+
+describirReconstruccion(bezique, reconstruirBezique, {
+  configs: [{ objetivo: 200 }],
+  base: iaBeziqueBasica,
+});
+
+describe('Reconstrucción del Bezique', () => {
+  it('el rival conserva sus cartas cantadas', () => {
+    const r = bezique.crear({ objetivo: 1000 }, 'cantadas');
+    if (!r.ok) throw new Error(r.error);
+    const e: EstadoBezique = {
+      ...r.valor,
+      cantadas: [[], [r.valor.manos[1]![0]!, r.valor.manos[1]![1]!]],
+    };
+    const g = new Generador(crearAzar('b'));
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirBezique(bezique.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.manos[1]).toContain(e.manos[1]![0]);
+      expect(rec.manos[1]).toContain(e.manos[1]![1]);
+      expect(rec.manos[1]).toHaveLength(8);
+    }
+  });
 });
