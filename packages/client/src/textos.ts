@@ -152,6 +152,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    kingsCorner: 'Kings in the Corner',
+    kingsCornerDesc:
+      'De 2 a 4 jugadores: escaleras descendentes de colores alternos en cruz, con los reyes en las esquinas. Gana quien se queda antes sin cartas.',
     pesca: 'Pesca',
     pescaDesc:
       'De 2 a 6 jugadores: pide cartas a los rivales y reúne cuartetos. Si no las tienen, ¡a pescar!',
@@ -1082,6 +1085,30 @@ export const T = {
     totalPartida: 'Total',
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos (menos es mejor)',
+  },
+
+  kings: {
+    mazo: (n: number) => `Mazo: ${n}`,
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    pasar: 'Pasar',
+    tuTurno: 'Tu turno',
+    turnoDe: (quien: string) => `Turno de ${quien}`,
+    eligeDestino: 'Elige dónde ponerla',
+    juega: (quien: string) => (quien === 'Tú' ? 'Juegas una carta' : `${quien} juega una carta`),
+    mueve: (quien: string) => (quien === 'Tú' ? 'Mueves una pila' : `${quien} mueve una pila`),
+    pasa: (quien: string) => (quien === 'Tú' ? 'Pasas' : `${quien} pasa`),
+    pila: (i: number) =>
+      [
+        'Arriba',
+        'Derecha',
+        'Abajo',
+        'Izquierda',
+        'Esquina arriba izquierda',
+        'Esquina arriba derecha',
+        'Esquina abajo derecha',
+        'Esquina abajo izquierda',
+      ][i]!,
+    clasificacion: 'Cartas en la mano',
   },
 
   pesca: {
@@ -2096,6 +2123,7 @@ export const T = {
       spiteMalice: 'Cómo se juega al Spite and Malice',
       bridge: 'Cómo se juega al Bridge',
       pesca: 'Cómo se juega a la Pesca',
+      kingsCorner: 'Cómo se juega a Kings in the Corner',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2683,6 +2711,48 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    kingsCorner: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'De 2 a 4 jugadores, cada uno por su cuenta, con la baraja francesa de 52. Gana quien se queda antes sin cartas.',
+        ],
+      },
+      {
+        titulo: 'La mesa',
+        texto: [
+          'Cada uno recibe 7 cartas. En el centro queda el mazo y, a su alrededor, 4 cartas boca arriba en cruz. Las 4 esquinas empiezan vacías.',
+        ],
+      },
+      {
+        titulo: 'Las pilas',
+        texto: [
+          'Sobre una carta se pone otra un punto más baja y del color contrario: un 7 rojo sobre un 8 negro, un 6 negro sobre ese 7… El As es la más baja y el K la más alta.',
+          'Las esquinas solo se empiezan con un K. Un hueco de la cruz admite cualquier carta.',
+        ],
+      },
+      {
+        titulo: 'El turno',
+        texto: [
+          'Al empezar tu turno robas una carta del mazo. Después juegas todas las cartas que quieras y, cuando no quieras jugar más, pasas.',
+          'También puedes mover una pila de la cruz entera sobre otra pila si su primera carta encaja; su sitio queda libre para cualquier carta. Toca la pila y después el destino.',
+        ],
+      },
+      {
+        titulo: 'El final',
+        texto: [
+          'Gana quien juega su última carta. Si el mazo se acaba y todos pasan seguidos sin jugar, gana quien tenga menos cartas.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Mueve pilas para abrir huecos: en un hueco puedes empezar una escalera con tus propias cartas.',
+          'Guarda los K para las esquinas y no dejes huecos que le vengan bien a tu rival.',
         ],
       },
     ],

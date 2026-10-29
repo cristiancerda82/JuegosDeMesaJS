@@ -57,6 +57,12 @@ import {
   CONFIG_SKAT_POR_DEFECTO,
   skat,
   actorBridge,
+  kingsCorner,
+  CONFIG_KINGS_CORNER_POR_DEFECTO,
+  type AccionKingsCorner,
+  type ConfigKingsCorner,
+  type EstadoKingsCorner,
+  type VistaKingsCorner,
   pesca,
   CONFIG_PESCA_POR_DEFECTO,
   type AccionPesca,
@@ -402,7 +408,8 @@ export type IdJuego =
   | 'ohHell'
   | 'spiteMalice'
   | 'bridge'
-  | 'pesca';
+  | 'pesca'
+  | 'kingsCorner';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -456,6 +463,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'spiteMalice',
   'bridge',
   'pesca',
+  'kingsCorner',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1425,6 +1433,27 @@ export const DEF_PESCA: DefPesca = {
   },
 };
 
+export type DefKingsCorner = DefJuego<
+  ConfigKingsCorner,
+  EstadoKingsCorner,
+  AccionKingsCorner,
+  VistaKingsCorner
+>;
+
+export const DEF_KINGS_CORNER: DefKingsCorner = {
+  id: 'kingsCorner',
+  nombre: T.menu.kingsCorner,
+  juego: kingsCorner,
+  configPorDefecto: CONFIG_KINGS_CORNER_POR_DEFECTO,
+  ia: IAS.kingsCorner,
+  // Cada jugada de un rival, para verla.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    return accion.asiento !== despues.asiento ? PAUSA_RIVAL_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1477,6 +1506,7 @@ export const JUEGOS = {
   spiteMalice: DEF_SPITE_MALICE,
   bridge: DEF_BRIDGE,
   pesca: DEF_PESCA,
+  kingsCorner: DEF_KINGS_CORNER,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

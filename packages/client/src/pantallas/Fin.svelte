@@ -98,6 +98,7 @@
       partida.id !== 'cribbage' &&
       partida.id !== 'ohHell' &&
       partida.id !== 'pesca' &&
+      partida.id !== 'kingsCorner' &&
       partida.id !== 'pocha' &&
       partida.id !== 'mus' &&
       partida.id !== 'corazones' &&
@@ -437,6 +438,20 @@
         <tbody>
           {#each [yo, yo === 0 ? 1 : 0] as a, i (a)}
             <tr><th scope="row">{nombre(a)}</th><td data-testid="puntos-fin-{i}">{vista.puntos[a]}</td></tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'kingsCorner'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      <table data-testid="cartas-fin">
+        <caption>{T.kings.clasificacion}</caption>
+        <tbody>
+          {#each Array.from({ length: n }, (_, a) => a).sort((a, b) => vista.cartasEnMano[a]! - vista.cartasEnMano[b]!) as a (a)}
+            <tr>
+              <th scope="row">{nombreChinchon(a, n)}</th>
+              <td data-testid="total-{a}">{vista.cartasEnMano[a]}</td>
+            </tr>
           {/each}
         </tbody>
       </table>

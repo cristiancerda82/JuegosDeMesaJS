@@ -816,6 +816,23 @@ test('Spite and Malice en red: el descarte de uno lo ve el otro', async ({ brows
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Kings in the Corner en red: el pase de uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'kingsCorner');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) await expect(p.getByTestId('mazo')).toBeVisible();
+
+  // Empieza Ana (asiento 0) con 8 cartas tras robar; pasa y Luis roba la suya.
+  await expect(ana.locator('[data-testid="mano"] .carta-mano')).toHaveCount(8);
+  await ana.getByTestId('pasar').click();
+  await expect(luis.getByTestId('aviso')).toContainText('Ana pasa');
+  await expect(luis.locator('[data-testid="mano"] .carta-mano')).toHaveCount(8);
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Pesca en red: la petición de uno la ve el otro', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

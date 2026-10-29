@@ -75,6 +75,9 @@ import { bridge, CONFIG_BRIDGE_POR_DEFECTO, type EstadoBridge } from '../../src/
 import { iaPescaBasica } from '../../src/ia/pesca-basica';
 import { reconstruirPesca } from '../../src/ia/reconstruir/pesca';
 import { CONFIG_PESCA_POR_DEFECTO, pesca, type EstadoPesca } from '../../src/juegos/pesca';
+import { iaKingsCornerBasica } from '../../src/ia/kings-corner-basica';
+import { reconstruirKingsCorner } from '../../src/ia/reconstruir/kings-corner';
+import { CONFIG_KINGS_CORNER_POR_DEFECTO, kingsCorner } from '../../src/juegos/kings-corner';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -866,4 +869,9 @@ describe('Reconstrucción de la Pesca', () => {
       expect(delValor(rec.manos[1]!)).toBe(true);
     }
   });
+});
+
+describirReconstruccion(kingsCorner, reconstruirKingsCorner, {
+  configs: [2, 4].map((jugadores) => ({ ...CONFIG_KINGS_CORNER_POR_DEFECTO, jugadores })),
+  base: iaKingsCornerBasica,
 });
