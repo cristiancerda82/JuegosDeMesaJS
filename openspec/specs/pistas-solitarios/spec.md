@@ -6,7 +6,7 @@ TBD - created by archiving change pistas-solitarios. Update Purpose after archiv
 ## Requirements
 
 ### Requirement: Pista de un solitario
-Cada solitario (Klondike, FreeCell, Spider, Pirámide, Golf, TriPeaks, Yukon, Canfield, Cuarenta ladrones y Scorpion) MUST tener una función de pista que, a partir de la vista del jugador y de sus acciones legales, devuelva una acción legal útil o `null` si no ve ninguna. La pista MUST ser determinista e instantánea (menos de 50 ms). MUST NOT sugerir deshacer, abandonar ni autocompletar.
+Cada solitario (Klondike, FreeCell, Spider, Pirámide, Golf, TriPeaks, Yukon, Canfield, Cuarenta ladrones, Scorpion y La Belle Lucie) MUST tener una función de pista que, a partir de la vista del jugador y de sus acciones legales, devuelva una acción legal útil o `null` si no ve ninguna. La pista MUST ser determinista e instantánea (menos de 50 ms). MUST NOT sugerir deshacer, abandonar ni autocompletar.
 
 Un movimiento MUST considerarse útil solo si cambia algo que acerca a la victoria:
 - sube una carta a una fundación;
@@ -21,13 +21,14 @@ Un movimiento MUST considerarse útil solo si cambia algo que acerca a la victor
 - en el Canfield, saca la carta de arriba de la reserva (a una fundación o a una columna), antes que una del descarte.
 - en Cuarenta ladrones, como en el Klondike: sube a las fundaciones, saca la carta del descarte o vacía una columna.
 - en el Scorpion, descubre una carta tapada, lleva una K a una columna vacía dejando algo atrás, o une a su escalera una carta que no lo estaba.
+- en La Belle Lucie, sube una carta a su fundación o, si no, mueve una carta sobre otro abanico dejando arriba de su abanico una carta que puede subir o moverse.
 
 MUST NOT considerarse útiles los movimientos de ida y vuelta:
 - pasar una escalera de una columna a otra sin descubrir ni vaciar nada;
 - bajar una carta de una fundación;
 - mover un Rey que ya está solo al fondo de su columna a otra columna vacía.
 
-Si no hay ningún movimiento útil, la pista MUST sugerir robar o reciclar (Klondike, Pirámide, Golf, TriPeaks, Canfield y Cuarenta ladrones; en este, solo robar), repartir (Spider) o repartir la reserva (Scorpion) cuando se pueda; si tampoco se puede, MUST devolver `null`.
+Si no hay ningún movimiento útil, la pista MUST sugerir robar o reciclar (Klondike, Pirámide, Golf, TriPeaks, Canfield y Cuarenta ladrones; en este, solo robar), repartir (Spider), repartir la reserva (Scorpion) o, en La Belle Lucie, hacer la merci con una carta que pueda subir a su fundación y, si no, rebarajar, cuando se pueda; si tampoco se puede, MUST devolver `null`.
 
 #### Scenario: Prefiere la fundación
 - **WHEN** en el Klondike se puede subir el As de corazones a una fundación y también mover una carta entre columnas
@@ -84,6 +85,10 @@ Si no hay ningún movimiento útil, la pista MUST sugerir robar o reciclar (Klon
 #### Scenario: Descubrir una carta en el Scorpion
 - **WHEN** en el Scorpion un movimiento deja arriba de su columna una carta tapada, y otro solo pasa cartas de una columna a otra
 - **THEN** la pista sugiere el que descubre la carta
+
+#### Scenario: Merci y rebaraje en La Belle Lucie
+- **WHEN** en La Belle Lucie no hay ningún movimiento útil y quedan rebarajes
+- **THEN** la pista sugiere rebarajar
 
 ### Requirement: Partida atascada
 Un solitario MUST considerarse atascado cuando la partida no ha terminado y las únicas acciones legales son deshacer, abandonar o ninguna.
