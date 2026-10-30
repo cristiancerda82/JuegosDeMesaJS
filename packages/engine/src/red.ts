@@ -47,6 +47,7 @@ import { CONFIG_PESCA_POR_DEFECTO, pesca } from './juegos/pesca';
 import { CONFIG_KINGS_CORNER_POR_DEFECTO, kingsCorner } from './juegos/kings-corner';
 import { bezique, CONFIG_BEZIQUE_POR_DEFECTO } from './juegos/bezique';
 import { CONFIG_DOPPELKOPF_POR_DEFECTO, doppelkopf } from './juegos/doppelkopf';
+import { CONFIG_TAROT_POR_DEFECTO, tarot } from './juegos/tarot';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -98,6 +99,7 @@ export const IDS_JUEGOS_EN_RED = [
   'kingsCorner',
   'bezique',
   'doppelkopf',
+  'tarot',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -174,6 +176,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   kingsCorner: entrada(kingsCorner, IAS.kingsCorner, CONFIG_KINGS_CORNER_POR_DEFECTO),
   bezique: entrada(bezique, IAS.bezique, CONFIG_BEZIQUE_POR_DEFECTO),
   doppelkopf: entrada(doppelkopf, IAS.doppelkopf, CONFIG_DOPPELKOPF_POR_DEFECTO),
+  tarot: entrada(tarot, IAS.tarot, CONFIG_TAROT_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

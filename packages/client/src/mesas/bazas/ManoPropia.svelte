@@ -27,6 +27,9 @@
   );
 
   const COLORES_GRUPO = ['#f2c14e', '#52b788', '#6aa9ff', '#ff8fab'];
+
+  /** Con más cartas (el Tarot, hasta 24), se juntan sin hueco y enseñan solo la esquina. */
+  const MAXIMO_HOLGADA = 12;
 </script>
 
 <!--
@@ -36,6 +39,7 @@
 -->
 <div
   class="mano"
+  class:apretada={cartas.length > MAXIMO_HOLGADA}
   class:legal={destino !== undefined && interaccion.resaltados.has(destino)}
   data-testid="mano"
   data-destino={destino}
@@ -75,6 +79,11 @@
     flex: 0 1 var(--ancho-carta);
     min-width: calc(var(--ancho-carta) * 0.3);
     margin-right: clamp(4px, 2vw, 14px);
+  }
+
+  .mano.apretada .ranura {
+    min-width: calc(var(--ancho-carta) * 0.22);
+    margin-right: 0;
   }
 
   .ranura:last-child {

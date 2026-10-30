@@ -21,6 +21,7 @@
   import ResumenSkat from '../mesas/ResumenSkat.svelte';
   import ResumenBezique from '../mesas/ResumenBezique.svelte';
   import ResumenDoppelkopf from '../mesas/ResumenDoppelkopf.svelte';
+  import ResumenTarot from '../mesas/ResumenTarot.svelte';
   import ResumenBridge from '../mesas/ResumenBridge.svelte';
   import ResumenOhHell from '../mesas/ResumenOhHell.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
@@ -105,6 +106,7 @@
       partida.id !== 'kingsCorner' &&
       partida.id !== 'bezique' &&
       partida.id !== 'doppelkopf' &&
+      partida.id !== 'tarot' &&
       partida.id !== 'pocha' &&
       partida.id !== 'mus' &&
       partida.id !== 'corazones' &&
@@ -473,6 +475,22 @@
         <caption>{T.doppelkopf.clasificacion}</caption>
         <tbody>
           {#each [0, 1, 2, 3].sort((a, b) => vista.puntos[b]! - vista.puntos[a]!) as a (a)}
+            <tr><th scope="row">{nombre(a)}</th><td data-testid="puntos-fin-{a}">{vista.puntos[a]}</td></tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'tarot'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const nombre = (a: number) => nombreNumerado(a, n, yo, partida.sesion.red, T.brisca.rivalN)}
+      {#if ultima}
+        <ResumenTarot resultado={ultima} {yo} {n} {nombre} />
+      {/if}
+      <table data-testid="puntos-tarot">
+        <caption>{T.tarot.clasificacion}</caption>
+        <tbody>
+          {#each Array.from({ length: n }, (_, a) => a).sort((a, b) => vista.puntos[b]! - vista.puntos[a]!) as a (a)}
             <tr><th scope="row">{nombre(a)}</th><td data-testid="puntos-fin-{a}">{vista.puntos[a]}</td></tr>
           {/each}
         </tbody>

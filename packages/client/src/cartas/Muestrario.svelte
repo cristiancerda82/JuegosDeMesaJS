@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { crearBaraja } from '@juegos/engine';
+  import { BARAJA_TAROT, crearBaraja } from '@juegos/engine';
   import { T } from '../textos';
   import Carta from './Carta.svelte';
 
@@ -12,6 +12,7 @@
   const barajas = [
     { titulo: T.cartas.barajaEspanola, cartas: crearBaraja('espanola48', { comodines: true }) },
     { titulo: T.cartas.barajaFrancesa, cartas: crearBaraja('francesa52') },
+    { titulo: T.cartas.barajaTarot, cartas: [...BARAJA_TAROT] },
   ];
 </script>
 

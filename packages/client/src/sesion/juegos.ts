@@ -59,6 +59,12 @@ import {
   actorBridge,
   bezique,
   doppelkopf,
+  tarot,
+  CONFIG_TAROT_POR_DEFECTO,
+  type AccionTarot,
+  type ConfigTarot,
+  type EstadoTarot,
+  type VistaTarot,
   CONFIG_DOPPELKOPF_POR_DEFECTO,
   type AccionDoppelkopf,
   type ConfigDoppelkopf,
@@ -431,7 +437,8 @@ export type IdJuego =
   | 'kingsCorner'
   | 'belleLucie'
   | 'bezique'
-  | 'doppelkopf';
+  | 'doppelkopf'
+  | 'tarot';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -489,6 +496,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'belleLucie',
   'bezique',
   'doppelkopf',
+  'tarot',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1539,6 +1547,26 @@ export const DEF_DOPPELKOPF: DefDoppelkopf = {
   },
 };
 
+export type DefTarot = DefJuego<ConfigTarot, EstadoTarot, AccionTarot, VistaTarot>;
+
+export const DEF_TAROT: DefTarot = {
+  id: 'tarot',
+  nombre: T.menu.tarot,
+  juego: tarot,
+  configPorDefecto: CONFIG_TAROT_POR_DEFECTO,
+  ia: IAS.tarot,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada dicho de un rival
+  // en la subasta, el perro, cada poignée y cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const dicho = despues.dichos.findIndex((d, i) => d !== null && antes.dichos[i] === null);
+    if (dicho !== -1 && dicho !== despues.asiento) return PAUSA_APUESTA_MS;
+    const perro = antes.fase !== 'descarte' && despues.fase === 'descarte';
+    if (perro || despues.poignees.length > antes.poignees.length) return PAUSA_CANTE_MS;
+    return despues.bazas.length > antes.bazas.length ? PAUSA_BAZA_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1595,6 +1623,7 @@ export const JUEGOS = {
   kingsCorner: DEF_KINGS_CORNER,
   bezique: DEF_BEZIQUE,
   doppelkopf: DEF_DOPPELKOPF,
+  tarot: DEF_TAROT,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

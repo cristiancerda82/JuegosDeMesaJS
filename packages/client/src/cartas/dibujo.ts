@@ -2,6 +2,9 @@ import {
   cartaDeId,
   colorDe,
   esComodin,
+  esExcusa,
+  esTriunfoTarot,
+  numeroTriunfo,
   PALOS_FRANCESES,
   type IdCarta,
   type Palo,
@@ -81,7 +84,10 @@ export const esFrancesa = (palo: Palo): palo is PaloFrances =>
 /** Texto del índice de la esquina: números en la española, A/J/Q/K en la francesa. */
 export function indice(palo: Palo, valor: number): string {
   if (!esFrancesa(palo)) return String(valor);
-  return ({ 1: 'A', 11: 'J', 12: 'Q', 13: 'K' } as Record<number, string>)[valor] ?? String(valor);
+  return (
+    ({ 1: 'A', 11: 'J', 12: 'Q', 13: 'K', 14: 'C' } as Record<number, string>)[valor] ??
+    String(valor)
+  );
 }
 
 /**
@@ -166,6 +172,10 @@ export const FIGURAS: Readonly<Record<Figura, readonly CapaIcono[]>> = {
 
 export const COLOR_COMODIN = '#6a1b9a';
 
+/** Colores de los triunfos y de la Excusa del Tarot. */
+export const COLOR_TRIUNFO = '#1b5e8a';
+export const COLOR_EXCUSA = '#b45309';
+
 /** Estrella de cinco puntas para las esquinas del comodín (caja de 100 × 100). */
 export const ESTRELLA = 'M50 4L61 38H97L68 59L79 94L50 72L21 94L32 59L3 38H39Z';
 
@@ -193,7 +203,7 @@ export const COMODIN: readonly {
 /** Figura que lleva la carta, o `null` si no es figura. */
 export function figuraDe(palo: Palo, valor: number): Figura | null {
   const figuras: Record<number, Figura> = esFrancesa(palo)
-    ? { 11: 'sota', 12: 'reina', 13: 'rey' }
+    ? { 11: 'sota', 12: 'reina', 13: 'rey', 14: 'caballo' }
     : { 10: 'sota', 11: 'caballo', 12: 'rey' };
   return figuras[valor] ?? null;
 }
@@ -205,6 +215,8 @@ export function colorTinta(palo: Palo): string {
 
 /** Nombre accesible de la carta, p. ej. "Caballo de copas" o "7 de picas". */
 export function nombreCarta(id: IdCarta): string {
+  if (esTriunfoTarot(id)) return T.cartas.triunfo(numeroTriunfo(id));
+  if (esExcusa(id)) return T.cartas.excusa;
   const carta = cartaDeId(id);
   if (carta === null) return esComodin(id) ? T.cartas.comodin : id;
   const figuras = esFrancesa(carta.palo) ? T.cartas.figurasFrancesas : T.cartas.figurasEspanolas;

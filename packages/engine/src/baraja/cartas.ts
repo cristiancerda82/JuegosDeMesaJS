@@ -18,8 +18,15 @@ export interface Carta {
 export const COMODINES = ['comodin-1', 'comodin-2'] as const;
 export type IdComodin = (typeof COMODINES)[number];
 
-/** Identificador serializable y estable de una carta, p. ej. "oros-1", "picas-13" o "comodin-1". */
-export type IdCarta = `${Palo}-${number}` | IdComodin;
+/** Los 21 triunfos y la Excusa de la baraja de Tarot: no tienen palo francés. */
+export type IdTriunfoTarot = `triunfo-${number}`;
+export const EXCUSA = 'excusa';
+
+/**
+ * Identificador serializable y estable de una carta, p. ej. "oros-1", "picas-13", "comodin-1",
+ * "triunfo-21" o "excusa".
+ */
+export type IdCarta = `${Palo}-${number}` | IdComodin | IdTriunfoTarot | typeof EXCUSA;
 
 export function esComodin(id: string): id is IdComodin {
   return (COMODINES as readonly string[]).includes(id);
@@ -66,7 +73,8 @@ function leerCarta(id: string): Carta | null {
   const textoValor = id.slice(separador + 1);
   if (separador < 0 || !TODOS_LOS_PALOS.includes(palo) || !/^\d+$/.test(textoValor)) return null;
   const valor = Number(textoValor);
-  const maximo = (PALOS_FRANCESES as readonly Palo[]).includes(palo) ? 13 : 12;
+  // En los palos franceses, el 14 es el Caballo de la baraja de Tarot.
+  const maximo = (PALOS_FRANCESES as readonly Palo[]).includes(palo) ? 14 : 12;
   if (valor < 1 || valor > maximo) return null;
   return { palo, valor };
 }
@@ -97,6 +105,31 @@ export function cartasFuera(
   const dentro = new Set(grupos.flat());
   return baraja.filter((c) => !dentro.has(c));
 }
+
+// ── Baraja de Tarot ──────────────────────────────────────────────────────────
+
+export const esExcusa = (id: string): id is typeof EXCUSA => id === EXCUSA;
+
+/** Es uno de los 21 triunfos del Tarot (la Excusa no cuenta). */
+export function esTriunfoTarot(id: string): id is IdTriunfoTarot {
+  const m = /^triunfo-(\d+)$/.exec(id);
+  return m !== null && Number(m[1]) >= 1 && Number(m[1]) <= 21;
+}
+
+/** El número de un triunfo del Tarot. */
+export const numeroTriunfo = (id: IdTriunfoTarot) => Number(id.slice('triunfo-'.length));
+
+/**
+ * La baraja de Tarot de 78 cartas: los cuatro palos franceses del 1 al 10 con Sota (11),
+ * Dama (12), Rey (13) y Caballo (14); los triunfos del 1 al 21, y la Excusa.
+ */
+export const BARAJA_TAROT: readonly IdCarta[] = [
+  ...PALOS_FRANCESES.flatMap((palo) =>
+    Array.from({ length: 14 }, (_, i) => idCarta({ palo, valor: i + 1 })),
+  ),
+  ...Array.from({ length: 21 }, (_, i): IdTriunfoTarot => `triunfo-${i + 1}`),
+  EXCUSA,
+];
 
 export function colorDe(palo: PaloFrances): 'rojo' | 'negro' {
   return palo === 'corazones' || palo === 'diamantes' ? 'rojo' : 'negro';

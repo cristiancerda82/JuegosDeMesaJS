@@ -5,6 +5,10 @@ import {
   COMODINES,
   crearBaraja,
   esComodin,
+  esExcusa,
+  esTriunfoTarot,
+  BARAJA_TAROT,
+  numeroTriunfo,
   idCarta,
   type Palo,
 } from '../../src/baraja/cartas';
@@ -77,7 +81,9 @@ describe('identidad de las cartas', () => {
       'oros',
       'oros-0',
       'oros-13',
-      'picas-14',
+      'picas-15',
+      'triunfo-5',
+      'excusa',
       'copas-x',
       'rombos-1',
       'oros-1.5',
@@ -111,5 +117,27 @@ describe('comodines', () => {
 
   it('la baraja francesa no admite comodines', () => {
     expect(() => crearBaraja('francesa52', { comodines: true })).toThrow();
+  });
+});
+
+describe('baraja de Tarot', () => {
+  it('78 cartas distintas: 56 de palo, 21 triunfos y la Excusa', () => {
+    expect(BARAJA_TAROT).toHaveLength(78);
+    expect(new Set(BARAJA_TAROT).size).toBe(78);
+    expect(BARAJA_TAROT.filter((c) => cartaDeId(c) !== null)).toHaveLength(56);
+    expect(BARAJA_TAROT.filter(esTriunfoTarot)).toHaveLength(21);
+    expect(BARAJA_TAROT.filter(esExcusa)).toEqual(['excusa']);
+  });
+
+  it('el Caballo es el valor 14 de un palo francés, que la baraja de 52 no tiene', () => {
+    expect(cartaDeId('picas-14')).toEqual({ palo: 'picas', valor: 14 });
+    expect(crearBaraja('francesa52')).not.toContain('picas-14');
+  });
+
+  it('los triunfos y la Excusa no tienen palo', () => {
+    expect(cartaDeId('triunfo-21')).toBeNull();
+    expect(esTriunfoTarot('triunfo-21')).toBe(true);
+    expect(esTriunfoTarot('triunfo-22')).toBe(false);
+    expect(numeroTriunfo('triunfo-7')).toBe(7);
   });
 });

@@ -84,6 +84,9 @@ import { bezique, type EstadoBezique } from '../../src/juegos/bezique';
 import { iaDoppelkopfBasica } from '../../src/ia/doppelkopf-basica';
 import { reconstruirDoppelkopf } from '../../src/ia/reconstruir/doppelkopf';
 import { doppelkopf, type EstadoDoppelkopf } from '../../src/juegos/doppelkopf';
+import { iaTarotBasica } from '../../src/ia/tarot-basica';
+import { reconstruirTarot } from '../../src/ia/reconstruir/tarot';
+import { tarot, type EstadoTarot } from '../../src/juegos/tarot';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -936,6 +939,36 @@ describe('Reconstrucción del Doppelkopf', () => {
       expect(conDamas).toHaveLength(2);
       expect(rec.manos.every((m) => m.filter((c) => c === 'treboles-12').length <= 1)).toBe(true);
       if (e.re.includes(0)) expect(rec.re).toEqual(e.re);
+    }
+  });
+});
+
+describirReconstruccion(tarot, reconstruirTarot, {
+  configs: [{ jugadores: 3 }, { jugadores: 4 }, { jugadores: 5 }],
+  base: iaTarotBasica,
+});
+
+describe('Reconstrucción del Tarot', () => {
+  it('los triunfos de una poignée que no se han jugado siguen en la mano de quien la enseñó', () => {
+    const r = tarot.crear({ jugadores: 4 }, 'poignee');
+    if (!r.ok) throw new Error(r.error);
+    const triunfos = r.valor.manos[2]!.filter((c) => c.startsWith('triunfo-')).slice(0, 4);
+    const e: EstadoTarot = {
+      ...r.valor,
+      fase: 'bazas',
+      contrato: 'gardeSans',
+      preneur: 1,
+      dichos: ['pasa', 'gardeSans', 'pasa', 'pasa'],
+      turno: 0,
+      poignees: [{ asiento: 2, nivel: 1, cartas: triunfos }],
+    };
+    const g = new Generador(crearAzar('t'));
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirTarot(tarot.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      for (const c of triunfos) expect(rec.manos[2]).toContain(c);
+      expect(rec.manos[2]).toHaveLength(18);
+      expect(rec.perro).toHaveLength(6);
     }
   });
 });

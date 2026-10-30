@@ -174,6 +174,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    tarot: 'Tarot',
+    tarotDesc:
+      'De 3 a 5 con 78 cartas, 21 triunfos y la Excusa: uno apuesta un contrato contra los demás y se queda con el perro.',
     doppelkopf: 'Doppelkopf',
     doppelkopfDesc:
       'Para cuatro con 48 cartas y parejas secretas: las Damas de tréboles juegan juntas, con bodas, solos y anuncios de Re y Contra.',
@@ -1113,6 +1116,57 @@ export const T = {
     totalPartida: 'Total',
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos (menos es mejor)',
+  },
+
+  tarot: {
+    reparte: 'Reparte',
+    preneur: 'Preneur',
+    pareja: 'Con el preneur',
+    bazas: (n: number) => (n === 1 ? '1 baza' : `${n} bazas`),
+    contrato: {
+      petite: 'Petite',
+      garde: 'Garde',
+      gardeSans: 'Garde sans',
+      gardeContre: 'Garde contre',
+    },
+    dicho: {
+      pasa: 'Pasa',
+      petite: 'Petite',
+      garde: 'Garde',
+      gardeSans: 'Garde sans',
+      gardeContre: 'Garde contre',
+    },
+    pasar: 'Pasar',
+    subasta: 'Subasta',
+    contratoDe: (contrato: 'petite' | 'garde' | 'gardeSans' | 'gardeContre', quien: string) =>
+      `${{ petite: 'Petite', garde: 'Garde', gardeSans: 'Garde sans', gardeContre: 'Garde contre' }[contrato]} · ${quien}`,
+    conPareja: (quien: string) => `con ${quien}`,
+    llama: (carta: string) => `Llama: ${carta}`,
+    llamando: (quien: string) => `${quien} llama a un Rey…`,
+    descarta: (n: number) => (n === 1 ? 'Descarta 1 carta' : `Descarta ${n} cartas`),
+    descartando: (quien: string) => `${quien} descarta…`,
+    perro: 'Perro:',
+    poigneeDe: (quien: string, nivel: number, n: number) =>
+      `${quien}: poignée ${['simple', 'doble', 'triple'][nivel - 1]} (${n} triunfos)`,
+    ensenarPoignee: (nivel: number) =>
+      `Enseñar poignée ${['simple', 'doble', 'triple'][nivel - 1]}`,
+    manoRonda: (n: number, total: number) => `Mano ${n} de ${total}`,
+    tusPuntos: (n: number) => `Tus puntos: ${n > 0 ? '+' : ''}${n}`,
+    medios: (m: number) => (m % 2 === 0 ? `${m / 2}` : `${(m - 1) / 2},5`),
+    puntosAtaque: (puntos: string, oudlers: number, necesarios: number) =>
+      `${puntos} puntos con ${oudlers === 1 ? '1 oudler' : `${oudlers} oudlers`} (necesita ${necesarios})`,
+    ganaPor: (n: number) => `El preneur gana por ${n}`,
+    pierdePor: (n: number) => `El preneur pierde por ${n}`,
+    petitAuBout: (bando: string) =>
+      `Petit au bout para ${bando === 'ataque' ? 'el preneur' : 'la defensa'}`,
+    poignees: (n: number) => `Poignées: ${n}`,
+    nula: 'Todos pasan: mano nula',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    jugadorCol: 'Jugador',
+    manoCol: 'Mano',
+    totalCol: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
   },
 
   doppelkopf: {
@@ -2167,9 +2221,14 @@ export const T = {
 
   cartas: {
     figurasEspanolas: { 10: 'Sota', 11: 'Caballo', 12: 'Rey' } as Record<number, string>,
-    figurasFrancesas: { 1: 'As', 11: 'Jota', 12: 'Reina', 13: 'Rey' } as Record<number, string>,
+    figurasFrancesas: { 1: 'As', 11: 'Jota', 12: 'Reina', 13: 'Rey', 14: 'Caballo' } as Record<
+      number,
+      string
+    >,
     as: 'As',
     comodin: 'Comodín',
+    triunfo: (n: number) => `Triunfo ${n}`,
+    excusa: 'Excusa',
     palos: {
       oros: 'oros',
       copas: 'copas',
@@ -2185,6 +2244,7 @@ export const T = {
     muestrario: 'Todas las cartas',
     barajaEspanola: 'Baraja española',
     barajaFrancesa: 'Baraja francesa',
+    barajaTarot: 'Baraja de Tarot',
     dorsos: 'Dorsos',
   },
 
@@ -2250,6 +2310,7 @@ export const T = {
       kingsCorner: 'Cómo se juega a Kings in the Corner',
       bezique: 'Cómo se juega al Bezique',
       doppelkopf: 'Cómo se juega al Doppelkopf',
+      tarot: 'Cómo se juega al Tarot',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2837,6 +2898,53 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    tarot: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega entre 3, 4 o 5 con la baraja de Tarot: los cuatro palos con Sota, Caballo, Dama y Rey, 21 triunfos y la Excusa.',
+          'En cada mano, uno (el preneur) apuesta un contrato contra los demás. La partida dura una ronda en la que cada uno reparte dos veces, y gana quien más puntos sume.',
+        ],
+      },
+      {
+        titulo: 'La subasta',
+        texto: [
+          'Cada uno, por orden y una sola vez, pasa o sube: Petite (×1), Garde (×2), Garde sans le chien (×4) o Garde contre le chien (×6). Quien pide más es el preneur; si todos pasan, la mano es nula.',
+          'Con 5 jugadores, el preneur llama a un Rey que no tenga: quien lo tiene juega con él, en secreto, hasta que lo saca.',
+        ],
+      },
+      {
+        titulo: 'El perro',
+        texto: [
+          'En la Petite y la Garde, el perro se enseña y el preneur se lo queda, y descarta otras tantas cartas (ni Reyes ni el 1, el 21 o la Excusa; triunfos solo si no tiene otra cosa).',
+          'En la Garde sans, el perro cuenta para el preneur sin verse; en la Garde contre, cuenta para la defensa.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Hay que seguir el palo de salida. Si no tienes, tienes que jugar triunfo, y más alto que los que haya en la baza si puedes. Sin palo ni triunfos, juegas lo que quieras.',
+          'La Excusa se puede jugar siempre: no gana nunca y vuelve a tu bando, que da medio punto a cambio.',
+          'Con muchos triunfos puedes enseñar una poignée en tu primer turno: vale 20, 30 o 40 para el bando que gane la mano.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'Reyes y oudlers (el 1, el 21 y la Excusa) valen 4,5; Damas 3,5; Caballos 2,5; Sotas 1,5; el resto 0,5. En total, 91.',
+          'El preneur necesita 56 sin oudlers, 51 con uno, 41 con dos y 36 con tres. La mano vale (25 + la diferencia) por el multiplicador del contrato; cobra o paga a cada defensor.',
+          'Petit au bout: quien gana la última baza con el 1 de triunfo suma 10 por el multiplicador.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Puja con triunfos altos y oudlers: el 21 y la Excusa no se pierden nunca. Guarda el Petit: si te lo cazan, lo pierdes.',
+          'Si tu bando va ganando la baza, cárgale un Rey o una Dama.',
         ],
       },
     ],

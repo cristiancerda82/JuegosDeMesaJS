@@ -34,6 +34,11 @@
   }: Props = $props();
 
   const dorsos = $derived(visible === null ? cartas : Math.max(0, cartas - 1));
+
+  /** Con más de 12 cartas los dorsos se solapan más, para ocupar lo mismo que 12. */
+  const MAXIMO = 12;
+  const solape = $derived(cartas > MAXIMO ? (MAXIMO - 1) * 0.55 / (cartas - 1) - 1 : null);
+  const solapeLateral = $derived(cartas > MAXIMO ? (MAXIMO - 1) * 0.4 / (cartas - 1) - 1.4 : null);
 </script>
 
 <div class="asiento {lado}" class:activo data-testid="asiento-{asiento}">
@@ -41,7 +46,13 @@
     {nombre}
     <small>{detalle}</small>
   </div>
-  <div class="mano-rival" class:abierta={abiertas !== null} data-zona="mano-{asiento}">
+  <div
+    class="mano-rival"
+    class:abierta={abiertas !== null}
+    data-zona="mano-{asiento}"
+    style:--solape-rival={solape}
+    style:--solape-rival-lateral={solapeLateral}
+  >
     {#if abiertas !== null}
       {#each abiertas as id (id)}
         <button

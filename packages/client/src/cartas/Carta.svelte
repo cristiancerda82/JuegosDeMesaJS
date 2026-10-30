@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { cartaDeId, esComodin, type IdCarta } from '@juegos/engine';
+  import { cartaDeId, esComodin, esExcusa, esTriunfoTarot, numeroTriunfo, type IdCarta } from '@juegos/engine';
   import { T } from '../textos';
   import {
     colocar,
     COLOR_COMODIN,
+    COLOR_EXCUSA,
+    COLOR_TRIUNFO,
     COMODIN,
     ESTRELLA,
     colorTinta,
@@ -28,6 +30,8 @@
   const palo = $derived(carta === null ? null : PALOS[carta.palo]);
   const tinta = $derived(carta === null ? '' : colorTinta(carta.palo));
   const figura = $derived(carta === null ? null : figuraDe(carta.palo, carta.valor));
+  /** El número del triunfo del Tarot, o `null` si no lo es. */
+  const triunfo = $derived(id !== null && esTriunfoTarot(id) ? numeroTriunfo(id) : null);
 </script>
 
 <svg
@@ -53,6 +57,39 @@
     {/each}
     <text x="50" y="108" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="1" fill={COLOR_COMODIN}>
       {T.cartas.comodin.toUpperCase()}
+    </text>
+  {:else if triunfo !== null}
+    <rect x="1" y="1" width="98" height="138" rx="8" fill="var(--papel)" stroke="var(--borde-carta)" stroke-width="1.5" />
+    <rect x="27" y="14" width="56" height="112" rx="6" fill={COLOR_TRIUNFO} fill-opacity="0.1" stroke={COLOR_TRIUNFO} stroke-width="2.5" />
+    <rect x="32" y="19" width="46" height="102" rx="4" fill="none" stroke={COLOR_TRIUNFO} stroke-width="1" stroke-dasharray="3 3" />
+    {#each [0, 1] as k (k)}
+      <g transform={k === 0 ? '' : 'rotate(180 50 70)'}>
+        <text
+          x="13"
+          y="27"
+          text-anchor="middle"
+          font-size={triunfo >= 10 ? 19 : 26}
+          letter-spacing={triunfo >= 10 ? -1.5 : 0}
+          font-weight="800"
+          fill={COLOR_TRIUNFO}>{triunfo}</text
+        >
+        <path d={ESTRELLA} fill={COLOR_TRIUNFO} transform={colocar(13, 41, 14)} />
+      </g>
+    {/each}
+    <text x="55" y="86" text-anchor="middle" font-size={triunfo >= 10 ? 36 : 44} font-weight="800" letter-spacing="-2" fill={COLOR_TRIUNFO}>
+      {triunfo}
+    </text>
+  {:else if id !== null && esExcusa(id)}
+    <rect x="1" y="1" width="98" height="138" rx="8" fill="var(--papel)" stroke="var(--borde-carta)" stroke-width="1.5" />
+    <rect x="18" y="14" width="64" height="112" rx="6" fill={COLOR_EXCUSA} fill-opacity="0.1" stroke={COLOR_EXCUSA} stroke-width="2.5" />
+    {#each [0, 1] as k (k)}
+      <g transform={k === 0 ? '' : 'rotate(180 50 70)'}>
+        <path d={ESTRELLA} fill={COLOR_EXCUSA} transform={colocar(13, 20, 20)} />
+      </g>
+    {/each}
+    <path d={ESTRELLA} fill={COLOR_EXCUSA} transform={colocar(50, 60, 44)} />
+    <text x="50" y="108" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="1" fill={COLOR_EXCUSA}>
+      {T.cartas.excusa.toUpperCase()}
     </text>
   {:else if carta === null || palo === null}
     <defs>

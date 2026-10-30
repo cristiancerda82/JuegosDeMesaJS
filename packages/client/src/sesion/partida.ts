@@ -59,6 +59,10 @@ import {
   type AccionPesca,
   type AccionBezique,
   type AccionDoppelkopf,
+  type AccionTarot,
+  type ConfigTarot,
+  type EstadoTarot,
+  type VistaTarot,
   type ConfigDoppelkopf,
   type EstadoDoppelkopf,
   type VistaDoppelkopf,
@@ -266,6 +270,7 @@ import {
   DEF_PESCA,
   DEF_BEZIQUE,
   DEF_DOPPELKOPF,
+  DEF_TAROT,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -387,6 +392,7 @@ export type SesionKingsCorner = SesionMesa<
   AccionKingsCorner,
   VistaKingsCorner
 >;
+export type SesionTarot = SesionMesa<ConfigTarot, EstadoTarot, AccionTarot, VistaTarot>;
 export type SesionDoppelkopf = SesionMesa<
   ConfigDoppelkopf,
   EstadoDoppelkopf,
@@ -527,7 +533,8 @@ export type Partida =
   | { readonly id: 'pesca'; readonly sesion: SesionPesca }
   | { readonly id: 'kingsCorner'; readonly sesion: SesionKingsCorner }
   | { readonly id: 'bezique'; readonly sesion: SesionBezique }
-  | { readonly id: 'doppelkopf'; readonly sesion: SesionDoppelkopf };
+  | { readonly id: 'doppelkopf'; readonly sesion: SesionDoppelkopf }
+  | { readonly id: 'tarot'; readonly sesion: SesionTarot };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -584,7 +591,8 @@ export type ConfigJuego =
   | ConfigPesca
   | ConfigKingsCorner
   | ConfigBezique
-  | ConfigDoppelkopf;
+  | ConfigDoppelkopf
+  | ConfigTarot;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -699,6 +707,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_BEZIQUE);
     case 'doppelkopf':
       return hacer(DEF_DOPPELKOPF);
+    case 'tarot':
+      return hacer(DEF_TAROT);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':

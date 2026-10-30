@@ -36,6 +36,7 @@
     ConfigKingsCorner,
     ConfigBezique,
     ConfigDoppelkopf,
+    ConfigTarot,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -133,6 +134,7 @@
   let kingsConfig: Editable<ConfigKingsCorner> = $state({ ...JUEGOS.kingsCorner.configPorDefecto });
   let beziqueConfig: Editable<ConfigBezique> = $state({ ...JUEGOS.bezique.configPorDefecto });
   let doppelkopfConfig: Editable<ConfigDoppelkopf> = $state({ ...JUEGOS.doppelkopf.configPorDefecto });
+  let tarotConfig: Editable<ConfigTarot> = $state({ ...JUEGOS.tarot.configPorDefecto });
   let ohHellConfig: Editable<ConfigOhHell> = $state({ ...JUEGOS.ohHell.configPorDefecto });
   let spiteMaliceConfig: Editable<ConfigSpiteMalice> = $state({
     ...JUEGOS.spiteMalice.configPorDefecto,
@@ -209,6 +211,7 @@
       kingsCorner: kingsConfig,
       bezique: beziqueConfig,
       doppelkopf: doppelkopfConfig,
+      tarot: tarotConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.
@@ -632,6 +635,13 @@
         <legend>{T.opciones.jugadores}</legend>
         {#each [3, 4, 5, 6, 7] as n (n)}
           <label><input type="radio" bind:group={ohHellConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
+        {/each}
+      </fieldset>
+    {:else if juego === 'tarot'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [3, 4, 5] as n (n)}
+          <label><input type="radio" bind:group={tarotConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
         {/each}
       </fieldset>
     {:else if juego === 'kingsCorner'}
