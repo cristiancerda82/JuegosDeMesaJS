@@ -174,6 +174,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    sueca: 'Sueca',
+    suecaDesc:
+      'Portuguesa, para cuatro en parejas con 40 cartas: el As y el 7 valen casi todo y gana la pareja que pasa de 60.',
     tarot: 'Tarot',
     tarotDesc:
       'De 3 a 5 con 78 cartas, 21 triunfos y la Excusa: uno apuesta un contrato contra los demás y se queda con el perro.',
@@ -1354,6 +1357,25 @@ export const T = {
     clasificacion: 'Puntos',
   },
 
+  sueca: {
+    reparte: 'Reparte',
+    cartaTriunfo: 'Carta del triunfo',
+    bazasDe: (n: number) => (n === 1 ? '1 baza' : `${n} bazas`),
+    triunfo: (palo: string) =>
+      `Triunfo: ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[palo]}`,
+    puntos: (lado: string, puntos: number, juegos: number) =>
+      `${lado}: ${puntos} puntos · ${juegos === 1 ? '1 juego' : `${juegos} juegos`}`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    parejaCol: 'Pareja',
+    puntosCol: 'Puntos',
+    juegosCol: 'Juegos',
+    ganan: (lado: string, n: number) => `${lado}: ${n === 1 ? '1 juego' : `${n} juegos`} más`,
+    empate: '60 a 60: nadie gana juegos',
+    juegos: (n: number) => (n === 1 ? '1 juego' : `${n} juegos`),
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Juegos ganados',
+  },
+
   whist: {
     reparte: 'Reparte',
     cartaTriunfo: 'Carta del triunfo',
@@ -2311,6 +2333,7 @@ export const T = {
       bezique: 'Cómo se juega al Bezique',
       doppelkopf: 'Cómo se juega al Doppelkopf',
       tarot: 'Cómo se juega al Tarot',
+      sueca: 'Cómo se juega a la Sueca',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2898,6 +2921,49 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    sueca: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega entre cuatro, en parejas: tu compañero se sienta enfrente. Se usan 40 cartas francesas, sin ochos, nueves ni dieces.',
+          'Cada mano se juegan 10 bazas y la pareja que hace más de 60 puntos gana juegos. Gana la partida la pareja que llega antes a 4 juegos.',
+        ],
+      },
+      {
+        titulo: 'Las cartas',
+        texto: [
+          'El orden, de mayor a menor, es A, 7, K, J, Q, 6, 5, 4, 3 y 2: el 7 gana al Rey.',
+          'Valen puntos el As (11), el 7 (10), el Rey (4), la Jota (3) y la Reina (2). En total hay 120.',
+        ],
+      },
+      {
+        titulo: 'El triunfo',
+        texto: [
+          'Cada uno recibe 10 cartas. La última del repartidor se enseña: su palo es el triunfo, y la carta sigue siendo suya hasta que la juega.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Sale el siguiente al repartidor. Hay que seguir el palo de salida; si no tienes, puedes jugar cualquier carta, también un triunfo.',
+          'Gana la baza el triunfo más alto o, si no hay, la carta más alta del palo de salida. Quien la gana sale en la siguiente.',
+        ],
+      },
+      {
+        titulo: 'Los juegos',
+        texto: [
+          'Al acabar la mano, la pareja con 61 a 90 puntos gana 1 juego; con 91 a 119, 2 juegos; y con los 120, 4 juegos. Con 60 a 60 no gana nadie.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Si la baza es de tu compañero, cárgale un As o un 7. Si es de un rival, no le regales puntos.',
+          'Guarda los triunfos para cazar los Ases y los sietes de los rivales.',
         ],
       },
     ],

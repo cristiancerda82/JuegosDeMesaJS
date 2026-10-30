@@ -22,6 +22,7 @@
   import ResumenBezique from '../mesas/ResumenBezique.svelte';
   import ResumenDoppelkopf from '../mesas/ResumenDoppelkopf.svelte';
   import ResumenTarot from '../mesas/ResumenTarot.svelte';
+  import ResumenSueca from '../mesas/ResumenSueca.svelte';
   import ResumenBridge from '../mesas/ResumenBridge.svelte';
   import ResumenOhHell from '../mesas/ResumenOhHell.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
@@ -585,6 +586,19 @@
         <tbody>
           <tr><th scope="row">{lados[0]}</th><td data-testid="juegos-fin-0">{T.whist.juegos(vista.juegos[mio])}</td></tr>
           <tr><th scope="row">{lados[1]}</th><td data-testid="juegos-fin-1">{T.whist.juegos(vista.juegos[1 - mio]!)}</td></tr>
+        </tbody>
+      </table>
+    {:else if partida.id === 'sueca'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenSueca resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} />
+      {/if}
+      <table data-testid="juegos-sueca">
+        <caption>{T.sueca.clasificacion}</caption>
+        <tbody>
+          <tr><th scope="row">{lados[0]}</th><td data-testid="juegos-fin-0">{T.sueca.juegos(vista.juegos[mio])}</td></tr>
+          <tr><th scope="row">{lados[1]}</th><td data-testid="juegos-fin-1">{T.sueca.juegos(vista.juegos[1 - mio]!)}</td></tr>
         </tbody>
       </table>
     {:else if partida.id === 'canasta'}

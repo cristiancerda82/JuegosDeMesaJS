@@ -87,6 +87,9 @@ import { doppelkopf, type EstadoDoppelkopf } from '../../src/juegos/doppelkopf';
 import { iaTarotBasica } from '../../src/ia/tarot-basica';
 import { reconstruirTarot } from '../../src/ia/reconstruir/tarot';
 import { tarot, type EstadoTarot } from '../../src/juegos/tarot';
+import { iaSuecaBasica } from '../../src/ia/sueca-basica';
+import { reconstruirSueca } from '../../src/ia/reconstruir/sueca';
+import { CONFIG_SUECA_POR_DEFECTO, sueca } from '../../src/juegos/sueca';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -969,6 +972,26 @@ describe('Reconstrucción del Tarot', () => {
       for (const c of triunfos) expect(rec.manos[2]).toContain(c);
       expect(rec.manos[2]).toHaveLength(18);
       expect(rec.perro).toHaveLength(6);
+    }
+  });
+});
+
+describirReconstruccion(sueca, reconstruirSueca, {
+  configs: [CONFIG_SUECA_POR_DEFECTO],
+  base: iaSuecaBasica,
+});
+
+describe('Reconstrucción de la Sueca', () => {
+  it('la carta del triunfo sigue en la mano del repartidor mientras no la juega', () => {
+    const r = sueca.crear(CONFIG_SUECA_POR_DEFECTO, 'triunfo');
+    if (!r.ok) throw new Error(r.error);
+    const e = r.valor;
+    const g = new Generador(crearAzar('s'));
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirSueca(sueca.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.manos[e.repartidor]).toContain(e.cartaTriunfo);
+      expect(rec.manos.map((m) => m.length)).toEqual([10, 10, 10, 10]);
     }
   });
 });

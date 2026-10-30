@@ -32,6 +32,7 @@
   import MesaBezique from '../mesas/MesaBezique.svelte';
   import MesaDoppelkopf from '../mesas/MesaDoppelkopf.svelte';
   import MesaTarot from '../mesas/MesaTarot.svelte';
+  import MesaSueca from '../mesas/MesaSueca.svelte';
   import MesaOhHell from '../mesas/MesaOhHell.svelte';
   import MesaSpiteMalice from '../mesas/MesaSpiteMalice.svelte';
   import MesaRemigio from '../mesas/MesaRemigio.svelte';
@@ -162,6 +163,8 @@
     <MesaDoppelkopf sesion={partida.sesion} />
   {:else if partida.id === 'tarot'}
     <MesaTarot sesion={partida.sesion} />
+  {:else if partida.id === 'sueca'}
+    <MesaSueca sesion={partida.sesion} />
   {:else if partida.id === 'ohHell'}
     <MesaOhHell sesion={partida.sesion} />
   {:else if partida.id === 'spiteMalice'}

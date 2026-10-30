@@ -60,6 +60,12 @@ import {
   bezique,
   doppelkopf,
   tarot,
+  sueca,
+  CONFIG_SUECA_POR_DEFECTO,
+  type AccionSueca,
+  type ConfigSueca,
+  type EstadoSueca,
+  type VistaSueca,
   CONFIG_TAROT_POR_DEFECTO,
   type AccionTarot,
   type ConfigTarot,
@@ -438,7 +444,8 @@ export type IdJuego =
   | 'belleLucie'
   | 'bezique'
   | 'doppelkopf'
-  | 'tarot';
+  | 'tarot'
+  | 'sueca';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -497,6 +504,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'bezique',
   'doppelkopf',
   'tarot',
+  'sueca',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1567,6 +1575,21 @@ export const DEF_TAROT: DefTarot = {
   },
 };
 
+export type DefSueca = DefJuego<ConfigSueca, EstadoSueca, AccionSueca, VistaSueca>;
+
+export const DEF_SUECA: DefSueca = {
+  id: 'sueca',
+  nombre: T.menu.sueca,
+  juego: sueca,
+  configPorDefecto: CONFIG_SUECA_POR_DEFECTO,
+  ia: IAS.sueca,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1624,6 +1647,7 @@ export const JUEGOS = {
   bezique: DEF_BEZIQUE,
   doppelkopf: DEF_DOPPELKOPF,
   tarot: DEF_TAROT,
+  sueca: DEF_SUECA,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

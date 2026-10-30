@@ -43,6 +43,7 @@ import { CONFIG_KINGS_CORNER_POR_DEFECTO, kingsCorner } from '../../src/juegos/k
 import { bezique } from '../../src/juegos/bezique';
 import { doppelkopf } from '../../src/juegos/doppelkopf';
 import { tarot } from '../../src/juegos/tarot';
+import { CONFIG_SUECA_POR_DEFECTO, sueca } from '../../src/juegos/sueca';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -133,4 +134,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Doppelkopf', doppelkopf, { manos: 2 }, IAS.doppelkopf, 4),
   // Con 5, que tiene la pareja secreta.
   entrada('Tarot', tarot, { jugadores: 5 }, IAS.tarot, 5),
+  entrada('Sueca', sueca, CONFIG_SUECA_POR_DEFECTO, IAS.sueca, 4),
 ];
