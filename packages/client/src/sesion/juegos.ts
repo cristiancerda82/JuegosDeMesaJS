@@ -58,6 +58,12 @@ import {
   skat,
   actorBridge,
   bezique,
+  doppelkopf,
+  CONFIG_DOPPELKOPF_POR_DEFECTO,
+  type AccionDoppelkopf,
+  type ConfigDoppelkopf,
+  type EstadoDoppelkopf,
+  type VistaDoppelkopf,
   CONFIG_BEZIQUE_POR_DEFECTO,
   type AccionBezique,
   type ConfigBezique,
@@ -424,7 +430,8 @@ export type IdJuego =
   | 'pesca'
   | 'kingsCorner'
   | 'belleLucie'
-  | 'bezique';
+  | 'bezique'
+  | 'doppelkopf';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -481,6 +488,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'kingsCorner',
   'belleLucie',
   'bezique',
+  'doppelkopf',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1506,6 +1514,31 @@ export const DEF_BEZIQUE: DefBezique = {
   },
 };
 
+export type DefDoppelkopf = DefJuego<
+  ConfigDoppelkopf,
+  EstadoDoppelkopf,
+  AccionDoppelkopf,
+  VistaDoppelkopf
+>;
+
+export const DEF_DOPPELKOPF: DefDoppelkopf = {
+  id: 'doppelkopf',
+  nombre: T.menu.doppelkopf,
+  juego: doppelkopf,
+  configPorDefecto: CONFIG_DOPPELKOPF_POR_DEFECTO,
+  ia: IAS.doppelkopf,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada anuncio, el juego
+  // que sale de las reservas y cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const anuncio = despues.anuncios.length > antes.anuncios.length;
+    const especial =
+      antes.fase === 'reservas' && despues.fase === 'bazas' && despues.juego !== 'normal';
+    if (anuncio || especial) return PAUSA_CANTE_MS;
+    return despues.bazas.length > antes.bazas.length ? PAUSA_BAZA_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1561,6 +1594,7 @@ export const JUEGOS = {
   pesca: DEF_PESCA,
   kingsCorner: DEF_KINGS_CORNER,
   bezique: DEF_BEZIQUE,
+  doppelkopf: DEF_DOPPELKOPF,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

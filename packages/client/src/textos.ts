@@ -174,6 +174,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    doppelkopf: 'Doppelkopf',
+    doppelkopfDesc:
+      'Para cuatro con 48 cartas y parejas secretas: las Damas de tréboles juegan juntas, con bodas, solos y anuncios de Re y Contra.',
     bezique: 'Bezique',
     beziqueDesc:
       'Para dos con 64 cartas: bazas, matrimonios, cuartetos y el bézique de la dama de picas y la sota de diamantes, a 1.000 puntos.',
@@ -1110,6 +1113,67 @@ export const T = {
     totalPartida: 'Total',
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos (menos es mejor)',
+  },
+
+  doppelkopf: {
+    reparte: 'Reparte',
+    bando: { re: 'Re', contra: 'Contra' },
+    bazas: (n: number) => (n === 1 ? '1 baza' : `${n} bazas`),
+    reserva: {
+      sano: 'Sano',
+      boda: 'Boda',
+      damas: 'Solo de Damas',
+      jotas: 'Solo de Jotas',
+      triunfo: 'Solo de triunfo',
+    },
+    reservas: 'Reservas',
+    juegoNormal: 'Juego normal',
+    boda: (quien: string) => `Boda de ${quien}`,
+    bodaCon: (quien: string, pareja: string) => `Boda: ${quien} con ${pareja}`,
+    bodaSola: (quien: string) => `Boda sin pareja: ${quien} juega solo`,
+    solo: (tipo: string, quien: string) =>
+      `${{ damas: 'Solo de Damas', jotas: 'Solo de Jotas', triunfo: 'Solo de triunfo' }[tipo] ?? tipo} de ${quien}`,
+    manoRonda: (n: number, total: number) => `Mano ${n} de ${total}`,
+    tuBando: (bando: string) => `Tu bando: ${bando === 're' ? 'Re' : 'Contra'}`,
+    tusPuntos: (n: number) => `Tus puntos: ${n > 0 ? '+' : ''}${n}`,
+    anuncio: (bando: string, nivel: number) =>
+      nivel === 1
+        ? bando === 're'
+          ? 'Re'
+          : 'Contra'
+        : ['No 90', 'No 60', 'No 30', 'Negro'][nivel - 2]!,
+    anunciar: (anuncio: string) => `Anunciar «${anuncio}»`,
+    cartasDe: (bando: string, quienes: string, puntos: number) =>
+      `${bando === 're' ? 'Re' : 'Contra'} (${quienes}): ${puntos} puntos`,
+    ganaBando: (bando: string | null) =>
+      bando === null ? 'Nadie gana la mano' : `Gana ${bando === 're' ? 'Re' : 'Contra'}`,
+    concepto: {
+      ganado: 'Ganar',
+      menos90: 'El rival, menos de 90',
+      menos60: 'El rival, menos de 60',
+      menos30: 'El rival, menos de 30',
+      sinBazas: 'El rival, sin bazas',
+      re: 'Anuncio «Re»',
+      contra: 'Anuncio «Contra»',
+      anunciadoNo90: '«No 90» anunciado',
+      anunciadoNo60: '«No 60» anunciado',
+      anunciadoNo30: '«No 30» anunciado',
+      anunciadoNegro: '«Negro» anunciado',
+      contraNo90: '120 contra «no 90»',
+      contraNo60: '90 contra «no 60»',
+      contraNo30: '60 contra «no 30»',
+      contraNegro: '30 contra «negro»',
+      contraLosViejos: 'Contra los viejos',
+      zorro: 'Zorro',
+      doppelkopf: 'Doppelkopf',
+      carlitos: 'Carlitos',
+    } as Record<string, string>,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    jugadorCol: 'Jugador',
+    manoCol: 'Mano',
+    totalCol: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
   },
 
   bezique: {
@@ -2185,6 +2249,7 @@ export const T = {
       pesca: 'Cómo se juega a la Pesca',
       kingsCorner: 'Cómo se juega a Kings in the Corner',
       bezique: 'Cómo se juega al Bezique',
+      doppelkopf: 'Cómo se juega al Doppelkopf',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2772,6 +2837,58 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    doppelkopf: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Para cuatro jugadores, con 48 cartas: el A, 10, K, Q, J y 9 de cada palo, dos copias de cada una. Valen A 11, 10 10, K 4, Q 3, J 2 y 9 nada: 240 puntos en total.',
+          'Se juegan 8 manos y gana quien más puntos sume. En cada mano, un bando gana o pierde según los puntos de las cartas que se lleva en las bazas.',
+        ],
+      },
+      {
+        titulo: 'Los triunfos',
+        texto: [
+          'Son triunfo, de mayor a menor: el 10 de corazones, las Damas (♣, ♠, ♥, ♦), las Jotas (en el mismo orden) y el A, 10, K y 9 de diamantes.',
+          'Los demás palos son tréboles y picas (A, 10, K y 9) y corazones (A, K y 9). Hay que seguir el palo de salida (los triunfos son un palo); si no puedes, juegas lo que quieras. Con dos cartas iguales, gana la primera.',
+        ],
+      },
+      {
+        titulo: 'Las parejas secretas',
+        texto: [
+          'Los dos que tienen las Damas de tréboles forman el bando Re, y los otros dos el bando Contra. Tú sabes tu bando, pero no quién es tu pareja hasta que se juega una Dama de tréboles o alguien anuncia.',
+        ],
+      },
+      {
+        titulo: 'Reservas: boda y solos',
+        texto: [
+          'Antes de jugar, cada uno dice «sano» o pide un juego especial. Si tienes las dos Damas de tréboles, tienes que pedir boda o un solo.',
+          'Boda: tu pareja es el primero que gane una de las tres primeras bazas; si las ganas tú todas, juegas solo.',
+          'Solo de Damas (solo las Damas son triunfo), solo de Jotas (solo las Jotas) o solo de triunfo (los triunfos normales): juegas solo contra los otros tres y cobras o pagas el triple. Un solo gana a la boda.',
+        ],
+      },
+      {
+        titulo: 'Anuncios',
+        texto: [
+          'En tu turno, antes de jugar, puedes anunciar «Re» o «Contra» por tu bando mientras te queden 11 cartas o más. Cada anuncio vale 2 puntos para el ganador y descubre tu bando.',
+          'Después vienen las bajadas: «no 90» (10 cartas), «no 60» (9), «no 30» (8) y «negro» (7). Prometen que el rival no llegará a esos puntos o no ganará ninguna baza; si no se cumplen, pierdes la mano.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'Re gana con 121 o más; con 120 a 120 gana Contra. El ganador suma 1 por ganar, 1 por cada umbral que no alcanza el rival (90, 60, 30, ninguna baza), los anuncios y las bajadas anunciadas. Si gana Contra suma uno más, «contra los viejos».',
+          'Puntos especiales: el zorro (ganar el As de diamantes del rival), el doppelkopf (una baza de 40 puntos o más) y Carlitos (ganar la última baza con la J de tréboles).',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Si tu pareja va ganando la baza, cárgale puntos: un As o un 10. Guarda los triunfos altos para las bazas que valen.',
+          'Anuncia solo con muchos triunfos altos: el anuncio dobla lo que está en juego.',
         ],
       },
     ],

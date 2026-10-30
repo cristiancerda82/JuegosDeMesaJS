@@ -49,6 +49,7 @@ import { SIMULABLE_BRIDGE } from './reconstruir/bridge';
 import { SIMULABLE_PESCA } from './reconstruir/pesca';
 import { SIMULABLE_KINGS_CORNER } from './reconstruir/kings-corner';
 import { SIMULABLE_BEZIQUE } from './reconstruir/bezique';
+import { SIMULABLE_DOPPELKOPF } from './reconstruir/doppelkopf';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -80,6 +81,7 @@ import { iaBridgeBasica } from './bridge-basica';
 import { iaPescaBasica } from './pesca-basica';
 import { iaKingsCornerBasica } from './kings-corner-basica';
 import { iaBeziqueBasica } from './bezique-basica';
+import { iaDoppelkopfBasica } from './doppelkopf-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -181,4 +183,5 @@ export const IAS = {
   pesca: niveles(iaPescaBasica, SIMULABLE_PESCA),
   kingsCorner: niveles(iaKingsCornerBasica, SIMULABLE_KINGS_CORNER),
   bezique: niveles(iaBeziqueBasica, SIMULABLE_BEZIQUE),
+  doppelkopf: niveles(iaDoppelkopfBasica, SIMULABLE_DOPPELKOPF),
 } as const;

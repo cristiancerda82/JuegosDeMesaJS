@@ -58,6 +58,10 @@ import {
   type AccionBridge,
   type AccionPesca,
   type AccionBezique,
+  type AccionDoppelkopf,
+  type ConfigDoppelkopf,
+  type EstadoDoppelkopf,
+  type VistaDoppelkopf,
   type ConfigBezique,
   type EstadoBezique,
   type VistaBezique,
@@ -261,6 +265,7 @@ import {
   DEF_BRIDGE,
   DEF_PESCA,
   DEF_BEZIQUE,
+  DEF_DOPPELKOPF,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -381,6 +386,12 @@ export type SesionKingsCorner = SesionMesa<
   EstadoKingsCorner,
   AccionKingsCorner,
   VistaKingsCorner
+>;
+export type SesionDoppelkopf = SesionMesa<
+  ConfigDoppelkopf,
+  EstadoDoppelkopf,
+  AccionDoppelkopf,
+  VistaDoppelkopf
 >;
 export type SesionBezique = SesionMesa<ConfigBezique, EstadoBezique, AccionBezique, VistaBezique>;
 export type SesionPesca = SesionMesa<ConfigPesca, EstadoPesca, AccionPesca, VistaPesca>;
@@ -515,7 +526,8 @@ export type Partida =
   | { readonly id: 'bridge'; readonly sesion: SesionBridge }
   | { readonly id: 'pesca'; readonly sesion: SesionPesca }
   | { readonly id: 'kingsCorner'; readonly sesion: SesionKingsCorner }
-  | { readonly id: 'bezique'; readonly sesion: SesionBezique };
+  | { readonly id: 'bezique'; readonly sesion: SesionBezique }
+  | { readonly id: 'doppelkopf'; readonly sesion: SesionDoppelkopf };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -571,7 +583,8 @@ export type ConfigJuego =
   | ConfigBridge
   | ConfigPesca
   | ConfigKingsCorner
-  | ConfigBezique;
+  | ConfigBezique
+  | ConfigDoppelkopf;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -684,6 +697,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_KINGS_CORNER);
     case 'bezique':
       return hacer(DEF_BEZIQUE);
+    case 'doppelkopf':
+      return hacer(DEF_DOPPELKOPF);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':

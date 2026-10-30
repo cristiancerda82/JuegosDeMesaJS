@@ -81,6 +81,9 @@ import { CONFIG_KINGS_CORNER_POR_DEFECTO, kingsCorner } from '../../src/juegos/k
 import { iaBeziqueBasica } from '../../src/ia/bezique-basica';
 import { reconstruirBezique } from '../../src/ia/reconstruir/bezique';
 import { bezique, type EstadoBezique } from '../../src/juegos/bezique';
+import { iaDoppelkopfBasica } from '../../src/ia/doppelkopf-basica';
+import { reconstruirDoppelkopf } from '../../src/ia/reconstruir/doppelkopf';
+import { doppelkopf, type EstadoDoppelkopf } from '../../src/juegos/doppelkopf';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -899,6 +902,40 @@ describe('Reconstrucción del Bezique', () => {
       expect(rec.manos[1]).toContain(e.manos[1]![0]);
       expect(rec.manos[1]).toContain(e.manos[1]![1]);
       expect(rec.manos[1]).toHaveLength(8);
+    }
+  });
+});
+
+describirReconstruccion(doppelkopf, reconstruirDoppelkopf, {
+  configs: [{ manos: 1 }],
+  base: iaDoppelkopfBasica,
+});
+
+describe('Reconstrucción del Doppelkopf', () => {
+  it('quien anunció Re sin jugar su Q de tréboles la tiene; las dos en manos distintas', () => {
+    const r = doppelkopf.crear({ manos: 1 }, 'bandos');
+    if (!r.ok) throw new Error(r.error);
+    let e: EstadoDoppelkopf = r.valor;
+    for (let i = 0; i < 4 && e.fase === 'reservas'; i++) {
+      const a = doppelkopf.accionesLegales(e, e.turno);
+      e = doppelkopf.transicion(
+        e,
+        e.turno,
+        a.find((x) => x.tipo === 'reservar' && x.reserva === 'sano') ?? a[0]!,
+      );
+    }
+    if (e.juego !== 'normal') throw new Error('La semilla no da un juego normal');
+    const conDama = e.re.find((a) => a !== 0)!;
+    e = { ...e, anuncios: [{ asiento: conDama, bando: 're', nivel: 1 }] };
+    const g = new Generador(crearAzar('d'));
+    for (let i = 0; i < 20; i++) {
+      const rec = reconstruirDoppelkopf(doppelkopf.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.manos[conDama]).toContain('treboles-12');
+      const conDamas = rec.manos.filter((m) => m.includes('treboles-12'));
+      expect(conDamas).toHaveLength(2);
+      expect(rec.manos.every((m) => m.filter((c) => c === 'treboles-12').length <= 1)).toBe(true);
+      if (e.re.includes(0)) expect(rec.re).toEqual(e.re);
     }
   });
 });
