@@ -62,6 +62,10 @@ import {
   type AccionTarot,
   type AccionSueca,
   type AccionPiquet,
+  type AccionJass,
+  type ConfigJass,
+  type EstadoJass,
+  type VistaJass,
   type ConfigPiquet,
   type EstadoPiquet,
   type VistaPiquet,
@@ -281,6 +285,7 @@ import {
   DEF_TAROT,
   DEF_SUECA,
   DEF_PIQUET,
+  DEF_JASS,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -402,6 +407,7 @@ export type SesionKingsCorner = SesionMesa<
   AccionKingsCorner,
   VistaKingsCorner
 >;
+export type SesionJass = SesionMesa<ConfigJass, EstadoJass, AccionJass, VistaJass>;
 export type SesionPiquet = SesionMesa<ConfigPiquet, EstadoPiquet, AccionPiquet, VistaPiquet>;
 export type SesionSueca = SesionMesa<ConfigSueca, EstadoSueca, AccionSueca, VistaSueca>;
 export type SesionTarot = SesionMesa<ConfigTarot, EstadoTarot, AccionTarot, VistaTarot>;
@@ -548,7 +554,8 @@ export type Partida =
   | { readonly id: 'doppelkopf'; readonly sesion: SesionDoppelkopf }
   | { readonly id: 'tarot'; readonly sesion: SesionTarot }
   | { readonly id: 'sueca'; readonly sesion: SesionSueca }
-  | { readonly id: 'piquet'; readonly sesion: SesionPiquet };
+  | { readonly id: 'piquet'; readonly sesion: SesionPiquet }
+  | { readonly id: 'jass'; readonly sesion: SesionJass };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -608,7 +615,8 @@ export type ConfigJuego =
   | ConfigDoppelkopf
   | ConfigTarot
   | ConfigSueca
-  | ConfigPiquet;
+  | ConfigPiquet
+  | ConfigJass;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -729,6 +737,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_SUECA);
     case 'piquet':
       return hacer(DEF_PIQUET);
+    case 'jass':
+      return hacer(DEF_JASS);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':

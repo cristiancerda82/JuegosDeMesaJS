@@ -39,6 +39,7 @@
     ConfigTarot,
     ConfigSueca,
     ConfigPiquet,
+    ConfigJass,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -139,6 +140,7 @@
   let tarotConfig: Editable<ConfigTarot> = $state({ ...JUEGOS.tarot.configPorDefecto });
   let suecaConfig: Editable<ConfigSueca> = $state({ ...JUEGOS.sueca.configPorDefecto });
   let piquetConfig: Editable<ConfigPiquet> = $state({ ...JUEGOS.piquet.configPorDefecto });
+  let jassConfig: Editable<ConfigJass> = $state({ ...JUEGOS.jass.configPorDefecto });
   let ohHellConfig: Editable<ConfigOhHell> = $state({ ...JUEGOS.ohHell.configPorDefecto });
   let spiteMaliceConfig: Editable<ConfigSpiteMalice> = $state({
     ...JUEGOS.spiteMalice.configPorDefecto,
@@ -218,6 +220,7 @@
       tarot: tarotConfig,
       sueca: suecaConfig,
       piquet: piquetConfig,
+      jass: jassConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.

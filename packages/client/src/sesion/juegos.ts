@@ -62,6 +62,12 @@ import {
   tarot,
   sueca,
   piquet,
+  jass,
+  CONFIG_JASS_POR_DEFECTO,
+  type AccionJass,
+  type ConfigJass,
+  type EstadoJass,
+  type VistaJass,
   CONFIG_PIQUET_POR_DEFECTO,
   type AccionPiquet,
   type ConfigPiquet,
@@ -452,7 +458,8 @@ export type IdJuego =
   | 'doppelkopf'
   | 'tarot'
   | 'sueca'
-  | 'piquet';
+  | 'piquet'
+  | 'jass';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -513,6 +520,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'tarot',
   'sueca',
   'piquet',
+  'jass',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1617,6 +1625,24 @@ export const DEF_PIQUET: DefPiquet = {
   },
 };
 
+export type DefJass = DefJuego<ConfigJass, EstadoJass, AccionJass, VistaJass>;
+
+export const DEF_JASS: DefJass = {
+  id: 'jass',
+  nombre: T.menu.jass,
+  juego: jass,
+  configPorDefecto: CONFIG_JASS_POR_DEFECTO,
+  ia: IAS.jass,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, la elección y cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (antes.fase === 'eleccion' && despues.fase === 'bazas') return PAUSA_CANTE_MS;
+    return despues.ultimaBaza !== antes.ultimaBaza && despues.ultimaBaza !== null
+      ? PAUSA_BAZA_MS
+      : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1676,6 +1702,7 @@ export const JUEGOS = {
   tarot: DEF_TAROT,
   sueca: DEF_SUECA,
   piquet: DEF_PIQUET,
+  jass: DEF_JASS,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

@@ -174,6 +174,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    jass: 'Jass',
+    jassDesc:
+      'El Schieber suizo, para cuatro en parejas con 36 cartas: elige el triunfo o pásalo a tu compañero, con Weis, Stöck y partida a 1.000.',
     piquet: 'Piquet',
     piquetDesc:
       'El gran clásico francés para dos: cambio con el montón, declaraciones de punto, secuencias y conjuntos, y doce bazas sin triunfo.',
@@ -1360,6 +1363,42 @@ export const T = {
     clasificacion: 'Puntos',
   },
 
+  jass: {
+    reparte: 'Reparte',
+    eligio: 'Eligió',
+    pasar: 'Schieben',
+    modoBoton: (modo: string) =>
+      `${({ picas: '♠', corazones: '♥', diamantes: '♦', treboles: '♣', obenabe: 'Obenabe', undenufe: 'Undenufe' } as Record<string, string>)[modo]} ×${({ picas: 2, corazones: 2, diamantes: 1, treboles: 1, obenabe: 3, undenufe: 3 } as Record<string, number>)[modo]}`,
+    modo: (modo: string, mult: number) =>
+      `${({ picas: 'Triunfo ♠ picas', corazones: 'Triunfo ♥ corazones', diamantes: 'Triunfo ♦ diamantes', treboles: 'Triunfo ♣ tréboles', obenabe: 'Obenabe', undenufe: 'Undenufe' } as Record<string, string>)[modo]} ×${mult}`,
+    modoDe: (quien: string, modo: string, mult: number) =>
+      `${quien}: ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles', obenabe: 'Obenabe', undenufe: 'Undenufe' } as Record<string, string>)[modo]} ×${mult}`,
+    puntos: (lado: string, mano: number, partida: number, meta: number) =>
+      `${lado}: ${mano} · ${partida}/${meta}`,
+    eligeTu: 'Elige el modo o pásalo',
+    tePasan: 'Tu compañero te pasa: elige',
+    eligiendo: (quien: string) => `${quien} elige…`,
+    pasa: (quien: string, compa: string) => `${quien} pasa: elige ${compa}`,
+    misWeis: (puntos: number) => `Tus Weis: ${puntos}`,
+    unWeis: (w: { tipo: string; cartas: readonly unknown[]; puntos: number }) =>
+      w.tipo === 'escalera'
+        ? `escalera de ${w.cartas.length} (${w.puntos})`
+        : `cuatro iguales (${w.puntos})`,
+    weis: (lado: string, lista: string) => `Weis de ${lado}: ${lista}`,
+    stock: (quien: string) => `Stöck de ${quien}`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    parejaCol: 'Pareja',
+    weisCol: 'Weis',
+    stockCol: 'Stöck',
+    bazasCol: 'Bazas',
+    manoCol: 'Mano',
+    partidaCol: 'Partida',
+    match: (lado: string) => `¡Match de ${lado}! Las 9 bazas`,
+    incompleta: 'La partida terminó en mitad de la mano',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
+  },
+
   piquet: {
     mayor: 'Mayor',
     puntosMano: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
@@ -2372,6 +2411,7 @@ export const T = {
       tarot: 'Cómo se juega al Tarot',
       sueca: 'Cómo se juega a la Sueca',
       piquet: 'Cómo se juega al Piquet',
+      jass: 'Cómo se juega al Jass',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2959,6 +2999,54 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    jass: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El Schieber es el Jass más jugado en Suiza. Se juega entre cuatro, en parejas: tu compañero se sienta enfrente. Se usan 36 cartas, del 6 al As de cada palo.',
+          'Gana la primera pareja que llega a 1.000 puntos, en el momento en que llega, aunque sea en mitad de una mano.',
+        ],
+      },
+      {
+        titulo: 'Elegir el modo',
+        texto: [
+          'Cada uno recibe 9 cartas. El siguiente al repartidor elige el modo: un palo de triunfo, Obenabe (sin triunfo, el As es la más alta) o Undenufe (sin triunfo, el 6 es la más alta).',
+          'Si no le gusta su mano, puede pasar la elección a su compañero (Schieben), que tiene que elegir. Sale siempre quien tenía la elección.',
+          'Los puntos se multiplican: diamantes y tréboles ×1, corazones y picas ×2, Obenabe y Undenufe ×3.',
+        ],
+      },
+      {
+        titulo: 'Las cartas',
+        texto: [
+          'En el triunfo, la Jota (Buur, 20 puntos) es la más alta y el 9 (Nell, 14) la segunda; siguen As, Rey, Dama, 10, 8, 7 y 6.',
+          'En los otros palos el orden es el normal: As 11, Rey 4, Dama 3, Jota 2 y 10 10. En Obenabe y Undenufe el 8 vale 8, y en Undenufe el 6 vale 11 y el As nada.',
+          'Cada mano reparte 157 puntos con los 5 de la última baza. Quien se lleva las 9 bazas (Match) suma 257.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Hay que seguir el palo de salida, pero siempre puedes echar un triunfo aunque tengas del palo. Si no tienes, cualquier carta.',
+          'Si sale triunfo, hay que echar triunfo, salvo que el único que tengas sea la Jota: el Buur nunca es obligatorio.',
+          'No se puede echar un triunfo más bajo que el que ya hay en la baza, salvo que solo te queden triunfos.',
+        ],
+      },
+      {
+        titulo: 'Weis y Stöck',
+        texto: [
+          'Las declaraciones se comparan solas al acabar la primera baza: escaleras del mismo palo (3 cartas 20, 4 cartas 50, 5 cartas 100…) y cuatro iguales (Jotas 200, nueves 150, Ases, Reyes, Damas o dieces 100).',
+          'Solo anota la pareja con la mejor declaración, y anota todas las suyas. El Rey y la Dama del triunfo en la misma mano (Stöck) valen 20 al jugar la segunda.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Elige triunfo con la Jota y el 9 del palo; si no tienes nada claro, pasa a tu compañero.',
+          'Si la baza es de tu compañero, cárgale un 10 o un As. Guarda el Buur: ninguna carta lo gana.',
         ],
       },
     ],

@@ -93,6 +93,9 @@ import { CONFIG_SUECA_POR_DEFECTO, sueca } from '../../src/juegos/sueca';
 import { iaPiquetBasica } from '../../src/ia/piquet-basica';
 import { reconstruirPiquet } from '../../src/ia/reconstruir/piquet';
 import { piquet, type EstadoPiquet } from '../../src/juegos/piquet';
+import { iaJassBasica } from '../../src/ia/jass-basica';
+import { reconstruirJass } from '../../src/ia/reconstruir/jass';
+import { jass, type EstadoJass } from '../../src/juegos/jass';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -1029,6 +1032,73 @@ describe('Reconstrucción del Piquet', () => {
       g.enteroHasta(1000);
       for (const c of delRival) expect(rec.manos[1]).toContain(c);
       expect(rec.manos[1]).toHaveLength(12);
+    }
+  });
+});
+
+describirReconstruccion(jass, reconstruirJass, {
+  configs: [{ jugadores: 4, meta: 300 }],
+  base: iaJassBasica,
+});
+
+describe('Reconstrucción del Jass', () => {
+  function jugarHasta(semilla: string, parar: (e: EstadoJass) => boolean): EstadoJass {
+    const r = jass.crear({ jugadores: 4, meta: 5000 }, semilla);
+    if (!r.ok) throw new Error(r.error);
+    let e = r.valor;
+    for (let paso = 0; !parar(e) && paso < 200; paso++) {
+      e = jass.transicion(
+        e,
+        e.turno,
+        iaJassBasica.decidir(
+          jass.vistaDe(e, e.turno),
+          jass.accionesLegales(e, e.turno),
+          crearAzar('a'),
+        ).accion,
+      );
+    }
+    return e;
+  }
+
+  it('las cartas de las declaraciones ganadoras siguen en la mano de su jugador', () => {
+    let probadas = 0;
+    for (let i = 0; i < 40 && probadas < 3; i++) {
+      const e = jugarHasta(`weis-${i}`, (x) => x.bazasGanadas[0] + x.bazasGanadas[1] === 1);
+      const ajenas = (e.weis?.declaraciones ?? []).filter((d) => d.asiento !== 0);
+      if (ajenas.length === 0) continue;
+      probadas++;
+      const g = new Generador(crearAzar('w'));
+      for (let k = 0; k < 10; k++) {
+        const rec = reconstruirJass(jass.vistaDe(e, 0), g.estado());
+        g.enteroHasta(1000);
+        for (const { asiento, weis } of ajenas) {
+          for (const c of weis.cartas) {
+            if (!e.jugadasPor[asiento]!.includes(c)) expect(rec.manos[asiento]).toContain(c);
+          }
+        }
+        expect(rec.manos.map((m) => m.length)).toEqual(e.manos.map((m) => m.length));
+      }
+    }
+    expect(probadas).toBeGreaterThan(0);
+  });
+
+  it('sin los palos que no siguió; del triunfo, solo el Buur', () => {
+    const r = jass.crear({ jugadores: 4, meta: 5000 }, 'fallos');
+    if (!r.ok) throw new Error(r.error);
+    const e: EstadoJass = {
+      ...r.valor,
+      fase: 'bazas',
+      modo: 'treboles',
+      fallos: [[], ['corazones'], [], ['treboles']],
+    };
+    const g = new Generador(crearAzar('f'));
+    for (let k = 0; k < 20; k++) {
+      const rec = reconstruirJass(jass.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.manos[1]!.some((c) => c.startsWith('corazones'))).toBe(false);
+      expect(rec.manos[3]!.filter((c) => c.startsWith('treboles') && c !== 'treboles-11')).toEqual(
+        [],
+      );
     }
   });
 });
