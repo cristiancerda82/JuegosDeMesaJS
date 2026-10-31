@@ -52,6 +52,7 @@ import { SIMULABLE_BEZIQUE } from './reconstruir/bezique';
 import { SIMULABLE_DOPPELKOPF } from './reconstruir/doppelkopf';
 import { SIMULABLE_TAROT } from './reconstruir/tarot';
 import { SIMULABLE_SUECA } from './reconstruir/sueca';
+import { SIMULABLE_PIQUET } from './reconstruir/piquet';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -86,6 +87,7 @@ import { iaBeziqueBasica } from './bezique-basica';
 import { iaDoppelkopfBasica } from './doppelkopf-basica';
 import { iaTarotBasica } from './tarot-basica';
 import { iaSuecaBasica } from './sueca-basica';
+import { iaPiquetBasica } from './piquet-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -190,4 +192,5 @@ export const IAS = {
   doppelkopf: niveles(iaDoppelkopfBasica, SIMULABLE_DOPPELKOPF),
   tarot: niveles(iaTarotBasica, SIMULABLE_TAROT),
   sueca: niveles(iaSuecaBasica, SIMULABLE_SUECA),
+  piquet: niveles(iaPiquetBasica, SIMULABLE_PIQUET),
 } as const;

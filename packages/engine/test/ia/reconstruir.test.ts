@@ -90,6 +90,9 @@ import { tarot, type EstadoTarot } from '../../src/juegos/tarot';
 import { iaSuecaBasica } from '../../src/ia/sueca-basica';
 import { reconstruirSueca } from '../../src/ia/reconstruir/sueca';
 import { CONFIG_SUECA_POR_DEFECTO, sueca } from '../../src/juegos/sueca';
+import { iaPiquetBasica } from '../../src/ia/piquet-basica';
+import { reconstruirPiquet } from '../../src/ia/reconstruir/piquet';
+import { piquet, type EstadoPiquet } from '../../src/juegos/piquet';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -992,6 +995,40 @@ describe('Reconstrucción de la Sueca', () => {
       g.enteroHasta(1000);
       expect(rec.manos[e.repartidor]).toContain(e.cartaTriunfo);
       expect(rec.manos.map((m) => m.length)).toEqual([10, 10, 10, 10]);
+    }
+  });
+});
+
+describirReconstruccion(piquet, reconstruirPiquet, {
+  configs: [{ manos: 1 }],
+  base: iaPiquetBasica,
+});
+
+describe('Reconstrucción del Piquet', () => {
+  it('las cartas de las combinaciones que ganó el rival siguen en su mano', () => {
+    const r = piquet.crear({ manos: 1 }, 'declaraciones');
+    if (!r.ok) throw new Error(r.error);
+    let e: EstadoPiquet = r.valor;
+    for (let paso = 0; e.fase === 'cambio' && paso < 20; paso++) {
+      e = piquet.transicion(
+        e,
+        e.turno,
+        iaPiquetBasica.decidir(
+          piquet.vistaDe(e, e.turno),
+          piquet.accionesLegales(e, e.turno),
+          crearAzar('a'),
+        ).accion,
+      );
+    }
+    const delRival = Object.values(e.declaraciones!)
+      .filter((d) => d.ganador === 1)
+      .flatMap((d) => d.cartas);
+    const g = new Generador(crearAzar('p'));
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirPiquet(piquet.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      for (const c of delRival) expect(rec.manos[1]).toContain(c);
+      expect(rec.manos[1]).toHaveLength(12);
     }
   });
 });

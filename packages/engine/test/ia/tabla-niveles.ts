@@ -44,6 +44,7 @@ import { bezique } from '../../src/juegos/bezique';
 import { doppelkopf } from '../../src/juegos/doppelkopf';
 import { tarot } from '../../src/juegos/tarot';
 import { CONFIG_SUECA_POR_DEFECTO, sueca } from '../../src/juegos/sueca';
+import { piquet } from '../../src/juegos/piquet';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -135,4 +136,6 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   // Con 5, que tiene la pareja secreta.
   entrada('Tarot', tarot, { jugadores: 5 }, IAS.tarot, 5),
   entrada('Sueca', sueca, CONFIG_SUECA_POR_DEFECTO, IAS.sueca, 4),
+  // Dos manos, para que las partidas de las pruebas no sean tan largas.
+  entrada('Piquet', piquet, { manos: 2 }, IAS.piquet, 2),
 ];

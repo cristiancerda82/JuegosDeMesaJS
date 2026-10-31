@@ -38,6 +38,7 @@
     ConfigDoppelkopf,
     ConfigTarot,
     ConfigSueca,
+    ConfigPiquet,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -137,6 +138,7 @@
   let doppelkopfConfig: Editable<ConfigDoppelkopf> = $state({ ...JUEGOS.doppelkopf.configPorDefecto });
   let tarotConfig: Editable<ConfigTarot> = $state({ ...JUEGOS.tarot.configPorDefecto });
   let suecaConfig: Editable<ConfigSueca> = $state({ ...JUEGOS.sueca.configPorDefecto });
+  let piquetConfig: Editable<ConfigPiquet> = $state({ ...JUEGOS.piquet.configPorDefecto });
   let ohHellConfig: Editable<ConfigOhHell> = $state({ ...JUEGOS.ohHell.configPorDefecto });
   let spiteMaliceConfig: Editable<ConfigSpiteMalice> = $state({
     ...JUEGOS.spiteMalice.configPorDefecto,
@@ -215,6 +217,7 @@
       doppelkopf: doppelkopfConfig,
       tarot: tarotConfig,
       sueca: suecaConfig,
+      piquet: piquetConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.

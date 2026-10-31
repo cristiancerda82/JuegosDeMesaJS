@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { clasificacionCulo, marcadorFinal, OBJETIVO_GIN_RUMMY } from '@juegos/engine';
+  import { valorPartidaPiquet, clasificacionCulo, marcadorFinal, OBJETIVO_GIN_RUMMY } from '@juegos/engine';
   import { nombreAsiento, nombreNumerado } from '../mesas/bazas/asientos';
   import { bandoDe, porBando } from '../sesion/sesion-mesa';
   import type { Partida } from '../sesion/partida';
@@ -23,6 +23,7 @@
   import ResumenDoppelkopf from '../mesas/ResumenDoppelkopf.svelte';
   import ResumenTarot from '../mesas/ResumenTarot.svelte';
   import ResumenSueca from '../mesas/ResumenSueca.svelte';
+  import ResumenPiquet from '../mesas/ResumenPiquet.svelte';
   import ResumenBridge from '../mesas/ResumenBridge.svelte';
   import ResumenOhHell from '../mesas/ResumenOhHell.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
@@ -108,6 +109,7 @@
       partida.id !== 'bezique' &&
       partida.id !== 'doppelkopf' &&
       partida.id !== 'tarot' &&
+      partida.id !== 'piquet' &&
       partida.id !== 'pocha' &&
       partida.id !== 'mus' &&
       partida.id !== 'corazones' &&
@@ -496,6 +498,24 @@
           {/each}
         </tbody>
       </table>
+    {:else if partida.id === 'piquet'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const nombre = (a: number) => nombreAsiento(a, 2, yo, partida.sesion.red)}
+      {#if ultima}
+        <ResumenPiquet resultado={ultima} {yo} {nombre} />
+      {/if}
+      <table data-testid="puntos-piquet">
+        <caption>{T.piquet.clasificacion}</caption>
+        <tbody>
+          {#each [yo, yo === 0 ? 1 : 0] as a, i (a)}
+            <tr><th scope="row">{nombre(a)}</th><td data-testid="puntos-fin-{i}">{vista.puntos[a as 0 | 1]}</td></tr>
+          {/each}
+        </tbody>
+      </table>
+      {#if vista.puntos[0] !== vista.puntos[1]}
+        <p data-testid="valor-partida">{T.piquet.valorPartida(valorPartidaPiquet(vista.puntos))}</p>
+      {/if}
     {:else if partida.id === 'kingsCorner'}
       {@const vista = partida.sesion.vista}
       {@const n = vista.config.jugadores}

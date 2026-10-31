@@ -174,6 +174,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    piquet: 'Piquet',
+    piquetDesc:
+      'El gran clásico francés para dos: cambio con el montón, declaraciones de punto, secuencias y conjuntos, y doce bazas sin triunfo.',
     sueca: 'Sueca',
     suecaDesc:
       'Portuguesa, para cuatro en parejas con 40 cartas: el As y el 7 valen casi todo y gana la pareja que pasa de 60.',
@@ -1357,6 +1360,40 @@ export const T = {
     clasificacion: 'Puntos',
   },
 
+  piquet: {
+    mayor: 'Mayor',
+    puntosMano: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
+    manoRonda: (n: number, total: number) => `Mano ${n} de ${total}`,
+    marcador: (yo: number, rival: number) => `Partida ${yo} – ${rival}`,
+    cambiando: (quien: string) => `${quien} cambia…`,
+    cambiaMayor: (n: number) => (n === 0 ? 'Descarta de 1 a 5 cartas' : `Descartadas: ${n} de 5`),
+    cambiaMenor: (n: number, monton: number) => `Cambia hasta ${monton}: llevas ${n}`,
+    robar: (n: number) => `Robar ${n}`,
+    noCambiar: 'No cambiar',
+    declaracion: (tipo: string, quien: string, largo: number, puntos: number) =>
+      tipo === 'punto'
+        ? `Punto: ${quien}, ${largo} · ${puntos}`
+        : tipo === 'secuencia'
+          ? `Secuencia: ${quien}, ${({ 3: 'tercera', 4: 'cuarta', 5: 'quinta', 6: 'sexta', 7: 'séptima', 8: 'octava' } as Record<number, string>)[largo]} · ${puntos}`
+          : `Conjunto: ${quien}, ${largo === 4 ? 'catorce' : 'trío'} · ${puntos}`,
+    declaracionNadie: (tipo: string) =>
+      `${({ punto: 'Punto', secuencia: 'Secuencia', conjunto: 'Conjunto' } as Record<string, string>)[tipo]}: nadie`,
+    repique: (quien: string) => `¡Repique de ${quien}! +60`,
+    pique: (quien: string) => `¡Pique de ${quien}! +30`,
+    capote: '¡Capote! +40',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    jugadorCol: 'Jugador',
+    declaracionesCol: 'Decl.',
+    primasCol: 'Primas',
+    bazasCol: 'Bazas',
+    cartasCol: 'Cartas',
+    manoCol: 'Mano',
+    totalCol: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
+    valorPartida: (n: number) => `La partida vale ${n}`,
+  },
+
   sueca: {
     reparte: 'Reparte',
     cartaTriunfo: 'Carta del triunfo',
@@ -2334,6 +2371,7 @@ export const T = {
       doppelkopf: 'Cómo se juega al Doppelkopf',
       tarot: 'Cómo se juega al Tarot',
       sueca: 'Cómo se juega a la Sueca',
+      piquet: 'Cómo se juega al Piquet',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2921,6 +2959,52 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    piquet: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Para dos jugadores, con 32 cartas: del 7 al As de cada palo. El orden es A, K, Q, J, 10, 9, 8 y 7.',
+          'Se juega un rubber de 6 manos. En cada una se anotan puntos por las combinaciones de la mano y por las bazas. Gana quien más suma.',
+        ],
+      },
+      {
+        titulo: 'El cambio',
+        texto: [
+          'Cada uno recibe 12 cartas y quedan 8 en el montón. El que no reparte es el mayor: descarta de 1 a 5 cartas y roba otras tantas.',
+          'Después el menor puede cambiar como mucho las que quedan, o ninguna. Toca las cartas que quieres descartar y después «Robar».',
+        ],
+      },
+      {
+        titulo: 'Las declaraciones',
+        texto: [
+          'El punto: gana el palo más largo (con empate, el que suma más: As 11, figuras 10). Vale tantos puntos como cartas.',
+          'La secuencia: gana la escalera más larga del mismo palo, de 3 o más. Vale 3, 4, o 10 más que su largo con 5 o más; quien gana anota también sus otras escaleras.',
+          'El conjunto: tres o cuatro cartas iguales del 10 al As. Gana el de cuatro (vale 14) y, si no, el más alto (vale 3); quien gana anota también sus otros conjuntos.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Sale el mayor. Hay que seguir el palo; no hay triunfo. Salir en una baza vale 1, ganar una baza en que salió el otro vale 1 y la última baza vale 1 más.',
+          'Quien gana más bazas anota 10; quien las gana todas (capote), 40.',
+        ],
+      },
+      {
+        titulo: 'Repique y pique',
+        texto: [
+          'Repique: si llegas a 30 solo con las declaraciones y el otro no ha ganado ninguna, sumas 60 más.',
+          'Pique: si eres mayor y llegas a 30 antes de que el otro anote nada en la mano, sumas 30 más.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Al cambiar, quédate con el palo más largo, las escaleras y los Ases, Reyes y Damas. Siendo mayor, cambia casi siempre las 5.',
+          'Gana las bazas con la carta justa y sal de tu palo más largo.',
         ],
       },
     ],

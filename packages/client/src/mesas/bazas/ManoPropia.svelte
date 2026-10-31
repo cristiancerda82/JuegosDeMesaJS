@@ -30,6 +30,8 @@
 
   /** Con más cartas (el Tarot, hasta 24), se juntan sin hueco y enseñan solo la esquina. */
   const MAXIMO_HOLGADA = 12;
+  /** Con 11 o 12 cartas grandes (la mesa para dos), la separación se estrecha en pantallas pequeñas. */
+  const MAXIMO_SEPARADA = 10;
 </script>
 
 <!--
@@ -40,6 +42,7 @@
 <div
   class="mano"
   class:apretada={cartas.length > MAXIMO_HOLGADA}
+  class:justa={cartas.length > MAXIMO_SEPARADA && cartas.length <= MAXIMO_HOLGADA}
   class:legal={destino !== undefined && interaccion.resaltados.has(destino)}
   data-testid="mano"
   data-destino={destino}
@@ -79,6 +82,10 @@
     flex: 0 1 var(--ancho-carta);
     min-width: calc(var(--ancho-carta) * 0.3);
     margin-right: clamp(4px, 2vw, 14px);
+  }
+
+  .mano.justa .ranura {
+    margin-right: clamp(0px, 3vw - 8px, 14px);
   }
 
   .mano.apretada .ranura {
