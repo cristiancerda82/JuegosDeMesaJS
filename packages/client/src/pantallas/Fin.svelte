@@ -26,6 +26,7 @@
   import ResumenPiquet from '../mesas/ResumenPiquet.svelte';
   import ResumenJass from '../mesas/ResumenJass.svelte';
   import ResumenKlaverjas from '../mesas/ResumenKlaverjas.svelte';
+  import ResumenBarbu from '../mesas/ResumenBarbu.svelte';
   import ResumenBridge from '../mesas/ResumenBridge.svelte';
   import ResumenOhHell from '../mesas/ResumenOhHell.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
@@ -112,6 +113,7 @@
       partida.id !== 'doppelkopf' &&
       partida.id !== 'tarot' &&
       partida.id !== 'piquet' &&
+      partida.id !== 'barbu' &&
       partida.id !== 'pocha' &&
       partida.id !== 'mus' &&
       partida.id !== 'corazones' &&
@@ -518,6 +520,21 @@
       {#if vista.puntos[0] !== vista.puntos[1]}
         <p data-testid="valor-partida">{T.piquet.valorPartida(valorPartidaPiquet(vista.puntos))}</p>
       {/if}
+    {:else if partida.id === 'barbu'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const nombre = (a: number) => nombreNumerado(a, 4, yo, partida.sesion.red, T.brisca.rivalN)}
+      {#if ultima}
+        <ResumenBarbu resultado={ultima} {yo} {nombre} />
+      {/if}
+      <table data-testid="puntos-barbu">
+        <caption>{T.barbu.clasificacion}</caption>
+        <tbody>
+          {#each [...[0, 1, 2, 3]].sort((a, b) => vista.totales[b]! - vista.totales[a]!) as a, i (a)}
+            <tr><th scope="row">{nombre(a)}</th><td data-testid="puntos-fin-{i}">{vista.totales[a]}</td></tr>
+          {/each}
+        </tbody>
+      </table>
     {:else if partida.id === 'kingsCorner'}
       {@const vista = partida.sesion.vista}
       {@const n = vista.config.jugadores}

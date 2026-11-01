@@ -174,6 +174,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    barbu: 'Barbu',
+    barbuDesc:
+      'Siete juegos en uno para cuatro: en cada mano quien reparte elige el contrato, de evitar bazas, corazones, damas o el Rey de corazones, de ganarlas con triunfo, o un dominó.',
     klaverjas: 'Klaverjas',
     klaverjasDesc:
       'El clásico neerlandés para cuatro en parejas con 32 cartas: hay que fallar y subir, se anota el roem de cada baza y quien juega y no gana se queda «nat».',
@@ -1366,6 +1369,53 @@ export const T = {
     clasificacion: 'Puntos',
   },
 
+  barbu: {
+    reparte: 'Reparte',
+    enMano: (n: number) => `${n}`,
+    nombreContrato: (c: string) =>
+      (
+        ({
+          bazas: 'Sin bazas',
+          corazones: 'Sin corazones',
+          damas: 'Sin damas',
+          rey: 'Sin el Rey ♥',
+          ultimas: 'Sin las dos últimas',
+          triunfo: 'Triunfo',
+          domino: 'Dominó',
+        }) as Record<string, string>
+      )[c]!,
+    contrato: (c: string, triunfo: string | null) =>
+      `${({ bazas: 'Sin bazas', corazones: 'Sin corazones', damas: 'Sin damas', rey: 'Sin el Rey de corazones', ultimas: 'Sin las dos últimas', triunfo: 'Triunfo', domino: 'Dominó' } as Record<string, string>)[c]}${triunfo ? ` de ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[triunfo]}` : ''}`,
+    palo: (palo: string) =>
+      (
+        ({
+          picas: '♠ Picas',
+          corazones: '♥ Corazones',
+          diamantes: '♦ Diamantes',
+          treboles: '♣ Tréboles',
+        }) as Record<string, string>
+      )[palo]!,
+    eligeContrato: 'Elige el contrato',
+    eligeTriunfo: 'Elige el palo de triunfo',
+    eligiendo: (quien: string) => `${quien} elige…`,
+    eligio: (quien: string, contrato: string) => `${quien}: ${contrato}`,
+    manoRonda: (n: number, total: number) => `Mano ${n} de ${total}`,
+    tusPuntos: (mano: number, total: number) => `Tú: ${mano} en la mano · ${total}`,
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    acabo: (puesto: number) => `Acabó ${puesto}.º`,
+    total: (n: number) => `${n} puntos`,
+    mesaDomino: 'Filas del dominó',
+    sinJugada: 'No tienes ninguna carta que encaje',
+    tuTurnoDomino: 'Tu turno: juega una carta que encaje',
+    paso: 'Paso',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    jugadorCol: 'Jugador',
+    manoCol: 'Mano',
+    totalCol: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
+  },
+
   klaverjas: {
     reparte: 'Reparte',
     pasa: 'Pasa',
@@ -2455,6 +2505,7 @@ export const T = {
       piquet: 'Cómo se juega al Piquet',
       jass: 'Cómo se juega al Jass',
       klaverjas: 'Cómo se juega al Klaverjas',
+      barbu: 'Cómo se juega al Barbu',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3042,6 +3093,44 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    barbu: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Para cuatro jugadores, cada uno contra todos, con 52 cartas. Cada uno recibe 13.',
+          'En cada mano, quien reparte elige un contrato entre los que aún no se han jugado. Tras 7 manos se han jugado los siete y gana quien más puntos suma.',
+        ],
+      },
+      {
+        titulo: 'Los contratos de bazas',
+        texto: [
+          'Sale quien reparte y hay que seguir el palo. Gana la baza la carta más alta del palo de salida (el As es la más alta).',
+          'Sin bazas: −2 por baza. Sin corazones: −2 por corazón y −6 por el As de corazones. Sin damas: −6 por dama. Sin el Rey de corazones: −20 a quien se lo lleve. Sin las dos últimas: −10 la penúltima baza y −20 la última.',
+          'En sin corazones y sin el Rey de corazones no se puede salir de corazones si tienes otros palos, y en el del Rey, si no puedes seguir el palo y lo tienes, tienes que echarlo. La mano acaba en cuanto no quedan cartas que penalicen.',
+        ],
+      },
+      {
+        titulo: 'El triunfo',
+        texto: [
+          'Quien reparte elige el palo de triunfo y cada baza vale +5. Si no tienes del palo, tienes que fallar y, si ya hay triunfo en la baza, subir si puedes.',
+        ],
+      },
+      {
+        titulo: 'El dominó',
+        texto: [
+          'Se juega desde las Jotas. Una Jota abre la fila de su palo; luego encajan la carta siguiente y la anterior de cada fila (del 2 al As).',
+          'Si no tienes ninguna carta que encaje, pasas. El primero que se queda sin cartas anota +45, el segundo +20, el tercero +5 y el último −5.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Elige primero los contratos que mejor te vienen: el triunfo con un palo largo y Ases, el dominó con Jotas y cartas seguidas.',
+          'En los contratos negativos, deshazte pronto de las cartas altas y de las que penalizan cuando no puedas seguir el palo.',
         ],
       },
     ],

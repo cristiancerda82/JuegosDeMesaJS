@@ -64,6 +64,12 @@ import {
   piquet,
   jass,
   klaverjas,
+  barbu,
+  CONFIG_BARBU_POR_DEFECTO,
+  type AccionBarbu,
+  type ConfigBarbu,
+  type EstadoBarbu,
+  type VistaBarbu,
   CONFIG_KLAVERJAS_POR_DEFECTO,
   type AccionKlaverjas,
   type ConfigKlaverjas,
@@ -466,7 +472,8 @@ export type IdJuego =
   | 'sueca'
   | 'piquet'
   | 'jass'
-  | 'klaverjas';
+  | 'klaverjas'
+  | 'barbu';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -529,6 +536,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'piquet',
   'jass',
   'klaverjas',
+  'barbu',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1674,6 +1682,30 @@ export const DEF_KLAVERJAS: DefKlaverjas = {
   },
 };
 
+export type DefBarbu = DefJuego<ConfigBarbu, EstadoBarbu, AccionBarbu, VistaBarbu>;
+
+export const DEF_BARBU: DefBarbu = {
+  id: 'barbu',
+  nombre: T.menu.barbu,
+  juego: barbu,
+  configPorDefecto: CONFIG_BARBU_POR_DEFECTO,
+  ia: IAS.barbu,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, el contrato, cada baza
+  // y cada jugada ajena del dominó.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (antes.fase === 'contrato' || antes.fase === 'triunfo') return 0;
+    if (despues.fase === 'domino') {
+      return antes.turno !== despues.asiento && antes.turno !== despues.turno
+        ? PAUSA_CINQUILLO_MS
+        : 0;
+    }
+    return despues.ultimaBaza !== antes.ultimaBaza && despues.ultimaBaza !== null
+      ? PAUSA_BAZA_MS
+      : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1735,6 +1767,7 @@ export const JUEGOS = {
   piquet: DEF_PIQUET,
   jass: DEF_JASS,
   klaverjas: DEF_KLAVERJAS,
+  barbu: DEF_BARBU,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

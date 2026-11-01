@@ -36,6 +36,7 @@
   import MesaPiquet from '../mesas/MesaPiquet.svelte';
   import MesaJass from '../mesas/MesaJass.svelte';
   import MesaKlaverjas from '../mesas/MesaKlaverjas.svelte';
+  import MesaBarbu from '../mesas/MesaBarbu.svelte';
   import MesaOhHell from '../mesas/MesaOhHell.svelte';
   import MesaSpiteMalice from '../mesas/MesaSpiteMalice.svelte';
   import MesaRemigio from '../mesas/MesaRemigio.svelte';
@@ -174,6 +175,8 @@
     <MesaJass sesion={partida.sesion} />
   {:else if partida.id === 'klaverjas'}
     <MesaKlaverjas sesion={partida.sesion} />
+  {:else if partida.id === 'barbu'}
+    <MesaBarbu sesion={partida.sesion} />
   {:else if partida.id === 'ohHell'}
     <MesaOhHell sesion={partida.sesion} />
   {:else if partida.id === 'spiteMalice'}

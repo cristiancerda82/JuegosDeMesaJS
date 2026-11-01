@@ -99,6 +99,9 @@ import { jass, type EstadoJass } from '../../src/juegos/jass';
 import { iaKlaverjasBasica } from '../../src/ia/klaverjas-basica';
 import { reconstruirKlaverjas } from '../../src/ia/reconstruir/klaverjas';
 import { klaverjas, type EstadoKlaverjas } from '../../src/juegos/klaverjas';
+import { iaBarbuBasica } from '../../src/ia/barbu-basica';
+import { reconstruirBarbu } from '../../src/ia/reconstruir/barbu';
+import { barbu, FILAS_VACIAS, type EstadoBarbu } from '../../src/juegos/barbu';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -1131,6 +1134,35 @@ describe('Reconstrucción del Klaverjas', () => {
       );
       expect(rec.manos[3]!.some((c) => c.startsWith('diamantes'))).toBe(false);
       expect(rec.manos.map((m) => m.length)).toEqual([8, 8, 8, 8]);
+    }
+  });
+});
+
+describirReconstruccion(barbu, reconstruirBarbu, {
+  configs: [{ jugadores: 4, manos: 2 }],
+  base: iaBarbuBasica,
+});
+
+describe('Reconstrucción del Barbu', () => {
+  it('quien pasó en el dominó no tiene las cartas que encajaban', () => {
+    const r = barbu.crear({ jugadores: 4, manos: 1 }, 'domino');
+    if (!r.ok) throw new Error(r.error);
+    const e: EstadoBarbu = {
+      ...r.valor,
+      fase: 'domino',
+      contrato: 'domino',
+      filas: { ...FILAS_VACIAS, picas: { bajo: 9, alto: 12 } },
+      noTiene: [[], ['picas-8', 'picas-13'], [], []],
+      fallos: [[], [], ['diamantes'], []],
+    };
+    const g = new Generador(crearAzar('b'));
+    for (let k = 0; k < 20; k++) {
+      const rec = reconstruirBarbu(barbu.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.manos[1]).not.toContain('picas-8');
+      expect(rec.manos[1]).not.toContain('picas-13');
+      expect(rec.manos[2]!.some((c) => c.startsWith('diamantes'))).toBe(false);
+      expect(rec.manos.map((m) => m.length)).toEqual(e.manos.map((m) => m.length));
     }
   });
 });

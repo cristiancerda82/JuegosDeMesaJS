@@ -52,6 +52,7 @@ import { CONFIG_SUECA_POR_DEFECTO, sueca } from './juegos/sueca';
 import { CONFIG_PIQUET_POR_DEFECTO, piquet } from './juegos/piquet';
 import { CONFIG_JASS_POR_DEFECTO, jass } from './juegos/jass';
 import { CONFIG_KLAVERJAS_POR_DEFECTO, klaverjas } from './juegos/klaverjas';
+import { barbu, CONFIG_BARBU_POR_DEFECTO } from './juegos/barbu';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -108,6 +109,7 @@ export const IDS_JUEGOS_EN_RED = [
   'piquet',
   'jass',
   'klaverjas',
+  'barbu',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -189,6 +191,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   piquet: entrada(piquet, IAS.piquet, CONFIG_PIQUET_POR_DEFECTO),
   jass: entrada(jass, IAS.jass, CONFIG_JASS_POR_DEFECTO),
   klaverjas: entrada(klaverjas, IAS.klaverjas, CONFIG_KLAVERJAS_POR_DEFECTO),
+  barbu: entrada(barbu, IAS.barbu, CONFIG_BARBU_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

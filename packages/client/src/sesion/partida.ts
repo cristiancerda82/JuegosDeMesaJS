@@ -64,6 +64,10 @@ import {
   type AccionPiquet,
   type AccionJass,
   type AccionKlaverjas,
+  type AccionBarbu,
+  type ConfigBarbu,
+  type EstadoBarbu,
+  type VistaBarbu,
   type ConfigKlaverjas,
   type EstadoKlaverjas,
   type VistaKlaverjas,
@@ -291,6 +295,7 @@ import {
   DEF_PIQUET,
   DEF_JASS,
   DEF_KLAVERJAS,
+  DEF_BARBU,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -412,6 +417,7 @@ export type SesionKingsCorner = SesionMesa<
   AccionKingsCorner,
   VistaKingsCorner
 >;
+export type SesionBarbu = SesionMesa<ConfigBarbu, EstadoBarbu, AccionBarbu, VistaBarbu>;
 export type SesionKlaverjas = SesionMesa<
   ConfigKlaverjas,
   EstadoKlaverjas,
@@ -567,7 +573,8 @@ export type Partida =
   | { readonly id: 'sueca'; readonly sesion: SesionSueca }
   | { readonly id: 'piquet'; readonly sesion: SesionPiquet }
   | { readonly id: 'jass'; readonly sesion: SesionJass }
-  | { readonly id: 'klaverjas'; readonly sesion: SesionKlaverjas };
+  | { readonly id: 'klaverjas'; readonly sesion: SesionKlaverjas }
+  | { readonly id: 'barbu'; readonly sesion: SesionBarbu };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -629,7 +636,8 @@ export type ConfigJuego =
   | ConfigSueca
   | ConfigPiquet
   | ConfigJass
-  | ConfigKlaverjas;
+  | ConfigKlaverjas
+  | ConfigBarbu;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -754,6 +762,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_JASS);
     case 'klaverjas':
       return hacer(DEF_KLAVERJAS);
+    case 'barbu':
+      return hacer(DEF_BARBU);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':
