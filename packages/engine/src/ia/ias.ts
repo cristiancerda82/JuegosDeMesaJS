@@ -56,6 +56,7 @@ import { SIMULABLE_PIQUET } from './reconstruir/piquet';
 import { SIMULABLE_JASS } from './reconstruir/jass';
 import { SIMULABLE_KLAVERJAS } from './reconstruir/klaverjas';
 import { SIMULABLE_BARBU } from './reconstruir/barbu';
+import { SIMULABLE_FIVE_HUNDRED } from './reconstruir/five-hundred';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -94,6 +95,7 @@ import { iaPiquetBasica } from './piquet-basica';
 import { iaJassBasica } from './jass-basica';
 import { iaKlaverjasBasica } from './klaverjas-basica';
 import { iaBarbuBasica } from './barbu-basica';
+import { iaFiveHundredBasica } from './five-hundred-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -202,4 +204,5 @@ export const IAS = {
   jass: niveles(iaJassBasica, SIMULABLE_JASS),
   klaverjas: niveles(iaKlaverjasBasica, SIMULABLE_KLAVERJAS),
   barbu: niveles(iaBarbuBasica, SIMULABLE_BARBU),
+  fiveHundred: niveles(iaFiveHundredBasica, SIMULABLE_FIVE_HUNDRED),
 } as const;

@@ -42,6 +42,7 @@
     ConfigJass,
     ConfigKlaverjas,
     ConfigBarbu,
+    ConfigFiveHundred,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -144,6 +145,9 @@
   let piquetConfig: Editable<ConfigPiquet> = $state({ ...JUEGOS.piquet.configPorDefecto });
   let jassConfig: Editable<ConfigJass> = $state({ ...JUEGOS.jass.configPorDefecto });
   let barbuConfig: Editable<ConfigBarbu> = $state({ ...JUEGOS.barbu.configPorDefecto });
+  let fiveHundredConfig: Editable<ConfigFiveHundred> = $state({
+    ...JUEGOS.fiveHundred.configPorDefecto,
+  });
   let klaverjasConfig: Editable<ConfigKlaverjas> = $state({
     ...JUEGOS.klaverjas.configPorDefecto,
   });
@@ -229,6 +233,7 @@
       jass: jassConfig,
       klaverjas: klaverjasConfig,
       barbu: barbuConfig,
+      fiveHundred: fiveHundredConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.

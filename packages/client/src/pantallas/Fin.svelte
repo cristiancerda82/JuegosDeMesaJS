@@ -27,6 +27,7 @@
   import ResumenJass from '../mesas/ResumenJass.svelte';
   import ResumenKlaverjas from '../mesas/ResumenKlaverjas.svelte';
   import ResumenBarbu from '../mesas/ResumenBarbu.svelte';
+  import ResumenFiveHundred from '../mesas/ResumenFiveHundred.svelte';
   import ResumenBridge from '../mesas/ResumenBridge.svelte';
   import ResumenOhHell from '../mesas/ResumenOhHell.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
@@ -625,6 +626,24 @@
         <tbody>
           <tr><th scope="row">{lados[0]}</th><td data-testid="juegos-fin-0">{T.whist.juegos(vista.juegos[mio])}</td></tr>
           <tr><th scope="row">{lados[1]}</th><td data-testid="juegos-fin-1">{T.whist.juegos(vista.juegos[1 - mio]!)}</td></tr>
+        </tbody>
+      </table>
+    {:else if partida.id === 'fiveHundred'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenFiveHundred
+          resultado={ultima}
+          lados={[lados[0]!, lados[1]!]}
+          bando={mio}
+          nombre={(a) => nombreAsiento(a, 4, yo, partida.sesion.red)}
+        />
+      {/if}
+      <table data-testid="puntos-500">
+        <caption>{T.fiveHundred.clasificacion}</caption>
+        <tbody>
+          <tr><th scope="row">{lados[0]}</th><td data-testid="puntos-fin-0">{vista.puntos[mio]}</td></tr>
+          <tr><th scope="row">{lados[1]}</th><td data-testid="puntos-fin-1">{vista.puntos[1 - mio]}</td></tr>
         </tbody>
       </table>
     {:else if partida.id === 'klaverjas'}

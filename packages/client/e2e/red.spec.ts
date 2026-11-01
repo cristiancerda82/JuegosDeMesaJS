@@ -816,6 +816,22 @@ test('Spite and Malice en red: el descarte de uno lo ve el otro', async ({ brows
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Five Hundred en red: la puja de uno la ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'fiveHundred');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(10);
+
+  // Puja Ana (asiento 0) y Luis ve su puja.
+  await ana.getByTestId('puja-6-picas').click();
+  await expect(luis.getByTestId('contrato-500')).toContainText('6 ♠');
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Barbu en red: el contrato que elige uno lo ve el otro', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

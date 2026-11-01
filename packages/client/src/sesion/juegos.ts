@@ -65,6 +65,12 @@ import {
   jass,
   klaverjas,
   barbu,
+  fiveHundred,
+  CONFIG_FIVE_HUNDRED_POR_DEFECTO,
+  type AccionFiveHundred,
+  type ConfigFiveHundred,
+  type EstadoFiveHundred,
+  type VistaFiveHundred,
   CONFIG_BARBU_POR_DEFECTO,
   type AccionBarbu,
   type ConfigBarbu,
@@ -473,7 +479,8 @@ export type IdJuego =
   | 'piquet'
   | 'jass'
   | 'klaverjas'
-  | 'barbu';
+  | 'barbu'
+  | 'fiveHundred';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -537,6 +544,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'jass',
   'klaverjas',
   'barbu',
+  'fiveHundred',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1706,6 +1714,31 @@ export const DEF_BARBU: DefBarbu = {
   },
 };
 
+export type DefFiveHundred = DefJuego<
+  ConfigFiveHundred,
+  EstadoFiveHundred,
+  AccionFiveHundred,
+  VistaFiveHundred
+>;
+
+export const DEF_FIVE_HUNDRED: DefFiveHundred = {
+  id: 'fiveHundred',
+  nombre: T.menu.fiveHundred,
+  juego: fiveHundred,
+  configPorDefecto: CONFIG_FIVE_HUNDRED_POR_DEFECTO,
+  ia: IAS.fiveHundred,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada puja y cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (antes.fase === 'subasta') {
+      return JSON.stringify(antes.pujas) !== JSON.stringify(despues.pujas) ? PAUSA_SUBASTA_MS : 0;
+    }
+    return despues.ultimaBaza !== antes.ultimaBaza && despues.ultimaBaza !== null
+      ? PAUSA_BAZA_MS
+      : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1768,6 +1801,7 @@ export const JUEGOS = {
   jass: DEF_JASS,
   klaverjas: DEF_KLAVERJAS,
   barbu: DEF_BARBU,
+  fiveHundred: DEF_FIVE_HUNDRED,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

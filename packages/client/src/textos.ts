@@ -174,6 +174,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    fiveHundred: 'Five Hundred',
+    fiveHundredDesc:
+      'El clásico australiano para cuatro en parejas: subasta de contratos, viuda, un comodín que es el triunfo más alto y misère. Gana quien llega a 500.',
     barbu: 'Barbu',
     barbuDesc:
       'Siete juegos en uno para cuatro: en cada mano quien reparte elige el contrato, de evitar bazas, corazones, damas o el Rey de corazones, de ganarlas con triunfo, o un dominó.',
@@ -1369,6 +1372,62 @@ export const T = {
     clasificacion: 'Puntos',
   },
 
+  fiveHundred: {
+    reparte: 'Reparte',
+    juega: 'Juega',
+    pasar: 'Pasar',
+    pujaCorta: (p: { tipo: string; bazas?: number; palo?: string }) =>
+      p.tipo === 'misere'
+        ? 'Misère'
+        : p.tipo === 'misereAbierto'
+          ? 'Misère abierto'
+          : `${p.bazas}${({ picas: '♠', treboles: '♣', diamantes: '♦', corazones: '♥', sin: 'ST' } as Record<string, string>)[p.palo!]}`,
+    puja: (p: { tipo: string; bazas?: number; palo?: string } | 'paso') =>
+      p === 'paso'
+        ? 'Pasa'
+        : p.tipo === 'bazas'
+          ? `${p.bazas} ${({ picas: '♠', treboles: '♣', diamantes: '♦', corazones: '♥', sin: 'sin triunfo' } as Record<string, string>)[p.palo!]}`
+          : p.tipo === 'misere'
+            ? 'Misère'
+            : 'Misère abierto',
+    contrato: (p: { tipo: string; bazas?: number; palo?: string }, quien: string) =>
+      `${p.tipo === 'bazas' ? `${p.bazas} ${({ picas: '♠ picas', treboles: '♣ tréboles', diamantes: '♦ diamantes', corazones: '♥ corazones', sin: 'sin triunfo' } as Record<string, string>)[p.palo!]}` : p.tipo === 'misere' ? 'Misère' : 'Misère abierto'} · juega ${quien.toLowerCase()}`,
+    mejor: (p: { tipo: string; bazas?: number; palo?: string }, quien: string) =>
+      `Más alta: ${p.tipo === 'bazas' ? `${p.bazas} ${({ picas: '♠', treboles: '♣', diamantes: '♦', corazones: '♥', sin: 'sin triunfo' } as Record<string, string>)[p.palo!]}` : p.tipo === 'misere' ? 'misère' : 'misère abierto'} (${quien})`,
+    jugo: (quien: string, p: { tipo: string; bazas?: number; palo?: string }) =>
+      `${quien}: ${p.tipo === 'bazas' ? `${p.bazas} ${({ picas: '♠ picas', treboles: '♣ tréboles', diamantes: '♦ diamantes', corazones: '♥ corazones', sin: 'sin triunfo' } as Record<string, string>)[p.palo!]}` : p.tipo === 'misere' ? 'misère' : 'misère abierto'}`,
+    palo: (palo: string) =>
+      (
+        ({
+          picas: '♠ Picas',
+          corazones: '♥ Corazones',
+          diamantes: '♦ Diamantes',
+          treboles: '♣ Tréboles',
+        }) as Record<string, string>
+      )[palo]!,
+    puntos: (lado: string, bazas: number, partida: number) =>
+      `${lado}: ${bazas === 1 ? '1 baza' : `${bazas} bazas`} · ${partida}`,
+    abiertas: (quien: string) => `${quien}:`,
+    tuPuja: 'Puja o pasa',
+    bazasPuja: 'Bazas de la puja',
+    pujando: (quien: string) => `${quien} puja…`,
+    descarta: (n: number) => `Toca ${n === 1 ? '1 carta' : `${n} cartas`} para descartarlas`,
+    descartando: (quien: string) => `${quien} se descarta…`,
+    nombraPalo: 'Nombra el palo que hay que seguir',
+    nombrado: (palo: string) =>
+      `Comodín: hay que seguir ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[palo]}`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    sinContrato: 'Pasaron todos: se reparte otra mano',
+    parejaCol: 'Pareja',
+    bazasCol: 'Bazas',
+    sumaCol: 'Suma',
+    partidaCol: 'Partida',
+    cumple: 'Contrato cumplido',
+    noCumple: 'Contrato no cumplido',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
+  },
+
   barbu: {
     reparte: 'Reparte',
     enMano: (n: number) => `${n}`,
@@ -2506,6 +2565,7 @@ export const T = {
       jass: 'Cómo se juega al Jass',
       klaverjas: 'Cómo se juega al Klaverjas',
       barbu: 'Cómo se juega al Barbu',
+      fiveHundred: 'Cómo se juega al Five Hundred',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3093,6 +3153,51 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    fiveHundred: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Para cuatro en parejas: tu compañero se sienta enfrente. Se usan 43 cartas: del 5 al As de cada palo, los cuatros rojos y un comodín.',
+          'Gana la pareja que llega a 500 puntos cumpliendo su contrato. La que baja a −500 pierde.',
+        ],
+      },
+      {
+        titulo: 'La subasta',
+        texto: [
+          'Cada uno recibe 10 cartas y quedan 3 en la viuda. Se puja por turnos: cuántas bazas (de 6 a 10) ganará tu pareja y con qué triunfo, o sin triunfo. Cada puja tiene que valer más que la anterior; quien pasa ya no vuelve a pujar.',
+          'Los valores van de 40 (6 picas) a 520 (10 sin triunfo): picas, tréboles, diamantes, corazones y sin triunfo, cada uno 20 más, y cada baza más, 100.',
+          'El misère (250) y el misère abierto (500, con tus cartas boca arriba) son contratos de no ganar ninguna baza, jugando solo: tu compañero no juega.',
+        ],
+      },
+      {
+        titulo: 'La viuda',
+        texto: [
+          'Quien gana la subasta se queda las 3 cartas de la viuda y se descarta de 3. Después sale en la primera baza.',
+        ],
+      },
+      {
+        titulo: 'Los triunfos',
+        texto: [
+          'El comodín es el triunfo más alto; luego la Jota del triunfo y la otra Jota del mismo color, que cuenta como triunfo (no de su palo); luego As, Rey, Dama, 10…',
+          'Sin triunfo, el comodín gana cualquier baza, pero solo se puede echar si no tienes del palo; si sales con él, nombras el palo que hay que seguir.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'Hay que seguir el palo. Si tu pareja cumple su contrato, suma su valor; si no, lo resta. Con las 10 bazas se suman al menos 250.',
+          'Los rivales suman 10 por cada baza que ganan, pero no pueden pasar de 490: hay que ganar la partida jugando un contrato.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Cuenta tus triunfos altos y tus Ases, y cuenta con una o dos bazas de tu compañero.',
+          'En la viuda, quédate sin un palo para poder fallar.',
         ],
       },
     ],

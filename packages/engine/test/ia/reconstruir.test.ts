@@ -102,6 +102,9 @@ import { klaverjas, type EstadoKlaverjas } from '../../src/juegos/klaverjas';
 import { iaBarbuBasica } from '../../src/ia/barbu-basica';
 import { reconstruirBarbu } from '../../src/ia/reconstruir/barbu';
 import { barbu, FILAS_VACIAS, type EstadoBarbu } from '../../src/juegos/barbu';
+import { iaFiveHundredBasica } from '../../src/ia/five-hundred-basica';
+import { reconstruirFiveHundred } from '../../src/ia/reconstruir/five-hundred';
+import { fiveHundred, type EstadoFiveHundred } from '../../src/juegos/five-hundred';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -1163,6 +1166,39 @@ describe('Reconstrucción del Barbu', () => {
       expect(rec.manos[1]).not.toContain('picas-13');
       expect(rec.manos[2]!.some((c) => c.startsWith('diamantes'))).toBe(false);
       expect(rec.manos.map((m) => m.length)).toEqual(e.manos.map((m) => m.length));
+    }
+  });
+});
+
+describirReconstruccion(fiveHundred, reconstruirFiveHundred, {
+  configs: [{ jugadores: 4, meta: 200 }],
+  base: iaFiveHundredBasica,
+});
+
+describe('Reconstrucción del Five Hundred', () => {
+  it('los descartes ajenos son 3 cartas que no se ven; los fallos se respetan', () => {
+    const r = fiveHundred.crear({ jugadores: 4, meta: 500 }, 'viuda');
+    if (!r.ok) throw new Error(r.error);
+    let e: EstadoFiveHundred = r.valor;
+    // Puja el 0 y pasan los demás; el 0 se descarta.
+    e = fiveHundred.transicion(e, 0, {
+      tipo: 'pujar',
+      puja: { tipo: 'bazas', bazas: 6, palo: 'picas' },
+    });
+    for (const a of [1, 2, 3]) e = fiveHundred.transicion(e, a, { tipo: 'pasar' });
+    for (let i = 0; i < 3; i++)
+      e = fiveHundred.transicion(e, 0, { tipo: 'descartar', carta: e.manos[0]![0]! });
+    e = { ...e, fallos: [[], [], ['corazones'], []] };
+    const g = new Generador(crearAzar('q'));
+    for (let k = 0; k < 20; k++) {
+      const vista = fiveHundred.vistaDe(e, 1);
+      const rec = reconstruirFiveHundred(vista, g.estado());
+      g.enteroHasta(1000);
+      expect(rec.manos[1]).toEqual(vista.miMano);
+      expect(rec.descartes).toHaveLength(3);
+      for (const c of rec.descartes) expect(vista.miMano).not.toContain(c);
+      expect(rec.manos.map((m) => m.length)).toEqual(e.manos.map((m) => m.length));
+      expect(rec.manos[2]!.some((c) => c.startsWith('corazones'))).toBe(false);
     }
   });
 });
