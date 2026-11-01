@@ -63,6 +63,12 @@ import {
   sueca,
   piquet,
   jass,
+  klaverjas,
+  CONFIG_KLAVERJAS_POR_DEFECTO,
+  type AccionKlaverjas,
+  type ConfigKlaverjas,
+  type EstadoKlaverjas,
+  type VistaKlaverjas,
   CONFIG_JASS_POR_DEFECTO,
   type AccionJass,
   type ConfigJass,
@@ -459,7 +465,8 @@ export type IdJuego =
   | 'tarot'
   | 'sueca'
   | 'piquet'
-  | 'jass';
+  | 'jass'
+  | 'klaverjas';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -521,6 +528,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'sueca',
   'piquet',
   'jass',
+  'klaverjas',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1643,6 +1651,29 @@ export const DEF_JASS: DefJass = {
   },
 };
 
+export type DefKlaverjas = DefJuego<
+  ConfigKlaverjas,
+  EstadoKlaverjas,
+  AccionKlaverjas,
+  VistaKlaverjas
+>;
+
+export const DEF_KLAVERJAS: DefKlaverjas = {
+  id: 'klaverjas',
+  nombre: T.menu.klaverjas,
+  juego: klaverjas,
+  configPorDefecto: CONFIG_KLAVERJAS_POR_DEFECTO,
+  ia: IAS.klaverjas,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, el triunfo y cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (antes.fase !== 'bazas' && despues.fase === 'bazas') return PAUSA_CANTE_MS;
+    return despues.ultimaBaza !== antes.ultimaBaza && despues.ultimaBaza !== null
+      ? PAUSA_BAZA_MS
+      : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1703,6 +1734,7 @@ export const JUEGOS = {
   sueca: DEF_SUECA,
   piquet: DEF_PIQUET,
   jass: DEF_JASS,
+  klaverjas: DEF_KLAVERJAS,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

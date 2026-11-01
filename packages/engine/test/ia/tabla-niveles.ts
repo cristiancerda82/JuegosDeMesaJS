@@ -46,6 +46,7 @@ import { tarot } from '../../src/juegos/tarot';
 import { CONFIG_SUECA_POR_DEFECTO, sueca } from '../../src/juegos/sueca';
 import { piquet } from '../../src/juegos/piquet';
 import { jass } from '../../src/juegos/jass';
+import { klaverjas } from '../../src/juegos/klaverjas';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -141,4 +142,6 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Piquet', piquet, { manos: 2 }, IAS.piquet, 2),
   // A 300 puntos, para que las partidas de las pruebas no sean tan largas.
   entrada('Jass', jass, { jugadores: 4, meta: 300 }, IAS.jass, 'bandos'),
+  // Dos manos, para que las partidas de las pruebas no sean tan largas.
+  entrada('Klaverjas', klaverjas, { jugadores: 4, manos: 2 }, IAS.klaverjas, 'bandos'),
 ];

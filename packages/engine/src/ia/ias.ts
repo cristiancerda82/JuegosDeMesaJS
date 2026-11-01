@@ -54,6 +54,7 @@ import { SIMULABLE_TAROT } from './reconstruir/tarot';
 import { SIMULABLE_SUECA } from './reconstruir/sueca';
 import { SIMULABLE_PIQUET } from './reconstruir/piquet';
 import { SIMULABLE_JASS } from './reconstruir/jass';
+import { SIMULABLE_KLAVERJAS } from './reconstruir/klaverjas';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -90,6 +91,7 @@ import { iaTarotBasica } from './tarot-basica';
 import { iaSuecaBasica } from './sueca-basica';
 import { iaPiquetBasica } from './piquet-basica';
 import { iaJassBasica } from './jass-basica';
+import { iaKlaverjasBasica } from './klaverjas-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -196,4 +198,5 @@ export const IAS = {
   sueca: niveles(iaSuecaBasica, SIMULABLE_SUECA),
   piquet: niveles(iaPiquetBasica, SIMULABLE_PIQUET),
   jass: niveles(iaJassBasica, SIMULABLE_JASS),
+  klaverjas: niveles(iaKlaverjasBasica, SIMULABLE_KLAVERJAS),
 } as const;

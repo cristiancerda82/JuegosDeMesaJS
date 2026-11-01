@@ -816,6 +816,22 @@ test('Spite and Malice en red: el descarte de uno lo ve el otro', async ({ brows
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Klaverjas en red: lo que dice uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'klaverjas');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(8);
+
+  // Dice Ana (asiento 0): juega con el palo propuesto y Luis ve el triunfo.
+  await ana.getByTestId('jugar').click();
+  await expect(luis.getByTestId('triunfo-klaverjas')).toBeVisible();
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Jass en red: el modo que elige uno lo ve el otro', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

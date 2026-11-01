@@ -40,6 +40,7 @@
     ConfigSueca,
     ConfigPiquet,
     ConfigJass,
+    ConfigKlaverjas,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -141,6 +142,9 @@
   let suecaConfig: Editable<ConfigSueca> = $state({ ...JUEGOS.sueca.configPorDefecto });
   let piquetConfig: Editable<ConfigPiquet> = $state({ ...JUEGOS.piquet.configPorDefecto });
   let jassConfig: Editable<ConfigJass> = $state({ ...JUEGOS.jass.configPorDefecto });
+  let klaverjasConfig: Editable<ConfigKlaverjas> = $state({
+    ...JUEGOS.klaverjas.configPorDefecto,
+  });
   let ohHellConfig: Editable<ConfigOhHell> = $state({ ...JUEGOS.ohHell.configPorDefecto });
   let spiteMaliceConfig: Editable<ConfigSpiteMalice> = $state({
     ...JUEGOS.spiteMalice.configPorDefecto,
@@ -221,6 +225,7 @@
       sueca: suecaConfig,
       piquet: piquetConfig,
       jass: jassConfig,
+      klaverjas: klaverjasConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.

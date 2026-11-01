@@ -96,6 +96,9 @@ import { piquet, type EstadoPiquet } from '../../src/juegos/piquet';
 import { iaJassBasica } from '../../src/ia/jass-basica';
 import { reconstruirJass } from '../../src/ia/reconstruir/jass';
 import { jass, type EstadoJass } from '../../src/juegos/jass';
+import { iaKlaverjasBasica } from '../../src/ia/klaverjas-basica';
+import { reconstruirKlaverjas } from '../../src/ia/reconstruir/klaverjas';
+import { klaverjas, type EstadoKlaverjas } from '../../src/juegos/klaverjas';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -1099,6 +1102,35 @@ describe('Reconstrucción del Jass', () => {
       expect(rec.manos[3]!.filter((c) => c.startsWith('treboles') && c !== 'treboles-11')).toEqual(
         [],
       );
+    }
+  });
+});
+
+describirReconstruccion(klaverjas, reconstruirKlaverjas, {
+  configs: [{ jugadores: 4, manos: 1 }],
+  base: iaKlaverjasBasica,
+});
+
+describe('Reconstrucción del Klaverjas', () => {
+  it('sin los palos que no siguió y, si no falló pudiendo, sin triunfos', () => {
+    const r = klaverjas.crear({ jugadores: 4, manos: 1 }, 'fallos');
+    if (!r.ok) throw new Error(r.error);
+    const e: EstadoKlaverjas = {
+      ...r.valor,
+      fase: 'bazas',
+      triunfo: 'treboles',
+      juega: 0,
+      fallos: [[], ['corazones', 'treboles'], [], ['diamantes']],
+    };
+    const g = new Generador(crearAzar('k'));
+    for (let k = 0; k < 20; k++) {
+      const rec = reconstruirKlaverjas(klaverjas.vistaDe(e, 0), g.estado());
+      g.enteroHasta(1000);
+      expect(rec.manos[1]!.some((c) => c.startsWith('corazones') || c.startsWith('treboles'))).toBe(
+        false,
+      );
+      expect(rec.manos[3]!.some((c) => c.startsWith('diamantes'))).toBe(false);
+      expect(rec.manos.map((m) => m.length)).toEqual([8, 8, 8, 8]);
     }
   });
 });

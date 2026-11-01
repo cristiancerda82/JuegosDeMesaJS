@@ -174,6 +174,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    klaverjas: 'Klaverjas',
+    klaverjasDesc:
+      'El clásico neerlandés para cuatro en parejas con 32 cartas: hay que fallar y subir, se anota el roem de cada baza y quien juega y no gana se queda «nat».',
     jass: 'Jass',
     jassDesc:
       'El Schieber suizo, para cuatro en parejas con 36 cartas: elige el triunfo o pásalo a tu compañero, con Weis, Stöck y partida a 1.000.',
@@ -1363,6 +1366,45 @@ export const T = {
     clasificacion: 'Puntos',
   },
 
+  klaverjas: {
+    reparte: 'Reparte',
+    pasa: 'Pasa',
+    pasar: 'Pasar',
+    jugar: (palo: string) =>
+      `Jugar ${({ picas: '♠', corazones: '♥', diamantes: '♦', treboles: '♣' } as Record<string, string>)[palo]}`,
+    palo: (palo: string) =>
+      (
+        ({
+          picas: '♠ Picas',
+          corazones: '♥ Corazones',
+          diamantes: '♦ Diamantes',
+          treboles: '♣ Tréboles',
+        }) as Record<string, string>
+      )[palo]!,
+    propuesto: (palo: string) =>
+      `Propuesto: ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[palo]}`,
+    triunfo: (palo: string, quien: string) =>
+      `Triunfo ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[palo]} · juega ${quien.toLowerCase()}`,
+    manoRonda: (n: number, total: number) => `Mano ${n} de ${total}`,
+    puntos: (lado: string, cartas: number, roem: number, partida: number) =>
+      `${lado}: ${cartas}${roem > 0 ? ` + ${roem}` : ''} · ${partida}`,
+    roem: (quien: string, n: number) => `Roem de ${quien}: ${n}`,
+    dices: '¿Juegas con este triunfo?',
+    eligeTu: 'Pasaron todos: elige el triunfo',
+    diciendo: (quien: string) => `${quien} decide…`,
+    eligiendo: (quien: string) => `${quien} elige el triunfo…`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    parejaCol: 'Pareja',
+    cartasCol: 'Cartas',
+    roemCol: 'Roem',
+    anotaCol: 'Anota',
+    partidaCol: 'Partida',
+    nat: (lado: string) => `¡Nat! ${lado} no ganó: la otra pareja se lo lleva todo`,
+    pit: (lado: string) => `¡Pit de ${lado.toLowerCase()}! Las 8 bazas: +100`,
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
+  },
+
   jass: {
     reparte: 'Reparte',
     eligio: 'Eligió',
@@ -2412,6 +2454,7 @@ export const T = {
       sueca: 'Cómo se juega a la Sueca',
       piquet: 'Cómo se juega al Piquet',
       jass: 'Cómo se juega al Jass',
+      klaverjas: 'Cómo se juega al Klaverjas',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -2999,6 +3042,57 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    klaverjas: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El juego de cartas de los Países Bajos. Se juega entre cuatro, en parejas: tu compañero se sienta enfrente. Se usan 32 cartas, del 7 al As de cada palo.',
+          'Se juegan 8 manos y gana la pareja con más puntos al final.',
+        ],
+      },
+      {
+        titulo: 'El triunfo',
+        texto: [
+          'Cada uno recibe 8 cartas y se propone un palo al azar. Por turnos, cada uno dice si juega con ese triunfo o pasa. El primero que juega hace de su pareja la que juega la mano.',
+          'Si pasan los cuatro, el siguiente al repartidor tiene que jugar y elige el palo que quiera. Sale siempre el siguiente al repartidor.',
+        ],
+      },
+      {
+        titulo: 'Las cartas',
+        texto: [
+          'En el triunfo, la Jota (20 puntos) es la más alta y el 9 (14) la segunda; siguen As 11, 10 10, Rey 4, Dama 3, 8 y 7.',
+          'En los otros palos: As 11, 10 10, Rey 4, Dama 3, Jota 2, 9, 8 y 7. La última baza vale 10 más: 162 por mano.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Hay que seguir el palo. Si no tienes, hay que fallar con un triunfo, aunque la baza sea de tu compañero.',
+          'Si ya hay triunfo en la baza, hay que echar uno más alto si puedes; si no puedes, no se echa uno más bajo salvo que solo te queden triunfos. Si sale triunfo, también hay que subir.',
+        ],
+      },
+      {
+        titulo: 'Roem',
+        texto: [
+          'Quien gana una baza anota el roem de sus cartas: escalera de 3 del mismo palo 20, de 4 50; cuatro iguales 100 (cuatro Jotas 200); el Rey y la Dama del triunfo juntos (stuk) 20.',
+          'Ganar las 8 bazas (pit) vale 100 de roem más.',
+        ],
+      },
+      {
+        titulo: 'Nat',
+        texto: [
+          'La pareja que juega tiene que hacer más puntos (cartas y roem) que la otra. Si no, está «nat»: la otra pareja se lleva los 162 y todo el roem de la mano.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Juega con el triunfo propuesto si tienes la Jota o el 9 y algún triunfo más.',
+          'Si la baza es de tu compañero, cárgale un 10 o un As. Cuidado con regalar roem al rival.',
         ],
       },
     ],
