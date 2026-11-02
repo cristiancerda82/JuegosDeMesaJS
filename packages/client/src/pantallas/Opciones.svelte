@@ -43,6 +43,7 @@
     ConfigKlaverjas,
     ConfigBarbu,
     ConfigFiveHundred,
+    ConfigScopa,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -145,6 +146,7 @@
   let piquetConfig: Editable<ConfigPiquet> = $state({ ...JUEGOS.piquet.configPorDefecto });
   let jassConfig: Editable<ConfigJass> = $state({ ...JUEGOS.jass.configPorDefecto });
   let barbuConfig: Editable<ConfigBarbu> = $state({ ...JUEGOS.barbu.configPorDefecto });
+  let scopaConfig: Editable<ConfigScopa> = $state({ ...JUEGOS.scopa.configPorDefecto });
   let fiveHundredConfig: Editable<ConfigFiveHundred> = $state({
     ...JUEGOS.fiveHundred.configPorDefecto,
   });
@@ -234,6 +236,7 @@
       klaverjas: klaverjasConfig,
       barbu: barbuConfig,
       fiveHundred: fiveHundredConfig,
+      scopa: scopaConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.
@@ -349,6 +352,15 @@
           <input type="checkbox" bind:checked={escoba.escobaInicial} />
           {T.opciones.escobaInicialDesc}
         </label>
+      </fieldset>
+    {:else if juego === 'scopa'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        <label><input type="radio" bind:group={scopaConfig.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
+        <label
+          ><input type="radio" bind:group={scopaConfig.jugadores} value={4} data-testid="scopa-cuatro" />
+          {T.opciones.scopone}</label
+        >
       </fieldset>
     {:else if juego === 'corazones'}
       <fieldset>

@@ -28,6 +28,7 @@
   import ResumenKlaverjas from '../mesas/ResumenKlaverjas.svelte';
   import ResumenBarbu from '../mesas/ResumenBarbu.svelte';
   import ResumenFiveHundred from '../mesas/ResumenFiveHundred.svelte';
+  import ResumenScopa from '../mesas/ResumenScopa.svelte';
   import ResumenBridge from '../mesas/ResumenBridge.svelte';
   import ResumenOhHell from '../mesas/ResumenOhHell.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
@@ -190,6 +191,11 @@
           bando={mio}
           totales={vista.puntosPartida}
         />
+      {/if}
+    {:else if partida.id === 'scopa'}
+      {@const ultima = partida.sesion.vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenScopa resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} />
       {/if}
     {:else if partida.id === 'guinote'}
       {@const ultima = partida.sesion.vista.resultadosManos.at(-1)}

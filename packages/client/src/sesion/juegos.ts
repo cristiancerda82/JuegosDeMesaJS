@@ -66,6 +66,12 @@ import {
   klaverjas,
   barbu,
   fiveHundred,
+  scopa,
+  CONFIG_SCOPA_POR_DEFECTO,
+  type AccionScopa,
+  type ConfigScopa,
+  type EstadoScopa,
+  type VistaScopa,
   CONFIG_FIVE_HUNDRED_POR_DEFECTO,
   type AccionFiveHundred,
   type ConfigFiveHundred,
@@ -480,7 +486,8 @@ export type IdJuego =
   | 'jass'
   | 'klaverjas'
   | 'barbu'
-  | 'fiveHundred';
+  | 'fiveHundred'
+  | 'scopa';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -545,6 +552,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'klaverjas',
   'barbu',
   'fiveHundred',
+  'scopa',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1739,6 +1747,23 @@ export const DEF_FIVE_HUNDRED: DefFiveHundred = {
   },
 };
 
+export type DefScopa = DefJuego<ConfigScopa, EstadoScopa, AccionScopa, VistaScopa>;
+
+export const DEF_SCOPA: DefScopa = {
+  id: 'scopa',
+  nombre: T.menu.scopa,
+  juego: scopa,
+  configPorDefecto: CONFIG_SCOPA_POR_DEFECTO,
+  ia: IAS.scopa,
+  // El cierre de la mano lo detiene la propia mesa con el resumen.
+  pausaTras(antes, despues) {
+    const jugada = despues.ultimaJugada;
+    if (jugada === null || jugada === antes.ultimaJugada) return 0;
+    if (jugada.scopa) return PAUSA_ESCOBA_MS;
+    return jugada.captura.length > 0 ? PAUSA_JUGADA_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1802,6 +1827,7 @@ export const JUEGOS = {
   klaverjas: DEF_KLAVERJAS,
   barbu: DEF_BARBU,
   fiveHundred: DEF_FIVE_HUNDRED,
+  scopa: DEF_SCOPA,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

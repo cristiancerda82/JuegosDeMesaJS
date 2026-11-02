@@ -105,6 +105,9 @@ import { barbu, FILAS_VACIAS, type EstadoBarbu } from '../../src/juegos/barbu';
 import { iaFiveHundredBasica } from '../../src/ia/five-hundred-basica';
 import { reconstruirFiveHundred } from '../../src/ia/reconstruir/five-hundred';
 import { fiveHundred, type EstadoFiveHundred } from '../../src/juegos/five-hundred';
+import { reconstruirScopa } from '../../src/ia/reconstruir/scopa';
+import { iaScopaBasica } from '../../src/ia/scopa-basica';
+import { CONFIG_SCOPA_POR_DEFECTO, scopa } from '../../src/juegos/scopa';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -1200,5 +1203,27 @@ describe('Reconstrucción del Five Hundred', () => {
       expect(rec.manos.map((m) => m.length)).toEqual(e.manos.map((m) => m.length));
       expect(rec.manos[2]!.some((c) => c.startsWith('corazones'))).toBe(false);
     }
+  });
+});
+
+describirReconstruccion(scopa, reconstruirScopa, {
+  configs: [CONFIG_SCOPA_POR_DEFECTO, { jugadores: 4, meta: 11 }],
+  base: iaScopaBasica,
+});
+
+describe('Reconstrucción de la Scopa', () => {
+  it('conserva la mano propia y la mesa; lo demás tiene el tamaño que se ve', () => {
+    const r = scopa.crear({ jugadores: 2, meta: 11 }, 'recogidas');
+    if (!r.ok) throw new Error(r.error);
+    let e = r.valor;
+    for (let i = 0; i < 5; i++)
+      e = scopa.transicion(e, e.turno, scopa.accionesLegales(e, e.turno)[0]!);
+    const vista = scopa.vistaDe(e, 0);
+    const rec = reconstruirScopa(vista, crearAzar('s'));
+    expect(rec.manos[0]).toEqual(vista.miMano);
+    expect(rec.mesa).toEqual(vista.mesa);
+    expect(rec.mazo).toHaveLength(vista.mazo);
+    expect([rec.recogidas[0].length, rec.recogidas[1].length]).toEqual(vista.cartasRecogidas);
+    expect(rec.manos.map((m) => m.length)).toEqual(vista.cartasEnMano);
   });
 });

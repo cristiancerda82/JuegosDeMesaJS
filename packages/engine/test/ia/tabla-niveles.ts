@@ -49,6 +49,7 @@ import { jass } from '../../src/juegos/jass';
 import { klaverjas } from '../../src/juegos/klaverjas';
 import { barbu } from '../../src/juegos/barbu';
 import { fiveHundred } from '../../src/juegos/five-hundred';
+import { CONFIG_SCOPA_POR_DEFECTO, scopa } from '../../src/juegos/scopa';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -150,4 +151,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Barbu', barbu, { jugadores: 4, manos: 2 }, IAS.barbu, 4),
   // A 200 puntos, para que las partidas de las pruebas no sean tan largas.
   entrada('Five Hundred', fiveHundred, { jugadores: 4, meta: 200 }, IAS.fiveHundred, 'bandos'),
+  entrada('Scopa', scopa, CONFIG_SCOPA_POR_DEFECTO, IAS.scopa, 'bandos'),
 ];

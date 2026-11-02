@@ -174,6 +174,9 @@ export const T = {
     euchre: 'Euchre',
     bigTwo: 'Big Two',
     cribbage: 'Cribbage',
+    scopa: 'Scopa',
+    scopaDesc:
+      'El clásico italiano de capturas para dos o cuatro (Scopone): llévate las cartas de la mesa por su valor, haz scopas y gana la primiera.',
     fiveHundred: 'Five Hundred',
     fiveHundredDesc:
       'El clásico australiano para cuatro en parejas: subasta de contratos, viuda, un comodín que es el triunfo más alto y misère. Gana quien llega a 500.',
@@ -305,6 +308,7 @@ export const T = {
     siempreCuatro: 'Siempre se juega con 4, cada uno por su cuenta.',
     dosCames: 'Dos cames de 12 (gana quien gane dos)',
     unaCame: 'Una came de 12',
+    scopone: '4 en parejas (Scopone)',
     cuatroJugadores: '4 jugadores en parejas',
     cambioMuestra: 'Cambio de la muestra',
     cambioNo: 'No se permite',
@@ -1370,6 +1374,33 @@ export const T = {
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
+  },
+
+  scopa: {
+    mesa: 'Mesa',
+    recoger: 'Capturar',
+    dejar: 'Dejar en la mesa',
+    cancelar: 'Cancelar',
+    suma: (n: number, objetivo: number) => `${n} / ${objetivo}`,
+    elegirCaptura: '¿Qué te llevas con esta carta?',
+    recogerCartas: (n: number) => (n === 1 ? 'Llevarse 1 carta' : `Llevarse ${n} cartas`),
+    scopaDe: (quien: string) => (quien === 'Tú' ? '¡Scopa!' : `¡Scopa de ${quien}!`),
+    recoge: (quien: string, n: number) =>
+      quien === 'Tú' ? `Capturas ${n} cartas` : `${quien} captura ${n} cartas`,
+    montonCartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    montonScopas: (n: number) => (n === 1 ? '1 scopa' : `${n} scopas`),
+    puntos: (tuyos: number, suyos: number, meta: number) =>
+      `Puntos: ${tuyos} – ${suyos} (a ${meta})`,
+    finMano: 'Fin de la mano',
+    siguienteMano: 'Siguiente mano',
+    concepto: 'Concepto',
+    scopas: 'Scopas',
+    cartas: 'Más cartas',
+    oros: 'Más oros',
+    settebello: 'Settebello (7 de oros)',
+    primiera: 'Primiera',
+    totalMano: 'Total de la mano',
+    totalPartida: 'Total de la partida',
   },
 
   fiveHundred: {
@@ -2566,6 +2597,7 @@ export const T = {
       klaverjas: 'Cómo se juega al Klaverjas',
       barbu: 'Cómo se juega al Barbu',
       fiveHundred: 'Cómo se juega al Five Hundred',
+      scopa: 'Cómo se juega a la Scopa',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3153,6 +3185,51 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    scopa: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El juego de capturas más popular de Italia, con la baraja española de 40 cartas. Se juega entre dos o entre cuatro en parejas (Scopone).',
+          'Se capturan cartas de la mesa y, al acabar cada mano, se reparten puntos. Gana el primero que llega a 11.',
+        ],
+      },
+      {
+        titulo: 'El reparto',
+        texto: [
+          'Con dos, cada uno recibe 3 cartas y se ponen 4 en la mesa; cuando los dos se quedan sin cartas, se reparten otras 3 hasta acabar el mazo.',
+          'Con cuatro (Scopone), cada uno recibe 10 cartas y la mesa empieza vacía.',
+        ],
+      },
+      {
+        titulo: 'Capturar',
+        texto: [
+          'Las cartas valen su número; la sota 8, el caballo 9 y el rey 10. Juegas una carta: si en la mesa hay una de su mismo valor, te la llevas; si no, te llevas varias que sumen su valor.',
+          'Capturar es obligatorio, y si hay una carta igual hay que llevarse esa antes que una suma. Si no puedes capturar, tu carta se queda en la mesa.',
+        ],
+      },
+      {
+        titulo: 'La scopa',
+        texto: [
+          'Si al capturar dejas la mesa vacía, haces scopa: 1 punto. La última jugada de la mano no cuenta como scopa.',
+          'Al acabar la mano, las cartas que quedan en la mesa son para el último que capturó.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          '1 punto por tener más de 20 cartas, 1 por más de 5 oros, 1 por el siete de oros (settebello) y 1 por cada scopa.',
+          'Y 1 por la primiera: se suma la mejor carta de cada palo, con el 7 a 21, el 6 a 18, el As a 16, el 5 a 15, el 4 a 14, el 3 a 13, el 2 a 12 y las figuras a 10. Gana la primiera más alta.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Los sietes valen mucho para la primiera: llévatelos siempre que puedas, sobre todo el de oros.',
+          'No dejes en la mesa cartas que sumen 10 o menos: el rival podría llevárselas todas de una vez y hacer scopa.',
         ],
       },
     ],

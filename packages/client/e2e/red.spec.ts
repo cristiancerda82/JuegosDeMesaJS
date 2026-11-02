@@ -816,6 +816,27 @@ test('Spite and Malice en red: el descarte de uno lo ve el otro', async ({ brows
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Scopa en red: la carta de uno la ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'scopa');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(3);
+
+  // Juega Ana (asiento 0) y Luis ve que tiene una carta menos.
+  const carta = ana.locator('[data-testid="mano"] .carta-mano.jugable').first();
+  await carta.click({ position: { x: 8, y: 8 } });
+  await ana.getByTestId('mesa').click();
+  const opcion = ana.getByTestId('opcion-0');
+  if (await opcion.isVisible().catch(() => false)) await opcion.click();
+  await expect(luis.getByTestId('asiento-0')).toBeVisible();
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+  await expect(ana.locator('[data-testid="mano"] .carta-mano')).toHaveCount(2);
+});
+
 test('Five Hundred en red: la puja de uno la ve el otro', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);
