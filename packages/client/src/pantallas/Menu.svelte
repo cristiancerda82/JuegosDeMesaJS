@@ -52,6 +52,7 @@ ull. */
     { id: 'brisca', desc: T.menu.briscaDesc, cartas: ['oros-1', 'copas-3', 'espadas-12'] },
     { id: 'tute', desc: T.menu.tuteDesc, cartas: ['bastos-12', 'oros-11', 'copas-12'] },
     { id: 'scopa', desc: T.menu.scopaDesc, cartas: ['oros-7', 'copas-7', 'bastos-1'] },
+    { id: 'tressette', desc: T.menu.tressetteDesc, cartas: ['oros-3', 'oros-2', 'oros-1'] },
     {
       id: 'fiveHundred',
       desc: T.menu.fiveHundredDesc,

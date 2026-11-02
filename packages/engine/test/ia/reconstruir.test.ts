@@ -108,6 +108,9 @@ import { fiveHundred, type EstadoFiveHundred } from '../../src/juegos/five-hundr
 import { reconstruirScopa } from '../../src/ia/reconstruir/scopa';
 import { iaScopaBasica } from '../../src/ia/scopa-basica';
 import { CONFIG_SCOPA_POR_DEFECTO, scopa } from '../../src/juegos/scopa';
+import { reconstruirTressette } from '../../src/ia/reconstruir/tressette';
+import { iaTressetteBasica } from '../../src/ia/tressette-basica';
+import { CONFIG_TRESSETTE_POR_DEFECTO, tressette } from '../../src/juegos/tressette';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -1225,5 +1228,43 @@ describe('Reconstrucción de la Scopa', () => {
     expect(rec.mazo).toHaveLength(vista.mazo);
     expect([rec.recogidas[0].length, rec.recogidas[1].length]).toEqual(vista.cartasRecogidas);
     expect(rec.manos.map((m) => m.length)).toEqual(vista.cartasEnMano);
+  });
+});
+
+describirReconstruccion(tressette, reconstruirTressette, {
+  configs: [CONFIG_TRESSETTE_POR_DEFECTO],
+  base: iaTressetteBasica,
+});
+
+describe('Reconstrucción del Tressette', () => {
+  it('quien no siguió los oros no tiene oros en la mano reconstruida', () => {
+    const r = tressette.crear(CONFIG_TRESSETTE_POR_DEFECTO, 'fallos');
+    if (!r.ok) throw new Error(r.error);
+    let e = r.valor;
+    for (let i = 0; i < 6; i++)
+      e = tressette.transicion(e, e.turno, tressette.accionesLegales(e, e.turno)[0]!);
+    e = { ...e, fallos: [[], ['oros'], [], []] };
+    // Se quitan los oros de la mano del 1 para que la vista sea coherente con el fallo.
+    const oros = e.manos[1]!.filter((c) => c.startsWith('oros'));
+    const otras = e.manos[3]!.filter((c) => !c.startsWith('oros')).slice(0, oros.length);
+    expect(otras).toHaveLength(oros.length);
+    e = {
+      ...e,
+      manos: e.manos.map((m, a) =>
+        a === 1
+          ? [...m.filter((c) => !oros.includes(c)), ...otras]
+          : a === 3
+            ? [...m.filter((c) => !otras.includes(c)), ...oros]
+            : m,
+      ),
+    };
+    const vista = tressette.vistaDe(e, 0);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirTressette(vista, crearAzar(`t${i}`));
+      expect(rec.manos[0]).toEqual(vista.miMano);
+      expect(rec.manos.map((m) => m.length)).toEqual(vista.cartasEnMano);
+      expect(rec.manos[1]!.some((c) => c.startsWith('oros'))).toBe(false);
+      expect(tressette.vistaDe(rec, 0)).toEqual(vista);
+    }
   });
 });

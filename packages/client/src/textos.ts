@@ -177,6 +177,9 @@ export const T = {
     scopa: 'Scopa',
     scopaDesc:
       'El clásico italiano de capturas para dos o cuatro (Scopone): llévate las cartas de la mesa por su valor, haz scopas y gana la primiera.',
+    tressette: 'Tressette',
+    tressetteDesc:
+      'El gran juego de bazas italiano para cuatro en parejas: sin triunfo, el 3 y el 2 mandan, y los Ases y las figuras dan los puntos.',
     fiveHundred: 'Five Hundred',
     fiveHundredDesc:
       'El clásico australiano para cuatro en parejas: subasta de contratos, viuda, un comodín que es el triunfo más alto y misère. Gana quien llega a 500.',
@@ -1374,6 +1377,19 @@ export const T = {
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
+  },
+
+  tressette: {
+    reparte: 'Reparte',
+    bazasDe: (n: number) => (n === 1 ? '1 baza' : `${n} bazas`),
+    puntos: (lado: string, mano: string, partida: number) => `${lado}: ${mano} · total ${partida}`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    parejaCol: 'Pareja',
+    cartasCol: 'Cartas',
+    anotaCol: 'Anota',
+    totalCol: 'Total',
+    ultima: (lado: string) => `Última baza: ${lado}`,
+    siguienteMano: 'Siguiente mano',
   },
 
   scopa: {
@@ -2598,6 +2614,7 @@ export const T = {
       barbu: 'Cómo se juega al Barbu',
       fiveHundred: 'Cómo se juega al Five Hundred',
       scopa: 'Cómo se juega a la Scopa',
+      tressette: 'Cómo se juega al Tressette',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3185,6 +3202,43 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    tressette: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El gran juego de bazas de Italia. Se juega entre cuatro, en parejas: tu compañero se sienta enfrente. Se usa la baraja española de 40 cartas y cada uno recibe 10.',
+          'Cada mano se juegan 10 bazas y cada pareja suma los puntos de las cartas que gana. Gana la partida la pareja que llega antes a 21.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'No hay triunfo. Hay que seguir el palo de la carta de salida si se puede; si no, se puede echar cualquier carta, pero no gana.',
+          'Gana la carta más alta del palo de salida. El orden, de mayor a menor, es 3, 2, As, rey, caballo, sota, 7, 6, 5 y 4. Quien gana la baza sale en la siguiente.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'El As vale 1 punto; el 3, el 2, el rey, el caballo y la sota, un tercio de punto cada uno; las demás, nada. La última baza vale 1 punto más.',
+          'Al acabar la mano, cada pareja anota solo los puntos enteros, sin los tercios que sobran: entre las dos siempre suman 11.',
+        ],
+      },
+      {
+        titulo: 'La partida',
+        texto: [
+          'Se juega a 21. Si las dos parejas pasan de 21 en la misma mano, gana la que tiene más; si empatan, se juega otra mano.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Los Ases valen tanto como tres figuras: no los sueltes si un rival puede llevárselos con el 3 o el 2.',
+          'Cuenta los treses y los doses que han salido: cuando tu carta es la más alta que queda de su palo, la baza es tuya. Si la baza es segura para tu compañero, cárgale puntos.',
         ],
       },
     ],

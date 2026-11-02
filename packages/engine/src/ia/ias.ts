@@ -58,6 +58,7 @@ import { SIMULABLE_KLAVERJAS } from './reconstruir/klaverjas';
 import { SIMULABLE_BARBU } from './reconstruir/barbu';
 import { SIMULABLE_FIVE_HUNDRED } from './reconstruir/five-hundred';
 import { SIMULABLE_SCOPA } from './reconstruir/scopa';
+import { SIMULABLE_TRESSETTE } from './reconstruir/tressette';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -98,6 +99,7 @@ import { iaKlaverjasBasica } from './klaverjas-basica';
 import { iaBarbuBasica } from './barbu-basica';
 import { iaFiveHundredBasica } from './five-hundred-basica';
 import { iaScopaBasica } from './scopa-basica';
+import { iaTressetteBasica } from './tressette-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -208,4 +210,5 @@ export const IAS = {
   barbu: niveles(iaBarbuBasica, SIMULABLE_BARBU),
   fiveHundred: niveles(iaFiveHundredBasica, SIMULABLE_FIVE_HUNDRED),
   scopa: niveles(iaScopaBasica, SIMULABLE_SCOPA),
+  tressette: niveles(iaTressetteBasica, SIMULABLE_TRESSETTE),
 } as const;

@@ -72,6 +72,12 @@ import {
   type ConfigScopa,
   type EstadoScopa,
   type VistaScopa,
+  tressette,
+  CONFIG_TRESSETTE_POR_DEFECTO,
+  type AccionTressette,
+  type ConfigTressette,
+  type EstadoTressette,
+  type VistaTressette,
   CONFIG_FIVE_HUNDRED_POR_DEFECTO,
   type AccionFiveHundred,
   type ConfigFiveHundred,
@@ -487,7 +493,8 @@ export type IdJuego =
   | 'klaverjas'
   | 'barbu'
   | 'fiveHundred'
-  | 'scopa';
+  | 'scopa'
+  | 'tressette';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -553,6 +560,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'barbu',
   'fiveHundred',
   'scopa',
+  'tressette',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1764,6 +1772,26 @@ export const DEF_SCOPA: DefScopa = {
   },
 };
 
+export type DefTressette = DefJuego<
+  ConfigTressette,
+  EstadoTressette,
+  AccionTressette,
+  VistaTressette
+>;
+
+export const DEF_TRESSETTE: DefTressette = {
+  id: 'tressette',
+  nombre: T.menu.tressette,
+  juego: tressette,
+  configPorDefecto: CONFIG_TRESSETTE_POR_DEFECTO,
+  ia: IAS.tressette,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1828,6 +1856,7 @@ export const JUEGOS = {
   barbu: DEF_BARBU,
   fiveHundred: DEF_FIVE_HUNDRED,
   scopa: DEF_SCOPA,
+  tressette: DEF_TRESSETTE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

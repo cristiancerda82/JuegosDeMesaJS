@@ -29,6 +29,7 @@
   import ResumenBarbu from '../mesas/ResumenBarbu.svelte';
   import ResumenFiveHundred from '../mesas/ResumenFiveHundred.svelte';
   import ResumenScopa from '../mesas/ResumenScopa.svelte';
+  import ResumenTressette from '../mesas/ResumenTressette.svelte';
   import ResumenBridge from '../mesas/ResumenBridge.svelte';
   import ResumenOhHell from '../mesas/ResumenOhHell.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
@@ -196,6 +197,11 @@
       {@const ultima = partida.sesion.vista.resultadosManos.at(-1)}
       {#if ultima}
         <ResumenScopa resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} />
+      {/if}
+    {:else if partida.id === 'tressette'}
+      {@const ultima = partida.sesion.vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenTressette resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} />
       {/if}
     {:else if partida.id === 'guinote'}
       {@const ultima = partida.sesion.vista.resultadosManos.at(-1)}
