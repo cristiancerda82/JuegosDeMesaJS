@@ -45,6 +45,7 @@
     ConfigFiveHundred,
     ConfigScopa,
     ConfigTressette,
+    ConfigSchafkopf,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -149,6 +150,7 @@
   let barbuConfig: Editable<ConfigBarbu> = $state({ ...JUEGOS.barbu.configPorDefecto });
   let scopaConfig: Editable<ConfigScopa> = $state({ ...JUEGOS.scopa.configPorDefecto });
   let tressetteConfig: Editable<ConfigTressette> = $state({ ...JUEGOS.tressette.configPorDefecto });
+  let schafkopfConfig: Editable<ConfigSchafkopf> = $state({ ...JUEGOS.schafkopf.configPorDefecto });
   let fiveHundredConfig: Editable<ConfigFiveHundred> = $state({
     ...JUEGOS.fiveHundred.configPorDefecto,
   });
@@ -240,6 +242,7 @@
       fiveHundred: fiveHundredConfig,
       scopa: scopaConfig,
       tressette: tressetteConfig,
+      schafkopf: schafkopfConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.

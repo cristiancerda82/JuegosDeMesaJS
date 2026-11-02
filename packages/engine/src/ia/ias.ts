@@ -59,6 +59,7 @@ import { SIMULABLE_BARBU } from './reconstruir/barbu';
 import { SIMULABLE_FIVE_HUNDRED } from './reconstruir/five-hundred';
 import { SIMULABLE_SCOPA } from './reconstruir/scopa';
 import { SIMULABLE_TRESSETTE } from './reconstruir/tressette';
+import { SIMULABLE_SCHAFKOPF } from './reconstruir/schafkopf';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -100,6 +101,7 @@ import { iaBarbuBasica } from './barbu-basica';
 import { iaFiveHundredBasica } from './five-hundred-basica';
 import { iaScopaBasica } from './scopa-basica';
 import { iaTressetteBasica } from './tressette-basica';
+import { iaSchafkopfBasica } from './schafkopf-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -211,4 +213,5 @@ export const IAS = {
   fiveHundred: niveles(iaFiveHundredBasica, SIMULABLE_FIVE_HUNDRED),
   scopa: niveles(iaScopaBasica, SIMULABLE_SCOPA),
   tressette: niveles(iaTressetteBasica, SIMULABLE_TRESSETTE),
+  schafkopf: niveles(iaSchafkopfBasica, SIMULABLE_SCHAFKOPF),
 } as const;

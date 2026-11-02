@@ -1,3 +1,4 @@
+import type { IdCarta } from '../../src/baraja/cartas';
 import { iaBriscaBasica } from '../../src/ia/brisca-basica';
 import { reconstruirBrisca } from '../../src/ia/reconstruir/brisca';
 import { reconstruirTute } from '../../src/ia/reconstruir/tute';
@@ -111,6 +112,9 @@ import { CONFIG_SCOPA_POR_DEFECTO, scopa } from '../../src/juegos/scopa';
 import { reconstruirTressette } from '../../src/ia/reconstruir/tressette';
 import { iaTressetteBasica } from '../../src/ia/tressette-basica';
 import { CONFIG_TRESSETTE_POR_DEFECTO, tressette } from '../../src/juegos/tressette';
+import { reconstruirSchafkopf } from '../../src/ia/reconstruir/schafkopf';
+import { iaSchafkopfBasica } from '../../src/ia/schafkopf-basica';
+import { CONFIG_SCHAFKOPF_POR_DEFECTO, schafkopf } from '../../src/juegos/schafkopf';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -1265,6 +1269,42 @@ describe('Reconstrucción del Tressette', () => {
       expect(rec.manos.map((m) => m.length)).toEqual(vista.cartasEnMano);
       expect(rec.manos[1]!.some((c) => c.startsWith('oros'))).toBe(false);
       expect(tressette.vistaDe(rec, 0)).toEqual(vista);
+    }
+  });
+});
+
+describirReconstruccion(schafkopf, reconstruirSchafkopf, {
+  configs: [CONFIG_SCHAFKOPF_POR_DEFECTO],
+  base: iaSchafkopfBasica,
+});
+
+describe('Reconstrucción del Schafkopf', () => {
+  it('el As llamado sin echar queda en la mano de uno de los que pueden tenerlo', () => {
+    const r = schafkopf.crear(CONFIG_SCHAFKOPF_POR_DEFECTO, 'llamado');
+    if (!r.ok) throw new Error(r.error);
+    // El 1 juega un Rufspiel con el As de picas, que tiene el 2; el 0 no lo tiene.
+    const manos = [
+      'treboles-7 treboles-8 treboles-9 diamantes-7 diamantes-8 diamantes-9 corazones-7 corazones-8',
+      'picas-7 picas-8 treboles-12 picas-12 corazones-12 diamantes-12 treboles-11 picas-11',
+      'picas-1 picas-9 picas-10 picas-13 corazones-11 diamantes-11 corazones-1 corazones-10',
+      'treboles-1 treboles-10 treboles-13 diamantes-1 diamantes-10 diamantes-13 corazones-13 corazones-9',
+    ].map((m) => m.split(' ') as IdCarta[]);
+    let e = { ...r.valor, manos };
+    e = schafkopf.transicion(e, 0, { tipo: 'pasar' });
+    e = schafkopf.transicion(e, 1, {
+      tipo: 'anunciar',
+      contrato: { tipo: 'rufspiel', palo: 'picas' },
+    });
+    e = schafkopf.transicion(e, 2, { tipo: 'pasar' });
+    e = schafkopf.transicion(e, 3, { tipo: 'pasar' });
+    expect(e.companero).toBe(2);
+    const vista = schafkopf.vistaDe(e, 0);
+    for (let i = 0; i < 20; i++) {
+      const rec = reconstruirSchafkopf(vista, crearAzar(`a${i}`));
+      const dueno = rec.manos.findIndex((m) => m.includes('picas-1' as IdCarta));
+      expect([2, 3]).toContain(dueno);
+      expect(rec.companero).toBe(dueno);
+      expect(schafkopf.vistaDe(rec, 0)).toEqual(vista);
     }
   });
 });

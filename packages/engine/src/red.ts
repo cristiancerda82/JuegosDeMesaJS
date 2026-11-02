@@ -56,6 +56,7 @@ import { barbu, CONFIG_BARBU_POR_DEFECTO } from './juegos/barbu';
 import { CONFIG_FIVE_HUNDRED_POR_DEFECTO, fiveHundred } from './juegos/five-hundred';
 import { CONFIG_SCOPA_POR_DEFECTO, scopa } from './juegos/scopa';
 import { CONFIG_TRESSETTE_POR_DEFECTO, tressette } from './juegos/tressette';
+import { CONFIG_SCHAFKOPF_POR_DEFECTO, schafkopf } from './juegos/schafkopf';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -116,6 +117,7 @@ export const IDS_JUEGOS_EN_RED = [
   'fiveHundred',
   'scopa',
   'tressette',
+  'schafkopf',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -201,6 +203,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   fiveHundred: entrada(fiveHundred, IAS.fiveHundred, CONFIG_FIVE_HUNDRED_POR_DEFECTO),
   scopa: entrada(scopa, IAS.scopa, CONFIG_SCOPA_POR_DEFECTO),
   tressette: entrada(tressette, IAS.tressette, CONFIG_TRESSETTE_POR_DEFECTO),
+  schafkopf: entrada(schafkopf, IAS.schafkopf, CONFIG_SCHAFKOPF_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

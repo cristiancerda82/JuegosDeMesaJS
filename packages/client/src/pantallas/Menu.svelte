@@ -54,6 +54,11 @@ ull. */
     { id: 'scopa', desc: T.menu.scopaDesc, cartas: ['oros-7', 'copas-7', 'bastos-1'] },
     { id: 'tressette', desc: T.menu.tressetteDesc, cartas: ['oros-3', 'oros-2', 'oros-1'] },
     {
+      id: 'schafkopf',
+      desc: T.menu.schafkopfDesc,
+      cartas: ['treboles-12', 'picas-12', 'corazones-1'],
+    },
+    {
       id: 'fiveHundred',
       desc: T.menu.fiveHundredDesc,
       cartas: ['comodin-1', 'corazones-11', 'diamantes-11'],

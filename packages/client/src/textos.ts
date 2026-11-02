@@ -180,6 +180,9 @@ export const T = {
     tressette: 'Tressette',
     tressetteDesc:
       'El gran juego de bazas italiano para cuatro en parejas: sin triunfo, el 3 y el 2 mandan, y los Ases y las figuras dan los puntos.',
+    schafkopf: 'Schafkopf',
+    schafkopfDesc:
+      'El clásico bávaro para cuatro: damas y jotas siempre de triunfo, llama a un As para tener compañero secreto o juega solo contra los tres.',
     fiveHundred: 'Five Hundred',
     fiveHundredDesc:
       'El clásico australiano para cuatro en parejas: subasta de contratos, viuda, un comodín que es el triunfo más alto y misère. Gana quien llega a 500.',
@@ -1377,6 +1380,68 @@ export const T = {
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
+  },
+
+  schafkopf: {
+    reparte: 'Reparte',
+    bazas: (n: number) => (n === 1 ? '1 baza' : `${n} bazas`),
+    puntos: (n: number) => `${n} pts`,
+    anunciando: 'Elección del contrato',
+    paso: 'Paso',
+    pasar: 'Pasar',
+    contrato: (c: { tipo: string; palo?: string }) => {
+      const palos: Record<string, string> = {
+        treboles: '♣ tréboles',
+        picas: '♠ picas',
+        corazones: '♥ corazones',
+        diamantes: '♦ diamantes',
+      };
+      if (c.tipo === 'rufspiel') return `Rufspiel con el As de ${palos[c.palo!]}`;
+      if (c.tipo === 'wenz') return 'Wenz';
+      return `Solo de ${palos[c.palo!]}`;
+    },
+    boton: (c: { tipo: string; palo?: string }) => {
+      const simbolos: Record<string, string> = {
+        treboles: '♣',
+        picas: '♠',
+        corazones: '♥',
+        diamantes: '♦',
+      };
+      if (c.tipo === 'rufspiel') return `As ${simbolos[c.palo!]}`;
+      if (c.tipo === 'wenz') return 'Wenz';
+      return `Solo ${simbolos[c.palo!]}`;
+    },
+    juega: (quien: string, contrato: string) => `${quien}: ${contrato}`,
+    triunfo: (c: { tipo: string; palo?: string }) => {
+      if (c.tipo === 'wenz') return 'Triunfo: las jotas';
+      const simbolos: Record<string, string> = {
+        treboles: '♣',
+        picas: '♠',
+        corazones: '♥',
+        diamantes: '♦',
+      };
+      return `Triunfo: damas, jotas y ${simbolos[c.tipo === 'solo' ? c.palo! : 'corazones']}`;
+    },
+    juegaCorto: 'Juega',
+    companeroCorto: 'Compañero',
+    companero: (quien: string) => `Compañero: ${quien}`,
+    eresCompanero: 'Tienes el As: eres el compañero',
+    manoDe: (n: number, total: number) => `Mano ${n} de ${total}`,
+    tusFichas: (n: number) => `Tus fichas: ${n > 0 ? '+' : ''}${n}`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    siguienteMano: 'Siguiente mano',
+    nadieJuega: 'Todos pasan: nadie juega esta mano',
+    puntosLados: (jugador: number, otros: number) => `${jugador} a ${otros}`,
+    gana: 'gana el que juega',
+    pierde: 'pierde el que juega',
+    schneider: 'Schneider',
+    schwarz: 'Schwarz',
+    laufende: (n: number) => `${n} Laufende`,
+    tarifa: (n: number) => `Tarifa: ${n}`,
+    jugadorCol: 'Jugador',
+    manoCol: 'Mano',
+    totalCol: 'Total',
+    clasificacion: 'Fichas',
   },
 
   tressette: {
@@ -2615,6 +2680,7 @@ export const T = {
       fiveHundred: 'Cómo se juega al Five Hundred',
       scopa: 'Cómo se juega a la Scopa',
       tressette: 'Cómo se juega al Tressette',
+      schafkopf: 'Cómo se juega al Schafkopf',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3202,6 +3268,51 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    schafkopf: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El juego tradicional de Baviera, para cuatro. Se juega con 32 cartas francesas: las damas hacen de Ober y las jotas de Unter. Las cartas valen As 11, 10 10, rey 4, dama 3 y jota 2: en total, 120.',
+          'En cada mano uno elige el contrato y su lado tiene que hacer 61 puntos o más. Se cobran y se pagan fichas, y tras 12 manos gana quien más tiene.',
+        ],
+      },
+      {
+        titulo: 'Los contratos',
+        texto: [
+          'Empezando por el siguiente al que reparte, cada uno pasa o anuncia un contrato más alto que el anunciado: Rufspiel, Wenz y Solo, de menor a mayor. Juega el que anuncia el más alto; si todos pasan, se reparte otra mano.',
+          'En el Rufspiel llamas a un As de tréboles, picas o diamantes que no tienes, de un palo del que tienes alguna carta: quien lo tiene es tu compañero, pero nadie lo sabe hasta que lo echa. En el Wenz y el Solo juegas tú solo contra los otros tres.',
+        ],
+      },
+      {
+        titulo: 'Los triunfos',
+        texto: [
+          'En el Rufspiel, los triunfos son, de mayor a menor, las damas (tréboles, picas, corazones y diamantes), las jotas en el mismo orden y los corazones. En el Solo, igual, con el palo que eliges en lugar de los corazones.',
+          'En el Wenz solo son triunfo las cuatro jotas, y las damas van en su palo, entre el rey y el 9. En los demás palos el orden es As, 10, rey, 9, 8 y 7.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Hay que seguir el palo de salida, y todos los triunfos cuentan como un palo: si sale una dama, hay que echar triunfo. Si no puedes, echas cualquier carta. Gana el triunfo más alto o la carta más alta del palo de salida.',
+          'Quien tiene el As llamado tiene que echarlo cuando sale su palo, no puede descartarlo en otro palo hasta la última baza y, si sale con ese palo, tiene que salir con el As.',
+        ],
+      },
+      {
+        titulo: 'Las fichas',
+        texto: [
+          'El Rufspiel vale 10 y el Wenz y el Solo 50. Se suman 10 si el que pierde hace 30 puntos o menos (Schneider), otros 10 si no gana ninguna baza (Schwarz) y 10 por cada Laufende: los triunfos más altos seguidos que tiene un mismo lado, desde 3 (desde 2 en el Wenz).',
+          'En el Rufspiel, cada uno de los que pierden paga la tarifa a uno de los que ganan. En el Wenz y el Solo, los otros tres pagan cada uno la tarifa al que juega solo, o la cobran de él si pierde.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Para un Rufspiel bastan cuatro triunfos con dos damas o jotas; llama al As del palo del que menos tienes. Para un Solo hacen falta seis triunfos o más.',
+          'Si juegas, saca los triunfos pronto para quitárselos a los rivales. Si defiendes, sal con el palo llamado para que salga el As y se sepa quién es el compañero.',
         ],
       },
     ],

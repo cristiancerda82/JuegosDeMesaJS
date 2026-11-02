@@ -74,6 +74,10 @@ import {
   type ConfigTressette,
   type EstadoTressette,
   type VistaTressette,
+  type AccionSchafkopf,
+  type ConfigSchafkopf,
+  type EstadoSchafkopf,
+  type VistaSchafkopf,
   type ConfigFiveHundred,
   type EstadoFiveHundred,
   type VistaFiveHundred,
@@ -311,6 +315,7 @@ import {
   DEF_FIVE_HUNDRED,
   DEF_SCOPA,
   DEF_TRESSETTE,
+  DEF_SCHAFKOPF,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -431,6 +436,12 @@ export type SesionKingsCorner = SesionMesa<
   EstadoKingsCorner,
   AccionKingsCorner,
   VistaKingsCorner
+>;
+export type SesionSchafkopf = SesionMesa<
+  ConfigSchafkopf,
+  EstadoSchafkopf,
+  AccionSchafkopf,
+  VistaSchafkopf
 >;
 export type SesionTressette = SesionMesa<
   ConfigTressette,
@@ -605,7 +616,8 @@ export type Partida =
   | { readonly id: 'barbu'; readonly sesion: SesionBarbu }
   | { readonly id: 'fiveHundred'; readonly sesion: SesionFiveHundred }
   | { readonly id: 'scopa'; readonly sesion: SesionScopa }
-  | { readonly id: 'tressette'; readonly sesion: SesionTressette };
+  | { readonly id: 'tressette'; readonly sesion: SesionTressette }
+  | { readonly id: 'schafkopf'; readonly sesion: SesionSchafkopf };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -671,7 +683,8 @@ export type ConfigJuego =
   | ConfigBarbu
   | ConfigFiveHundred
   | ConfigScopa
-  | ConfigTressette;
+  | ConfigTressette
+  | ConfigSchafkopf;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -804,6 +817,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_SCOPA);
     case 'tressette':
       return hacer(DEF_TRESSETTE);
+    case 'schafkopf':
+      return hacer(DEF_SCHAFKOPF);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':

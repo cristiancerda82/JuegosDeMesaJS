@@ -78,6 +78,12 @@ import {
   type ConfigTressette,
   type EstadoTressette,
   type VistaTressette,
+  schafkopf,
+  CONFIG_SCHAFKOPF_POR_DEFECTO,
+  type AccionSchafkopf,
+  type ConfigSchafkopf,
+  type EstadoSchafkopf,
+  type VistaSchafkopf,
   CONFIG_FIVE_HUNDRED_POR_DEFECTO,
   type AccionFiveHundred,
   type ConfigFiveHundred,
@@ -494,7 +500,8 @@ export type IdJuego =
   | 'barbu'
   | 'fiveHundred'
   | 'scopa'
-  | 'tressette';
+  | 'tressette'
+  | 'schafkopf';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -561,6 +568,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'fiveHundred',
   'scopa',
   'tressette',
+  'schafkopf',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1792,6 +1800,28 @@ export const DEF_TRESSETTE: DefTressette = {
   },
 };
 
+export type DefSchafkopf = DefJuego<
+  ConfigSchafkopf,
+  EstadoSchafkopf,
+  AccionSchafkopf,
+  VistaSchafkopf
+>;
+
+export const DEF_SCHAFKOPF: DefSchafkopf = {
+  id: 'schafkopf',
+  nombre: T.menu.schafkopf,
+  juego: schafkopf,
+  configPorDefecto: CONFIG_SCHAFKOPF_POR_DEFECTO,
+  ia: IAS.schafkopf,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada anuncio y cada
+  // baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (despues.anuncios.length > antes.anuncios.length) return PAUSA_CANTE_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1857,6 +1887,7 @@ export const JUEGOS = {
   fiveHundred: DEF_FIVE_HUNDRED,
   scopa: DEF_SCOPA,
   tressette: DEF_TRESSETTE,
+  schafkopf: DEF_SCHAFKOPF,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */
