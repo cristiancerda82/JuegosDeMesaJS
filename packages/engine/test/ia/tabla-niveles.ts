@@ -53,6 +53,7 @@ import { CONFIG_SCOPA_POR_DEFECTO, scopa } from '../../src/juegos/scopa';
 import { tressette } from '../../src/juegos/tressette';
 import { schafkopf } from '../../src/juegos/schafkopf';
 import { CONFIG_TRUCO_POR_DEFECTO, truco } from '../../src/juegos/truco';
+import { preference } from '../../src/juegos/preference';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -160,4 +161,6 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   // Cuatro manos, para que las partidas de las pruebas no sean tan largas.
   entrada('Schafkopf', schafkopf, { jugadores: 4, manos: 4 }, IAS.schafkopf, 4),
   entrada('Truco', truco, CONFIG_TRUCO_POR_DEFECTO, IAS.truco, 'bandos'),
+  // Pulka a 4, para que las partidas de las pruebas no sean tan largas.
+  entrada('Préférence', preference, { jugadores: 3, meta: 4 }, IAS.preference, 3),
 ];

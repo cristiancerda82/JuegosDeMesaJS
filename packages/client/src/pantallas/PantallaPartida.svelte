@@ -42,6 +42,7 @@
   import MesaTressette from '../mesas/MesaTressette.svelte';
   import MesaSchafkopf from '../mesas/MesaSchafkopf.svelte';
   import MesaTruco from '../mesas/MesaTruco.svelte';
+  import MesaPreference from '../mesas/MesaPreference.svelte';
   import MesaOhHell from '../mesas/MesaOhHell.svelte';
   import MesaSpiteMalice from '../mesas/MesaSpiteMalice.svelte';
   import MesaRemigio from '../mesas/MesaRemigio.svelte';
@@ -192,6 +193,8 @@
     <MesaSchafkopf sesion={partida.sesion} />
   {:else if partida.id === 'truco'}
     <MesaTruco sesion={partida.sesion} />
+  {:else if partida.id === 'preference'}
+    <MesaPreference sesion={partida.sesion} />
   {:else if partida.id === 'ohHell'}
     <MesaOhHell sesion={partida.sesion} />
   {:else if partida.id === 'spiteMalice'}

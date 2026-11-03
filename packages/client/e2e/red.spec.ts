@@ -1015,6 +1015,22 @@ test('Truco en red: la carta de uno la ve el otro', async ({ browser }) => {
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Préférence en red: lo que puja uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'preference');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(10);
+
+  // Puja primero Ana (asiento 0): pasa, y Luis lo ve junto a su asiento.
+  await ana.getByTestId('pasar').click();
+  await expect(luis.getByTestId('asiento-0')).toContainText('Paso');
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Tarot en red: lo que dice uno en la subasta lo ve el otro', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

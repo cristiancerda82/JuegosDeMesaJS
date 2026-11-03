@@ -90,6 +90,12 @@ import {
   type ConfigTruco,
   type EstadoTruco,
   type VistaTruco,
+  preference,
+  CONFIG_PREFERENCE_POR_DEFECTO,
+  type AccionPreference,
+  type ConfigPreference,
+  type EstadoPreference,
+  type VistaPreference,
   CONFIG_FIVE_HUNDRED_POR_DEFECTO,
   type AccionFiveHundred,
   type ConfigFiveHundred,
@@ -508,7 +514,8 @@ export type IdJuego =
   | 'scopa'
   | 'tressette'
   | 'schafkopf'
-  | 'truco';
+  | 'truco'
+  | 'preference';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -577,6 +584,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'tressette',
   'schafkopf',
   'truco',
+  'preference',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1852,6 +1860,32 @@ export const DEF_TRUCO: DefTruco = {
   },
 };
 
+export type DefPreference = DefJuego<
+  ConfigPreference,
+  EstadoPreference,
+  AccionPreference,
+  VistaPreference
+>;
+
+export const DEF_PREFERENCE: DefPreference = {
+  id: 'preference',
+  nombre: T.menu.preference,
+  juego: preference,
+  configPorDefecto: CONFIG_PREFERENCE_POR_DEFECTO,
+  ia: IAS.preference,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada puja, el whist y
+  // cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const dicho =
+      JSON.stringify(antes.pujas) !== JSON.stringify(despues.pujas) ||
+      JSON.stringify(antes.whist) !== JSON.stringify(despues.whist) ||
+      (antes.contrato === null && despues.contrato !== null);
+    if (dicho) return PAUSA_CANTE_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1919,6 +1953,7 @@ export const JUEGOS = {
   tressette: DEF_TRESSETTE,
   schafkopf: DEF_SCHAFKOPF,
   truco: DEF_TRUCO,
+  preference: DEF_PREFERENCE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

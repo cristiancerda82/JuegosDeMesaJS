@@ -186,6 +186,9 @@ export const T = {
     truco: 'Truco',
     trucoDesc:
       'El clásico argentino de engaño, mano a mano o por parejas: canta el envido, el truco y el vale cuatro, y gana a 30 en malas y buenas.',
+    preference: 'Préférence',
+    preferenceDesc:
+      'El gran juego ruso para tres: puja bazas, quédate la viuda y decide si haces whist; la pulka, la montaña y los whists cierran las cuentas.',
     fiveHundred: 'Five Hundred',
     fiveHundredDesc:
       'El clásico australiano para cuatro en parejas: subasta de contratos, viuda, un comodín que es el triunfo más alto y misère. Gana quien llega a 500.',
@@ -1383,6 +1386,65 @@ export const T = {
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
+  },
+
+  preference: {
+    reparte: 'Reparte',
+    juega: 'Juega',
+    haceWhist: 'Whist',
+    paso: 'Paso',
+    pasar: 'Pasar',
+    whist: 'Whist',
+    miseria: 'Miseria',
+    raspasy: 'Raspasy: cada uno para sí',
+    subasta: 'Subasta',
+    bazasPuja: 'Bazas de la puja',
+    viuda: 'Viuda:',
+    pujaCorta: (p: { tipo: string; bazas?: number; palo?: string }) => {
+      if (p.tipo === 'miseria') return 'Miseria';
+      const simbolos: Record<string, string> = {
+        picas: '♠',
+        treboles: '♣',
+        diamantes: '♦',
+        corazones: '♥',
+        sin: 'ST',
+      };
+      return `${p.bazas} ${simbolos[p.palo!]}`;
+    },
+    pujaLarga: (p: { tipo: string; bazas?: number; palo?: string }) => {
+      if (p.tipo === 'miseria') return 'miseria';
+      const palos: Record<string, string> = {
+        picas: 'de ♠ picas',
+        treboles: 'de ♣ tréboles',
+        diamantes: 'de ♦ diamantes',
+        corazones: 'de ♥ corazones',
+        sin: 'sin triunfo',
+      };
+      return `${p.bazas} ${palos[p.palo!]}`;
+    },
+    contrato: (quien: string, contrato: string) => `${quien}: ${contrato}`,
+    mejor: (quien: string, puja: string) => `Puja más alta: ${puja} (${quien})`,
+    cuenta: (pulka: number, montana: number, meta: number) =>
+      `Pulka ${pulka}/${meta} · Montaña ${montana}`,
+    tuPuja: 'Te toca pujar',
+    pujando: (quien: string) => `Puja ${quien}`,
+    descarta: (n: number) => (n === 1 ? 'Descarta 1 carta' : `Descarta ${n} cartas`),
+    descartando: (quien: string) => `${quien} se descarta`,
+    declara: 'Declara tu contrato',
+    declarando: (quien: string) => `${quien} declara su contrato`,
+    decideWhist: '¿Haces whist?',
+    decidiendoWhist: (quien: string) => `${quien} decide si hace whist`,
+    cumple: 'cumple',
+    falla: 'falla',
+    sinWhist: 'nadie hace whist',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    siguienteMano: 'Siguiente mano',
+    jugadorCol: 'Jugador',
+    bazasCol: 'Bazas',
+    pulkaCol: 'Pulka',
+    montanaCol: 'Montaña',
+    whistsCol: 'Whists',
+    saldoCol: 'Saldo',
   },
 
   truco: {
@@ -2726,6 +2788,7 @@ export const T = {
       tressette: 'Cómo se juega al Tressette',
       schafkopf: 'Cómo se juega al Schafkopf',
       truco: 'Cómo se juega al Truco',
+      preference: 'Cómo se juega al Préférence',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3313,6 +3376,50 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    preference: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El gran juego de Rusia, para tres, con 32 cartas francesas (del 7 al As). Cada uno recibe 10 cartas y quedan 2 en la viuda.',
+          'En cada mano uno se compromete a ganar un número de bazas y los otros deciden si juegan contra él. Se apunta en tres columnas: la pulka (lo bueno), la montaña (lo malo) y los whists (lo que te deben los demás).',
+        ],
+      },
+      {
+        titulo: 'La subasta',
+        texto: [
+          'Empezando por el siguiente al que reparte, cada uno puja más alto o pasa, y quien pasa ya no vuelve. Las pujas van de 6 a 10 bazas y, en cada número, de picas, tréboles, diamantes, corazones y sin triunfo.',
+          'La miseria (no ganar ninguna baza) va entre el 8 sin triunfo y el 9 de picas, y solo se puede pujar como primera puja. Si pasan los tres, se juega la raspasy.',
+        ],
+      },
+      {
+        titulo: 'La viuda y el contrato',
+        texto: [
+          'Quien gana la subasta enseña la viuda, se la queda y descarta 2 cartas. Después declara su contrato: igual o más alto que su puja.',
+          'Cada uno de los otros dos dice si hace whist (juega a quitarle bazas) o pasa. Si pasan los dos, el contrato se da por cumplido. Entre los que hacen whist deben ganar 4 bazas contra un 6, 2 contra un 7, 1 contra un 8 o un 9, y ninguna contra un 10.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Hay que seguir el palo; si no tienes, tienes que echar triunfo; y si tampoco, cualquier carta. Gana el triunfo más alto o la carta más alta del palo de salida.',
+          'En la raspasy no hay triunfo y cada uno juega para sí: cada baza que ganas suma 1 a tu montaña.',
+        ],
+      },
+      {
+        titulo: 'La cuenta',
+        texto: [
+          'Los contratos valen 2, 4, 6, 8 y 10 (de 6 a 10 bazas) y la miseria 10. Si cumples, sumas el valor a tu pulka; si fallas, sumas a tu montaña el valor por cada baza que te falta.',
+          'Quien hace whist se apunta whists contra el que juega: el valor por cada baza que gana. Si entre los que hacen whist no llegan a sus bazas, suman montaña.',
+        ],
+      },
+      {
+        titulo: 'El cierre',
+        texto: [
+          'La partida termina cuando las pulkas de los tres suman 30. Cada punto de montaña (menos tu pulka) por encima de la media te cuesta 10 whists, y se suman los whists que te deben los demás. Gana quien acaba con el saldo más alto.',
         ],
       },
     ],

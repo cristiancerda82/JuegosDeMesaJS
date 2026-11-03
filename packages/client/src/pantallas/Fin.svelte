@@ -32,6 +32,7 @@
   import ResumenTressette from '../mesas/ResumenTressette.svelte';
   import ResumenSchafkopf from '../mesas/ResumenSchafkopf.svelte';
   import ResumenTruco from '../mesas/ResumenTruco.svelte';
+  import ResumenPreference from '../mesas/ResumenPreference.svelte';
   import ResumenBridge from '../mesas/ResumenBridge.svelte';
   import ResumenOhHell from '../mesas/ResumenOhHell.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
@@ -120,6 +121,7 @@
       partida.id !== 'piquet' &&
       partida.id !== 'barbu' &&
       partida.id !== 'schafkopf' &&
+      partida.id !== 'preference' &&
       partida.id !== 'pocha' &&
       partida.id !== 'mus' &&
       partida.id !== 'corazones' &&
@@ -551,6 +553,13 @@
           {/each}
         </tbody>
       </table>
+    {:else if partida.id === 'preference'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const nombre = (a: number) => nombreNumerado(a, 3, yo, partida.sesion.red, T.brisca.rivalN)}
+      {#if ultima}
+        <ResumenPreference resultado={ultima} {yo} {nombre} cierre />
+      {/if}
     {:else if partida.id === 'schafkopf'}
       {@const vista = partida.sesion.vista}
       {@const ultima = vista.resultadosManos.at(-1)}

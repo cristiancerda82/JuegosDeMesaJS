@@ -114,10 +114,17 @@ import { iaTressetteBasica } from '../../src/ia/tressette-basica';
 import { CONFIG_TRESSETTE_POR_DEFECTO, tressette } from '../../src/juegos/tressette';
 import { reconstruirSchafkopf } from '../../src/ia/reconstruir/schafkopf';
 import { iaSchafkopfBasica } from '../../src/ia/schafkopf-basica';
-import { CONFIG_SCHAFKOPF_POR_DEFECTO, schafkopf } from '../../src/juegos/schafkopf';
+import {
+  CONFIG_SCHAFKOPF_POR_DEFECTO,
+  schafkopf,
+  type EstadoSchafkopf,
+} from '../../src/juegos/schafkopf';
 import { reconstruirTruco } from '../../src/ia/reconstruir/truco';
 import { iaTrucoBasica } from '../../src/ia/truco-basica';
 import { CONFIG_TRUCO_POR_DEFECTO, truco } from '../../src/juegos/truco';
+import { reconstruirPreference } from '../../src/ia/reconstruir/preference';
+import { iaPreferenceBasica } from '../../src/ia/preference-basica';
+import { CONFIG_PREFERENCE_POR_DEFECTO, preference } from '../../src/juegos/preference';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -1292,7 +1299,7 @@ describe('Reconstrucción del Schafkopf', () => {
       'picas-1 picas-9 picas-10 picas-13 corazones-11 diamantes-11 corazones-1 corazones-10',
       'treboles-1 treboles-10 treboles-13 diamantes-1 diamantes-10 diamantes-13 corazones-13 corazones-9',
     ].map((m) => m.split(' ') as IdCarta[]);
-    let e = { ...r.valor, manos };
+    let e: EstadoSchafkopf = { ...r.valor, manos };
     e = schafkopf.transicion(e, 0, { tipo: 'pasar' });
     e = schafkopf.transicion(e, 1, {
       tipo: 'anunciar',
@@ -1334,6 +1341,53 @@ describe('reconstrucción del Truco', () => {
         });
         expect(truco.vistaDe(r, 0)).toEqual(vista);
       }
+    }
+  });
+});
+
+describirReconstruccion(preference, reconstruirPreference, {
+  configs: [CONFIG_PREFERENCE_POR_DEFECTO],
+  base: iaPreferenceBasica,
+});
+
+describe('reconstrucción del Préférence', () => {
+  it('quien no siguió ni falló queda sin ese palo y sin triunfos', () => {
+    const r = preference.crear(CONFIG_PREFERENCE_POR_DEFECTO, 'fallos');
+    if (!r.ok) throw new Error(r.error);
+    const e = {
+      ...r.valor,
+      fase: 'bazas' as const,
+      contrato: { tipo: 'bazas' as const, bazas: 6, palo: 'corazones' as const },
+      juega: 0,
+      // La viuda sin enseñar: así no hay que meterla en la mano del que juega.
+      viudaVista: false,
+      whist: [null, true, false],
+      fallos: [[], ['picas' as const, 'triunfo' as const], []],
+    };
+    // La mano del 1, sin picas ni corazones, para que la vista sea coherente con sus fallos.
+    const malas = e.manos[1]!.filter((c) => c.startsWith('picas') || c.startsWith('corazones'));
+    const buenas = e.manos[2]!.filter((c) => !c.startsWith('picas') && !c.startsWith('corazones'));
+    expect(buenas.length).toBeGreaterThanOrEqual(malas.length);
+    const cambio = buenas.slice(0, malas.length);
+    const estado = {
+      ...e,
+      manos: e.manos.map((m, a) =>
+        a === 1
+          ? [...m.filter((c) => !malas.includes(c)), ...cambio]
+          : a === 2
+            ? [...m.filter((c) => !cambio.includes(c)), ...malas]
+            : m,
+      ),
+    };
+    const vista = preference.vistaDe(estado, 0);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirPreference(vista, crearAzar(`p${i}`));
+      expect(rec.manos[0]).toEqual(vista.miMano);
+      expect(rec.manos.map((m) => m.length)).toEqual(vista.cartasEnMano);
+      expect(rec.manos[1]!.some((c) => c.startsWith('picas') || c.startsWith('corazones'))).toBe(
+        false,
+      );
+      expect(preference.vistaDe(rec, 0)).toEqual(vista);
     }
   });
 });
