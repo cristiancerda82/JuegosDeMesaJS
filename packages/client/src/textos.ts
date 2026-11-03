@@ -183,6 +183,9 @@ export const T = {
     schafkopf: 'Schafkopf',
     schafkopfDesc:
       'El clásico bávaro para cuatro: damas y jotas siempre de triunfo, llama a un As para tener compañero secreto o juega solo contra los tres.',
+    truco: 'Truco',
+    trucoDesc:
+      'El clásico argentino de engaño, mano a mano o por parejas: canta el envido, el truco y el vale cuatro, y gana a 30 en malas y buenas.',
     fiveHundred: 'Five Hundred',
     fiveHundredDesc:
       'El clásico australiano para cuatro en parejas: subasta de contratos, viuda, un comodín que es el triunfo más alto y misère. Gana quien llega a 500.',
@@ -1380,6 +1383,47 @@ export const T = {
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
+  },
+
+  truco: {
+    malasBuenas: (p: number) => (p <= 15 ? `${p} malas` : `${p - 15} buenas`),
+    marcador: (nuestros: number, suyos: number) =>
+      `Puntos: ${nuestros <= 15 ? `${nuestros} malas` : `${nuestros - 15} buenas`} – ${suyos <= 15 ? `${suyos} malas` : `${suyos - 15} buenas`}`,
+    valeMano: (n: number) => (n === 1 ? 'La mano vale 1' : `La mano vale ${n}`),
+    pendiente: (que: string) => `${que} sin responder`,
+    cantos: { envido: 'Envido', real: 'Real envido', falta: 'Falta envido' } as Record<
+      'envido' | 'real' | 'falta',
+      string
+    >,
+    trucos: ['Truco', 'Retruco', 'Vale cuatro'] as readonly string[],
+    quiero: 'Quiero',
+    noQuiero: 'No quiero',
+    meVoy: 'Me voy al mazo',
+    parda: 'Baza parda',
+    envidoQuerido: (valor: number) => `Envido querido (${valor})`,
+    envidoNoQuerido: 'Envido no querido',
+    puntosEnvido: (quien: string, puntos: number) => `${quien} ${puntos}`,
+    detalleEnvido: (puntos: number) => `envido ${puntos}`,
+    /** Lo que canta un jugador. `quien` es «Tú» para el propio. */
+    dice: (quien: string, que: string) =>
+      quien === 'Tú' ? `Cantas «${que}»` : `${quien}: «${que}»`,
+    seVa: (quien: string) => (quien === 'Tú' ? 'Te vas al mazo' : `${quien} se va al mazo`),
+    finMano: (n: number) => (n === 1 ? 'Fin de la primera mano' : `Fin de la mano ${n}`),
+    concepto: 'Concepto',
+    filaEnvido: 'Envido',
+    filaTruco: 'Truco',
+    totalMano: 'Total de la mano',
+    puntosPartida: 'Puntos de la partida',
+    sinEnvido: 'Nadie cantó envido.',
+    envidoResumen: (cantos: string, querido: boolean, gana: string) =>
+      querido
+        ? `${cantos}: querido · lo gana: ${gana}`
+        : `${cantos}: no querido · lo cobra: ${gana}`,
+    trucoResumen: (nivel: string | null, gana: string) =>
+      `${nivel ?? 'Sin truco'} · gana la mano: ${gana}`,
+    seFueResumen: (quien: string, gana: string) =>
+      `${quien === 'Tú' ? 'Te fuiste' : `${quien} se fue`} al mazo · cobra: ${gana}`,
+    siguienteMano: 'Siguiente mano',
   },
 
   schafkopf: {
@@ -2681,6 +2725,7 @@ export const T = {
       scopa: 'Cómo se juega a la Scopa',
       tressette: 'Cómo se juega al Tressette',
       schafkopf: 'Cómo se juega al Schafkopf',
+      truco: 'Cómo se juega al Truco',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3268,6 +3313,50 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    truco: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El juego de cartas más popular de Argentina y Uruguay, con la baraja española de 40 cartas. Se juega mano a mano o entre cuatro en parejas, y cada uno recibe 3 cartas.',
+          'Se gana con buenas cartas y con faroles: se apuesta al envido y al truco. Gana la partida el primer bando que llega a 30 puntos; los 15 primeros son las malas y los 15 siguientes, las buenas.',
+        ],
+      },
+      {
+        titulo: 'Las cartas y las bazas',
+        texto: [
+          'De mayor a menor: As de espadas, As de bastos, 7 de espadas, 7 de oros, treses, doses, Ases de copas y de oros, reyes, caballos, sotas, 7 de copas y de bastos, seises, cincos y cuatros. No hace falta seguir el palo.',
+          'Gana la mano quien gana dos de las tres bazas. Si una baza empata, es parda: si la primera es parda, decide la segunda; si la segunda es parda, gana quien ganó la primera; si todo es pardo, gana el que es mano.',
+        ],
+      },
+      {
+        titulo: 'El envido',
+        texto: [
+          'Con dos cartas del mismo palo, tus puntos son 20 más sus valores (las figuras valen 0); si no, la carta más alta. Solo se canta en la primera baza, antes de jugar tu carta y antes de que se acepte un truco.',
+          'Puedes cantar envido (2), real envido (3) o falta envido (lo que le falta al que va ganando para llegar a 30). El rival quiere, no quiere o sube: hasta dos envidos, luego el real y al final la falta. Querido, se comparan los puntos y gana el más alto; no querido, cobra el que cantó lo último lo querido antes, o 1.',
+        ],
+      },
+      {
+        titulo: 'El truco',
+        texto: [
+          'Sin truco la mano vale 1. Con el truco aceptado vale 2, con el retruco 3 y con el vale cuatro 4. Solo sube quien aceptó la última apuesta, y quien no quiere da el valor anterior.',
+          'El envido está primero: si te cantan truco en la primera baza y aún no has jugado, puedes cantar envido antes de responder.',
+        ],
+      },
+      {
+        titulo: 'Irse al mazo',
+        texto: [
+          'En tu turno o al responder puedes irte al mazo: el rival gana la mano y cobra lo que valga. Al final de la mano se suma primero el envido y después el truco.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Con 30 o más de envido, cántalo. Guarda tus cartas altas para la segunda baza si ya ganaste la primera.',
+          'Un truco con mala mano puede salir bien: el rival no ve tus cartas. Pero si te lo quieren, prepárate a perder dos puntos.',
         ],
       },
     ],

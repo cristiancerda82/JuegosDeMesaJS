@@ -84,6 +84,12 @@ import {
   type ConfigSchafkopf,
   type EstadoSchafkopf,
   type VistaSchafkopf,
+  truco,
+  CONFIG_TRUCO_POR_DEFECTO,
+  type AccionTruco,
+  type ConfigTruco,
+  type EstadoTruco,
+  type VistaTruco,
   CONFIG_FIVE_HUNDRED_POR_DEFECTO,
   type AccionFiveHundred,
   type ConfigFiveHundred,
@@ -501,7 +507,8 @@ export type IdJuego =
   | 'fiveHundred'
   | 'scopa'
   | 'tressette'
-  | 'schafkopf';
+  | 'schafkopf'
+  | 'truco';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -569,6 +576,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'scopa',
   'tressette',
   'schafkopf',
+  'truco',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1822,6 +1830,28 @@ export const DEF_SCHAFKOPF: DefSchafkopf = {
   },
 };
 
+export type DefTruco = DefJuego<ConfigTruco, EstadoTruco, AccionTruco, VistaTruco>;
+
+export const DEF_TRUCO: DefTruco = {
+  id: 'truco',
+  nombre: T.menu.truco,
+  juego: truco,
+  configPorDefecto: CONFIG_TRUCO_POR_DEFECTO,
+  ia: IAS.truco,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, la última baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const apuesta =
+      antes.envido.estado !== despues.envido.estado ||
+      antes.envido.cantos.length !== despues.envido.cantos.length ||
+      antes.truco.nivel !== despues.truco.nivel ||
+      antes.truco.pendiente !== despues.truco.pendiente;
+    if (apuesta && antes.turno !== despues.asiento) return PAUSA_APUESTA_TRUC_MS;
+    if (despues.bazasJugadas.length > antes.bazasJugadas.length) return PAUSA_BAZA_MS;
+    return 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1888,6 +1918,7 @@ export const JUEGOS = {
   scopa: DEF_SCOPA,
   tressette: DEF_TRESSETTE,
   schafkopf: DEF_SCHAFKOPF,
+  truco: DEF_TRUCO,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

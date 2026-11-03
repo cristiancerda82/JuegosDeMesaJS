@@ -52,6 +52,7 @@ import { fiveHundred } from '../../src/juegos/five-hundred';
 import { CONFIG_SCOPA_POR_DEFECTO, scopa } from '../../src/juegos/scopa';
 import { tressette } from '../../src/juegos/tressette';
 import { schafkopf } from '../../src/juegos/schafkopf';
+import { CONFIG_TRUCO_POR_DEFECTO, truco } from '../../src/juegos/truco';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -158,4 +159,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Tressette', tressette, { jugadores: 4, meta: 11 }, IAS.tressette, 'bandos'),
   // Cuatro manos, para que las partidas de las pruebas no sean tan largas.
   entrada('Schafkopf', schafkopf, { jugadores: 4, manos: 4 }, IAS.schafkopf, 4),
+  entrada('Truco', truco, CONFIG_TRUCO_POR_DEFECTO, IAS.truco, 'bandos'),
 ];

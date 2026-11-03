@@ -31,6 +31,7 @@
   import ResumenScopa from '../mesas/ResumenScopa.svelte';
   import ResumenTressette from '../mesas/ResumenTressette.svelte';
   import ResumenSchafkopf from '../mesas/ResumenSchafkopf.svelte';
+  import ResumenTruco from '../mesas/ResumenTruco.svelte';
   import ResumenBridge from '../mesas/ResumenBridge.svelte';
   import ResumenOhHell from '../mesas/ResumenOhHell.svelte';
   import { nombresBandoCasino } from '../mesas/casino';
@@ -951,6 +952,12 @@
           {/each}
         </tbody>
       </table>
+    {:else if partida.id === 'truco'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenTruco resultado={ultima} lados={[lados[0]!, lados[1]!]} {yo} jugadores={vista.config.jugadores} red={partida.sesion.red} />
+      {/if}
     {:else if partida.id === 'butifarra'}
       {@const vista = partida.sesion.vista}
       {@const ultima = vista.resultadosManos.at(-1)}

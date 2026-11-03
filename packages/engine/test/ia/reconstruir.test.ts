@@ -115,6 +115,9 @@ import { CONFIG_TRESSETTE_POR_DEFECTO, tressette } from '../../src/juegos/tresse
 import { reconstruirSchafkopf } from '../../src/ia/reconstruir/schafkopf';
 import { iaSchafkopfBasica } from '../../src/ia/schafkopf-basica';
 import { CONFIG_SCHAFKOPF_POR_DEFECTO, schafkopf } from '../../src/juegos/schafkopf';
+import { reconstruirTruco } from '../../src/ia/reconstruir/truco';
+import { iaTrucoBasica } from '../../src/ia/truco-basica';
+import { CONFIG_TRUCO_POR_DEFECTO, truco } from '../../src/juegos/truco';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -1305,6 +1308,32 @@ describe('Reconstrucción del Schafkopf', () => {
       expect([2, 3]).toContain(dueno);
       expect(rec.companero).toBe(dueno);
       expect(schafkopf.vistaDe(rec, 0)).toEqual(vista);
+    }
+  });
+});
+
+describirReconstruccion(truco, reconstruirTruco, {
+  configs: [CONFIG_TRUCO_POR_DEFECTO, { jugadores: 4, meta: 30 }],
+  base: iaTrucoBasica,
+});
+
+describe('reconstrucción del Truco', () => {
+  it('las manos ajenas dan los puntos de envido que se mostraron', () => {
+    for (let i = 0; i < 100; i++) {
+      const jugadores = i % 2 === 0 ? 2 : 4;
+      const creado = truco.crear({ jugadores, meta: 30 }, `envido-${i}`);
+      if (!creado.ok) throw new Error(creado.error);
+      let e = creado.valor;
+      e = truco.transicion(e, 0, { tipo: 'envido' });
+      e = truco.transicion(e, 1, { tipo: 'quiero' });
+      const vista = truco.vistaDe(e, 0);
+      for (let k = 0; k < 3; k++) {
+        const r = reconstruirTruco(vista, crearAzar(`envido-${i}/${k}`));
+        vista.envido.mostrado.forEach((p, a) => {
+          if (p !== null && a !== 0) expect(puntosEnvit(r.manos[a]!)).toBe(p);
+        });
+        expect(truco.vistaDe(r, 0)).toEqual(vista);
+      }
     }
   });
 });
