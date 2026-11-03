@@ -120,6 +120,24 @@ test('Mus de 2 humanos y 2 IAs, jugando desde los asientos 0 y 2', async ({ brow
   await luis.screenshot({ path: `test-results/red-mus-asiento-2.png` });
 });
 
+test('la sala de espera muestra las parejas en los juegos de 4 por parejas', async ({
+  browser,
+}) => {
+  // Muestra de juegos por parejas añadidos después de la sala de espera.
+  for (const juego of ['sueca', 'tressette', 'bridge']) {
+    const ana = await jugador(browser);
+    await crearSala(ana, juego);
+    await expect(ana.getByTestId('asiento-sala-0')).toContainText('Pareja 1');
+    await expect(ana.getByTestId('asiento-sala-1')).toContainText('Pareja 2');
+    await expect(ana.getByTestId('asiento-sala-2')).toContainText('Pareja 1');
+    await ana.context().close();
+  }
+  // Un juego de 4 sin parejas no las muestra.
+  const ana = await jugador(browser);
+  await crearSala(ana, 'barbu');
+  await expect(ana.getByTestId('asiento-sala-0')).not.toContainText('Pareja');
+});
+
 test('Butifarra en red: dos humanos rivales juegan una baza', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);
@@ -532,6 +550,8 @@ test('Rummy 500 en red: dos humanos roban y descartan', async ({ browser }) => {
   ] as const) {
     await expect(p.getByTestId('mazo')).toHaveClass(/robable/);
     await p.getByTestId('mazo').click();
+    // Se espera a la carta robada: al llegar, la mano se reordena y la primera puede cambiar.
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(14);
     const primera = p.locator('[data-testid="mano"] .carta-mano').first();
     const carta = await primera.getAttribute('data-carta');
     await primera.click({ position: { x: 6, y: 6 } });

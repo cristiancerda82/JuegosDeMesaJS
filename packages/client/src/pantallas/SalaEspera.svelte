@@ -15,7 +15,29 @@
   const soyAnfitrion = $derived(sala !== null && yo === sala.anfitrion);
 
   /** Juegos de 4 que se juegan por parejas (0 y 2 contra 1 y 3). */
-  const PAREJAS = ['brisca', 'tute', 'guinote', 'escoba', 'mus', 'pinacle', 'butifarra', 'truc', 'truco'];
+  const PAREJAS = [
+    'brisca',
+    'tute',
+    'guinote',
+    'escoba',
+    'mus',
+    'pinacle',
+    'butifarra',
+    'truc',
+    'picas',
+    'canasta',
+    'whist',
+    'euchre',
+    'belote',
+    'bridge',
+    'sueca',
+    'jass',
+    'klaverjas',
+    'fiveHundred',
+    'scopa',
+    'tressette',
+    'truco',
+  ];
   const porParejas = $derived(
     sala !== null && sala.asientos.length === 4 && PAREJAS.includes(sala.juego),
   );
