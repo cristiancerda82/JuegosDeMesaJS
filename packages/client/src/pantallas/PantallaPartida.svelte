@@ -41,6 +41,7 @@
   import MesaScopa from '../mesas/MesaScopa.svelte';
   import MesaCuarenta from '../mesas/MesaCuarenta.svelte';
   import MesaPishti from '../mesas/MesaPishti.svelte';
+  import MesaEcarte from '../mesas/MesaEcarte.svelte';
   import MesaTressette from '../mesas/MesaTressette.svelte';
   import MesaSchafkopf from '../mesas/MesaSchafkopf.svelte';
   import MesaTruco from '../mesas/MesaTruco.svelte';
@@ -201,6 +202,8 @@
     <MesaCuarenta sesion={partida.sesion} />
   {:else if partida.id === 'pishti'}
     <MesaPishti sesion={partida.sesion} />
+  {:else if partida.id === 'ecarte'}
+    <MesaEcarte sesion={partida.sesion} />
   {:else if partida.id === 'ohHell'}
     <MesaOhHell sesion={partida.sesion} />
   {:else if partida.id === 'spiteMalice'}

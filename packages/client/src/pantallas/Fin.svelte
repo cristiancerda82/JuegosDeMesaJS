@@ -31,6 +31,7 @@
   import ResumenScopa from '../mesas/ResumenScopa.svelte';
   import ResumenCuarenta from '../mesas/ResumenCuarenta.svelte';
   import ResumenPishti from '../mesas/ResumenPishti.svelte';
+  import ResumenEcarte from '../mesas/ResumenEcarte.svelte';
   import ResumenTressette from '../mesas/ResumenTressette.svelte';
   import ResumenSchafkopf from '../mesas/ResumenSchafkopf.svelte';
   import ResumenTruco from '../mesas/ResumenTruco.svelte';
@@ -121,6 +122,7 @@
       partida.id !== 'doppelkopf' &&
       partida.id !== 'tarot' &&
       partida.id !== 'piquet' &&
+      partida.id !== 'ecarte' &&
       partida.id !== 'barbu' &&
       partida.id !== 'schafkopf' &&
       partida.id !== 'preference' &&
@@ -550,6 +552,21 @@
       {#if vista.puntos[0] !== vista.puntos[1]}
         <p data-testid="valor-partida">{T.piquet.valorPartida(valorPartidaPiquet(vista.puntos))}</p>
       {/if}
+    {:else if partida.id === 'ecarte'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const nombre = (a: number) => nombreAsiento(a, 2, yo, partida.sesion.red)}
+      {#if ultima}
+        <ResumenEcarte resultado={ultima} {yo} {nombre} />
+      {/if}
+      <table data-testid="puntos-ecarte">
+        <caption>{T.ecarte.clasificacion}</caption>
+        <tbody>
+          {#each [yo, yo === 0 ? 1 : 0] as a, i (a)}
+            <tr><th scope="row">{nombre(a)}</th><td data-testid="puntos-fin-{i}">{vista.puntos[a as 0 | 1]}</td></tr>
+          {/each}
+        </tbody>
+      </table>
     {:else if partida.id === 'barbu'}
       {@const vista = partida.sesion.vista}
       {@const ultima = vista.resultadosManos.at(-1)}

@@ -108,6 +108,12 @@ import {
   type ConfigPishti,
   type EstadoPishti,
   type VistaPishti,
+  ecarte,
+  CONFIG_ECARTE_POR_DEFECTO,
+  type AccionEcarte,
+  type ConfigEcarte,
+  type EstadoEcarte,
+  type VistaEcarte,
   CONFIG_FIVE_HUNDRED_POR_DEFECTO,
   type AccionFiveHundred,
   type ConfigFiveHundred,
@@ -529,7 +535,8 @@ export type IdJuego =
   | 'truco'
   | 'preference'
   | 'cuarenta'
-  | 'pishti';
+  | 'pishti'
+  | 'ecarte';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -601,6 +608,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'preference',
   'cuarenta',
   'pishti',
+  'ecarte',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1936,6 +1944,23 @@ export const DEF_PISHTI: DefPishti = {
   },
 };
 
+export type DefEcarte = DefJuego<ConfigEcarte, EstadoEcarte, AccionEcarte, VistaEcarte>;
+
+export const DEF_ECARTE: DefEcarte = {
+  id: 'ecarte',
+  nombre: T.menu.ecarte,
+  juego: ecarte,
+  configPorDefecto: CONFIG_ECARTE_POR_DEFECTO,
+  ia: IAS.ecarte,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada decisión del
+  // cambio y cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (antes.fase !== despues.fase && despues.fase !== 'descarte') return PAUSA_CANTE_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2006,6 +2031,7 @@ export const JUEGOS = {
   preference: DEF_PREFERENCE,
   cuarenta: DEF_CUARENTA,
   pishti: DEF_PISHTI,
+  ecarte: DEF_ECARTE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

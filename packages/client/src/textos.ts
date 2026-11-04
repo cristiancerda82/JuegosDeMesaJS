@@ -186,6 +186,9 @@ export const T = {
     truco: 'Truco',
     trucoDesc:
       'El clásico argentino de engaño, mano a mano o por parejas: canta el envido, el truco y el vale cuatro, y gana a 30 en malas y buenas.',
+    ecarte: 'Écarté',
+    ecarteDesc:
+      'El clásico francés para dos con 32 cartas: propón cambiar cartas o juega de autoridad, anuncia el rey y haz 3 de 5 bazas. A 5 puntos.',
     pishti: 'Pishti',
     pishtiDesc:
       'El clásico turco de pesca para dos o cuatro en parejas: llévate el montón con la misma carta o con la J, y haz pishti. A 151.',
@@ -1390,6 +1393,44 @@ export const T = {
     resultado: (diferencia: number) =>
       diferencia === 0 ? 'Cumplido' : diferencia > 0 ? `+${diferencia}` : `${diferencia}`,
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
+  },
+
+  ecarte: {
+    reparte: 'Reparte',
+    mano: 'Mano',
+    montonVuelta: (n: number) =>
+      n === 1 ? 'Vuelta · 1 en el montón' : `Vuelta · ${n} en el montón`,
+    marcador: (yo: number, rival: number, meta: number) => `Partida ${yo} – ${rival} (a ${meta})`,
+    triunfo: (palo: string) =>
+      `Triunfo: ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[palo]}`,
+    reyVuelto: (quien: string) => `Rey vuelto: +1 para ${quien}`,
+    rey: (quien: string) => (quien === 'Tú' ? 'Tienes el rey: +1' : `${quien} tiene el rey: +1`),
+    autoridad: (quien: string) =>
+      quien === 'Tú' ? 'Juegas de autoridad' : `${quien} juega de autoridad`,
+    vole: (quien: string) => (quien === 'Tú' ? '¡Vole! +2' : `¡Vole de ${quien}! +2`),
+    aMedias: 'La partida terminó antes de acabar las bazas.',
+    piensa: (quien: string) => `${quien} piensa…`,
+    proponerOJugar: '¿Propones cambiar o juegas?',
+    teProponen: (quien: string) => `${quien} propone cambiar`,
+    descarta: (n: number, maximo: number, esMano: boolean) =>
+      n === 0
+        ? esMano
+          ? `Toca las que cambias (1 a ${maximo})`
+          : `Toca las que cambias (hasta ${maximo})`
+        : `Cambias ${n} de ${maximo}`,
+    proponer: 'Proponer',
+    jugar: 'Jugar',
+    aceptar: 'Aceptar',
+    rehusar: 'Rehusar',
+    cambiar: (n: number) => (n === 1 ? 'Cambiar 1' : `Cambiar ${n}`),
+    noCambiar: 'No cambiar',
+    finMano: 'Fin de la mano',
+    jugadorCol: 'Jugador',
+    bazasCol: 'Bazas',
+    manoCol: 'Mano',
+    totalCol: 'Total',
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
   },
@@ -2867,6 +2908,7 @@ export const T = {
       preference: 'Cómo se juega al Préférence',
       cuarenta: 'Cómo se juega al Cuarenta',
       pishti: 'Cómo se juega al Pishti',
+      ecarte: 'Cómo se juega al Écarté',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3454,6 +3496,56 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    ecarte: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El clásico francés de bazas para dos, con 32 cartas (del 7 al As). Cada mano son solo 5 bazas: gana la mano quien hace 3. Gana la partida el primero que llega a 5 puntos.',
+          'En cada palo, el orden es K, Q, J, As, 10, 9, 8 y 7: el As va entre la J y el 10.',
+        ],
+      },
+      {
+        titulo: 'El reparto',
+        texto: [
+          'Cada uno recibe 5 cartas y la siguiente se pone boca arriba: es la vuelta, y su palo es el triunfo. Si la vuelta es un rey, el que reparte anota 1 punto.',
+        ],
+      },
+      {
+        titulo: 'Proponer o jugar',
+        texto: [
+          'El que no reparte (el mano) puede proponer cambiar cartas o jugar. Si propone, el otro acepta o rehúsa.',
+          'Si acepta, el mano se descarta de 1 a 5 cartas y roba otras tantas, y luego el que reparte cambia las que quiera. Después el mano puede volver a proponer, mientras quede montón.',
+        ],
+      },
+      {
+        titulo: 'Jugar de autoridad',
+        texto: [
+          'Si el mano juega sin proponer, o el que reparte rehúsa la primera propuesta, juega de autoridad: está seguro de su mano.',
+          'Si luego no hace 3 bazas, el otro anota 2 puntos en lugar de 1.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Sale el mano. Hay que seguir el palo y, si puedes, ganar la baza. Si no tienes el palo, hay que fallar con un triunfo si tienes.',
+          'Quien tiene el rey de triunfo lo anuncia al jugar su primera carta y anota 1 punto.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'Quien hace 3 o 4 bazas anota 1 punto (2 si el otro jugó de autoridad). Con las 5 bazas, el vole, 2 puntos.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Con tres triunfos, o con triunfos altos y un rey, juega de autoridad: el rival no podrá mejorar su mano.',
+          'Al cambiar, quédate los triunfos y los reyes y deja lo demás.',
         ],
       },
     ],

@@ -127,6 +127,9 @@ import { iaPreferenceBasica } from '../../src/ia/preference-basica';
 import { CONFIG_PREFERENCE_POR_DEFECTO, preference } from '../../src/juegos/preference';
 import { reconstruirCuarenta } from '../../src/ia/reconstruir/cuarenta';
 import { reconstruirPishti } from '../../src/ia/reconstruir/pishti';
+import { reconstruirEcarte } from '../../src/ia/reconstruir/ecarte';
+import { iaEcarteBasica } from '../../src/ia/ecarte-basica';
+import { CONFIG_ECARTE_POR_DEFECTO, ecarte, type EstadoEcarte } from '../../src/juegos/ecarte';
 import { iaPishtiBasica } from '../../src/ia/pishti-basica';
 import { CONFIG_PISHTI_POR_DEFECTO, pishti } from '../../src/juegos/pishti';
 import { iaCuarentaBasica } from '../../src/ia/cuarenta-basica';
@@ -1451,5 +1454,32 @@ describe('Reconstrucción del Pishti', () => {
       expect(pishti.vistaDe(rec, 0)).toEqual(vista);
     }
     expect(tapadas.size).toBeGreaterThan(1);
+  });
+});
+
+describirReconstruccion(ecarte, reconstruirEcarte, {
+  configs: [CONFIG_ECARTE_POR_DEFECTO],
+  base: iaEcarteBasica,
+});
+
+describe('Reconstrucción del Écarté', () => {
+  it('el rival que anunció el rey de triunfo lo tiene en la mano', () => {
+    // Una semilla en la que el asiento 1 tiene el rey de triunfo.
+    let e: EstadoEcarte | null = null;
+    for (let i = 0; i < 200 && !e; i++) {
+      const r = ecarte.crear(CONFIG_ECARTE_POR_DEFECTO, `rey-${i}`);
+      if (!r.ok) throw new Error(r.error);
+      const rey = `${r.valor.vuelta.split('-')[0]}-13`;
+      if (r.valor.manos[1]!.some((c) => c === rey)) e = r.valor;
+    }
+    expect(e).not.toBeNull();
+    const rey = `${e!.vuelta.split('-')[0]}-13`;
+    const estado: EstadoEcarte = { ...e!, fase: 'bazas', turno: 0, rey: 1 };
+    const vista = ecarte.vistaDe(estado, 0);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirEcarte(vista, crearAzar(`e${i}`));
+      expect(rec.manos[1]).toContain(rey);
+      expect(ecarte.vistaDe(rec, 0)).toEqual(vista);
+    }
   });
 });
