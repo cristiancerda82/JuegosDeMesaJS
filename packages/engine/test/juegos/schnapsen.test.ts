@@ -3,7 +3,9 @@ import type { IdCarta } from '../../src/baraja/cartas';
 import { aplicar } from '../../src/motor/aplicar';
 import {
   BARAJA_SCHNAPSEN,
+  BARAJA_SIXTY_SIX,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
+  CONFIG_SIXTY_SIX,
   damaDe,
   puntosManoSchnapsen,
   reyDe,
@@ -250,8 +252,92 @@ describe('vista', () => {
   });
 });
 
+describe('Variante Sixty-six', () => {
+  function sixtySix(semilla = 'sixty-six'): EstadoSchnapsen {
+    const r = schnapsen.crear(CONFIG_SIXTY_SIX, semilla);
+    if (!r.ok) throw new Error(r.error);
+    return r.valor;
+  }
+
+  it('24 cartas con los 9; 6 a cada uno, la vuelta y 11 en el mazo', () => {
+    expect(BARAJA_SIXTY_SIX).toHaveLength(24);
+    const e = sixtySix();
+    expect(e.config.variante).toBe('sixtySix');
+    expect(e.manos.map((m) => m.length)).toEqual([6, 6]);
+    expect(e.cartaVuelta).not.toBeNull();
+    expect(e.mazo).toHaveLength(11);
+  });
+
+  it('el 9 es la carta más baja y no vale puntos', () => {
+    const e = {
+      ...sixtySix(),
+      manos: [c('9p Ad'), c('Jp 9t')],
+      triunfo: 'corazones' as const,
+      turno: 0,
+    };
+    const r = jugar(jugar(e, carta('9p')), carta('Jp'));
+    expect(r.ultimaBaza?.ganador).toBe(1);
+    expect(r.puntosBazas).toEqual([0, 2]);
+  });
+
+  it('se cambia el 9 del triunfo, no la J', () => {
+    const base = {
+      ...sixtySix(),
+      cartaVuelta: una('Ac'),
+      triunfo: 'corazones' as const,
+      turno: 0,
+    };
+    const conNueve = { ...base, manos: [c('9c Jp Qp Kp 10p Ap'), base.manos[1]!] };
+    expect(legales(conNueve)).toContainEqual({ tipo: 'cambiar' });
+    const cambiado = jugar(conNueve, { tipo: 'cambiar' });
+    expect(cambiado.manos[0]).toContain(una('Ac'));
+    expect(cambiado.cartaVuelta).toBe(una('9c'));
+    const conJota = { ...base, manos: [c('Jc 9p Qp Kp 10p Ap'), base.manos[1]!] };
+    expect(legales(conJota)).not.toContainEqual({ tipo: 'cambiar' });
+  });
+
+  it('diez de últimas: 50 + 6 + 10 llega a 66', () => {
+    const e: EstadoSchnapsen = {
+      ...sixtySix(),
+      manos: [c('Qp'), c('Jp')],
+      mazo: [],
+      cartaVuelta: null,
+      triunfo: 'corazones',
+      turno: 0,
+      cerrado: null,
+      puntosBazas: [49, 30],
+      bazas: [3, 2],
+      cantes: [],
+    };
+    // 49 + Q (3) + J (2) = 54 + 10 de últimas = 64: no llega; con 51 sí.
+    const sin = jugar(jugar(e, carta('Qp')), carta('Jp'));
+    expect(sin.resultadosManos.at(-1)).toMatchObject({ motivo: 'ultima', puntosMano: [64, 30] });
+    const con = jugar(jugar({ ...e, puntosBazas: [51, 30] }, carta('Qp')), carta('Jp'));
+    expect(con.resultadosManos.at(-1)).toMatchObject({ motivo: '66', puntosMano: [66, 30] });
+  });
+
+  it('el Schnapsen no cambia: sin variante, 20 cartas, 5 por mano y sin las 10 de últimas', () => {
+    const e = nueva();
+    expect(e.config).toEqual({ jugadores: 2 });
+    expect(e.manos.map((m) => m.length)).toEqual([5, 5]);
+    expect(BARAJA_SCHNAPSEN).toHaveLength(20);
+    const fin: EstadoSchnapsen = {
+      ...e,
+      manos: [c('Qp'), c('Jp')],
+      mazo: [],
+      cartaVuelta: null,
+      turno: 0,
+      puntosBazas: [51, 30],
+      bazas: [3, 2],
+      cantes: [],
+    };
+    const r = jugar(jugar(fin, carta('Qp')), carta('Jp'));
+    expect(r.resultadosManos.at(-1)).toMatchObject({ motivo: 'ultima', puntosMano: [56, 30] });
+  });
+});
+
 describirContrato(schnapsen, {
-  configs: [CONFIG_SCHNAPSEN_POR_DEFECTO],
+  configs: [CONFIG_SCHNAPSEN_POR_DEFECTO, CONFIG_SIXTY_SIX],
   // La carta vuelta, las de la última baza, las conocidas y las parejas cantadas ya se vieron.
   cartasOcultas: (e, asiento) => {
     const vistas = new Set<IdCarta>([

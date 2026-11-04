@@ -33,7 +33,11 @@ import { CONFIG_EUCHRE_POR_DEFECTO, euchre } from '../../src/juegos/euchre';
 import { bigTwo, CONFIG_BIG_TWO_POR_DEFECTO } from '../../src/juegos/big-two';
 import { CONFIG_CRIBBAGE_POR_DEFECTO, cribbage } from '../../src/juegos/cribbage';
 import { belote, CONFIG_BELOTE_POR_DEFECTO } from '../../src/juegos/belote';
-import { CONFIG_SCHNAPSEN_POR_DEFECTO, schnapsen } from '../../src/juegos/schnapsen';
+import {
+  CONFIG_SCHNAPSEN_POR_DEFECTO,
+  CONFIG_SIXTY_SIX,
+  schnapsen,
+} from '../../src/juegos/schnapsen';
 import { CONFIG_SKAT_POR_DEFECTO, skat } from '../../src/juegos/skat';
 import { CONFIG_OH_HELL_POR_DEFECTO, ohHell } from '../../src/juegos/oh-hell';
 import { CONFIG_SPITE_MALICE_POR_DEFECTO, spiteMalice } from '../../src/juegos/spite-malice';
@@ -135,6 +139,7 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Cribbage', cribbage, CONFIG_CRIBBAGE_POR_DEFECTO, IAS.cribbage, 2),
   entrada('Belote', belote, CONFIG_BELOTE_POR_DEFECTO, IAS.belote, 'bandos'),
   entrada('Schnapsen', schnapsen, CONFIG_SCHNAPSEN_POR_DEFECTO, IAS.schnapsen, 2),
+  entrada('Sixty-six', schnapsen, CONFIG_SIXTY_SIX, IAS.schnapsen, 2),
   entrada('Skat', skat, CONFIG_SKAT_POR_DEFECTO, IAS.skat, 3),
   entrada('Oh Hell', ohHell, CONFIG_OH_HELL_POR_DEFECTO, IAS.ohHell, 4),
   entrada('Spite and Malice', spiteMalice, CONFIG_SPITE_MALICE_POR_DEFECTO, IAS.spiteMalice, 2),

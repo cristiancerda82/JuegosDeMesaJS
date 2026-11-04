@@ -784,6 +784,25 @@ test('Schnapsen en red: lo que juega uno lo ve el otro', async ({ browser }) => 
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Sixty-six en red: lo que juega uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'sixtySix');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(6);
+
+  // Sale Ana (no reparte): juega una carta y Luis la ve en la mesa.
+  const carta = ana.locator('[data-testid="mano"] .carta-mano.jugable').first();
+  const id = (await carta.getAttribute('data-carta'))!;
+  await carta.click({ position: { x: 6, y: 8 } });
+  await ana.getByTestId('mesa').click();
+  await expect(luis.getByTestId('mesa').locator(`[data-carta="${id}"]`)).toBeVisible();
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Skat en red: los dos ven la misma subasta', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

@@ -65,10 +65,13 @@
 
   // ── Cambiar, cantar y cerrar ───────────────────────────────────────────────
 
+  /** En el Sixty-six se cambia el 9 del triunfo, no la J. */
+  const nueve = $derived(vista.config.variante === 'sixtySix');
+
   const decisiones = $derived(legales.filter((a) => a.tipo !== 'jugar'));
 
   function etiqueta(a: AccionSchnapsen): string {
-    if (a.tipo === 'cambiar') return T.schnapsen.cambiar;
+    if (a.tipo === 'cambiar') return nueve ? T.schnapsen.cambiarNueve : T.schnapsen.cambiar;
     if (a.tipo === 'cantar') return T.schnapsen.cantar(a.palo === vista.triunfo ? 40 : 20, a.palo);
     return T.schnapsen.cerrar;
   }
@@ -83,7 +86,7 @@
     if (hecha === null || sesion.fin !== null) return null;
     const a = hecha.accion;
     const quien = nombre(hecha.asiento);
-    if (a.tipo === 'cambiar') return T.schnapsen.cambia(quien);
+    if (a.tipo === 'cambiar') return nueve ? T.schnapsen.cambiaNueve(quien) : T.schnapsen.cambia(quien);
     if (a.tipo === 'cantar') {
       return T.schnapsen.canta(quien, a.palo === vista.triunfo ? 40 : 20, a.palo);
     }

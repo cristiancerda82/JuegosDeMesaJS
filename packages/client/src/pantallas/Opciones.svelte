@@ -142,6 +142,7 @@
   let cribbageConfig: Editable<ConfigCribbage> = $state({ ...JUEGOS.cribbage.configPorDefecto });
   let beloteConfig: Editable<ConfigBelote> = $state({ ...JUEGOS.belote.configPorDefecto });
   let schnapsenConfig: Editable<ConfigSchnapsen> = $state({ ...JUEGOS.schnapsen.configPorDefecto });
+  let sixtySixConfig: Editable<ConfigSchnapsen> = $state({ ...JUEGOS.sixtySix.configPorDefecto });
   let skatConfig: Editable<ConfigSkat> = $state({ ...JUEGOS.skat.configPorDefecto });
   let bridgeConfig: Editable<ConfigBridge> = $state({ ...JUEGOS.bridge.configPorDefecto });
   let pescaConfig: Editable<ConfigPesca> = $state({ ...JUEGOS.pesca.configPorDefecto });
@@ -239,6 +240,7 @@
       cribbage: cribbageConfig,
       belote: beloteConfig,
       schnapsen: schnapsenConfig,
+      sixtySix: sixtySixConfig,
       skat: skatConfig,
       bridge: bridgeConfig,
       pesca: pescaConfig,

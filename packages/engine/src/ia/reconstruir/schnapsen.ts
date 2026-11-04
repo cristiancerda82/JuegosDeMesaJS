@@ -2,7 +2,7 @@ import { Generador, type EstadoAzar } from '../../baraja/azar';
 import { barajar } from '../../baraja/barajar';
 import { cartasFuera, type IdCarta } from '../../baraja/cartas';
 import {
-  BARAJA_SCHNAPSEN,
+  barajaSchnapsen,
   damaDe,
   paloSchnapsen,
   reyDe,
@@ -37,7 +37,7 @@ export function reconstruirSchnapsen(vista: VistaSchnapsen, azar: EstadoAzar): E
   }
   const { cartas, azar: azarReparto } = barajar(
     cartasFuera(
-      BARAJA_SCHNAPSEN,
+      barajaSchnapsen(vista.config),
       mia,
       jugadas,
       vista.cartaVuelta ? [vista.cartaVuelta] : [],

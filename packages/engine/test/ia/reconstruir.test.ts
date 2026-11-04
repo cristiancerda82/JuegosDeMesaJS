@@ -767,7 +767,7 @@ describe('Reconstrucción del Belote', () => {
 });
 
 describirReconstruccion(schnapsen, reconstruirSchnapsen, {
-  configs: [CONFIG_SCHNAPSEN_POR_DEFECTO],
+  configs: [CONFIG_SCHNAPSEN_POR_DEFECTO, { jugadores: 2, variante: 'sixtySix' }],
   base: iaSchnapsenBasica,
 });
 

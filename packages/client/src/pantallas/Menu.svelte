@@ -82,6 +82,7 @@ ull. */
     { id: 'ohHell', desc: T.menu.ohHellDesc, cartas: ['picas-1', 'corazones-13', 'diamantes-2'] },
     { id: 'skat', desc: T.menu.skatDesc, cartas: ['treboles-11', 'picas-11', 'corazones-1'] },
     { id: 'schnapsen', desc: T.menu.schnapsenDesc, cartas: ['corazones-13', 'corazones-12', 'corazones-1'] },
+    { id: 'sixtySix', desc: T.menu.sixtySixDesc, cartas: ['picas-9', 'picas-13', 'picas-12'] },
     { id: 'belote', desc: T.menu.beloteDesc, cartas: ['corazones-11', 'corazones-9', 'corazones-13'] },
     { id: 'cribbage', desc: T.menu.cribbageDesc, cartas: ['treboles-5', 'corazones-5', 'picas-11'] },
     { id: 'bigTwo', desc: T.menu.bigTwoDesc, cartas: ['picas-2', 'corazones-2', 'diamantes-3'] },

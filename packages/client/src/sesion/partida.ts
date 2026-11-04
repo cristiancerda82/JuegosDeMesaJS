@@ -341,6 +341,7 @@ import {
   DEF_CUARENTA,
   DEF_PISHTI,
   DEF_ECARTE,
+  DEF_SIXTY_SIX,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -662,7 +663,8 @@ export type Partida =
   | { readonly id: 'preference'; readonly sesion: SesionPreference }
   | { readonly id: 'cuarenta'; readonly sesion: SesionCuarenta }
   | { readonly id: 'pishti'; readonly sesion: SesionPishti }
-  | { readonly id: 'ecarte'; readonly sesion: SesionEcarte };
+  | { readonly id: 'ecarte'; readonly sesion: SesionEcarte }
+  | { readonly id: 'sixtySix'; readonly sesion: SesionSchnapsen };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -879,6 +881,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_PISHTI);
     case 'ecarte':
       return hacer(DEF_ECARTE);
+    case 'sixtySix':
+      return hacer(DEF_SIXTY_SIX);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':

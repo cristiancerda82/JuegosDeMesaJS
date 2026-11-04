@@ -54,6 +54,7 @@ import {
   belote,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
   schnapsen,
+  CONFIG_SIXTY_SIX,
   CONFIG_SKAT_POR_DEFECTO,
   skat,
   actorBridge,
@@ -536,7 +537,8 @@ export type IdJuego =
   | 'preference'
   | 'cuarenta'
   | 'pishti'
-  | 'ecarte';
+  | 'ecarte'
+  | 'sixtySix';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -609,6 +611,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'cuarenta',
   'pishti',
   'ecarte',
+  'sixtySix',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1494,6 +1497,14 @@ export const DEF_SCHNAPSEN: DefSchnapsen = {
   },
 };
 
+/** El Sixty-six: la variante del Schnapsen con 24 cartas, entrada propia en el menú. */
+export const DEF_SIXTY_SIX: DefSchnapsen = {
+  ...DEF_SCHNAPSEN,
+  id: 'sixtySix',
+  nombre: T.menu.sixtySix,
+  configPorDefecto: CONFIG_SIXTY_SIX,
+};
+
 export type DefSkat = DefJuego<ConfigSkat, EstadoSkat, AccionSkat, VistaSkat>;
 
 export const DEF_SKAT: DefSkat = {
@@ -2032,6 +2043,7 @@ export const JUEGOS = {
   cuarenta: DEF_CUARENTA,
   pishti: DEF_PISHTI,
   ecarte: DEF_ECARTE,
+  sixtySix: DEF_SIXTY_SIX,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

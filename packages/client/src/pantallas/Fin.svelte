@@ -473,7 +473,7 @@
           {/each}
         </tbody>
       </table>
-    {:else if partida.id === 'schnapsen'}
+    {:else if partida.id === 'schnapsen' || partida.id === 'sixtySix'}
       {@const vista = partida.sesion.vista}
       {@const ultima = vista.resultadosManos.at(-1)}
       {@const nombre = (a: number) => nombreAsiento(a, 2, yo, partida.sesion.red)}

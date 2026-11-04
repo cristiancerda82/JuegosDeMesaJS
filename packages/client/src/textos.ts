@@ -243,6 +243,9 @@ export const T = {
     skat: 'Skat',
     skatDesc:
       'El gran juego alemán para tres: puja, coge el Skat y juega solo contra los otros dos un palo, un Grand o un Nulo.',
+    sixtySix: 'Sixty-six',
+    sixtySixDesc:
+      'El clásico alemán para dos con 24 cartas, padre del Schnapsen: canta 20 y 40, cierra el mazo, cambia el 9 y llega a 66.',
     schnapsen: 'Schnapsen',
     schnapsenDesc:
       'El clásico austriaco para dos con 20 cartas: canta, cambia la J, cierra el mazo y llega a 66 antes que el rival.',
@@ -885,9 +888,14 @@ export const T = {
       quien === 'Tú' ? 'Has cerrado el mazo' : `${quien} ha cerrado el mazo`,
     marcador: (mios: number, suyos: number) => `Partida: ${mios} a ${suyos} (a 7)`,
     cambiar: 'Cambiar la J',
+    cambiarNueve: 'Cambiar el 9',
     cerrar: 'Cerrar',
     cantar: (puntos: number, palo: string) =>
       `Cantar ${puntos} ${({ picas: '♠', corazones: '♥', diamantes: '♦', treboles: '♣' } as Record<string, string>)[palo]}`,
+    cambiaNueve: (quien: string) =>
+      quien === 'Tú'
+        ? 'Cambias el 9 por la carta vuelta'
+        : `${quien} cambia el 9 por la carta vuelta`,
     cambia: (quien: string) =>
       quien === 'Tú'
         ? 'Cambias la J por la carta vuelta'
@@ -2886,6 +2894,7 @@ export const T = {
       cribbage: 'Cómo se juega al Cribbage',
       belote: 'Cómo se juega al Belote',
       schnapsen: 'Cómo se juega al Schnapsen',
+      sixtySix: 'Cómo se juega al Sixty-six',
       skat: 'Cómo se juega al Skat',
       ohHell: 'Cómo se juega al Oh Hell',
       spiteMalice: 'Cómo se juega al Spite and Malice',
@@ -4445,6 +4454,49 @@ export const T = {
         texto: [
           'Puja con J y un palo largo, o con varias J y Ases para un Grand. Calcula el valor antes de seguir subiendo.',
           'Como defensor, si tu compañero va ganando la baza y juegas el último, échale tus cartas de más puntos.',
+        ],
+      },
+    ],
+
+    sixtySix: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El clásico alemán para dos del que nació el Schnapsen. Se juega con 24 cartas: As, 10, K, Q, J y 9 de cada palo, que valen 11, 10, 4, 3, 2 y 0.',
+          'Gana la mano quien llega a 66 puntos con sus bazas y sus cantes, y la partida quien suma 7 puntos de partida.',
+        ],
+      },
+      {
+        titulo: 'El reparto y las bazas',
+        texto: [
+          'Cada uno recibe 6 cartas y la siguiente se pone boca arriba: su palo es el triunfo. Mientras haya mazo puedes jugar cualquier carta, y tras cada baza roba primero el que la ganó.',
+          'Si tienes el 9 del triunfo, al salir puedes cambiarlo por la carta vuelta.',
+        ],
+      },
+      {
+        titulo: 'Cantes y cerrar',
+        texto: [
+          'Al salir, si tienes el K y la Q de un palo puedes cantarlos: 20 puntos, o 40 en el triunfo, y sales con uno de los dos. Los cantes cuentan cuando ya tienes alguna baza.',
+          'También puedes cerrar el mazo: desde entonces hay que seguir el palo, ganar si se puede y fallar si no se tiene, y tienes que llegar a 66.',
+        ],
+      },
+      {
+        titulo: 'Diez de últimas',
+        texto: [
+          'Si el mazo se acaba sin cerrarse, las reglas también se vuelven estrictas, y quien gana la última baza suma 10 puntos más.',
+        ],
+      },
+      {
+        titulo: 'Los puntos de partida',
+        texto: [
+          'El ganador de la mano se apunta 1 punto, 2 si el otro no llegó a 33 y 3 si no hizo ninguna baza. Si quien cerró no llega a 66, el otro se apunta 2 (o 3).',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Los nueves no valen nada: úsalos para perder bazas sin regalar puntos.',
+          'Guarda los Ases y los dieces para cuando se cierre el mazo, y cierra cuando sepas que llegas a 66.',
         ],
       },
     ],

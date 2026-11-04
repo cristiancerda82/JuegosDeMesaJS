@@ -13,19 +13,25 @@ import { error, ok } from '../resultado';
 
 // ── Tipos ────────────────────────────────────────────────────────────────────
 
-/** El Schnapsen clásico no tiene opciones: 2 jugadores, 20 cartas y bummerl a 7. */
+/**
+ * El Schnapsen se juega entre 2 con bummerl a 7. La variante Sixty-six usa 24 cartas (con los 9),
+ * manos de 6, el cambio con el 9 y las 10 de últimas; sin `variante`, es el Schnapsen de 20.
+ */
 export interface ConfigSchnapsen {
   readonly jugadores: 2;
+  readonly variante?: VarianteSchnapsen;
 }
 
+export type VarianteSchnapsen = 'schnapsen' | 'sixtySix';
+
 export const CONFIG_SCHNAPSEN_POR_DEFECTO: ConfigSchnapsen = { jugadores: 2 };
+export const CONFIG_SIXTY_SIX: ConfigSchnapsen = { jugadores: 2, variante: 'sixtySix' };
 
 export const PUNTOS_PARTIDA_SCHNAPSEN = 7;
 export const PUNTOS_MANO_SCHNAPSEN = 66;
 /** Por debajo de esto, el perdedor da 2 puntos de partida (schneider). */
 const PUNTOS_SCHNEIDER = 33;
 const JUGADORES = 2;
-const CARTAS_MANO = 5;
 
 type DeDos<T> = readonly [T, T];
 
@@ -131,6 +137,7 @@ export interface VistaSchnapsen {
 // ── Cartas ───────────────────────────────────────────────────────────────────
 
 const AS = 1;
+const NUEVE = 9;
 const DIEZ = 10;
 const JOTA = 11;
 const DAMA = 12;
@@ -141,12 +148,43 @@ export const BARAJA_SCHNAPSEN: readonly IdCarta[] = crearBaraja('francesa52').fi
   [AS, DIEZ, JOTA, DAMA, REY].includes(cartaDeId(c)!.valor),
 );
 
-const RANGO: Record<number, number> = { [AS]: 5, [DIEZ]: 4, [REY]: 3, [DAMA]: 2, [JOTA]: 1 };
-const VALOR: Record<number, number> = { [AS]: 11, [DIEZ]: 10, [REY]: 4, [DAMA]: 3, [JOTA]: 2 };
+/** La baraja de 24 del Sixty-six: la de 20 con los 9. */
+export const BARAJA_SIXTY_SIX: readonly IdCarta[] = crearBaraja('francesa52').filter((c) =>
+  [AS, NUEVE, DIEZ, JOTA, DAMA, REY].includes(cartaDeId(c)!.valor),
+);
+
+const esSixtySix = (config: ConfigSchnapsen) => config.variante === 'sixtySix';
+
+/** La baraja de la variante. */
+export const barajaSchnapsen = (config: ConfigSchnapsen) =>
+  esSixtySix(config) ? BARAJA_SIXTY_SIX : BARAJA_SCHNAPSEN;
+
+/** Cartas de cada mano: 5, o 6 en el Sixty-six. */
+export const cartasManoSchnapsen = (config: ConfigSchnapsen) => (esSixtySix(config) ? 6 : 5);
+
+/** Las 10 de últimas del Sixty-six. */
+export const DIEZ_DE_ULTIMAS_SIXTY_SIX = 10;
+
+const RANGO: Record<number, number> = {
+  [AS]: 5,
+  [DIEZ]: 4,
+  [REY]: 3,
+  [DAMA]: 2,
+  [JOTA]: 1,
+  [NUEVE]: 0,
+};
+const VALOR: Record<number, number> = {
+  [AS]: 11,
+  [DIEZ]: 10,
+  [REY]: 4,
+  [DAMA]: 3,
+  [JOTA]: 2,
+  [NUEVE]: 0,
+};
 
 export const paloSchnapsen = (c: IdCarta) => cartaDeId(c)!.palo as PaloFrances;
 const numero = (c: IdCarta) => cartaDeId(c)!.valor;
-/** El orden dentro del palo: As 5, 10 4, K 3, Q 2 y J 1. */
+/** El orden dentro del palo: As 5, 10 4, K 3, Q 2, J 1 y 9 0. */
 export const rangoSchnapsen = (c: IdCarta) => RANGO[numero(c)]!;
 /** Los puntos de la carta. */
 export const valorSchnapsen = (c: IdCarta) => VALOR[numero(c)]!;
@@ -154,6 +192,10 @@ export const valorSchnapsen = (c: IdCarta) => VALOR[numero(c)]!;
 export const jotaDe = (palo: PaloFrances): IdCarta => `${palo}-${JOTA}` as IdCarta;
 export const reyDe = (palo: PaloFrances): IdCarta => `${palo}-${REY}` as IdCarta;
 export const damaDe = (palo: PaloFrances): IdCarta => `${palo}-${DAMA}` as IdCarta;
+
+/** La carta que se cambia por la carta vuelta: la J del triunfo, o el 9 en el Sixty-six. */
+export const cartaDeCambioSchnapsen = (config: ConfigSchnapsen, triunfo: PaloFrances): IdCarta =>
+  esSixtySix(config) ? (`${triunfo}-${NUEVE}` as IdCarta) : jotaDe(triunfo);
 
 /** La carta que va ganando la baza: el triunfo más alto o la más alta del palo de salida. */
 export function ganadoraSchnapsen(mesa: readonly CartaJugada[], triunfo: PaloFrances): CartaJugada {
@@ -232,18 +274,19 @@ function nuevaMano(
   repartidor: Asiento,
   previo: Pick<EstadoSchnapsen, 'puntos' | 'resultadosManos' | 'ultimaBaza' | 'ultimaAccion'>,
 ): EstadoSchnapsen {
-  const { cartas, azar: azarSiguiente } = barajar(BARAJA_SCHNAPSEN, azar);
+  const { cartas, azar: azarSiguiente } = barajar(barajaSchnapsen(config), azar);
+  const n = cartasManoSchnapsen(config);
   const sale = otro(repartidor);
   const manos: IdCarta[][] = [[], []];
-  manos[sale] = cartas.slice(0, CARTAS_MANO);
-  manos[repartidor] = cartas.slice(CARTAS_MANO, 2 * CARTAS_MANO);
-  const vuelta = cartas[2 * CARTAS_MANO]!;
+  manos[sale] = cartas.slice(0, n);
+  manos[repartidor] = cartas.slice(n, 2 * n);
+  const vuelta = cartas[2 * n]!;
   return {
     config,
     azar: azarSiguiente,
     repartidor,
     manos,
-    mazo: cartas.slice(2 * CARTAS_MANO + 1),
+    mazo: cartas.slice(2 * n + 1),
     cartaVuelta: vuelta,
     triunfo: paloSchnapsen(vuelta),
     turno: sale,
@@ -339,9 +382,16 @@ function resolverBaza(e: EstadoSchnapsen): EstadoSchnapsen {
   }
   const robado = robar(resuelto, ganador);
   if (robado.manos.every((m) => m.length === 0)) {
-    return robado.cerrado === null
-      ? cerrarMano(robado, ganador, 'ultima')
-      : cerrarMano(robado, otro(robado.cerrado.asiento), 'cierre');
+    if (robado.cerrado !== null) return cerrarMano(robado, otro(robado.cerrado.asiento), 'cierre');
+    if (!esSixtySix(e.config)) return cerrarMano(robado, ganador, 'ultima');
+    // Sixty-six: las 10 de últimas, que pueden llevarle a 66.
+    const conUltimas = {
+      ...robado,
+      puntosBazas: suma(robado.puntosBazas, DIEZ_DE_ULTIMAS_SIXTY_SIX),
+    };
+    const motivo =
+      puntosManoSchnapsen(conUltimas, ganador) >= PUNTOS_MANO_SCHNAPSEN ? '66' : 'ultima';
+    return cerrarMano(conUltimas, ganador, motivo);
   }
   return robado;
 }
@@ -353,8 +403,10 @@ export const schnapsen: Juego<ConfigSchnapsen, EstadoSchnapsen, AccionSchnapsen,
 
   crear(config, semilla) {
     if (config.jugadores !== JUGADORES) return error('El Schnapsen se juega entre 2');
+    const limpia: ConfigSchnapsen =
+      config.variante === 'sixtySix' ? CONFIG_SIXTY_SIX : CONFIG_SCHNAPSEN_POR_DEFECTO;
     return ok(
-      nuevaMano({ jugadores: 2 }, crearAzar(semilla), 1, {
+      nuevaMano(limpia, crearAzar(semilla), 1, {
         puntos: [0, 0],
         resultadosManos: [],
         ultimaBaza: null,
@@ -378,7 +430,8 @@ export const schnapsen: Juego<ConfigSchnapsen, EstadoSchnapsen, AccionSchnapsen,
     }
     const acciones: AccionSchnapsen[] = [];
     const abierto = e.cerrado === null && e.cartaVuelta !== null;
-    if (abierto && mano.includes(jotaDe(e.triunfo))) acciones.push({ tipo: 'cambiar' });
+    if (abierto && mano.includes(cartaDeCambioSchnapsen(e.config, e.triunfo)))
+      acciones.push({ tipo: 'cambiar' });
     for (const palo of palosCantables(e, asiento)) acciones.push({ tipo: 'cantar', palo });
     if (abierto) acciones.push({ tipo: 'cerrar' });
     return [...acciones, ...jugar(mano)];
@@ -388,14 +441,14 @@ export const schnapsen: Juego<ConfigSchnapsen, EstadoSchnapsen, AccionSchnapsen,
     const hecha: EstadoSchnapsen = { ...e, ultimaAccion: { asiento, accion } };
     switch (accion.tipo) {
       case 'cambiar': {
-        const jota = jotaDe(e.triunfo);
+        const cambiada = cartaDeCambioSchnapsen(e.config, e.triunfo);
         const vuelta = e.cartaVuelta!;
         return {
           ...hecha,
           manos: e.manos.map((m, a) =>
-            a === asiento ? [...m.filter((c) => c !== jota), vuelta] : m,
+            a === asiento ? [...m.filter((c) => c !== cambiada), vuelta] : m,
           ),
-          cartaVuelta: jota,
+          cartaVuelta: cambiada,
           conocidas: [...e.conocidas, { asiento, carta: vuelta }],
         };
       }

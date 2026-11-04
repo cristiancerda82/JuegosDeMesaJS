@@ -160,7 +160,7 @@
     <MesaCribbage sesion={partida.sesion} />
   {:else if partida.id === 'belote'}
     <MesaBelote sesion={partida.sesion} />
-  {:else if partida.id === 'schnapsen'}
+  {:else if partida.id === 'schnapsen' || partida.id === 'sixtySix'}
     <MesaSchnapsen sesion={partida.sesion} />
   {:else if partida.id === 'skat'}
     <MesaSkat sesion={partida.sesion} />
