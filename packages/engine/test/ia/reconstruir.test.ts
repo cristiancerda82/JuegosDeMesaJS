@@ -126,6 +126,9 @@ import { reconstruirPreference } from '../../src/ia/reconstruir/preference';
 import { iaPreferenceBasica } from '../../src/ia/preference-basica';
 import { CONFIG_PREFERENCE_POR_DEFECTO, preference } from '../../src/juegos/preference';
 import { reconstruirCuarenta } from '../../src/ia/reconstruir/cuarenta';
+import { reconstruirPishti } from '../../src/ia/reconstruir/pishti';
+import { iaPishtiBasica } from '../../src/ia/pishti-basica';
+import { CONFIG_PISHTI_POR_DEFECTO, pishti } from '../../src/juegos/pishti';
 import { iaCuarentaBasica } from '../../src/ia/cuarenta-basica';
 import {
   BARAJA_CUARENTA,
@@ -1426,5 +1429,27 @@ describe('Reconstrucción del Cuarenta', () => {
       expect(rec.manos[1]!.filter((c) => rangoCuarenta(c) === 5)).toHaveLength(3);
       expect(cuarenta.vistaDe(rec, 0)).toEqual(vista);
     }
+  });
+});
+
+describirReconstruccion(pishti, reconstruirPishti, {
+  configs: [CONFIG_PISHTI_POR_DEFECTO, { jugadores: 4, meta: 151 }],
+  base: iaPishtiBasica,
+});
+
+describe('Reconstrucción del Pishti', () => {
+  it('la carta de arriba del montón no cambia, y las tapadas sí', () => {
+    const r = pishti.crear(CONFIG_PISHTI_POR_DEFECTO, 'tapadas');
+    if (!r.ok) throw new Error(r.error);
+    const vista = pishti.vistaDe(r.valor, 0);
+    const tapadas = new Set<string>();
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirPishti(vista, crearAzar(`p${i}`));
+      expect(rec.monton).toEqual(r.valor.monton);
+      expect(rec.tapadas).toHaveLength(3);
+      tapadas.add(rec.tapadas.join());
+      expect(pishti.vistaDe(rec, 0)).toEqual(vista);
+    }
+    expect(tapadas.size).toBeGreaterThan(1);
   });
 });

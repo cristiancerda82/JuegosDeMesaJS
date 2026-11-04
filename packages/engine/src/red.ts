@@ -60,6 +60,7 @@ import { CONFIG_SCHAFKOPF_POR_DEFECTO, schafkopf } from './juegos/schafkopf';
 import { CONFIG_TRUCO_POR_DEFECTO, truco } from './juegos/truco';
 import { CONFIG_PREFERENCE_POR_DEFECTO, preference } from './juegos/preference';
 import { CONFIG_CUARENTA_POR_DEFECTO, cuarenta } from './juegos/cuarenta';
+import { CONFIG_PISHTI_POR_DEFECTO, pishti } from './juegos/pishti';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -124,6 +125,7 @@ export const IDS_JUEGOS_EN_RED = [
   'truco',
   'preference',
   'cuarenta',
+  'pishti',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -213,6 +215,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   truco: entrada(truco, IAS.truco, CONFIG_TRUCO_POR_DEFECTO),
   preference: entrada(preference, IAS.preference, CONFIG_PREFERENCE_POR_DEFECTO),
   cuarenta: entrada(cuarenta, IAS.cuarenta, CONFIG_CUARENTA_POR_DEFECTO),
+  pishti: entrada(pishti, IAS.pishti, CONFIG_PISHTI_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

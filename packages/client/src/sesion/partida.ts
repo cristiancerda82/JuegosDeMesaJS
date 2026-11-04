@@ -90,6 +90,10 @@ import {
   type ConfigCuarenta,
   type EstadoCuarenta,
   type VistaCuarenta,
+  type AccionPishti,
+  type ConfigPishti,
+  type EstadoPishti,
+  type VistaPishti,
   type ConfigFiveHundred,
   type EstadoFiveHundred,
   type VistaFiveHundred,
@@ -331,6 +335,7 @@ import {
   DEF_TRUCO,
   DEF_PREFERENCE,
   DEF_CUARENTA,
+  DEF_PISHTI,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -452,6 +457,7 @@ export type SesionKingsCorner = SesionMesa<
   AccionKingsCorner,
   VistaKingsCorner
 >;
+export type SesionPishti = SesionMesa<ConfigPishti, EstadoPishti, AccionPishti, VistaPishti>;
 export type SesionCuarenta = SesionMesa<
   ConfigCuarenta,
   EstadoCuarenta,
@@ -648,7 +654,8 @@ export type Partida =
   | { readonly id: 'schafkopf'; readonly sesion: SesionSchafkopf }
   | { readonly id: 'truco'; readonly sesion: SesionTruco }
   | { readonly id: 'preference'; readonly sesion: SesionPreference }
-  | { readonly id: 'cuarenta'; readonly sesion: SesionCuarenta };
+  | { readonly id: 'cuarenta'; readonly sesion: SesionCuarenta }
+  | { readonly id: 'pishti'; readonly sesion: SesionPishti };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -718,7 +725,8 @@ export type ConfigJuego =
   | ConfigSchafkopf
   | ConfigTruco
   | ConfigPreference
-  | ConfigCuarenta;
+  | ConfigCuarenta
+  | ConfigPishti;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -859,6 +867,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_PREFERENCE);
     case 'cuarenta':
       return hacer(DEF_CUARENTA);
+    case 'pishti':
+      return hacer(DEF_PISHTI);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':

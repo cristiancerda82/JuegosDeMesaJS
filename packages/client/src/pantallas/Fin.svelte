@@ -30,6 +30,7 @@
   import ResumenFiveHundred from '../mesas/ResumenFiveHundred.svelte';
   import ResumenScopa from '../mesas/ResumenScopa.svelte';
   import ResumenCuarenta from '../mesas/ResumenCuarenta.svelte';
+  import ResumenPishti from '../mesas/ResumenPishti.svelte';
   import ResumenTressette from '../mesas/ResumenTressette.svelte';
   import ResumenSchafkopf from '../mesas/ResumenSchafkopf.svelte';
   import ResumenTruco from '../mesas/ResumenTruco.svelte';
@@ -208,6 +209,11 @@
       {@const ultima = partida.sesion.vista.resultadosManos.at(-1)}
       {#if ultima}
         <ResumenCuarenta resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} />
+      {/if}
+    {:else if partida.id === 'pishti'}
+      {@const ultima = partida.sesion.vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenPishti resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} />
       {/if}
     {:else if partida.id === 'tressette'}
       {@const ultima = partida.sesion.vista.resultadosManos.at(-1)}

@@ -38,6 +38,7 @@
     'tressette',
     'truco',
     'cuarenta',
+    'pishti',
   ];
   const porParejas = $derived(
     sala !== null && sala.asientos.length === 4 && PAREJAS.includes(sala.juego),

@@ -49,6 +49,7 @@
     ConfigTruco,
     ConfigPreference,
     ConfigCuarenta,
+    ConfigPishti,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -156,6 +157,7 @@
   let schafkopfConfig: Editable<ConfigSchafkopf> = $state({ ...JUEGOS.schafkopf.configPorDefecto });
   let trucoConfig: Editable<ConfigTruco> = $state({ ...JUEGOS.truco.configPorDefecto });
   let cuarentaConfig: Editable<ConfigCuarenta> = $state({ ...JUEGOS.cuarenta.configPorDefecto });
+  let pishtiConfig: Editable<ConfigPishti> = $state({ ...JUEGOS.pishti.configPorDefecto });
   let preferenceConfig: Editable<ConfigPreference> = $state({
     ...JUEGOS.preference.configPorDefecto,
   });
@@ -254,6 +256,7 @@
       truco: trucoConfig,
       preference: preferenceConfig,
       cuarenta: cuarentaConfig,
+      pishti: pishtiConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.
@@ -385,6 +388,15 @@
         <label><input type="radio" bind:group={cuarentaConfig.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
         <label
           ><input type="radio" bind:group={cuarentaConfig.jugadores} value={4} data-testid="cuarenta-cuatro" />
+          {T.opciones.cuatroJugadores}</label
+        >
+      </fieldset>
+    {:else if juego === 'pishti'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        <label><input type="radio" bind:group={pishtiConfig.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
+        <label
+          ><input type="radio" bind:group={pishtiConfig.jugadores} value={4} data-testid="pishti-cuatro" />
           {T.opciones.cuatroJugadores}</label
         >
       </fieldset>

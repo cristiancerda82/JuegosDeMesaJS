@@ -110,6 +110,7 @@ ull. */
     { id: 'truc', desc: T.menu.trucDesc, cartas: ['espadas-1', 'bastos-1', 'oros-7'] },
     { id: 'truco', desc: T.menu.trucoDesc, cartas: ['espadas-1', 'espadas-7', 'oros-7'] },
     { id: 'cuarenta', desc: T.menu.cuarentaDesc, cartas: ['corazones-5', 'picas-5', 'diamantes-6'] },
+    { id: 'pishti', desc: T.menu.pishtiDesc, cartas: ['treboles-11', 'diamantes-10', 'treboles-2'] },
     {
       id: 'preference',
       desc: T.menu.preferenceDesc,

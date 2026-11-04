@@ -186,6 +186,9 @@ export const T = {
     truco: 'Truco',
     trucoDesc:
       'El clásico argentino de engaño, mano a mano o por parejas: canta el envido, el truco y el vale cuatro, y gana a 30 en malas y buenas.',
+    pishti: 'Pishti',
+    pishtiDesc:
+      'El clásico turco de pesca para dos o cuatro en parejas: llévate el montón con la misma carta o con la J, y haz pishti. A 151.',
     cuarenta: 'Cuarenta',
     cuarentaDesc:
       'El juego de Ecuador, para dos o cuatro en parejas: llévate cartas por número, suma o escalera, haz caídas y limpias, y llega a 40.',
@@ -1389,6 +1392,30 @@ export const T = {
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
+  },
+
+  pishti: {
+    monton: 'Montón',
+    tapadas: (n: number) => (n === 1 ? '1 tapada' : `${n} tapadas`),
+    enMonton: (n: number) => (n === 1 ? '1 carta en el montón' : `${n} cartas en el montón`),
+    pishtiDe: (quien: string, puntos: number) =>
+      quien === 'Tú' ? `¡Pishti! +${puntos}` : `¡Pishti de ${quien}! +${puntos}`,
+    seLleva: (quien: string, n: number) =>
+      quien === 'Tú' ? `Te llevas ${n} cartas` : `${quien} se lleva ${n} cartas`,
+    montonCartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    montonPishtis: (n: number) => (n === 1 ? '1 pishti' : `${n} pishtis`),
+    puntos: (tuyos: number, suyos: number, meta: number) =>
+      `Puntos: ${tuyos} – ${suyos} (a ${meta})`,
+    finMano: 'Fin de la mano',
+    siguienteMano: 'Siguiente mano',
+    concepto: 'Concepto',
+    cartas: 'Más cartas',
+    asesYJotas: 'Ases y J',
+    dosTreboles: '2 de tréboles',
+    diezDiamantes: '10 de diamantes',
+    pishtis: 'Pishtis',
+    totalMano: 'Total de la mano',
+    totalPartida: 'Total de la partida',
   },
 
   cuarenta: {
@@ -2839,6 +2866,7 @@ export const T = {
       truco: 'Cómo se juega al Truco',
       preference: 'Cómo se juega al Préférence',
       cuarenta: 'Cómo se juega al Cuarenta',
+      pishti: 'Cómo se juega al Pishti',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3426,6 +3454,49 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    pishti: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El juego de pesca más popular de Turquía, con la baraja francesa de 52 cartas. Se juega entre dos o entre cuatro en parejas.',
+          'Te llevas el montón de la mesa y, al acabar cada mano, se reparten puntos. Gana el primero que llega a 151.',
+        ],
+      },
+      {
+        titulo: 'El reparto',
+        texto: [
+          'Se ponen 4 cartas en el montón: 3 tapadas y la de arriba a la vista. Cada uno recibe 4 cartas, y cuando todos se quedan sin cartas, otras 4 hasta acabar el mazo.',
+        ],
+      },
+      {
+        titulo: 'Jugar',
+        texto: [
+          'Echas una carta sobre el montón. Si es del mismo número que la de arriba, te llevas el montón entero, tapadas incluidas.',
+          'Una J se lleva siempre el montón, sea cual sea la carta de arriba. Si no te llevas nada, tu carta se queda arriba.',
+        ],
+      },
+      {
+        titulo: 'El pishti',
+        texto: [
+          'Si el montón tiene una sola carta y te la llevas con otra del mismo número, haces pishti: 10 puntos. Si las dos son J, 20.',
+          'Llevarte con una J una carta sola que no es J no es pishti.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'Al acabar la mano, el montón es para el último que se llevó uno. 3 puntos por tener más cartas, 1 por cada As y cada J, 2 por el 2 de tréboles y 3 por el 10 de diamantes, más los pishtis.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Guarda las J para cuando el montón valga la pena: con muchas cartas, o con Ases, J, el 2 de tréboles o el 10 de diamantes.',
+          'Cuando el montón está vacío, echa una carta de un número que ya haya salido: así el siguiente no te hará pishti.',
         ],
       },
     ],
