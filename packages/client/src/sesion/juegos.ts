@@ -96,6 +96,12 @@ import {
   type ConfigPreference,
   type EstadoPreference,
   type VistaPreference,
+  cuarenta,
+  CONFIG_CUARENTA_POR_DEFECTO,
+  type AccionCuarenta,
+  type ConfigCuarenta,
+  type EstadoCuarenta,
+  type VistaCuarenta,
   CONFIG_FIVE_HUNDRED_POR_DEFECTO,
   type AccionFiveHundred,
   type ConfigFiveHundred,
@@ -515,7 +521,8 @@ export type IdJuego =
   | 'tressette'
   | 'schafkopf'
   | 'truco'
-  | 'preference';
+  | 'preference'
+  | 'cuarenta';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -585,6 +592,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'schafkopf',
   'truco',
   'preference',
+  'cuarenta',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1886,6 +1894,23 @@ export const DEF_PREFERENCE: DefPreference = {
   },
 };
 
+export type DefCuarenta = DefJuego<ConfigCuarenta, EstadoCuarenta, AccionCuarenta, VistaCuarenta>;
+
+export const DEF_CUARENTA: DefCuarenta = {
+  id: 'cuarenta',
+  nombre: T.menu.cuarenta,
+  juego: cuarenta,
+  configPorDefecto: CONFIG_CUARENTA_POR_DEFECTO,
+  ia: IAS.cuarenta,
+  // El cierre de la mano lo detiene la propia mesa con el resumen.
+  pausaTras(antes, despues) {
+    const jugada = despues.ultimaJugada;
+    if (jugada === null || jugada === antes.ultimaJugada) return 0;
+    if (jugada.caida || jugada.limpia) return PAUSA_ESCOBA_MS;
+    return jugada.captura.length > 0 ? PAUSA_JUGADA_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -1954,6 +1979,7 @@ export const JUEGOS = {
   schafkopf: DEF_SCHAFKOPF,
   truco: DEF_TRUCO,
   preference: DEF_PREFERENCE,
+  cuarenta: DEF_CUARENTA,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

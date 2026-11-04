@@ -62,6 +62,7 @@ import { SIMULABLE_TRESSETTE } from './reconstruir/tressette';
 import { SIMULABLE_SCHAFKOPF } from './reconstruir/schafkopf';
 import { SIMULABLE_TRUCO } from './reconstruir/truco';
 import { SIMULABLE_PREFERENCE } from './reconstruir/preference';
+import { SIMULABLE_CUARENTA } from './reconstruir/cuarenta';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -106,6 +107,7 @@ import { iaTressetteBasica } from './tressette-basica';
 import { iaSchafkopfBasica } from './schafkopf-basica';
 import { iaTrucoBasica } from './truco-basica';
 import { iaPreferenceBasica } from './preference-basica';
+import { iaCuarentaBasica } from './cuarenta-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -220,4 +222,5 @@ export const IAS = {
   schafkopf: niveles(iaSchafkopfBasica, SIMULABLE_SCHAFKOPF),
   truco: niveles(iaTrucoBasica, SIMULABLE_TRUCO),
   preference: niveles(iaPreferenceBasica, SIMULABLE_PREFERENCE),
+  cuarenta: niveles(iaCuarentaBasica, SIMULABLE_CUARENTA),
 } as const;

@@ -186,6 +186,9 @@ export const T = {
     truco: 'Truco',
     trucoDesc:
       'El clásico argentino de engaño, mano a mano o por parejas: canta el envido, el truco y el vale cuatro, y gana a 30 en malas y buenas.',
+    cuarenta: 'Cuarenta',
+    cuarentaDesc:
+      'El juego de Ecuador, para dos o cuatro en parejas: llévate cartas por número, suma o escalera, haz caídas y limpias, y llega a 40.',
     preference: 'Préférence',
     preferenceDesc:
       'El gran juego ruso para tres: puja bazas, quédate la viuda y decide si haces whist; la pulka, la montaña y los whists cierran las cuentas.',
@@ -1386,6 +1389,52 @@ export const T = {
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
+  },
+
+  cuarenta: {
+    mesa: 'Mesa',
+    recoger: 'Capturar',
+    dejar: 'Dejar en la mesa',
+    cancelar: 'Cancelar',
+    suma: (n: number, objetivo: number) => `${n} / ${objetivo}`,
+    elegirCaptura: '¿Qué te llevas con esta carta?',
+    recogerCartas: (n: number) => (n === 1 ? 'Llevarse 1 carta' : `Llevarse ${n} cartas`),
+    escalera: (n: number) => (n === 1 ? '+1 en escalera' : `+${n} en escalera`),
+    caida: (quien: string) => (quien === 'Tú' ? '¡Caída!' : `¡Caída de ${quien}!`),
+    limpia: (quien: string) => (quien === 'Tú' ? '¡Limpia!' : `¡Limpia de ${quien}!`),
+    caidaYLimpia: (quien: string) =>
+      quien === 'Tú' ? '¡Caída y limpia!' : `¡Caída y limpia de ${quien}!`,
+    recoge: (quien: string, n: number) =>
+      quien === 'Tú' ? `Capturas ${n} cartas` : `${quien} captura ${n} cartas`,
+    montonCartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    puntos: (tuyos: number, suyos: number, meta: number) =>
+      `Puntos: ${tuyos} – ${suyos} (a ${meta})`,
+    ronda: (quien: string, numero: string) =>
+      quien === 'Tú' ? `Tienes ronda de ${numero}` : `${quien}: ronda de ${numero}`,
+    numeros: [
+      '',
+      'Ases',
+      'doses',
+      'treses',
+      'cuatros',
+      'cincos',
+      'seises',
+      'sietes',
+      'jotas',
+      'reinas',
+      'reyes',
+    ],
+    caible: 'Da caída',
+    finMano: 'Fin de la mano',
+    siguienteMano: 'Siguiente mano',
+    concepto: 'Concepto',
+    rondas: 'Rondas',
+    caidas: 'Caídas',
+    limpias: 'Limpias',
+    cartones: 'Cartones',
+    totalMano: 'Total de la mano',
+    totalPartida: 'Total de la partida',
+    aMedias: 'La partida terminó a mitad de la mano: no se cuentan los cartones.',
   },
 
   preference: {
@@ -2789,6 +2838,7 @@ export const T = {
       schafkopf: 'Cómo se juega al Schafkopf',
       truco: 'Cómo se juega al Truco',
       preference: 'Cómo se juega al Préférence',
+      cuarenta: 'Cómo se juega al Cuarenta',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3376,6 +3426,51 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    cuarenta: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El juego de cartas de Ecuador: se juega entre dos o entre cuatro en parejas, con la baraja francesa sin los 8, 9 y 10.',
+          'Se capturan cartas de la mesa y se anotan puntos durante la mano (rondas, caídas y limpias) y al final (cartones). Gana el primero que llega a 40, en cuanto llega.',
+        ],
+      },
+      {
+        titulo: 'El reparto y la ronda',
+        texto: [
+          'Cada uno recibe 5 cartas y la mesa empieza vacía; cuando todos se quedan sin cartas, se reparten otras 5 hasta acabar el mazo.',
+          'Si te tocan tres cartas del mismo número (o cuatro), tienes ronda: 4 puntos, y los demás ven de qué número es.',
+        ],
+      },
+      {
+        titulo: 'Capturar',
+        texto: [
+          'Juegas una carta y puedes llevarte una de la mesa de su mismo número, o, con una carta del As al 7, varias del As al 7 que sumen su valor. La J, la Q y la K no suman.',
+          'Después te llevas en escalera la carta siguiente, si está en la mesa, y la siguiente, mientras haya: As, 2… 7, J, Q, K. Capturar no es obligatorio: puedes dejar tu carta en la mesa.',
+        ],
+      },
+      {
+        titulo: 'Caída y limpia',
+        texto: [
+          'Caída: si te llevas por su número la carta que acaba de echar el jugador anterior, 2 puntos. La carta que queda en la mesa de un reparto anterior no da caída.',
+          'Limpia: si al capturar dejas la mesa vacía, 2 puntos. Caída y limpia a la vez valen 4.',
+        ],
+      },
+      {
+        titulo: 'Los cartones',
+        texto: [
+          'Al acabar la mano, las cartas de la mesa son para el último que capturó, y cada bando cuenta sus cartas.',
+          'Con 20 cartas, 6 puntos, y 1 más por cada carta pasada de 20, redondeando al par de arriba: 21 o 22 cartas, 8; 23 o 24, 10. Con menos de 20, nada; con 20 y 20, nadie.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Antes de soltar una carta, piensa si el siguiente puede tener otra igual: te haría caída. Las cartas de las que ya han salido las otras tres son las más seguras.',
+          'No dejes la mesa con una sola carta ni con pocas que sumen 7 o menos: es una limpia fácil para el rival.',
         ],
       },
     ],

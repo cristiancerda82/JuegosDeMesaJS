@@ -1015,6 +1015,28 @@ test('Truco en red: la carta de uno la ve el otro', async ({ browser }) => {
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Cuarenta en red: la carta de uno la ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'cuarenta');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(5);
+
+  // Ana (asiento 0) deja su primera carta en la mesa y Luis la ve.
+  const carta = ana.locator('[data-testid="mano"] .carta-mano.jugable').first();
+  const id = await carta.getAttribute('data-carta');
+  await carta.click({ position: { x: 8, y: 8 } });
+  await ana.getByTestId('mesa').click();
+  const dejar = ana.getByTestId('opcion-dejar');
+  if (await dejar.isVisible().catch(() => false)) await dejar.click();
+  await expect(luis.getByTestId(`mesa-${id}`)).toBeVisible();
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+  await expect(ana.locator('[data-testid="mano"] .carta-mano')).toHaveCount(4);
+});
+
 test('Préférence en red: lo que puja uno lo ve el otro', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

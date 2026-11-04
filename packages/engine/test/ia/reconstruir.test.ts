@@ -125,6 +125,15 @@ import { CONFIG_TRUCO_POR_DEFECTO, truco } from '../../src/juegos/truco';
 import { reconstruirPreference } from '../../src/ia/reconstruir/preference';
 import { iaPreferenceBasica } from '../../src/ia/preference-basica';
 import { CONFIG_PREFERENCE_POR_DEFECTO, preference } from '../../src/juegos/preference';
+import { reconstruirCuarenta } from '../../src/ia/reconstruir/cuarenta';
+import { iaCuarentaBasica } from '../../src/ia/cuarenta-basica';
+import {
+  BARAJA_CUARENTA,
+  CONFIG_CUARENTA_POR_DEFECTO,
+  cuarenta,
+  rangoCuarenta,
+  type EstadoCuarenta,
+} from '../../src/juegos/cuarenta';
 import {
   BARAJA_SCHNAPSEN,
   CONFIG_SCHNAPSEN_POR_DEFECTO,
@@ -1388,6 +1397,34 @@ describe('reconstrucción del Préférence', () => {
         false,
       );
       expect(preference.vistaDe(rec, 0)).toEqual(vista);
+    }
+  });
+});
+
+describirReconstruccion(cuarenta, reconstruirCuarenta, {
+  configs: [CONFIG_CUARENTA_POR_DEFECTO, { jugadores: 4, meta: 40 }],
+  base: iaCuarentaBasica,
+});
+
+describe('Reconstrucción del Cuarenta', () => {
+  it('quien anunció ronda tiene sus cartas, y con tres, no la cuarta', () => {
+    const r = cuarenta.crear(CONFIG_CUARENTA_POR_DEFECTO, 'ronda');
+    if (!r.ok) throw new Error(r.error);
+    const cincos = BARAJA_CUARENTA.filter((c) => rangoCuarenta(c) === 5);
+    const resto = BARAJA_CUARENTA.filter((c) => rangoCuarenta(c) !== 5);
+    const e: EstadoCuarenta = {
+      ...r.valor,
+      turno: 0,
+      manos: [resto.slice(0, 5), [...cincos.slice(0, 3), ...resto.slice(5, 7)]],
+      mazo: [cincos[3]!, ...resto.slice(7)],
+      rondas: [{ asiento: 1, rango: 5, cartas: 3 }],
+      jugadasReparto: [[], []],
+    };
+    const vista = cuarenta.vistaDe(e, 0);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirCuarenta(vista, crearAzar(`c${i}`));
+      expect(rec.manos[1]!.filter((c) => rangoCuarenta(c) === 5)).toHaveLength(3);
+      expect(cuarenta.vistaDe(rec, 0)).toEqual(vista);
     }
   });
 });

@@ -48,6 +48,7 @@
     ConfigSchafkopf,
     ConfigTruco,
     ConfigPreference,
+    ConfigCuarenta,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -154,6 +155,7 @@
   let tressetteConfig: Editable<ConfigTressette> = $state({ ...JUEGOS.tressette.configPorDefecto });
   let schafkopfConfig: Editable<ConfigSchafkopf> = $state({ ...JUEGOS.schafkopf.configPorDefecto });
   let trucoConfig: Editable<ConfigTruco> = $state({ ...JUEGOS.truco.configPorDefecto });
+  let cuarentaConfig: Editable<ConfigCuarenta> = $state({ ...JUEGOS.cuarenta.configPorDefecto });
   let preferenceConfig: Editable<ConfigPreference> = $state({
     ...JUEGOS.preference.configPorDefecto,
   });
@@ -251,6 +253,7 @@
       schafkopf: schafkopfConfig,
       truco: trucoConfig,
       preference: preferenceConfig,
+      cuarenta: cuarentaConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.
@@ -374,6 +377,15 @@
         <label
           ><input type="radio" bind:group={scopaConfig.jugadores} value={4} data-testid="scopa-cuatro" />
           {T.opciones.scopone}</label
+        >
+      </fieldset>
+    {:else if juego === 'cuarenta'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        <label><input type="radio" bind:group={cuarentaConfig.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
+        <label
+          ><input type="radio" bind:group={cuarentaConfig.jugadores} value={4} data-testid="cuarenta-cuatro" />
+          {T.opciones.cuatroJugadores}</label
         >
       </fieldset>
     {:else if juego === 'corazones'}

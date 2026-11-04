@@ -109,6 +109,7 @@ ull. */
     { id: 'julepe', desc: T.menu.julepeDesc, cartas: ['copas-1', 'copas-3', 'oros-12'] },
     { id: 'truc', desc: T.menu.trucDesc, cartas: ['espadas-1', 'bastos-1', 'oros-7'] },
     { id: 'truco', desc: T.menu.trucoDesc, cartas: ['espadas-1', 'espadas-7', 'oros-7'] },
+    { id: 'cuarenta', desc: T.menu.cuarentaDesc, cartas: ['corazones-5', 'picas-5', 'diamantes-6'] },
     {
       id: 'preference',
       desc: T.menu.preferenceDesc,
