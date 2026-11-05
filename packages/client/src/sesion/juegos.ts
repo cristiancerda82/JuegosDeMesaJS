@@ -117,6 +117,12 @@ import {
   CONFIG_SHEEPSHEAD_POR_DEFECTO,
   rentz,
   CONFIG_RENTZ_POR_DEFECTO,
+  bourre,
+  CONFIG_BOURRE_POR_DEFECTO,
+  type AccionBourre,
+  type ConfigBourre,
+  type EstadoBourre,
+  type VistaBourre,
   type AccionRentz,
   type ConfigRentz,
   type EstadoRentz,
@@ -559,7 +565,8 @@ export type IdJuego =
   | 'sixtySix'
   | 'tysiacha'
   | 'sheepshead'
-  | 'rentz';
+  | 'rentz'
+  | 'bourre';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -636,6 +643,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'tysiacha',
   'sheepshead',
   'rentz',
+  'bourre',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2062,6 +2070,26 @@ export const DEF_RENTZ: DefRentz = {
   },
 };
 
+export type DefBourre = DefJuego<ConfigBourre, EstadoBourre, AccionBourre, VistaBourre>;
+
+export const DEF_BOURRE: DefBourre = {
+  id: 'bourre',
+  nombre: T.menu.bourre,
+  juego: bourre,
+  configPorDefecto: CONFIG_BOURRE_POR_DEFECTO,
+  ia: IAS.bourre,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, jugar o pasar, cada
+  // cambio y cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const dicho =
+      JSON.stringify(antes.juega) !== JSON.stringify(despues.juega) ||
+      JSON.stringify(antes.cambiadas) !== JSON.stringify(despues.cambiadas);
+    if (dicho) return PAUSA_CANTE_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2137,6 +2165,7 @@ export const JUEGOS = {
   tysiacha: DEF_TYSIACHA,
   sheepshead: DEF_SHEEPSHEAD,
   rentz: DEF_RENTZ,
+  bourre: DEF_BOURRE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

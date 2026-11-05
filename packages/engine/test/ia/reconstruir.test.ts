@@ -133,6 +133,9 @@ import { CONFIG_ECARTE_POR_DEFECTO, ecarte, type EstadoEcarte } from '../../src/
 import { reconstruirTysiacha } from '../../src/ia/reconstruir/tysiacha';
 import { reconstruirSheepshead } from '../../src/ia/reconstruir/sheepshead';
 import { reconstruirRentz } from '../../src/ia/reconstruir/rentz';
+import { reconstruirBourre } from '../../src/ia/reconstruir/bourre';
+import { iaBourreBasica } from '../../src/ia/bourre-basica';
+import { bourre, CONFIG_BOURRE_POR_DEFECTO } from '../../src/juegos/bourre';
 import { iaRentzBasica } from '../../src/ia/rentz-basica';
 import {
   CONFIG_RENTZ_POR_DEFECTO,
@@ -1609,6 +1612,25 @@ describe('Reconstrucción del Rentz', () => {
       const rec = reconstruirRentz(vista, crearAzar(`r${i}`));
       expect(sinJotas(rec.manos[1]!)).toBe(true);
       expect(rentz.vistaDe(rec, 0)).toEqual(vista);
+    }
+  });
+});
+
+describirReconstruccion(bourre, reconstruirBourre, {
+  configs: [CONFIG_BOURRE_POR_DEFECTO, { jugadores: 5, manos: 3, fichas: 3 }],
+  base: iaBourreBasica,
+});
+
+describe('Reconstrucción del Bourré', () => {
+  it('la vuelta sigue en la mano del que reparte mientras no la juegue', () => {
+    const r = bourre.crear(CONFIG_BOURRE_POR_DEFECTO, 'vuelta');
+    if (!r.ok) throw new Error(r.error);
+    const vista = bourre.vistaDe(r.valor, 0);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirBourre(vista, crearAzar(`b${i}`));
+      expect(rec.manos[4]).toContain(r.valor.vuelta);
+      expect(rec.manos.map((m) => m.length)).toEqual(vista.cartasEnMano);
+      expect(bourre.vistaDe(rec, 0)).toEqual(vista);
     }
   });
 });

@@ -116,6 +116,7 @@ ull. */
     { id: 'tysiacha', desc: T.menu.tysiachaDesc, cartas: ['corazones-12', 'corazones-13', 'corazones-1'] },
     { id: 'sheepshead', desc: T.menu.sheepsheadDesc, cartas: ['treboles-12', 'diamantes-11', 'diamantes-1'] },
     { id: 'rentz', desc: T.menu.rentzDesc, cartas: ['corazones-13', 'picas-12', 'treboles-11'] },
+    { id: 'bourre', desc: T.menu.bourreDesc, cartas: ['diamantes-1', 'diamantes-13', 'picas-1'] },
     {
       id: 'preference',
       desc: T.menu.preferenceDesc,

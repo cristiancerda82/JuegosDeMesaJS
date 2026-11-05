@@ -186,6 +186,9 @@ export const T = {
     truco: 'Truco',
     trucoDesc:
       'El clásico argentino de engaño, mano a mano o por parejas: canta el envido, el truco y el vale cuatro, y gana a 30 en malas y buenas.',
+    bourre: 'Bourré',
+    bourreDesc:
+      'El clásico de Luisiana para cinco: juega o pasa, cambia cartas, gana más bazas que nadie y llévate el bote, o paga el bourré.',
     rentz: 'Rentz',
     rentzDesc:
       'El clásico alemán de compromisos para cuatro: cada uno elige sus siete contratos, de evitar bazas, corazones o damas al dominó.',
@@ -1412,6 +1415,40 @@ export const T = {
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
+  },
+
+  bourre: {
+    reparte: 'Reparte',
+    juega: 'Juega',
+    pasa: 'Pasa',
+    fuera: 'Sin fichas',
+    cambio: (n: number) => (n === 1 ? 'Cambió 1' : `Cambió ${n}`),
+    fichasCortas: (n: number) => `${n} 🪙`,
+    mano: (n: number, total: number) => `Mano ${n}/${total}`,
+    triunfo: (palo: string) =>
+      `Triunfo: ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[palo]}`,
+    bote: (n: number) => `Bote: ${n}`,
+    fichas: (n: number) => `Tus fichas: ${n}`,
+    decide: '¿Juegas esta mano?',
+    decidiendo: (quien: string) => `${quien} decide si juega`,
+    cambia: (n: number) =>
+      n === 0 ? 'Toca las cartas que cambias' : n === 1 ? 'Cambias 1 carta' : `Cambias ${n} cartas`,
+    cambiando: (quien: string) => `${quien} cambia cartas`,
+    jugar: 'Jugar',
+    pasar: 'Pasar',
+    cambiar: (n: number) => (n === 1 ? 'Cambiar 1' : `Cambiar ${n}`),
+    noCambiar: 'No cambiar',
+    seLleva: (quien: string, n: number) =>
+      quien === 'Tú' ? `Te llevas el bote: ${n}` : `${quien} se lleva el bote: ${n}`,
+    seQueda: (n: number) => `El bote (${n}) se queda`,
+    bourre: (quienes: string) => `Bourré: ${quienes}`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    siguienteMano: 'Siguiente mano',
+    jugadorCol: 'Jugador',
+    bazasCol: 'Bazas',
+    cambioCol: 'Fichas',
+    fichasCol: 'Total',
+    clasificacion: 'Fichas',
   },
 
   rentz: {
@@ -3054,6 +3091,7 @@ export const T = {
       tysiacha: 'Cómo se juega al Tysiącha',
       sheepshead: 'Cómo se juega al Sheepshead',
       rentz: 'Cómo se juega al Rentz',
+      bourre: 'Cómo se juega al Bourré',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3641,6 +3679,43 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    bourre: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El juego de bazas y apuestas de Luisiana, para cinco. Cada uno empieza con 100 fichas; tras 15 manos (o cuando solo queda uno con fichas) gana quien tiene más.',
+          'Se juega con la baraja francesa, con el orden As, K, Q, J, 10… hasta el 2.',
+        ],
+      },
+      {
+        titulo: 'La mano',
+        texto: [
+          'Al empezar, cada uno pone 1 ficha en el bote y recibe 5 cartas. La última carta del que reparte se enseña: su palo es el triunfo.',
+          'Por turno, cada uno decide si juega o pasa. Los que juegan pueden cambiar de 0 a 5 cartas por otras del mazo.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Si sales y tienes el As de triunfo, tienes que salir con él. Hay que seguir el palo y ganar la baza si se puede.',
+          'Sin el palo hay que echar triunfo, y superar el triunfo más alto de la baza si se puede.',
+        ],
+      },
+      {
+        titulo: 'El bote y el bourré',
+        texto: [
+          'Quien hace más bazas se lleva el bote; si hay empate, se queda para la mano siguiente.',
+          'Quien juega y no hace ninguna baza hace «bourré»: paga al bote tanto como había. Si solo juega uno, se lleva el bote sin jugar.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Pasa con una mano floja: el bourré cuesta caro cuando el bote ha crecido. Con dos o tres triunfos altos, juega y cambia lo demás.',
         ],
       },
     ],

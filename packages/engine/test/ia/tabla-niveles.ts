@@ -64,6 +64,7 @@ import { CONFIG_ECARTE_POR_DEFECTO, ecarte } from '../../src/juegos/ecarte';
 import { tysiacha } from '../../src/juegos/tysiacha';
 import { sheepshead } from '../../src/juegos/sheepshead';
 import { rentz } from '../../src/juegos/rentz';
+import { bourre } from '../../src/juegos/bourre';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -183,4 +184,6 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Sheepshead', sheepshead, { jugadores: 5, manos: 5 }, IAS.sheepshead, 5),
   // Una ronda (4 manos), para que las partidas de las pruebas no sean tan largas.
   entrada('Rentz', rentz, { jugadores: 4, rondas: 1 }, IAS.rentz, 4),
+  // Cinco manos y 20 fichas, para que las partidas de las pruebas no sean tan largas.
+  entrada('Bourré', bourre, { jugadores: 5, manos: 5, fichas: 20 }, IAS.bourre, 5),
 ];

@@ -54,6 +54,7 @@
     ConfigTysiacha,
     ConfigSheepshead,
     ConfigRentz,
+    ConfigBourre,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -167,6 +168,7 @@
   let tysiachaConfig: Editable<ConfigTysiacha> = $state({ ...JUEGOS.tysiacha.configPorDefecto });
   let sheepsheadConfig: Editable<ConfigSheepshead> = $state({ ...JUEGOS.sheepshead.configPorDefecto });
   let rentzConfig: Editable<ConfigRentz> = $state({ ...JUEGOS.rentz.configPorDefecto });
+  let bourreConfig: Editable<ConfigBourre> = $state({ ...JUEGOS.bourre.configPorDefecto });
   let preferenceConfig: Editable<ConfigPreference> = $state({
     ...JUEGOS.preference.configPorDefecto,
   });
@@ -271,6 +273,7 @@
       tysiacha: tysiachaConfig,
       sheepshead: sheepsheadConfig,
       rentz: rentzConfig,
+      bourre: bourreConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.
