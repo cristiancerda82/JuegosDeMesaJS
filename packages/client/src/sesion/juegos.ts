@@ -113,6 +113,12 @@ import {
   CONFIG_ECARTE_POR_DEFECTO,
   tysiacha,
   CONFIG_TYSIACHA_POR_DEFECTO,
+  sheepshead,
+  CONFIG_SHEEPSHEAD_POR_DEFECTO,
+  type AccionSheepshead,
+  type ConfigSheepshead,
+  type EstadoSheepshead,
+  type VistaSheepshead,
   type AccionTysiacha,
   type ConfigTysiacha,
   type EstadoTysiacha,
@@ -545,7 +551,8 @@ export type IdJuego =
   | 'pishti'
   | 'ecarte'
   | 'sixtySix'
-  | 'tysiacha';
+  | 'tysiacha'
+  | 'sheepshead';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -620,6 +627,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'ecarte',
   'sixtySix',
   'tysiacha',
+  'sheepshead',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2003,6 +2011,31 @@ export const DEF_TYSIACHA: DefTysiacha = {
   },
 };
 
+export type DefSheepshead = DefJuego<
+  ConfigSheepshead,
+  EstadoSheepshead,
+  AccionSheepshead,
+  VistaSheepshead
+>;
+
+export const DEF_SHEEPSHEAD: DefSheepshead = {
+  id: 'sheepshead',
+  nombre: T.menu.sheepshead,
+  juego: sheepshead,
+  configPorDefecto: CONFIG_SHEEPSHEAD_POR_DEFECTO,
+  ia: IAS.sheepshead,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, coger o pasar y cada
+  // baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const dicho =
+      JSON.stringify(antes.pasados) !== JSON.stringify(despues.pasados) ||
+      antes.picker !== despues.picker;
+    if (dicho) return PAUSA_CANTE_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2076,6 +2109,7 @@ export const JUEGOS = {
   ecarte: DEF_ECARTE,
   sixtySix: DEF_SIXTY_SIX,
   tysiacha: DEF_TYSIACHA,
+  sheepshead: DEF_SHEEPSHEAD,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

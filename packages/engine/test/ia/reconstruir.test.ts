@@ -131,6 +131,14 @@ import { reconstruirEcarte } from '../../src/ia/reconstruir/ecarte';
 import { iaEcarteBasica } from '../../src/ia/ecarte-basica';
 import { CONFIG_ECARTE_POR_DEFECTO, ecarte, type EstadoEcarte } from '../../src/juegos/ecarte';
 import { reconstruirTysiacha } from '../../src/ia/reconstruir/tysiacha';
+import { reconstruirSheepshead } from '../../src/ia/reconstruir/sheepshead';
+import { iaSheepsheadBasica } from '../../src/ia/sheepshead-basica';
+import {
+  CONFIG_SHEEPSHEAD_POR_DEFECTO,
+  J_DIAMANTES,
+  sheepshead,
+  type EstadoSheepshead,
+} from '../../src/juegos/sheepshead';
 import { iaTysiachaBasica } from '../../src/ia/tysiacha-basica';
 import {
   BARAJA_TYSIACHA,
@@ -1526,6 +1534,40 @@ describe('Reconstrucción del Tysiącha', () => {
       expect(rec.manos[1]).toContain(k);
       expect(rec.manos.map((m) => m.length)).toEqual(vista.cartasEnMano);
       expect(tysiacha.vistaDe(rec, 0)).toEqual(vista);
+    }
+  });
+});
+
+describirReconstruccion(sheepshead, reconstruirSheepshead, {
+  configs: [CONFIG_SHEEPSHEAD_POR_DEFECTO],
+  base: iaSheepsheadBasica,
+});
+
+describe('Reconstrucción del Sheepshead', () => {
+  it('con el blind enterrado, la J de diamantes que no se ve está en la mano de otro', () => {
+    // Una semilla en la que el 0 no tiene la J de diamantes y no está en el blind.
+    let base: EstadoSheepshead | null = null;
+    for (let i = 0; i < 200 && !base; i++) {
+      const r = sheepshead.crear(CONFIG_SHEEPSHEAD_POR_DEFECTO, `jd-${i}`);
+      if (!r.ok) throw new Error(r.error);
+      if (!r.valor.manos[0]!.includes(J_DIAMANTES) && !r.valor.blind.includes(J_DIAMANTES)) {
+        base = r.valor;
+      }
+    }
+    expect(base).not.toBeNull();
+    // Coge el 1, entierra sus dos primeras cartas que no son la J de diamantes.
+    let e = sheepshead.transicion(base!, 0, { tipo: 'pasar' });
+    e = sheepshead.transicion(e, 1, { tipo: 'coger' });
+    for (let k = 0; k < 2; k++) {
+      const a = sheepshead.accionesLegales(e, 1)[0]!;
+      e = sheepshead.transicion(e, 1, a);
+    }
+    const vista = sheepshead.vistaDe(e, 0);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirSheepshead(vista, crearAzar(`s${i}`));
+      expect(rec.enterradas).not.toContain(J_DIAMANTES);
+      expect(rec.manos.slice(1).some((m) => m.includes(J_DIAMANTES))).toBe(true);
+      expect(sheepshead.vistaDe(rec, 0)).toEqual(vista);
     }
   });
 });

@@ -98,6 +98,10 @@ import {
   type ConfigEcarte,
   type EstadoEcarte,
   type VistaEcarte,
+  type AccionSheepshead,
+  type ConfigSheepshead,
+  type EstadoSheepshead,
+  type VistaSheepshead,
   type AccionTysiacha,
   type ConfigTysiacha,
   type EstadoTysiacha,
@@ -347,6 +351,7 @@ import {
   DEF_ECARTE,
   DEF_SIXTY_SIX,
   DEF_TYSIACHA,
+  DEF_SHEEPSHEAD,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -469,6 +474,12 @@ export type SesionKingsCorner = SesionMesa<
   VistaKingsCorner
 >;
 export type SesionEcarte = SesionMesa<ConfigEcarte, EstadoEcarte, AccionEcarte, VistaEcarte>;
+export type SesionSheepshead = SesionMesa<
+  ConfigSheepshead,
+  EstadoSheepshead,
+  AccionSheepshead,
+  VistaSheepshead
+>;
 export type SesionTysiacha = SesionMesa<
   ConfigTysiacha,
   EstadoTysiacha,
@@ -676,7 +687,8 @@ export type Partida =
   | { readonly id: 'pishti'; readonly sesion: SesionPishti }
   | { readonly id: 'ecarte'; readonly sesion: SesionEcarte }
   | { readonly id: 'sixtySix'; readonly sesion: SesionSchnapsen }
-  | { readonly id: 'tysiacha'; readonly sesion: SesionTysiacha };
+  | { readonly id: 'tysiacha'; readonly sesion: SesionTysiacha }
+  | { readonly id: 'sheepshead'; readonly sesion: SesionSheepshead };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -749,7 +761,8 @@ export type ConfigJuego =
   | ConfigCuarenta
   | ConfigPishti
   | ConfigEcarte
-  | ConfigTysiacha;
+  | ConfigTysiacha
+  | ConfigSheepshead;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -898,6 +911,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_SIXTY_SIX);
     case 'tysiacha':
       return hacer(DEF_TYSIACHA);
+    case 'sheepshead':
+      return hacer(DEF_SHEEPSHEAD);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':

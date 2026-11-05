@@ -186,6 +186,9 @@ export const T = {
     truco: 'Truco',
     trucoDesc:
       'El clásico argentino de engaño, mano a mano o por parejas: canta el envido, el truco y el vale cuatro, y gana a 30 en malas y buenas.',
+    sheepshead: 'Sheepshead',
+    sheepsheadDesc:
+      'El clásico de Wisconsin para cinco: coge el blind, juega con el compañero secreto de la J de diamantes o gana el leaster.',
     tysiacha: 'Tysiącha',
     tysiachaDesc:
       'El clásico ruso para tres con 24 cartas: puja por el prikup, canta matrimonios que cambian el triunfo y llega a 1000.',
@@ -1406,6 +1409,40 @@ export const T = {
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
+  },
+
+  sheepshead: {
+    reparte: 'Reparte',
+    pasa: 'Pasa',
+    picker: 'Picker',
+    companero: 'Compañero',
+    coger: 'Coger',
+    pasar: 'Pasar',
+    leaster: 'Leaster: gana quien hace menos puntos',
+    blind: 'Blind:',
+    pickerDe: (quien: string) => `Picker: ${quien}`,
+    companeroDe: (quien: string) => `Compañero: ${quien}`,
+    solo: 'El picker juega solo',
+    companeroOculto: 'Compañero: J♦',
+    mano: (n: number, total: number) => `Mano ${n}/${total}`,
+    marcador: (n: number) => `Tú: ${n}`,
+    puntosMano: (n: number) => `${n} pts`,
+    tuTurnoCoger: '¿Coges el blind?',
+    decidiendo: (quien: string) => `${quien} decide si coge`,
+    entierra: (n: number) =>
+      n === 1 ? 'Toca 1 carta para enterrar' : `Toca ${n} cartas para enterrar`,
+    enterrando: (quien: string) => `${quien} entierra`,
+    gana: (puntos: number) => `${puntos} puntos: gana el picker`,
+    pierde: (puntos: number) => `${puntos} puntos: pierde el picker`,
+    ganaLeaster: (quien: string) => `Leaster: gana ${quien}`,
+    leasterSinGanador: 'Leaster sin ganador',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    siguienteMano: 'Siguiente mano',
+    jugadorCol: 'Jugador',
+    puntosCol: 'Puntos',
+    anotaCol: 'Anota',
+    marcadorCol: 'Total',
+    clasificacion: 'Marcador',
   },
 
   tysiacha: {
@@ -2965,6 +3002,7 @@ export const T = {
       pishti: 'Cómo se juega al Pishti',
       ecarte: 'Cómo se juega al Écarté',
       tysiacha: 'Cómo se juega al Tysiącha',
+      sheepshead: 'Cómo se juega al Sheepshead',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3552,6 +3590,49 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    sheepshead: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El gran juego de bazas de Wisconsin, para cinco. Se juega con 32 cartas, del 7 al As, que valen As 11, 10 10, K 4, Q 3 y J 2 (120 en total).',
+          'Se juegan 10 manos y gana quien tiene más puntos al final.',
+        ],
+      },
+      {
+        titulo: 'Los triunfos',
+        texto: [
+          'Hay 14 triunfos: las cuatro Q (tréboles, picas, corazones y diamantes), las cuatro J en el mismo orden y los diamantes (As, 10, K, 9, 8 y 7).',
+          'En los otros palos el orden es As, 10, K, 9, 8 y 7.',
+        ],
+      },
+      {
+        titulo: 'Coger el blind',
+        texto: [
+          'Cada uno recibe 6 cartas y quedan 2 boca abajo: el blind. Por turno, cada uno lo coge o pasa. Quien lo coge es el picker: se queda las 2 cartas y entierra otras 2, que cuentan para él.',
+          'Su compañero es quien tiene la J de diamantes, y nadie lo sabe hasta que la juega. Si la tiene el picker, juega solo.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Hay que seguir el palo de salida; todos los triunfos cuentan como un palo. Si no tienes, puedes echar cualquier carta. No hay que ganar ni fallar.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'El bando del picker gana con 61 o más: el picker anota +2, el compañero +1 y cada rival −1. Con 91 o más (schneider) se dobla, y con todas las bazas (schwarz), se triplica.',
+          'Si pierde, el picker anota −4, el compañero −2 y cada rival +2, doble con 30 o menos y triple sin bazas. Solo, el picker se lleva lo suyo y lo del compañero.',
+        ],
+      },
+      {
+        titulo: 'El leaster',
+        texto: [
+          'Si nadie coge, cada uno juega para sí y gana quien hace menos puntos con al menos una baza: anota +4 y los demás −1. El blind es para quien gana la última baza.',
         ],
       },
     ],

@@ -63,6 +63,7 @@ import { CONFIG_CUARENTA_POR_DEFECTO, cuarenta } from './juegos/cuarenta';
 import { CONFIG_PISHTI_POR_DEFECTO, pishti } from './juegos/pishti';
 import { CONFIG_ECARTE_POR_DEFECTO, ecarte } from './juegos/ecarte';
 import { CONFIG_TYSIACHA_POR_DEFECTO, tysiacha } from './juegos/tysiacha';
+import { CONFIG_SHEEPSHEAD_POR_DEFECTO, sheepshead } from './juegos/sheepshead';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -131,6 +132,7 @@ export const IDS_JUEGOS_EN_RED = [
   'ecarte',
   'sixtySix',
   'tysiacha',
+  'sheepshead',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -224,6 +226,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   pishti: entrada(pishti, IAS.pishti, CONFIG_PISHTI_POR_DEFECTO),
   ecarte: entrada(ecarte, IAS.ecarte, CONFIG_ECARTE_POR_DEFECTO),
   tysiacha: entrada(tysiacha, IAS.tysiacha, CONFIG_TYSIACHA_POR_DEFECTO),
+  sheepshead: entrada(sheepshead, IAS.sheepshead, CONFIG_SHEEPSHEAD_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>
