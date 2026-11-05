@@ -132,6 +132,14 @@ import { iaEcarteBasica } from '../../src/ia/ecarte-basica';
 import { CONFIG_ECARTE_POR_DEFECTO, ecarte, type EstadoEcarte } from '../../src/juegos/ecarte';
 import { reconstruirTysiacha } from '../../src/ia/reconstruir/tysiacha';
 import { reconstruirSheepshead } from '../../src/ia/reconstruir/sheepshead';
+import { reconstruirRentz } from '../../src/ia/reconstruir/rentz';
+import { iaRentzBasica } from '../../src/ia/rentz-basica';
+import {
+  CONFIG_RENTZ_POR_DEFECTO,
+  FILAS_VACIAS_RENTZ,
+  rentz,
+  type EstadoRentz,
+} from '../../src/juegos/rentz';
 import { iaSheepsheadBasica } from '../../src/ia/sheepshead-basica';
 import {
   CONFIG_SHEEPSHEAD_POR_DEFECTO,
@@ -1568,6 +1576,39 @@ describe('Reconstrucción del Sheepshead', () => {
       expect(rec.enterradas).not.toContain(J_DIAMANTES);
       expect(rec.manos.slice(1).some((m) => m.includes(J_DIAMANTES))).toBe(true);
       expect(sheepshead.vistaDe(rec, 0)).toEqual(vista);
+    }
+  });
+});
+
+describirReconstruccion(rentz, reconstruirRentz, {
+  configs: [CONFIG_RENTZ_POR_DEFECTO, { jugadores: 4, rondas: 1 }],
+  base: iaRentzBasica,
+});
+
+describe('Reconstrucción del Rentz', () => {
+  it('quien pasó en el dominó no tiene las cartas que encajaban', () => {
+    // Un estado de dominó en el que el 1 pasó con las filas vacías: no tiene ninguna J.
+    const sinJotas = (m: readonly string[]) => m.every((c) => !c.endsWith('-11'));
+    let e: EstadoRentz | null = null;
+    for (let i = 0; i < 200 && !e; i++) {
+      const x = rentz.crear(CONFIG_RENTZ_POR_DEFECTO, `domino-${i}`);
+      if (!x.ok) throw new Error(x.error);
+      if (sinJotas(x.valor.manos[1]!)) e = x.valor;
+    }
+    expect(e).not.toBeNull();
+    const estado: EstadoRentz = {
+      ...e!,
+      fase: 'domino',
+      contrato: 'domino',
+      filas: FILAS_VACIAS_RENTZ,
+      turno: 2,
+      noTiene: [[], ['picas-11', 'corazones-11', 'diamantes-11', 'treboles-11'], [], []],
+    };
+    const vista = rentz.vistaDe(estado, 0);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirRentz(vista, crearAzar(`r${i}`));
+      expect(sinJotas(rec.manos[1]!)).toBe(true);
+      expect(rentz.vistaDe(rec, 0)).toEqual(vista);
     }
   });
 });

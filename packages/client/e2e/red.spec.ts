@@ -1110,6 +1110,22 @@ test('Préférence en red: lo que puja uno lo ve el otro', async ({ browser }) =
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Rentz en red: el contrato que elige uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'rentz');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(8);
+
+  // Elige primero Ana (asiento 0, que reparte): sin damas, y Luis lo ve.
+  await ana.getByTestId('contrato-damas').click();
+  await expect(luis.getByTestId('contrato-rentz')).toContainText('Sin damas');
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Sheepshead en red: lo que decide uno lo ve el otro', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

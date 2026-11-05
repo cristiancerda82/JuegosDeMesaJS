@@ -186,6 +186,9 @@ export const T = {
     truco: 'Truco',
     trucoDesc:
       'El clásico argentino de engaño, mano a mano o por parejas: canta el envido, el truco y el vale cuatro, y gana a 30 en malas y buenas.',
+    rentz: 'Rentz',
+    rentzDesc:
+      'El clásico alemán de compromisos para cuatro: cada uno elige sus siete contratos, de evitar bazas, corazones o damas al dominó.',
     sheepshead: 'Sheepshead',
     sheepsheadDesc:
       'El clásico de Wisconsin para cinco: coge el blind, juega con el compañero secreto de la J de diamantes o gana el leaster.',
@@ -1407,6 +1410,53 @@ export const T = {
     resultado: (diferencia: number) =>
       diferencia === 0 ? 'Cumplido' : diferencia > 0 ? `+${diferencia}` : `${diferencia}`,
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
+  },
+
+  rentz: {
+    reparte: 'Reparte',
+    enMano: (n: number) => `${n}`,
+    nombreContrato: (c: string) =>
+      (
+        ({
+          bazas: 'Sin bazas',
+          corazones: 'Sin corazones',
+          damas: 'Sin damas',
+          rey: 'Sin el K ♥',
+          ultima: 'Sin la última',
+          domino: 'Dominó',
+          positivo: 'Bazas',
+        }) as Record<string, string>
+      )[c]!,
+    contrato: (c: string) =>
+      (
+        ({
+          bazas: 'Sin bazas',
+          corazones: 'Sin corazones',
+          damas: 'Sin damas',
+          rey: 'Sin el K de corazones',
+          ultima: 'Sin la última baza',
+          domino: 'Dominó',
+          positivo: 'Bazas (+5 cada una)',
+        }) as Record<string, string>
+      )[c]!,
+    eligeContrato: 'Elige tu contrato',
+    eligiendo: (quien: string) => `${quien} elige…`,
+    eligio: (quien: string, contrato: string) => `${quien}: ${contrato}`,
+    manoRonda: (n: number, total: number) => `Mano ${n} de ${total}`,
+    tusPuntos: (mano: number, total: number) => `Tú: ${mano} en la mano · ${total}`,
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    acabo: (puesto: number) => `Acabó ${puesto}.º`,
+    total: (n: number) => `${n} puntos`,
+    mesaDomino: 'Filas del dominó',
+    sinJugada: 'No tienes ninguna carta que encaje',
+    tuTurnoDomino: 'Tu turno: juega una carta que encaje',
+    paso: 'Paso',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    jugadorCol: 'Jugador',
+    manoCol: 'Mano',
+    totalCol: 'Total',
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
   },
@@ -3003,6 +3053,7 @@ export const T = {
       ecarte: 'Cómo se juega al Écarté',
       tysiacha: 'Cómo se juega al Tysiącha',
       sheepshead: 'Cómo se juega al Sheepshead',
+      rentz: 'Cómo se juega al Rentz',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3590,6 +3641,43 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    rentz: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El gran juego de compromisos alemán para cuatro. Se juega con 32 cartas, del 7 al As, con el orden As, K, Q, J, 10, 9, 8 y 7 y sin triunfo.',
+          'Cada jugador elige, cuando reparte, uno de sus siete contratos. Tras 28 manos (los siete de cada uno), gana quien tiene más puntos.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Sale el que eligió. Hay que seguir el palo de salida; si no tienes, puedes echar cualquier carta. Gana la carta más alta del palo de salida.',
+        ],
+      },
+      {
+        titulo: 'Los contratos',
+        texto: [
+          'Sin bazas: −5 por baza. Sin corazones: −5 por corazón. Sin damas: −10 por dama. Sin el K de corazones: −40 a quien se lo lleve. Sin la última baza: −40 a quien la gane.',
+          'Bazas: +5 por cada baza que ganes. En sin corazones, sin damas y sin el K, la mano se acaba en cuanto se han ganado todas las cartas que restan.',
+        ],
+      },
+      {
+        titulo: 'El dominó',
+        texto: [
+          'Abre el que eligió. Cada palo empieza por su J y crece de uno en uno hacia arriba y hacia abajo. Si no tienes ninguna carta que encaje, pasas.',
+          'Por orden de acabar se anotan +40, +20, +10 y 0.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Guarda el contrato de bazas para una mano con muchos Ases y K, y el dominó para una con J y cartas seguidas.',
+          'En los contratos de evitar, deshazte pronto de tus cartas altas cuando no tengas el palo.',
         ],
       },
     ],

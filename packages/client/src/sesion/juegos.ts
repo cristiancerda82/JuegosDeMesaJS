@@ -115,6 +115,12 @@ import {
   CONFIG_TYSIACHA_POR_DEFECTO,
   sheepshead,
   CONFIG_SHEEPSHEAD_POR_DEFECTO,
+  rentz,
+  CONFIG_RENTZ_POR_DEFECTO,
+  type AccionRentz,
+  type ConfigRentz,
+  type EstadoRentz,
+  type VistaRentz,
   type AccionSheepshead,
   type ConfigSheepshead,
   type EstadoSheepshead,
@@ -552,7 +558,8 @@ export type IdJuego =
   | 'ecarte'
   | 'sixtySix'
   | 'tysiacha'
-  | 'sheepshead';
+  | 'sheepshead'
+  | 'rentz';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -628,6 +635,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'sixtySix',
   'tysiacha',
   'sheepshead',
+  'rentz',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2036,6 +2044,24 @@ export const DEF_SHEEPSHEAD: DefSheepshead = {
   },
 };
 
+export type DefRentz = DefJuego<ConfigRentz, EstadoRentz, AccionRentz, VistaRentz>;
+
+export const DEF_RENTZ: DefRentz = {
+  id: 'rentz',
+  nombre: T.menu.rentz,
+  juego: rentz,
+  configPorDefecto: CONFIG_RENTZ_POR_DEFECTO,
+  ia: IAS.rentz,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, el contrato, cada baza
+  // y cada jugada del dominó.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (antes.contrato === null && despues.contrato !== null) return PAUSA_CANTE_MS;
+    if (despues.fase === 'domino') return PAUSA_CANTE_MS;
+    return despues.bazasJugadas > antes.bazasJugadas ? PAUSA_BAZA_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2110,6 +2136,7 @@ export const JUEGOS = {
   sixtySix: DEF_SIXTY_SIX,
   tysiacha: DEF_TYSIACHA,
   sheepshead: DEF_SHEEPSHEAD,
+  rentz: DEF_RENTZ,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */
