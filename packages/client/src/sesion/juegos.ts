@@ -111,6 +111,12 @@ import {
   type VistaPishti,
   ecarte,
   CONFIG_ECARTE_POR_DEFECTO,
+  tysiacha,
+  CONFIG_TYSIACHA_POR_DEFECTO,
+  type AccionTysiacha,
+  type ConfigTysiacha,
+  type EstadoTysiacha,
+  type VistaTysiacha,
   type AccionEcarte,
   type ConfigEcarte,
   type EstadoEcarte,
@@ -538,7 +544,8 @@ export type IdJuego =
   | 'cuarenta'
   | 'pishti'
   | 'ecarte'
-  | 'sixtySix';
+  | 'sixtySix'
+  | 'tysiacha';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -612,6 +619,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'pishti',
   'ecarte',
   'sixtySix',
+  'tysiacha',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -1972,6 +1980,29 @@ export const DEF_ECARTE: DefEcarte = {
   },
 };
 
+export type DefTysiacha = DefJuego<ConfigTysiacha, EstadoTysiacha, AccionTysiacha, VistaTysiacha>;
+
+export const DEF_TYSIACHA: DefTysiacha = {
+  id: 'tysiacha',
+  nombre: T.menu.tysiacha,
+  juego: tysiacha,
+  configPorDefecto: CONFIG_TYSIACHA_POR_DEFECTO,
+  ia: IAS.tysiacha,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada puja, el contrato
+  // y cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const dicho =
+      JSON.stringify(antes.pujas) !== JSON.stringify(despues.pujas) ||
+      (antes.fase === 'contrato' && despues.fase === 'bazas');
+    if (dicho) return PAUSA_CANTE_MS;
+    return pausaBazas(
+      { bazas: antes.bazasGanadas, resultadosManos: antes.resultadosManos },
+      { bazas: despues.bazasGanadas, resultadosManos: despues.resultadosManos },
+    );
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2044,6 +2075,7 @@ export const JUEGOS = {
   pishti: DEF_PISHTI,
   ecarte: DEF_ECARTE,
   sixtySix: DEF_SIXTY_SIX,
+  tysiacha: DEF_TYSIACHA,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

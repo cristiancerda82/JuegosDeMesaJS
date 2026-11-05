@@ -186,6 +186,9 @@ export const T = {
     truco: 'Truco',
     trucoDesc:
       'El clásico argentino de engaño, mano a mano o por parejas: canta el envido, el truco y el vale cuatro, y gana a 30 en malas y buenas.',
+    tysiacha: 'Tysiącha',
+    tysiachaDesc:
+      'El clásico ruso para tres con 24 cartas: puja por el prikup, canta matrimonios que cambian el triunfo y llega a 1000.',
     ecarte: 'Écarté',
     ecarteDesc:
       'El clásico francés para dos con 32 cartas: propón cambiar cartas o juega de autoridad, anuncia el rey y haz 3 de 5 bazas. A 5 puntos.',
@@ -1403,6 +1406,49 @@ export const T = {
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
+  },
+
+  tysiacha: {
+    reparte: 'Reparte',
+    declara: 'Declara',
+    paso: 'Paso',
+    pasar: 'Pasar',
+    pujar: (n: number) => `Pujar ${n}`,
+    puja: (n: number) => `${n}`,
+    subasta: (puja: number, quien: string) => `Puja: ${puja} (${quien})`,
+    contrato: (quien: string, n: number) => `${quien}: ${n}`,
+    prikup: 'Prikup:',
+    sinTriunfo: 'Sin triunfo',
+    triunfo: (palo: string) =>
+      `Triunfo: ${({ picas: '♠ picas', corazones: '♥ corazones', diamantes: '♦ diamantes', treboles: '♣ tréboles' } as Record<string, string>)[palo]}`,
+    marcador: (n: number) => `Tú: ${n}`,
+    barril: (manos: number) => `en el barril (${manos}/3)`,
+    puntosMano: (n: number) => `${n} pts`,
+    tuPuja: 'Te toca pujar',
+    pujando: (quien: string) => `Puja ${quien}`,
+    daA: (quien: string) => `Toca la carta para ${quien}`,
+    dando: (quien: string) => `${quien} da una carta a cada rival`,
+    fijaContrato: 'Fija tu contrato',
+    fijando: (quien: string) => `${quien} fija su contrato`,
+    fijar: (n: number) => `Fijar ${n}`,
+    contratoCol: 'Contrato',
+    canta: (quien: string, palo: string, puntos: number) => {
+      const p = (
+        { picas: '♠', corazones: '♥', diamantes: '♦', treboles: '♣' } as Record<string, string>
+      )[palo];
+      return quien === 'Tú' ? `Cantas ${p}: +${puntos}` : `${quien} canta ${p}: +${puntos}`;
+    },
+    cumple: 'cumple',
+    falla: 'falla',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    siguienteMano: 'Siguiente mano',
+    jugadorCol: 'Jugador',
+    cartasCol: 'Cartas',
+    matrimoniosCol: 'Matrim.',
+    anotaCol: 'Anota',
+    marcadorCol: 'Total',
+    enBarril: '🛢',
+    clasificacion: 'Marcador',
   },
 
   ecarte: {
@@ -2918,6 +2964,7 @@ export const T = {
       cuarenta: 'Cómo se juega al Cuarenta',
       pishti: 'Cómo se juega al Pishti',
       ecarte: 'Cómo se juega al Écarté',
+      tysiacha: 'Cómo se juega al Tysiącha',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3505,6 +3552,50 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    tysiacha: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El gran juego de bazas para tres de Rusia, Polonia y Ucrania. Se juega con 24 cartas: As, 10, K, Q, J y 9 de cada palo, que valen 11, 10, 4, 3, 2 y 0 (120 en total).',
+          'Gana quien, siendo el declarante, cumple su contrato y llega a 1000 puntos.',
+        ],
+      },
+      {
+        titulo: 'La subasta',
+        texto: [
+          'Cada uno recibe 7 cartas y quedan 3 boca abajo: el prikup. El que sigue al que reparte abre con 100; después cada uno sube de 5 en 5 o pasa, y quien pasa ya no vuelve.',
+          'Para pujar más de 120 hay que tener un matrimonio (el K y la Q de un palo).',
+        ],
+      },
+      {
+        titulo: 'El prikup y el contrato',
+        texto: [
+          'Quien gana la subasta enseña el prikup, se lo queda y da una carta a cada rival. Después puede subir el contrato, hasta 120 más lo que valen sus matrimonios.',
+        ],
+      },
+      {
+        titulo: 'Las bazas y los matrimonios',
+        texto: [
+          'Sale el declarante. Hay que seguir el palo; sin él, hay que echar triunfo si lo hay. No hay que ganar la baza.',
+          'Al empezar no hay triunfo. Si ya ganaste una baza y sales con el K o la Q de un matrimonio, lo cantas: corazones 100, diamantes 80, tréboles 60 y picas 40, y su palo pasa a ser el triunfo.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'El declarante suma sus cartas y sus matrimonios: si llega al contrato lo anota, y si no, lo resta. Los rivales anotan lo suyo redondeado a 5.',
+          'Quien llega a 880 se sube al barril: desde ahí solo suma ganando un contrato que le lleve a 1000. Si en 3 manos no lo consigue, baja a 760.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Los matrimonios dan muchos puntos: puja fuerte si tienes uno, y procura ganar pronto una baza para poder cantarlo.',
+          'Da a los rivales tus cartas más flojas, los nueves y las jotas sueltas.',
         ],
       },
     ],

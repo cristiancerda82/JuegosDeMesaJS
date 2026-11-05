@@ -113,6 +113,7 @@ ull. */
     { id: 'cuarenta', desc: T.menu.cuarentaDesc, cartas: ['corazones-5', 'picas-5', 'diamantes-6'] },
     { id: 'pishti', desc: T.menu.pishtiDesc, cartas: ['treboles-11', 'diamantes-10', 'treboles-2'] },
     { id: 'ecarte', desc: T.menu.ecarteDesc, cartas: ['corazones-13', 'corazones-12', 'picas-11'] },
+    { id: 'tysiacha', desc: T.menu.tysiachaDesc, cartas: ['corazones-12', 'corazones-13', 'corazones-1'] },
     {
       id: 'preference',
       desc: T.menu.preferenceDesc,

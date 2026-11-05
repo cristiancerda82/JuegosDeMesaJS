@@ -130,6 +130,14 @@ import { reconstruirPishti } from '../../src/ia/reconstruir/pishti';
 import { reconstruirEcarte } from '../../src/ia/reconstruir/ecarte';
 import { iaEcarteBasica } from '../../src/ia/ecarte-basica';
 import { CONFIG_ECARTE_POR_DEFECTO, ecarte, type EstadoEcarte } from '../../src/juegos/ecarte';
+import { reconstruirTysiacha } from '../../src/ia/reconstruir/tysiacha';
+import { iaTysiachaBasica } from '../../src/ia/tysiacha-basica';
+import {
+  BARAJA_TYSIACHA,
+  CONFIG_TYSIACHA_POR_DEFECTO,
+  tysiacha,
+  type EstadoTysiacha,
+} from '../../src/juegos/tysiacha';
 import { iaPishtiBasica } from '../../src/ia/pishti-basica';
 import { CONFIG_PISHTI_POR_DEFECTO, pishti } from '../../src/juegos/pishti';
 import { iaCuarentaBasica } from '../../src/ia/cuarenta-basica';
@@ -1480,6 +1488,44 @@ describe('Reconstrucción del Écarté', () => {
       const rec = reconstruirEcarte(vista, crearAzar(`e${i}`));
       expect(rec.manos[1]).toContain(rey);
       expect(ecarte.vistaDe(rec, 0)).toEqual(vista);
+    }
+  });
+});
+
+describirReconstruccion(tysiacha, reconstruirTysiacha, {
+  configs: [CONFIG_TYSIACHA_POR_DEFECTO],
+  base: iaTysiachaBasica,
+});
+
+describe('Reconstrucción del Tysiącha', () => {
+  it('el rival que cantó un matrimonio tiene la otra carta de la pareja', () => {
+    const r = tysiacha.crear(CONFIG_TYSIACHA_POR_DEFECTO, 'matrimonio');
+    if (!r.ok) throw new Error(r.error);
+    const k = 'corazones-13';
+    const q = 'corazones-12';
+    // El 1 salió con la Q de corazones y canta; el resto, repartido sin la pareja.
+    const resto = BARAJA_TYSIACHA.filter((c) => c !== k && c !== q);
+    const estado: EstadoTysiacha = {
+      ...r.valor,
+      fase: 'bazas',
+      declarante: 1,
+      contrato: 100,
+      prikupVisto: false,
+      prikup: resto.slice(0, 3),
+      manos: [resto.slice(3, 10), [k, ...resto.slice(10, 16)], resto.slice(16, 22)],
+      turno: 2,
+      triunfo: 'corazones',
+      matrimonios: [{ asiento: 1, palo: 'corazones' }],
+      mesa: [{ asiento: 1, carta: q }],
+      jugadasPor: [[], [q], []],
+      bazasGanadas: [0, 1, 0],
+    };
+    const vista = tysiacha.vistaDe(estado, 0);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirTysiacha(vista, crearAzar(`t${i}`));
+      expect(rec.manos[1]).toContain(k);
+      expect(rec.manos.map((m) => m.length)).toEqual(vista.cartasEnMano);
+      expect(tysiacha.vistaDe(rec, 0)).toEqual(vista);
     }
   });
 });

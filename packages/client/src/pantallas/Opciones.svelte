@@ -51,6 +51,7 @@
     ConfigCuarenta,
     ConfigPishti,
     ConfigEcarte,
+    ConfigTysiacha,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -161,6 +162,7 @@
   let cuarentaConfig: Editable<ConfigCuarenta> = $state({ ...JUEGOS.cuarenta.configPorDefecto });
   let pishtiConfig: Editable<ConfigPishti> = $state({ ...JUEGOS.pishti.configPorDefecto });
   let ecarteConfig: Editable<ConfigEcarte> = $state({ ...JUEGOS.ecarte.configPorDefecto });
+  let tysiachaConfig: Editable<ConfigTysiacha> = $state({ ...JUEGOS.tysiacha.configPorDefecto });
   let preferenceConfig: Editable<ConfigPreference> = $state({
     ...JUEGOS.preference.configPorDefecto,
   });
@@ -262,6 +264,7 @@
       cuarenta: cuarentaConfig,
       pishti: pishtiConfig,
       ecarte: ecarteConfig,
+      tysiacha: tysiachaConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.

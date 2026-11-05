@@ -65,6 +65,7 @@ import { SIMULABLE_PREFERENCE } from './reconstruir/preference';
 import { SIMULABLE_CUARENTA } from './reconstruir/cuarenta';
 import { SIMULABLE_PISHTI } from './reconstruir/pishti';
 import { SIMULABLE_ECARTE } from './reconstruir/ecarte';
+import { SIMULABLE_TYSIACHA } from './reconstruir/tysiacha';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -112,6 +113,7 @@ import { iaPreferenceBasica } from './preference-basica';
 import { iaCuarentaBasica } from './cuarenta-basica';
 import { iaPishtiBasica } from './pishti-basica';
 import { iaEcarteBasica } from './ecarte-basica';
+import { iaTysiachaBasica } from './tysiacha-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -229,4 +231,5 @@ export const IAS = {
   cuarenta: niveles(iaCuarentaBasica, SIMULABLE_CUARENTA),
   pishti: niveles(iaPishtiBasica, SIMULABLE_PISHTI),
   ecarte: niveles(iaEcarteBasica, SIMULABLE_ECARTE),
+  tysiacha: niveles(iaTysiachaBasica, SIMULABLE_TYSIACHA),
 } as const;

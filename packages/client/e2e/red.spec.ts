@@ -1110,6 +1110,23 @@ test('Préférence en red: lo que puja uno lo ve el otro', async ({ browser }) =
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Tysiącha en red: lo que puja uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'tysiacha');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(7);
+
+  // Ana (asiento 0) abre con 100 y puja primero Luis: pasa, y Ana lo ve junto a su asiento.
+  await expect(luis.getByTestId('pasar')).toBeVisible();
+  await luis.getByTestId('pasar').click();
+  await expect(ana.getByTestId('asiento-1')).toContainText('Paso');
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Tarot en red: lo que dice uno en la subasta lo ve el otro', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

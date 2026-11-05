@@ -61,6 +61,7 @@ import { preference } from '../../src/juegos/preference';
 import { CONFIG_CUARENTA_POR_DEFECTO, cuarenta } from '../../src/juegos/cuarenta';
 import { CONFIG_PISHTI_POR_DEFECTO, pishti } from '../../src/juegos/pishti';
 import { CONFIG_ECARTE_POR_DEFECTO, ecarte } from '../../src/juegos/ecarte';
+import { tysiacha } from '../../src/juegos/tysiacha';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -174,4 +175,6 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Cuarenta', cuarenta, CONFIG_CUARENTA_POR_DEFECTO, IAS.cuarenta, 'bandos'),
   entrada('Pishti', pishti, CONFIG_PISHTI_POR_DEFECTO, IAS.pishti, 'bandos'),
   entrada('Écarté', ecarte, CONFIG_ECARTE_POR_DEFECTO, IAS.ecarte, 2),
+  // A 300, para que las partidas de las pruebas no sean tan largas.
+  entrada('Tysiącha', tysiacha, { jugadores: 3, meta: 300 }, IAS.tysiacha, 3),
 ];
