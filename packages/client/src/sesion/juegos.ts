@@ -123,6 +123,12 @@ import {
   CONFIG_TRESILLO_POR_DEFECTO,
   conquian,
   CONFIG_CONQUIAN_POR_DEFECTO,
+  treintaYUno,
+  CONFIG_TREINTA_Y_UNO_POR_DEFECTO,
+  type AccionTreintaYUno,
+  type ConfigTreintaYUno,
+  type EstadoTreintaYUno,
+  type VistaTreintaYUno,
   type AccionConquian,
   type ConfigConquian,
   type EstadoConquian,
@@ -580,7 +586,8 @@ export type IdJuego =
   | 'rentz'
   | 'bourre'
   | 'tresillo'
-  | 'conquian';
+  | 'conquian'
+  | 'treintaYUno';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -660,6 +667,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'bourre',
   'tresillo',
   'conquian',
+  'treintaYUno',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2141,6 +2149,25 @@ export const DEF_CONQUIAN: DefConquian = {
   },
 };
 
+export type DefTreintaYUno = DefJuego<
+  ConfigTreintaYUno,
+  EstadoTreintaYUno,
+  AccionTreintaYUno,
+  VistaTreintaYUno
+>;
+
+export const DEF_TREINTA_Y_UNO: DefTreintaYUno = {
+  id: 'treintaYUno',
+  nombre: T.menu.treintaYUno,
+  juego: treintaYUno,
+  configPorDefecto: CONFIG_TREINTA_Y_UNO_POR_DEFECTO,
+  ia: IAS.treintaYUno,
+  // El cierre de la ronda lo detiene la propia mesa con el resumen; aquí, cada jugada ajena.
+  pausaTras(antes, despues) {
+    return antes.turno !== null && antes.turno !== despues.asiento ? PAUSA_RIVAL_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2219,6 +2246,7 @@ export const JUEGOS = {
   bourre: DEF_BOURRE,
   tresillo: DEF_TRESILLO,
   conquian: DEF_CONQUIAN,
+  treintaYUno: DEF_TREINTA_Y_UNO,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

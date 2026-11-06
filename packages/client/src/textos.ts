@@ -186,6 +186,9 @@ export const T = {
     truco: 'Truco',
     trucoDesc:
       'El clásico argentino de engaño, mano a mano o por parejas: canta el envido, el truco y el vale cuatro, y gana a 30 en malas y buenas.',
+    treintaYUno: 'Treinta y uno',
+    treintaYUnoDesc:
+      'De 2 a 6 con solo 3 cartas: roba y descarta para sumar 31 en un palo, plántate a tiempo y no te quedes con la peor mano.',
     conquian: 'Conquián',
     conquianDesc:
       'El rummy mexicano mano a mano: nunca se roba a la mano, la carta descubierta se usa bajándola o se deja. Gana quien baja 11 cartas.',
@@ -1423,6 +1426,32 @@ export const T = {
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
+  },
+
+  treinta: {
+    ronda: (n: number) => `Ronda ${n}`,
+    tusVidas: (n: number) => (n === 1 ? 'Te queda 1 vida' : `Te quedan ${n} vidas`),
+    vidas: (n: number) => (n === 1 ? '1 vida' : `${n} vidas`),
+    fuera: 'Fuera',
+    plantado: 'Plantado',
+    valor: (v: number) => `Tu mano: ${String(v).replace('.', ',')}`,
+    faseRobar: 'Roba del mazo o del descarte, o plántate',
+    faseDescartar: 'Toca la carta que descartas',
+    plantarse: 'Plantarse',
+    robarMazo: 'Robar del mazo',
+    robarDescarte: 'Coger la carta del descarte',
+    sePlanta: (quien: string, quedan: number) =>
+      `${quien === 'Tú' ? 'Te has plantado' : `${quien} se ha plantado`}: ${quedan === 1 ? 'queda 1 turno' : `quedan ${quedan} turnos`}`,
+    sinPlantar: 'Se acabaron las vueltas',
+    seHaPlantado: (quien: string) => (quien === 'Tú' ? 'Te plantaste' : `Se plantó ${quien}`),
+    pierden: (quienes: string) => `Pierde una vida: ${quienes}`,
+    finRonda: (n: number) => `Fin de la ronda ${n}`,
+    siguienteRonda: 'Siguiente ronda',
+    jugadorCol: 'Jugador',
+    manoCol: 'Mano',
+    valorCol: 'Valor',
+    vidasCol: 'Vidas',
+    clasificacion: 'Vidas',
   },
 
   conquian: {
@@ -3171,6 +3200,7 @@ export const T = {
       bourre: 'Cómo se juega al Bourré',
       tresillo: 'Cómo se juega al Tresillo',
       conquian: 'Cómo se juega al Conquián',
+      treintaYUno: 'Cómo se juega al Treinta y uno',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3758,6 +3788,41 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    treintaYUno: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'De 2 a 6 jugadores con la baraja francesa. Cada uno tiene 3 cartas y 3 vidas: en cada ronda, la peor mano pierde una vida. El último que queda con vidas gana.',
+        ],
+      },
+      {
+        titulo: 'El valor de la mano',
+        texto: [
+          'Cuenta la mayor suma de cartas de un mismo palo: el As vale 11, las figuras 10 y las demás su número. Lo máximo es 31 (el As y dos cartas de 10 del mismo palo).',
+          'Tres cartas del mismo número valen 30,5.',
+        ],
+      },
+      {
+        titulo: 'El turno',
+        texto: [
+          'Toca el mazo o el descarte para robar una carta y después toca la carta de tu mano que descartas (no puedes devolver la que acabas de coger del descarte).',
+          'En lugar de robar, puedes plantarte si crees que no tendrás la peor mano. Entonces cada uno de los demás juega un último turno y se enseñan las manos.',
+        ],
+      },
+      {
+        titulo: 'Las vidas',
+        texto: [
+          'Al enseñar las manos, quien tiene la de menos valor pierde una vida; si empatan varios abajo, todos la pierden. Quien se queda sin vidas queda fuera.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Junta cartas altas de un mismo palo y plántate pronto si tienes una buena mano: cuantos más turnos pasan, más mejoran los demás. Fíjate en lo que cogen los rivales del descarte.',
         ],
       },
     ],

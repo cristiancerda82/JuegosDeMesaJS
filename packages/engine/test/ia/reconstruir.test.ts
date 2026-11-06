@@ -138,6 +138,9 @@ import { iaBourreBasica } from '../../src/ia/bourre-basica';
 import { bourre, CONFIG_BOURRE_POR_DEFECTO } from '../../src/juegos/bourre';
 import { reconstruirTresillo } from '../../src/ia/reconstruir/tresillo';
 import { reconstruirConquian } from '../../src/ia/reconstruir/conquian';
+import { reconstruirTreintaYUno } from '../../src/ia/reconstruir/treinta-y-uno';
+import { iaTreintaYUnoBasica } from '../../src/ia/treinta-y-uno-basica';
+import { CONFIG_TREINTA_Y_UNO_POR_DEFECTO, treintaYUno } from '../../src/juegos/treinta-y-uno';
 import { iaConquianBasica } from '../../src/ia/conquian-basica';
 import { CONFIG_CONQUIAN_POR_DEFECTO, conquian } from '../../src/juegos/conquian';
 import { iaTresilloBasica } from '../../src/ia/tresillo-basica';
@@ -1718,6 +1721,26 @@ describe('Reconstrucción del Conquián', () => {
       expect(rec.muertas).toEqual(vista.muertas);
       expect(rec.descubierta).toBe(vista.descubierta);
       expect(conquian.vistaDe(rec, 0)).toEqual(vista);
+    }
+  });
+});
+
+describirReconstruccion(treintaYUno, reconstruirTreintaYUno, {
+  configs: [CONFIG_TREINTA_Y_UNO_POR_DEFECTO, { jugadores: 6, vidas: 1 }],
+  base: iaTreintaYUnoBasica,
+});
+
+describe('Reconstrucción del Treinta y uno', () => {
+  it('la carta cogida del descarte sigue en la mano de quien la cogió', () => {
+    const r = treintaYUno.crear(CONFIG_TREINTA_Y_UNO_POR_DEFECTO, 'treinta');
+    if (!r.ok) throw new Error(r.error);
+    const arriba = r.valor.descarte.at(-1)!;
+    const e = treintaYUno.transicion(r.valor, 0, { tipo: 'robar', desde: 'descarte' });
+    const vista = treintaYUno.vistaDe(e, 1);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirTreintaYUno(vista, crearAzar(`t${i}`));
+      expect(rec.manos[0]).toContain(arriba);
+      expect(treintaYUno.vistaDe(rec, 1)).toEqual(vista);
     }
   });
 });

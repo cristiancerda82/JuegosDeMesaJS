@@ -67,6 +67,7 @@ import { rentz } from '../../src/juegos/rentz';
 import { bourre } from '../../src/juegos/bourre';
 import { tresillo } from '../../src/juegos/tresillo';
 import { conquian } from '../../src/juegos/conquian';
+import { treintaYUno } from '../../src/juegos/treinta-y-uno';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -194,4 +195,6 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Tresillo', tresillo, { manos: 4, fichas: 20 }, IAS.tresillo, 3),
   // Al mejor de 3, para que las partidas de las pruebas no sean tan largas.
   entrada('Conquián', conquian, { manosParaGanar: 2 }, IAS.conquian, 2),
+  // Dos vidas, para que las partidas de las pruebas no sean tan largas.
+  entrada('Treinta y uno', treintaYUno, { jugadores: 4, vidas: 2 }, IAS.treintaYUno, 4),
 ];

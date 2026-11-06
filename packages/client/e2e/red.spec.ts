@@ -1493,3 +1493,19 @@ test('Conquián en red: lo que baja uno lo ve el otro', async ({ browser }) => {
   await expect(luis.getByTestId('rotulo-descubierta')).toContainText('para ti');
   await expect(luis.getByTestId('pasar')).toBeVisible();
 });
+
+test('Treinta y uno en red: lo que roba uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'treintaYUno');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(3);
+
+  // Juega primero Ana (asiento 0): se planta, y Luis lo ve.
+  await ana.getByTestId('plantarse').click();
+  await expect(luis.getByTestId('aviso-plantado')).toContainText('Ana se ha plantado');
+  await expect(luis.getByTestId('asiento-0')).toContainText('Plantado');
+});

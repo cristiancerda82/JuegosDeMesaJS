@@ -57,6 +57,7 @@
     ConfigBourre,
     ConfigTresillo,
     ConfigConquian,
+    ConfigTreintaYUno,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -173,6 +174,7 @@
   let bourreConfig: Editable<ConfigBourre> = $state({ ...JUEGOS.bourre.configPorDefecto });
   let tresilloConfig: Editable<ConfigTresillo> = $state({ ...JUEGOS.tresillo.configPorDefecto });
   let conquianConfig: Editable<ConfigConquian> = $state({ ...JUEGOS.conquian.configPorDefecto });
+  let treintaConfig: Editable<ConfigTreintaYUno> = $state({ ...JUEGOS.treintaYUno.configPorDefecto });
   let preferenceConfig: Editable<ConfigPreference> = $state({
     ...JUEGOS.preference.configPorDefecto,
   });
@@ -280,6 +282,7 @@
       bourre: bourreConfig,
       tresillo: tresilloConfig,
       conquian: conquianConfig,
+      treintaYUno: treintaConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.
@@ -422,6 +425,21 @@
           ><input type="radio" bind:group={pishtiConfig.jugadores} value={4} data-testid="pishti-cuatro" />
           {T.opciones.cuatroJugadores}</label
         >
+      </fieldset>
+    {:else if juego === 'treintaYUno'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [2, 3, 4, 5, 6] as n (n)}
+          <label
+            ><input
+              type="radio"
+              bind:group={treintaConfig.jugadores}
+              value={n}
+              data-testid="treinta-jugadores-{n}"
+            />
+            {T.opciones.jugadoresN(n)}</label
+          >
+        {/each}
       </fieldset>
     {:else if juego === 'corazones'}
       <fieldset>

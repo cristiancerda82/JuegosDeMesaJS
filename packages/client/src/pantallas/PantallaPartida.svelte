@@ -48,6 +48,7 @@
   import MesaBourre from '../mesas/MesaBourre.svelte';
   import MesaTresillo from '../mesas/MesaTresillo.svelte';
   import MesaConquian from '../mesas/MesaConquian.svelte';
+  import MesaTreintaYUno from '../mesas/MesaTreintaYUno.svelte';
   import MesaTressette from '../mesas/MesaTressette.svelte';
   import MesaSchafkopf from '../mesas/MesaSchafkopf.svelte';
   import MesaTruco from '../mesas/MesaTruco.svelte';
@@ -222,6 +223,8 @@
     <MesaTresillo sesion={partida.sesion} />
   {:else if partida.id === 'conquian'}
     <MesaConquian sesion={partida.sesion} />
+  {:else if partida.id === 'treintaYUno'}
+    <MesaTreintaYUno sesion={partida.sesion} />
   {:else if partida.id === 'ohHell'}
     <MesaOhHell sesion={partida.sesion} />
   {:else if partida.id === 'spiteMalice'}

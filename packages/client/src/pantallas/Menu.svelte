@@ -119,6 +119,7 @@ ull. */
     { id: 'bourre', desc: T.menu.bourreDesc, cartas: ['diamantes-1', 'diamantes-13', 'picas-1'] },
     { id: 'tresillo', desc: T.menu.tresilloDesc, cartas: ['espadas-1', 'oros-7', 'bastos-1'] },
     { id: 'conquian', desc: T.menu.conquianDesc, cartas: ['copas-6', 'copas-7', 'copas-10'] },
+    { id: 'treintaYUno', desc: T.menu.treintaYUnoDesc, cartas: ['treboles-1', 'treboles-13', 'treboles-10'] },
     {
       id: 'preference',
       desc: T.menu.preferenceDesc,
