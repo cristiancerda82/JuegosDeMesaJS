@@ -121,6 +121,12 @@ import {
   CONFIG_BOURRE_POR_DEFECTO,
   tresillo,
   CONFIG_TRESILLO_POR_DEFECTO,
+  conquian,
+  CONFIG_CONQUIAN_POR_DEFECTO,
+  type AccionConquian,
+  type ConfigConquian,
+  type EstadoConquian,
+  type VistaConquian,
   type AccionTresillo,
   type ConfigTresillo,
   type EstadoTresillo,
@@ -573,7 +579,8 @@ export type IdJuego =
   | 'sheepshead'
   | 'rentz'
   | 'bourre'
-  | 'tresillo';
+  | 'tresillo'
+  | 'conquian';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -652,6 +659,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'rentz',
   'bourre',
   'tresillo',
+  'conquian',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2119,6 +2127,20 @@ export const DEF_TRESILLO: DefTresillo = {
   },
 };
 
+export type DefConquian = DefJuego<ConfigConquian, EstadoConquian, AccionConquian, VistaConquian>;
+
+export const DEF_CONQUIAN: DefConquian = {
+  id: 'conquian',
+  nombre: T.menu.conquian,
+  juego: conquian,
+  configPorDefecto: CONFIG_CONQUIAN_POR_DEFECTO,
+  ia: IAS.conquian,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada jugada del rival.
+  pausaTras(antes, despues) {
+    return antes.turno !== null && antes.turno !== despues.asiento ? PAUSA_RIVAL_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2196,6 +2218,7 @@ export const JUEGOS = {
   rentz: DEF_RENTZ,
   bourre: DEF_BOURRE,
   tresillo: DEF_TRESILLO,
+  conquian: DEF_CONQUIAN,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

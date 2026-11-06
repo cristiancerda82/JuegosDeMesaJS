@@ -67,6 +67,7 @@ import { CONFIG_SHEEPSHEAD_POR_DEFECTO, sheepshead } from './juegos/sheepshead';
 import { CONFIG_RENTZ_POR_DEFECTO, rentz } from './juegos/rentz';
 import { bourre, CONFIG_BOURRE_POR_DEFECTO } from './juegos/bourre';
 import { CONFIG_TRESILLO_POR_DEFECTO, tresillo } from './juegos/tresillo';
+import { CONFIG_CONQUIAN_POR_DEFECTO, conquian } from './juegos/conquian';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -139,6 +140,7 @@ export const IDS_JUEGOS_EN_RED = [
   'rentz',
   'bourre',
   'tresillo',
+  'conquian',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -236,6 +238,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   rentz: entrada(rentz, IAS.rentz, CONFIG_RENTZ_POR_DEFECTO),
   bourre: entrada(bourre, IAS.bourre, CONFIG_BOURRE_POR_DEFECTO),
   tresillo: entrada(tresillo, IAS.tresillo, CONFIG_TRESILLO_POR_DEFECTO),
+  conquian: entrada(conquian, IAS.conquian, CONFIG_CONQUIAN_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

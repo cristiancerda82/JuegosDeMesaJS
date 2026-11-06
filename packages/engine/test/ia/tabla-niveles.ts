@@ -66,6 +66,7 @@ import { sheepshead } from '../../src/juegos/sheepshead';
 import { rentz } from '../../src/juegos/rentz';
 import { bourre } from '../../src/juegos/bourre';
 import { tresillo } from '../../src/juegos/tresillo';
+import { conquian } from '../../src/juegos/conquian';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -191,4 +192,6 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Bourré', bourre, { jugadores: 5, manos: 5, fichas: 20 }, IAS.bourre, 5),
   // Cuatro manos y 20 fichas, para que las partidas de las pruebas no sean tan largas.
   entrada('Tresillo', tresillo, { manos: 4, fichas: 20 }, IAS.tresillo, 3),
+  // Al mejor de 3, para que las partidas de las pruebas no sean tan largas.
+  entrada('Conquián', conquian, { manosParaGanar: 2 }, IAS.conquian, 2),
 ];

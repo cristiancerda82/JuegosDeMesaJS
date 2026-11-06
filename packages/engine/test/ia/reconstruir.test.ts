@@ -137,6 +137,9 @@ import { reconstruirBourre } from '../../src/ia/reconstruir/bourre';
 import { iaBourreBasica } from '../../src/ia/bourre-basica';
 import { bourre, CONFIG_BOURRE_POR_DEFECTO } from '../../src/juegos/bourre';
 import { reconstruirTresillo } from '../../src/ia/reconstruir/tresillo';
+import { reconstruirConquian } from '../../src/ia/reconstruir/conquian';
+import { iaConquianBasica } from '../../src/ia/conquian-basica';
+import { CONFIG_CONQUIAN_POR_DEFECTO, conquian } from '../../src/juegos/conquian';
 import { iaTresilloBasica } from '../../src/ia/tresillo-basica';
 import {
   CONFIG_TRESILLO_POR_DEFECTO,
@@ -1686,5 +1689,35 @@ describe('Reconstrucción del Tresillo', () => {
       }
     }
     expect(probadas).toBeGreaterThan(0);
+  });
+});
+
+describirReconstruccion(conquian, reconstruirConquian, {
+  configs: [CONFIG_CONQUIAN_POR_DEFECTO, { manosParaGanar: 1 }],
+  base: iaConquianBasica,
+});
+
+describe('Reconstrucción del Conquián', () => {
+  it('lo que se ve no cambia: solo la mano del rival y el mazo', () => {
+    const r = conquian.crear(CONFIG_CONQUIAN_POR_DEFECTO, 'conquian');
+    if (!r.ok) throw new Error(r.error);
+    let e = r.valor;
+    for (let i = 0; i < 40 && conquian.resultado(e) === null; i++) {
+      const acciones = conquian.accionesLegales(e, e.turno);
+      const { accion } = iaConquianBasica.decidir(
+        conquian.vistaDe(e, e.turno),
+        acciones,
+        crearAzar('c'),
+      );
+      e = conquian.transicion(e, e.turno, accion);
+    }
+    const vista = conquian.vistaDe(e, 0);
+    for (let i = 0; i < 5; i++) {
+      const rec = reconstruirConquian(vista, crearAzar(`c${i}`));
+      expect(rec.combinaciones).toEqual(vista.combinaciones);
+      expect(rec.muertas).toEqual(vista.muertas);
+      expect(rec.descubierta).toBe(vista.descubierta);
+      expect(conquian.vistaDe(rec, 0)).toEqual(vista);
+    }
   });
 });

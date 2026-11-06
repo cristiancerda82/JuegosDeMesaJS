@@ -186,6 +186,9 @@ export const T = {
     truco: 'Truco',
     trucoDesc:
       'El clásico argentino de engaño, mano a mano o por parejas: canta el envido, el truco y el vale cuatro, y gana a 30 en malas y buenas.',
+    conquian: 'Conquián',
+    conquianDesc:
+      'El rummy mexicano mano a mano: nunca se roba a la mano, la carta descubierta se usa bajándola o se deja. Gana quien baja 11 cartas.',
     tresillo: 'Tresillo',
     tresilloDesc:
       'El gran clásico español para tres: subasta la entrada, la vuelta o el solo, y juega contra los dos con la espadilla, la malilla y el basto.',
@@ -1420,6 +1423,37 @@ export const T = {
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
+  },
+
+  conquian: {
+    mano: (n: number) => `Mano ${n}`,
+    ganadas: (tu: number, rival: number) => `Manos: ${tu} – ${rival}`,
+    objetivo: (n: number) => `Gana quien gane ${n}`,
+    detalle: (cartas: number, bajadas: number) =>
+      `${cartas === 1 ? '1 carta' : `${cartas} cartas`} · ${bajadas} bajadas`,
+    combinacionesDe: (quien: string) => `Combinaciones de ${quien}`,
+    tusCombinaciones: 'Tus combinaciones',
+    sinCombinaciones: 'Sin combinaciones',
+    bajadas: (n: number) => `${n}/11 bajadas`,
+    mazo: (n: number) => `Mazo: ${n}`,
+    delMazo: 'Del mazo',
+    descarteDe: (quien: string) => (quien === 'Tú' ? 'Tu descarte' : `Descarte de ${quien}`),
+    paraTi: 'para ti',
+    para: (quien: string) => `para ${quien}`,
+    muertas: (n: number) => (n === 1 ? '1 muerta' : `${n} muertas`),
+    faseDecidir: 'Elige cartas y baja con la descubierta, toca una combinación tuya o pasa',
+    faseDescartar: 'Elige la carta que descartas',
+    bajar: 'Bajar',
+    pasar: 'Pasar',
+    descartar: 'Descartar',
+    tablas: 'Tablas: se acabó el mazo',
+    gana: (quien: string) => (quien === 'Tú' ? 'Ganas la mano' : `${quien} gana la mano`),
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    siguienteMano: 'Siguiente mano',
+    jugadorCol: 'Jugador',
+    bajadasCol: 'Bajadas',
+    ganadasCol: 'Manos',
+    clasificacion: 'Manos ganadas',
   },
 
   tresillo: {
@@ -3136,6 +3170,7 @@ export const T = {
       rentz: 'Cómo se juega al Rentz',
       bourre: 'Cómo se juega al Bourré',
       tresillo: 'Cómo se juega al Tresillo',
+      conquian: 'Cómo se juega al Conquián',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3723,6 +3758,42 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    conquian: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El rummy mexicano, mano a mano y con la baraja española de 40 cartas. Cada uno recibe 10 cartas; gana la mano quien consigue tener 11 cartas bajadas en combinaciones.',
+          'La partida es al mejor de 5: gana quien gana 3 manos. Las manos en tablas no cuentan.',
+        ],
+      },
+      {
+        titulo: 'Las combinaciones',
+        texto: [
+          'Grupo: 3 o 4 cartas del mismo número. Escalera: 3 o más cartas seguidas del mismo palo, en el orden As, 2… 7, sota, caballo y rey (el 7 y la sota van seguidos, y no se da la vuelta del rey al As).',
+        ],
+      },
+      {
+        titulo: 'La carta descubierta',
+        texto: [
+          'Nunca se roba a la mano. Por turno se descubre la primera carta del mazo: quien la descubre puede usarla y, si no, puede usarla el rival. Si nadie la usa, queda muerta y el otro descubre la siguiente.',
+          'Usarla es bajarla: elige cartas de tu mano y pulsa «Bajar» para formar una combinación nueva con ella, o toca una de tus combinaciones para añadírsela (con las cartas elegidas, si hacen falta).',
+          'Tras usarla, descarta una carta. Tu descarte solo se le ofrece a tu rival.',
+        ],
+      },
+      {
+        titulo: 'Ganar la mano',
+        texto: [
+          'Cuando bajas tu última carta tienes 11 bajadas y ganas la mano. Si se acaba el mazo sin que nadie lo consiga, la mano es tablas.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Guarda parejas y cartas seguidas del mismo palo: son las que te dejan usar más cartas descubiertas. Y no descartes una carta que encaje en las combinaciones del rival.',
         ],
       },
     ],

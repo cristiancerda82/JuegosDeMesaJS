@@ -1477,3 +1477,19 @@ test('Tresillo en red: lo que puja uno lo ve el otro', async ({ browser }) => {
   await expect(luis.getByTestId('asiento-0')).toContainText('Paso');
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
+
+test('Conquián en red: lo que baja uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'conquian');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(10);
+
+  // Decide primero Ana (asiento 0): pasa, y la carta se le ofrece a Luis.
+  await ana.getByTestId('pasar').click();
+  await expect(luis.getByTestId('rotulo-descubierta')).toContainText('para ti');
+  await expect(luis.getByTestId('pasar')).toBeVisible();
+});

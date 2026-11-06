@@ -106,6 +106,10 @@ import {
   type ConfigTresillo,
   type EstadoTresillo,
   type VistaTresillo,
+  type AccionConquian,
+  type ConfigConquian,
+  type EstadoConquian,
+  type VistaConquian,
   type AccionRentz,
   type ConfigRentz,
   type EstadoRentz,
@@ -367,6 +371,7 @@ import {
   DEF_RENTZ,
   DEF_BOURRE,
   DEF_TRESILLO,
+  DEF_CONQUIAN,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -491,6 +496,12 @@ export type SesionKingsCorner = SesionMesa<
 export type SesionEcarte = SesionMesa<ConfigEcarte, EstadoEcarte, AccionEcarte, VistaEcarte>;
 export type SesionRentz = SesionMesa<ConfigRentz, EstadoRentz, AccionRentz, VistaRentz>;
 export type SesionBourre = SesionMesa<ConfigBourre, EstadoBourre, AccionBourre, VistaBourre>;
+export type SesionConquian = SesionMesa<
+  ConfigConquian,
+  EstadoConquian,
+  AccionConquian,
+  VistaConquian
+>;
 export type SesionTresillo = SesionMesa<
   ConfigTresillo,
   EstadoTresillo,
@@ -714,7 +725,8 @@ export type Partida =
   | { readonly id: 'sheepshead'; readonly sesion: SesionSheepshead }
   | { readonly id: 'rentz'; readonly sesion: SesionRentz }
   | { readonly id: 'bourre'; readonly sesion: SesionBourre }
-  | { readonly id: 'tresillo'; readonly sesion: SesionTresillo };
+  | { readonly id: 'tresillo'; readonly sesion: SesionTresillo }
+  | { readonly id: 'conquian'; readonly sesion: SesionConquian };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -791,7 +803,8 @@ export type ConfigJuego =
   | ConfigSheepshead
   | ConfigRentz
   | ConfigBourre
-  | ConfigTresillo;
+  | ConfigTresillo
+  | ConfigConquian;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -948,6 +961,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_BOURRE);
     case 'tresillo':
       return hacer(DEF_TRESILLO);
+    case 'conquian':
+      return hacer(DEF_CONQUIAN);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':
