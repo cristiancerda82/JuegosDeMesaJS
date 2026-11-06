@@ -1110,6 +1110,21 @@ test('Préférence en red: lo que puja uno lo ve el otro', async ({ browser }) =
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Corazones de 3 en red: los dos ven la mesa de tres', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'corazones', (p) =>
+    p.getByTestId('corazones-jugadores-3').check(),
+  );
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(17);
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+  await expect(ana.getByTestId('asiento-3')).toHaveCount(0);
+});
+
 test('Bourré en red: lo que decide uno lo ve el otro', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

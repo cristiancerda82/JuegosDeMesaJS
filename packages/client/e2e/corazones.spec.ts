@@ -139,3 +139,57 @@ test('la mesa de los Corazones entra en 360 × 640', async ({ page }) => {
   await expect(page.locator('.carta-mano')).toHaveCount(13);
   await page.screenshot({ path: 'test-results/corazones-360.png' });
 });
+
+// ── De 3 a 6 jugadores (Black Lady) ──────────────────────────────────────────
+
+async function empezarCon(page: Page, query: string, jugadores: number) {
+  await page.goto(`./?${query}`);
+  await page.getByTestId('juego-corazones').click();
+  await page.getByTestId(`corazones-jugadores-${jugadores}`).check();
+  await page.getByLabel('A 50 puntos').check();
+  await page.getByTestId('empezar').click();
+}
+
+test('Corazones de 3: 17 cartas, sin pase y sin el 2 de diamantes', async ({ page }) => {
+  await page.goto('./?semilla=corazones-tres');
+  await page.getByTestId('juego-corazones').click();
+  await expect(page.getByTestId('corazones-pase')).toBeVisible();
+  await page.getByTestId('corazones-jugadores-3').check();
+  await expect(page.getByTestId('corazones-pase')).toHaveCount(0);
+  await expect(page.getByTestId('corazones-black-lady')).toBeVisible();
+  await page.getByTestId('empezar').click();
+  await expect(page.locator('.carta-mano')).toHaveCount(17);
+  await expect(page.getByTestId('panel-pase')).toHaveCount(0);
+  await expect(page.locator('.carta-mano[data-carta="diamantes-2"]')).toHaveCount(0);
+  for (const a of [1, 2]) await expect(page.getByTestId(`asiento-${a}`)).toBeVisible();
+  await expect(page.getByTestId('asiento-3')).toHaveCount(0);
+  await page.screenshot({ path: `test-results/corazones-3-${page.viewportSize()!.width}.png` });
+});
+
+test('partida de Corazones de 3 completa contra la IA', async ({ page }) => {
+  test.setTimeout(300_000);
+  await empezarCon(page, 'rapido&semilla=corazones-tres-completa', 3);
+  const resumenes = await jugar(page);
+  expect(resumenes).toBeGreaterThan(0);
+  const fin = page.getByTestId('fin');
+  await expect(fin).toContainText('Puntos (menos es mejor)');
+  await expect(fin.getByTestId('total-2')).toBeVisible();
+  await expect(fin.getByTestId('total-3')).toHaveCount(0);
+});
+
+test('Corazones de 6: 8 cartas y la mesa entra en 360 × 640', async ({ page }) => {
+  await empezarCon(page, 'semilla=corazones-seis', 6);
+  await expect(page.locator('.carta-mano')).toHaveCount(8);
+  for (const a of [1, 2, 3, 4, 5]) await expect(page.getByTestId(`asiento-${a}`)).toBeVisible();
+  if (page.viewportSize()?.width === 360) {
+    await page.waitForFunction(() => document.getAnimations().length === 0);
+    const anchos = await page.evaluate(() => ({
+      pagina: document.documentElement.scrollWidth,
+      ventana: window.innerWidth,
+    }));
+    expect(anchos.pagina).toBeLessThanOrEqual(anchos.ventana);
+    for (const a of [1, 2, 3, 4, 5])
+      await expect(page.getByTestId(`asiento-${a}`)).toBeInViewport();
+  }
+  await page.screenshot({ path: `test-results/corazones-6-${page.viewportSize()!.width}.png` });
+});

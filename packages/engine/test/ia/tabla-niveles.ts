@@ -113,6 +113,8 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Pocha', pocha, CONFIG_POCHA_POR_DEFECTO, IAS.pocha, 4),
   entrada('Mus', mus, CONFIG_MUS_POR_DEFECTO, IAS.mus, 'bandos', false),
   entrada('Corazones', corazones, CONFIG_CORAZONES_POR_DEFECTO, IAS.corazones, 4),
+  entrada('Corazones de 3', corazones, { pase: false, fin: 100, jugadores: 3 }, IAS.corazones, 3),
+  entrada('Corazones de 6', corazones, { pase: false, fin: 100, jugadores: 6 }, IAS.corazones, 6),
   entrada('Burro', burro, CONFIG_BURRO_POR_DEFECTO, IAS.burro, 4, false),
   entrada('Pinacle', pinacle, CONFIG_PINACLE_POR_DEFECTO, IAS.pinacle, 'bandos'),
   entrada('Butifarra', butifarra, CONFIG_BUTIFARRA_POR_DEFECTO, IAS.butifarra, 'bandos'),

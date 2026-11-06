@@ -267,12 +267,13 @@
       </table>
     {:else if partida.id === 'corazones'}
       {@const vista = partida.sesion.vista}
+      {@const n = vista.totales.length}
       <table>
         <caption>{T.corazones.clasificacion}</caption>
         <tbody>
-          {#each [0, 1, 2, 3].sort((a, b) => vista.totales[a]! - vista.totales[b]!) as a (a)}
+          {#each vista.totales.map((_, a) => a).sort((a, b) => vista.totales[a]! - vista.totales[b]!) as a (a)}
             <tr>
-              <th scope="row">{nombreChinchon(a, 4)}</th>
+              <th scope="row">{nombreChinchon(a, n)}</th>
               <td data-testid="total-{a}">{vista.totales[a]}</td>
             </tr>
           {/each}

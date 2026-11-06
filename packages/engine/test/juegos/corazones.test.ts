@@ -271,8 +271,69 @@ describe('vista', () => {
 
 // ── Contrato ─────────────────────────────────────────────────────────────────
 
+describe('de 3 a 6 jugadores (Black Lady)', () => {
+  it('con 3: 17 cartas a cada uno, sin el 2 de diamantes y sin pase', () => {
+    const e = nueva({ jugadores: 3 });
+    expect(corazones.asientos(e)).toBe(3);
+    expect(e.manos.map((m) => m.length)).toEqual([17, 17, 17]);
+    expect(e.manos.flat()).not.toContain('diamantes-2');
+    expect(e.fase).toBe('juego');
+    expect(e.config.pase).toBe(false);
+    expect(e.manos[e.turno]).toContain('treboles-2');
+  });
+
+  it('con 5: 10 cartas, sin el 2 de diamantes ni el de picas', () => {
+    const e = nueva({ jugadores: 5 });
+    expect(e.manos.map((m) => m.length)).toEqual([10, 10, 10, 10, 10]);
+    expect(e.manos.flat()).not.toContain('picas-2');
+  });
+
+  it('con 6: 8 cartas, sin el 2 ni el 3 de diamantes ni de picas', () => {
+    const e = nueva({ jugadores: 6 });
+    expect(e.manos.map((m) => m.length)).toEqual([8, 8, 8, 8, 8, 8]);
+    for (const c of ['diamantes-2', 'picas-2', 'diamantes-3', 'picas-3']) {
+      expect(e.manos.flat()).not.toContain(c);
+    }
+  });
+
+  it('con 4 todo sigue igual, también con un estado guardado sin la opción', () => {
+    const e = nueva();
+    expect(e.config).toEqual(CONFIG_CORAZONES_POR_DEFECTO);
+    expect(e.manos.map((m) => m.length)).toEqual([13, 13, 13, 13]);
+    expect(e.fase).toBe('pase');
+    const r = corazones.crear({ pase: true, fin: 100, jugadores: 4 }, 'c');
+    if (!r.ok) throw new Error(r.error);
+    expect(r.valor.fase).toBe('pase');
+  });
+
+  it('con 5, la luna suma 26 a cada uno de los otros cuatro', () => {
+    let e = nueva({ jugadores: 5 });
+    // Una sola baza por jugar: el 0 ya tiene 24 puntos y se lleva los dos últimos corazones.
+    e = {
+      ...e,
+      manos: [['corazones-1'], ['corazones-3'], ['treboles-4'], ['treboles-5'], ['treboles-6']],
+      turno: 0,
+      rotos: true,
+      bazasJugadas: 9,
+      puntosMano: [24, 0, 0, 0, 0],
+    };
+    for (const a of [0, 1, 2, 3, 4]) {
+      e = corazones.transicion(e, a, corazones.accionesLegales(e, a)[0]!);
+    }
+    const r = e.resultadosManos.at(-1)!;
+    expect(r.luna).toBe(0);
+    expect(r.puntos).toEqual([0, 26, 26, 26, 26]);
+  });
+});
+
 describirContrato(corazones, {
-  configs: [CONFIG_CORAZONES_POR_DEFECTO, { pase: false, fin: 50 }],
+  configs: [
+    CONFIG_CORAZONES_POR_DEFECTO,
+    { pase: false, fin: 50 },
+    { pase: false, fin: 50, jugadores: 3 },
+    { pase: false, fin: 50, jugadores: 5 },
+    { pase: false, fin: 50, jugadores: 6 },
+  ],
   // Las cartas de la última baza ya se vieron, aunque tras barajar estén en otra mano.
   cartasOcultas: (e, asiento) => {
     const vistas = new Set(e.ultimaBaza?.cartas.map((j) => j.carta));

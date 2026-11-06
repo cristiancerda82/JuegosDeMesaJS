@@ -126,10 +126,19 @@ describe('garantías de la IA de los Corazones', () => {
     CONFIG_CORAZONES_POR_DEFECTO,
   ];
 
+  /** También de 3, 5 y 6 jugadores (Black Lady, sin pase). */
+  const configsN: ConfigCorazones[] = [
+    { pase: true, fin: 50 },
+    { pase: false, fin: 50 },
+    { pase: false, fin: 50, jugadores: 3 },
+    { pase: false, fin: 50, jugadores: 5 },
+    { pase: false, fin: 50, jugadores: 6 },
+  ];
+
   it('1.000 partidas entre IAs terminan sin acciones ilegales', () => {
     for (let i = 0; i < 1_000; i++) {
-      const config = configs[i % 2]!;
-      const agentes = Array.from({ length: 4 }, (_, a) =>
+      const config = configsN[i % configsN.length]!;
+      const agentes = Array.from({ length: config.jugadores ?? 4 }, (_, a) =>
         (i + a) % 3 === 0 ? azarDe : iaCorazonesBasica,
       );
       const { final } = jugarPartida(config, `sim-${i}`, agentes);
@@ -148,6 +157,19 @@ describe('garantías de la IA de los Corazones', () => {
       if (corazones.resultado(final)!.ganadores.includes(asientoIa)) ganadas++;
     }
     expect(ganadas).toBeGreaterThan(600);
+  });
+
+  it('con 3 jugadores, la IA básica gana claramente más de la tercera parte contra el azar', () => {
+    let ganadas = 0;
+    for (let i = 0; i < 300; i++) {
+      const asientoIa = i % 3;
+      const agentes = Array.from({ length: 3 }, (_, a) =>
+        a === asientoIa ? iaCorazonesBasica : azarDe,
+      );
+      const { final } = jugarPartida({ pase: false, fin: 50, jugadores: 3 }, `tres-${i}`, agentes);
+      if (corazones.resultado(final)!.ganadores.includes(asientoIa)) ganadas++;
+    }
+    expect(ganadas).toBeGreaterThan(150);
   });
 
   it('misma vista y misma semilla, misma decisión', () => {

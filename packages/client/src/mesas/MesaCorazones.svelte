@@ -7,6 +7,7 @@
     IdCarta,
     VistaCorazones,
   } from '@juegos/engine';
+  import { jugadoresCorazones } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
   import { FACTOR_PAUSAS } from '../ajustes';
   import type { SesionMesa } from '../sesion/sesion-mesa';
@@ -23,9 +24,8 @@
 
   /** Tiempo para ver la última baza de la mano antes de que salga el resumen. */
   const ESPERA_RESUMEN_MS = 1100 * FACTOR_PAUSAS;
-  const JUGADORES = 4;
-
   const vista = $derived(sesion.vista);
+  const JUGADORES = $derived(jugadoresCorazones(vista.config));
   const legales = $derived(sesion.legales);
 
   const jugable = (carta: IdCarta) =>
@@ -63,7 +63,7 @@
     config: { jugadores: JUGADORES },
     mazo: 0,
     muestra: null,
-    bazas: [0, 0, 0, 0],
+    bazas: new Array<number>(JUGADORES).fill(0),
     ultimaBaza:
       vista.fase === 'pase' && vista.pasaron.some(Boolean) ? null : vista.ultimaBaza,
     resultadosManos: [],

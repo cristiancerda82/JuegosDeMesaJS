@@ -120,7 +120,7 @@
   let cuarentaLadronesConfig: Editable<ConfigCuarentaLadrones> = $state({
     ...JUEGOS.cuarentaLadrones.configPorDefecto,
   });
-  let corazones: Editable<ConfigCorazones> = $state({ ...JUEGOS.corazones.configPorDefecto });
+  let corazones: Editable<ConfigCorazones> = $state({ jugadores: 4, ...JUEGOS.corazones.configPorDefecto });
   let burro: Editable<ConfigBurro> = $state({ ...JUEGOS.burro.configPorDefecto });
   let pinacle: Editable<ConfigPinacle> = $state({ ...JUEGOS.pinacle.configPorDefecto });
   let butifarra: Editable<ConfigButifarra> = $state({ ...JUEGOS.butifarra.configPorDefecto });
@@ -419,12 +419,30 @@
       </fieldset>
     {:else if juego === 'corazones'}
       <fieldset>
-        <legend>{T.opciones.paseCorazones}</legend>
-        <label class="casilla">
-          <input type="checkbox" bind:checked={corazones.pase} />
-          {T.opciones.paseCorazonesDesc}
-        </label>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [3, 4, 5, 6] as n (n)}
+          <label
+            ><input
+              type="radio"
+              bind:group={corazones.jugadores}
+              value={n}
+              data-testid="corazones-jugadores-{n}"
+            />
+            {T.opciones.jugadoresN(n)}</label
+          >
+        {/each}
       </fieldset>
+      {#if (corazones.jugadores ?? 4) === 4}
+        <fieldset>
+          <legend>{T.opciones.paseCorazones}</legend>
+          <label class="casilla">
+            <input type="checkbox" bind:checked={corazones.pase} data-testid="corazones-pase" />
+            {T.opciones.paseCorazonesDesc}
+          </label>
+        </fieldset>
+      {:else}
+        <p class="nota" data-testid="corazones-black-lady">{T.opciones.blackLady}</p>
+      {/if}
       <fieldset>
         <legend>{T.opciones.puntosPartida}</legend>
         {#each [100, 50] as p (p)}

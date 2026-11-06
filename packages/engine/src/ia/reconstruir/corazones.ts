@@ -1,7 +1,8 @@
 import type { EstadoAzar } from '../../baraja/azar';
 import { barajar } from '../../baraja/barajar';
-import { cartasFuera, crearBaraja, type IdCarta } from '../../baraja/cartas';
+import { cartasFuera, type IdCarta } from '../../baraja/cartas';
 import {
+  barajaCorazones,
   corazones,
   type AccionCorazones,
   type ConfigCorazones,
@@ -20,7 +21,7 @@ const CARTAS_A_PASAR = 3;
 export function reconstruirCorazones(vista: VistaCorazones, azar: EstadoAzar): EstadoCorazones {
   const ocultas = new Ocultas(
     cartasFuera(
-      crearBaraja('francesa52'),
+      barajaCorazones(vista.config),
       vista.miMano ?? [],
       vista.mesa.map((j) => j.carta),
       vista.jugadas,

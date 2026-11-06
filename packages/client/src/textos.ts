@@ -401,6 +401,8 @@ export const T = {
     vueltaGolfDesc: 'Con vuelta: sobre una K va un As, y sobre un As una K.',
     escobaInicialDesc: 'Si las 4 cartas iniciales de la mesa suman 15, son escoba del que reparte.',
     jugadoresN: (n: number) => `${n} jugadores`,
+    blackLady:
+      'Con 3, 5 o 6 jugadores (Black Lady) se quitan algunos doses para repartir igual y no hay pase.',
     baraja: 'Baraja',
     baraja40: 'Española de 40 cartas',
     baraja48: 'Española de 48 cartas (con 8 y 9)',
@@ -6156,6 +6158,13 @@ export const T = {
           'Pasa la Q de picas, y el As y el Rey de picas si tienes pocas picas: con ellos te puede caer la Q.',
           'Quedarte sin un palo pronto te deja soltar cartas peligrosas.',
           'Vigila si alguien se está llevando todos los corazones: ¡puede ir a por la luna!',
+        ],
+      },
+      {
+        titulo: 'Con 3, 5 o 6 jugadores (Black Lady)',
+        texto: [
+          'En las opciones puedes jugar de 3 a 6. Para que todos tengan las mismas cartas se quitan algunos doses: con 3, el 2 de diamantes (17 cartas cada uno); con 5, también el 2 de picas (10 cada uno); y con 6, además el 3 de diamantes y el 3 de picas (8 cada uno).',
+          'Con 3, 5 o 6 no hay pase. Siguen los 13 corazones y la Q de picas, así que la luna vale igual: 26 para cada uno de los demás.',
         ],
       },
     ],

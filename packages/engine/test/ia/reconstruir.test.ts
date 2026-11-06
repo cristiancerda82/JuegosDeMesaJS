@@ -324,7 +324,12 @@ describe('reconstrucción del Mus', () => {
 });
 
 describirReconstruccion(corazones, reconstruirCorazones, {
-  configs: [CONFIG_CORAZONES_POR_DEFECTO, { pase: false, fin: 50 }],
+  configs: [
+    CONFIG_CORAZONES_POR_DEFECTO,
+    { pase: false, fin: 50 },
+    { pase: false, fin: 50, jugadores: 3 },
+    { pase: false, fin: 50, jugadores: 6 },
+  ],
   base: iaCorazonesBasica,
   partidas: 4,
 });

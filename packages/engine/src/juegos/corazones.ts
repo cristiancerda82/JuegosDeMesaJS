@@ -19,7 +19,11 @@ export interface ConfigCorazones {
   readonly pase: boolean;
   /** La partida termina al acabar la mano en la que alguien llega a estos puntos. */
   readonly fin: 100 | 50;
+  /** De 3 a 6 (Black Lady con 3, 5 y 6, sin pase); sin el campo, 4. */
+  readonly jugadores?: JugadoresCorazones;
 }
+
+export type JugadoresCorazones = 3 | 4 | 5 | 6;
 
 export const CONFIG_CORAZONES_POR_DEFECTO: ConfigCorazones = { pase: true, fin: 100 };
 
@@ -90,13 +94,39 @@ export interface VistaCorazones {
 
 // ── Reglas ───────────────────────────────────────────────────────────────────
 
-const JUGADORES = 4;
-const CARTAS_EN_MANO = 13;
 const DOS_DE_TREBOLES: IdCarta = 'treboles-2';
 const REINA_DE_PICAS: IdCarta = 'picas-12';
 const PUNTOS_TOTALES = 26;
 /** Desplazamiento del pase en cada mano: al siguiente, al anterior, al de enfrente, sin pase. */
 const DIRECCIONES = [1, 3, 2, 0] as const;
+
+/** Cartas que se quitan para que el reparto salga igual. */
+export const QUITADAS_CORAZONES: Readonly<Record<JugadoresCorazones, readonly IdCarta[]>> = {
+  3: ['diamantes-2'],
+  4: [],
+  5: ['diamantes-2', 'picas-2'],
+  6: ['diamantes-2', 'picas-2', 'diamantes-3', 'picas-3'],
+};
+
+export const jugadoresCorazones = (config: ConfigCorazones): JugadoresCorazones =>
+  config.jugadores ?? 4;
+
+// Precalculadas: las simulaciones de la IA las consultan en cada baza.
+const quitarDe52 = (n: JugadoresCorazones) =>
+  cartasFuera(crearBaraja('francesa52'), QUITADAS_CORAZONES[n]);
+const BARAJAS_CORAZONES: Readonly<Record<JugadoresCorazones, readonly IdCarta[]>> = {
+  3: quitarDe52(3),
+  4: quitarDe52(4),
+  5: quitarDe52(5),
+  6: quitarDe52(6),
+};
+
+/** La baraja de la partida: la de 52 sin las cartas que se quitan. */
+export const barajaCorazones = (config: ConfigCorazones): readonly IdCarta[] =>
+  BARAJAS_CORAZONES[jugadoresCorazones(config)];
+
+export const cartasEnManoCorazones = (config: ConfigCorazones) =>
+  BARAJAS_CORAZONES[jugadoresCorazones(config)].length / jugadoresCorazones(config);
 
 export const paloCorazones = (c: IdCarta) => cartaDeId(c)!.palo as PaloFrances;
 /** Rango para ganar bazas: el As es la más alta (14). */
@@ -167,8 +197,9 @@ function nuevaMano(
   totales: readonly number[],
   ultimaBaza: EstadoCorazones['ultimaBaza'],
 ): EstadoCorazones {
-  const { cartas, azar: azarSiguiente } = barajar(crearBaraja('francesa52'), azar);
-  const reparto = repartir(cartas, new Array<number>(JUGADORES).fill(CARTAS_EN_MANO));
+  const n = jugadoresCorazones(config);
+  const { cartas, azar: azarSiguiente } = barajar(barajaCorazones(config), azar);
+  const reparto = repartir(cartas, new Array<number>(n).fill(cartasEnManoCorazones(config)));
   if (!reparto.ok) throw new Error(reparto.error);
   const manos = reparto.valor.manos;
   const conPase = direccionPase(config, numeroMano) !== 0;
@@ -178,14 +209,14 @@ function nuevaMano(
     numeroMano,
     manos,
     fase: conPase ? 'pase' : 'juego',
-    pases: new Array<IdCarta[] | null>(JUGADORES).fill(null),
-    recibidas: Array.from({ length: JUGADORES }, () => []),
+    pases: new Array<IdCarta[] | null>(n).fill(null),
+    recibidas: Array.from({ length: n }, () => []),
     turno: conPase ? 0 : quienTieneElDos(manos),
     mesa: [],
     ultimaBaza,
     bazasJugadas: 0,
     rotos: false,
-    puntosMano: new Array<number>(JUGADORES).fill(0),
+    puntosMano: new Array<number>(n).fill(0),
     resultadosManos,
     totales,
   };
@@ -193,10 +224,8 @@ function nuevaMano(
 
 function entregarPases(e: EstadoCorazones): EstadoCorazones {
   const d = direccionPase(e.config, e.numeroMano);
-  const recibidas = Array.from(
-    { length: JUGADORES },
-    (_, a) => e.pases[(a - d + JUGADORES) % JUGADORES]!,
-  );
+  const n = jugadoresCorazones(e.config);
+  const recibidas = Array.from({ length: n }, (_, a) => e.pases[(a - d + n) % n]!);
   const manos = e.manos.map((m, a) => [
     ...m.filter((c) => !e.pases[a]!.includes(c)),
     ...recibidas[a]!,
@@ -229,7 +258,9 @@ function resolverBaza(e: EstadoCorazones): EstadoCorazones {
     bazasJugadas: e.bazasJugadas + 1,
     puntosMano: e.puntosMano.map((p, a) => (a === ganador ? p + valor : p)),
   };
-  return resuelto.bazasJugadas === CARTAS_EN_MANO ? cerrarMano(resuelto) : resuelto;
+  return resuelto.bazasJugadas === cartasEnManoCorazones(e.config)
+    ? cerrarMano(resuelto)
+    : resuelto;
 }
 
 // ── Juego ────────────────────────────────────────────────────────────────────
@@ -242,13 +273,17 @@ export const corazones: Juego<ConfigCorazones, EstadoCorazones, AccionCorazones,
     if (config.fin !== 100 && config.fin !== 50) {
       return error('La partida termina a 100 o a 50 puntos');
     }
-    const limpia: ConfigCorazones = { pase: config.pase, fin: config.fin };
-    return ok(
-      nuevaMano(limpia, crearAzar(semilla), 0, [], new Array<number>(JUGADORES).fill(0), null),
-    );
+    const n = config.jugadores ?? 4;
+    if (![3, 4, 5, 6].includes(n)) return error('Los Corazones se juegan de 3 a 6');
+    // Sin el campo, como las partidas de antes; el pase solo existe con 4.
+    const limpia: ConfigCorazones =
+      config.jugadores === undefined
+        ? { pase: config.pase, fin: config.fin }
+        : { pase: n === 4 && config.pase, fin: config.fin, jugadores: n };
+    return ok(nuevaMano(limpia, crearAzar(semilla), 0, [], new Array<number>(n).fill(0), null));
   },
 
-  asientos: () => JUGADORES,
+  asientos: (e) => jugadoresCorazones(e.config),
 
   accionesLegales(e, asiento) {
     if (partidaTerminada(e) || asiento !== e.turno) return [];
@@ -261,7 +296,11 @@ export const corazones: Juego<ConfigCorazones, EstadoCorazones, AccionCorazones,
   transicion(e, asiento, accion) {
     if (accion.tipo === 'pasar') {
       const pases = e.pases.map((p, a) => (a === asiento ? accion.cartas : p));
-      const elegido: EstadoCorazones = { ...e, pases, turno: (asiento + 1) % JUGADORES };
+      const elegido: EstadoCorazones = {
+        ...e,
+        pases,
+        turno: (asiento + 1) % jugadoresCorazones(e.config),
+      };
       return pases.every((p) => p !== null) ? entregarPases(elegido) : elegido;
     }
     const manos = e.manos.map((m, a) => (a === asiento ? m.filter((c) => c !== accion.carta) : m));
@@ -272,9 +311,8 @@ export const corazones: Juego<ConfigCorazones, EstadoCorazones, AccionCorazones,
       mesa,
       rotos: e.rotos || paloCorazones(accion.carta) === 'corazones',
     };
-    return mesa.length < JUGADORES
-      ? { ...jugado, turno: (asiento + 1) % JUGADORES }
-      : resolverBaza(jugado);
+    const n = jugadoresCorazones(e.config);
+    return mesa.length < n ? { ...jugado, turno: (asiento + 1) % n } : resolverBaza(jugado);
   },
 
   vistaDe(e, asiento) {
@@ -297,7 +335,7 @@ export const corazones: Juego<ConfigCorazones, EstadoCorazones, AccionCorazones,
       ultimaBaza: e.ultimaBaza,
       bazasJugadas: e.bazasJugadas,
       jugadas: cartasFuera(
-        crearBaraja('francesa52'),
+        barajaCorazones(e.config),
         ...e.manos,
         e.mesa.map((j) => j.carta),
       ),
@@ -314,7 +352,8 @@ export const corazones: Juego<ConfigCorazones, EstadoCorazones, AccionCorazones,
     const minimo = Math.min(...e.totales);
     const ganadores = e.totales.flatMap((t, a) => (t === minimo ? [a] : []));
     const puntos = [...e.totales];
-    if (ganadores.length === JUGADORES) return { ganadores: [], empate: true, puntos };
+    if (ganadores.length === jugadoresCorazones(e.config))
+      return { ganadores: [], empate: true, puntos };
     return { ganadores, empate: false, puntos };
   },
 };
