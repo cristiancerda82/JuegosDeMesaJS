@@ -257,6 +257,8 @@ Los Corazones MUST ofrecer al menos un nivel de IA, con las mismas garantías qu
 - **Si no tiene el palo:** se deshace primero de la Q de picas, luego de su corazón más alto y luego de su carta más alta.
 - **Al salir:** sale con su carta más baja de un palo que no sea corazones mientras pueda.
 
+La IA MUST jugar con cualquier número de jugadores de los Corazones (de 3 a 6), con las mismas reglas.
+
 Este nivel MUST terminar con menos puntos que los jugadores que eligen acciones legales al azar en la mayoría de las partidas.
 
 #### Scenario: Se deshace de la Q de picas
@@ -268,12 +270,16 @@ Este nivel MUST terminar con menos puntos que los jugadores que eligen acciones 
 - **THEN** juega la más alta de las que no ganan
 
 #### Scenario: Partidas completas de Corazones
-- **WHEN** se juegan 1.000 partidas de Corazones entre IAs con semillas distintas y distintas opciones
+- **WHEN** se juegan 1.000 partidas de Corazones entre IAs con semillas distintas y distintas opciones, también de 3, 5 y 6 jugadores
 - **THEN** todas terminan sin ninguna acción ilegal
 
 #### Scenario: Contra el azar en los Corazones
 - **WHEN** la IA básica juega 1.000 partidas contra tres jugadores que eligen acciones legales al azar
 - **THEN** gana claramente más de la mitad de las partidas
+
+#### Scenario: Contra el azar con 3 jugadores
+- **WHEN** la IA básica juega 300 partidas de Corazones de 3 contra dos jugadores que eligen acciones legales al azar
+- **THEN** gana claramente más de la tercera parte
 
 ### Requirement: IA del Burro nivel básico
 El Burro MUST ofrecer al menos un nivel de IA, con las mismas garantías que el resto de IAs: decide solo con la vista de su asiento, juega siempre una acción legal, es reproducible con su semilla y responde en menos de 500 ms. Este nivel MUST jugar de forma razonable:
