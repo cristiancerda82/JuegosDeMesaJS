@@ -136,6 +136,13 @@ import { reconstruirRentz } from '../../src/ia/reconstruir/rentz';
 import { reconstruirBourre } from '../../src/ia/reconstruir/bourre';
 import { iaBourreBasica } from '../../src/ia/bourre-basica';
 import { bourre, CONFIG_BOURRE_POR_DEFECTO } from '../../src/juegos/bourre';
+import { reconstruirTresillo } from '../../src/ia/reconstruir/tresillo';
+import { iaTresilloBasica } from '../../src/ia/tresillo-basica';
+import {
+  CONFIG_TRESILLO_POR_DEFECTO,
+  tresillo,
+  type EstadoTresillo,
+} from '../../src/juegos/tresillo';
 import { iaRentzBasica } from '../../src/ia/rentz-basica';
 import {
   CONFIG_RENTZ_POR_DEFECTO,
@@ -1637,5 +1644,47 @@ describe('Reconstrucción del Bourré', () => {
       expect(rec.manos.map((m) => m.length)).toEqual(vista.cartasEnMano);
       expect(bourre.vistaDe(rec, 0)).toEqual(vista);
     }
+  });
+});
+
+describirReconstruccion(tresillo, reconstruirTresillo, {
+  configs: [CONFIG_TRESILLO_POR_DEFECTO, { manos: 2, fichas: 3 }],
+  base: iaTresilloBasica,
+});
+
+describe('Reconstrucción del Tresillo', () => {
+  /** Avanza con la IA básica hasta que se cumple `hasta`. */
+  function avanzar(semilla: string, hasta: (e: EstadoTresillo) => boolean): EstadoTresillo | null {
+    const r = tresillo.crear(CONFIG_TRESILLO_POR_DEFECTO, semilla);
+    if (!r.ok) throw new Error(r.error);
+    let e = r.valor;
+    for (let i = 0; i < 500 && tresillo.resultado(e) === null; i++) {
+      if (hasta(e)) return e;
+      const acciones = tresillo.accionesLegales(e, e.turno);
+      const { accion } = iaTresilloBasica.decidir(
+        tresillo.vistaDe(e, e.turno),
+        acciones,
+        crearAzar('t'),
+      );
+      e = tresillo.transicion(e, e.turno, accion);
+    }
+    return null;
+  }
+
+  it('la vuelta sigue en la mano del hombre mientras no la juegue', () => {
+    let probadas = 0;
+    for (let s = 0; s < 200 && probadas < 5; s++) {
+      const e = avanzar(`v${s}`, (x) => x.contrato === 'vuelta' && x.fase === 'bazas');
+      if (!e || !e.manos[e.hombre!]!.includes(e.vuelta!)) continue;
+      probadas++;
+      const otro = (e.hombre! + 1) % 3;
+      const vista = tresillo.vistaDe(e, otro);
+      for (let i = 0; i < 5; i++) {
+        const rec = reconstruirTresillo(vista, crearAzar(`t${i}`));
+        expect(rec.manos[e.hombre!]).toContain(e.vuelta);
+        expect(tresillo.vistaDe(rec, otro)).toEqual(vista);
+      }
+    }
+    expect(probadas).toBeGreaterThan(0);
   });
 });

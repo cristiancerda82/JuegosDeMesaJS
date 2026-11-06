@@ -66,6 +66,7 @@ import { CONFIG_TYSIACHA_POR_DEFECTO, tysiacha } from './juegos/tysiacha';
 import { CONFIG_SHEEPSHEAD_POR_DEFECTO, sheepshead } from './juegos/sheepshead';
 import { CONFIG_RENTZ_POR_DEFECTO, rentz } from './juegos/rentz';
 import { bourre, CONFIG_BOURRE_POR_DEFECTO } from './juegos/bourre';
+import { CONFIG_TRESILLO_POR_DEFECTO, tresillo } from './juegos/tresillo';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -137,6 +138,7 @@ export const IDS_JUEGOS_EN_RED = [
   'sheepshead',
   'rentz',
   'bourre',
+  'tresillo',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -233,6 +235,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   sheepshead: entrada(sheepshead, IAS.sheepshead, CONFIG_SHEEPSHEAD_POR_DEFECTO),
   rentz: entrada(rentz, IAS.rentz, CONFIG_RENTZ_POR_DEFECTO),
   bourre: entrada(bourre, IAS.bourre, CONFIG_BOURRE_POR_DEFECTO),
+  tresillo: entrada(tresillo, IAS.tresillo, CONFIG_TRESILLO_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

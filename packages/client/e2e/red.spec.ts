@@ -1461,3 +1461,19 @@ test('sin servidor, la pantalla de red lo dice', async ({ page }) => {
   await page.getByTestId('empezar').click();
   await expect(page.getByTestId('aviso-red')).toHaveText('No se puede conectar con el servidor');
 });
+
+test('Tresillo en red: lo que puja uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'tresillo');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(9);
+
+  // Puja primero Ana (asiento 0, el mano): pasa, y Luis lo ve junto a su asiento.
+  await ana.getByTestId('pasar').click();
+  await expect(luis.getByTestId('asiento-0')).toContainText('Paso');
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});

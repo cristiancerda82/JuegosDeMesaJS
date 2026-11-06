@@ -55,6 +55,7 @@
     ConfigSheepshead,
     ConfigRentz,
     ConfigBourre,
+    ConfigTresillo,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -169,6 +170,7 @@
   let sheepsheadConfig: Editable<ConfigSheepshead> = $state({ ...JUEGOS.sheepshead.configPorDefecto });
   let rentzConfig: Editable<ConfigRentz> = $state({ ...JUEGOS.rentz.configPorDefecto });
   let bourreConfig: Editable<ConfigBourre> = $state({ ...JUEGOS.bourre.configPorDefecto });
+  let tresilloConfig: Editable<ConfigTresillo> = $state({ ...JUEGOS.tresillo.configPorDefecto });
   let preferenceConfig: Editable<ConfigPreference> = $state({
     ...JUEGOS.preference.configPorDefecto,
   });
@@ -274,6 +276,7 @@
       sheepshead: sheepsheadConfig,
       rentz: rentzConfig,
       bourre: bourreConfig,
+      tresillo: tresilloConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.

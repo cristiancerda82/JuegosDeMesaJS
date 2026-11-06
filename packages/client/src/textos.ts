@@ -186,6 +186,9 @@ export const T = {
     truco: 'Truco',
     trucoDesc:
       'El clásico argentino de engaño, mano a mano o por parejas: canta el envido, el truco y el vale cuatro, y gana a 30 en malas y buenas.',
+    tresillo: 'Tresillo',
+    tresilloDesc:
+      'El gran clásico español para tres: subasta la entrada, la vuelta o el solo, y juega contra los dos con la espadilla, la malilla y el basto.',
     bourre: 'Bourré',
     bourreDesc:
       'El clásico de Luisiana para cinco: juega o pasa, cambia cartas, gana más bazas que nadie y llévate el bote, o paga el bourré.',
@@ -1417,6 +1420,44 @@ export const T = {
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
+  },
+
+  tresillo: {
+    reparte: 'Reparte',
+    hombre: 'Hombre',
+    puja: (p: string) => (p === 'paso' ? 'Paso' : `${p[0]!.toUpperCase()}${p.slice(1)}`),
+    nombreContrato: (c: string) => `${c[0]!.toUpperCase()}${c.slice(1)}`,
+    contrato: (c: string, palo: string | null) =>
+      `${c[0]!.toUpperCase()}${c.slice(1)}${palo === null ? '' : ` en ${palo}`}`,
+    palo: (p: string) => `${p[0]!.toUpperCase()}${p.slice(1)}`,
+    cambio: (n: number) => (n === 1 ? 'Cambió 1' : `Cambió ${n}`),
+    fichasCortas: (n: number) => `${n} 🪙`,
+    mano: (n: number, total: number) => `Mano ${n}/${total}`,
+    subasta: 'Subasta',
+    monte: (n: number) => `Monte: ${n}`,
+    bote: (n: number) => `Bote: ${n}`,
+    fichas: (n: number) => `Tus fichas: ${n}`,
+    puja_tu: 'Puja un contrato o pasa',
+    pujando: (quien: string) => `${quien} puja`,
+    eligeTriunfo: 'Elige el triunfo',
+    eligiendo: (quien: string) => `${quien} elige el triunfo`,
+    cambia: (n: number) =>
+      n === 0 ? 'Toca las cartas que cambias' : n === 1 ? 'Cambias 1 carta' : `Cambias ${n} cartas`,
+    debeDescartar: 'En la vuelta, descarta al menos una carta',
+    cambiando: (quien: string) => `${quien} cambia cartas`,
+    paso: 'Paso',
+    cambiar: (n: number) => (n === 1 ? 'Cambiar 1' : `Cambiar ${n}`),
+    noCambiar: 'No cambiar',
+    pasada: (n: number) => `Pasan todos: el bote (${n}) se queda`,
+    desenlace: { sacada: 'Sacada', puesta: 'Puesta' } as Record<string, string>,
+    codillo: (quien: string) => `Codillo de ${quien}`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    siguienteMano: 'Siguiente mano',
+    jugadorCol: 'Jugador',
+    bazasCol: 'Bazas',
+    cambioCol: 'Fichas',
+    fichasCol: 'Total',
+    clasificacion: 'Fichas',
   },
 
   bourre: {
@@ -3094,6 +3135,7 @@ export const T = {
       sheepshead: 'Cómo se juega al Sheepshead',
       rentz: 'Cómo se juega al Rentz',
       bourre: 'Cómo se juega al Bourré',
+      tresillo: 'Cómo se juega al Tresillo',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3681,6 +3723,52 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    tresillo: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El gran juego español de bazas, para tres, con la baraja de 40 cartas. Quien gana la subasta (el hombre) juega solo contra los otros dos.',
+          'Cada uno empieza con 100 fichas y pone 1 en el bote en cada mano. Tras 12 manos (o cuando alguien se queda sin fichas) gana quien tiene más.',
+        ],
+      },
+      {
+        titulo: 'Los matadores y el orden',
+        texto: [
+          'La espadilla (As de espadas) y el basto (As de bastos) son siempre triunfo. La malilla es el 2 del triunfo si es espadas o bastos, y el 7 si es oros o copas. Son los tres triunfos más altos: espadilla, malilla y basto.',
+          'Con triunfo de espadas o bastos siguen el rey, el caballo, la sota y del 7 al 3. Con oros o copas, tras los matadores va el punto (el As del triunfo), luego el rey, el caballo, la sota y del 2 al 6.',
+          'En los palos que no son triunfo: los negros van rey, caballo, sota y del 7 al 2; los rojos, rey, caballo, sota, As y del 2 al 7.',
+        ],
+      },
+      {
+        titulo: 'La subasta',
+        texto: [
+          'Cada uno recibe 9 cartas y quedan 13 en el monte. Desde el mano, se puja más alto o se pasa (y quien pasa ya no vuelve). De menor a mayor:',
+          'Entrada: eliges el triunfo y cambias cartas con el monte. Vuelta: se descubre la primera carta del monte, su palo es el triunfo y te la quedas al cambiar. Solo: eliges el triunfo y juegas sin cambiar.',
+          'Tras el hombre, cada defensor también puede cambiar cartas con lo que quede del monte. Si pasan los tres, la mano no se juega y el bote crece.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Se juegan 9 bazas y sale el mano. Hay que seguir el palo; si no tienes, puedes echar cualquier carta, sin obligación de fallar.',
+          'Si sale triunfo y solo tienes matadores, no estás obligado a echarlos, salvo que la carta de salida sea un matador más alto que el tuyo.',
+        ],
+      },
+      {
+        titulo: 'Sacada, puesta y codillo',
+        texto: [
+          'El contrato vale 2 la entrada, 4 la vuelta y 6 el solo. Sacada: si el hombre hace más bazas que cada defensor, se lleva el bote y cada defensor le paga el contrato.',
+          'Puesta: si empata con el defensor que más hace, paga al bote tanto como había y el contrato a cada defensor. Codillo: si un defensor le gana, le paga lo que hay en el bote, y el contrato a cada uno.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Los matadores son la clave: con dos o tres y unos cuantos triunfos más, puja. Como defensor, ayuda a tu compañero y no gastes cartas altas en una baza que ya es suya.',
         ],
       },
     ],

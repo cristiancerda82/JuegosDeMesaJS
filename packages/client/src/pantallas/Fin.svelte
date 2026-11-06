@@ -36,6 +36,7 @@
   import ResumenSheepshead from '../mesas/ResumenSheepshead.svelte';
   import ResumenRentz from '../mesas/ResumenRentz.svelte';
   import ResumenBourre from '../mesas/ResumenBourre.svelte';
+  import ResumenTresillo from '../mesas/ResumenTresillo.svelte';
   import ResumenTressette from '../mesas/ResumenTressette.svelte';
   import ResumenSchafkopf from '../mesas/ResumenSchafkopf.svelte';
   import ResumenTruco from '../mesas/ResumenTruco.svelte';
@@ -131,6 +132,7 @@
       partida.id !== 'sheepshead' &&
       partida.id !== 'rentz' &&
       partida.id !== 'bourre' &&
+      partida.id !== 'tresillo' &&
       partida.id !== 'barbu' &&
       partida.id !== 'schafkopf' &&
       partida.id !== 'preference' &&
@@ -587,6 +589,21 @@
         <caption>{T.bourre.clasificacion}</caption>
         <tbody>
           {#each [...[0, 1, 2, 3, 4]].sort((a, b) => vista.fichas[b]! - vista.fichas[a]!) as a, i (a)}
+            <tr><th scope="row">{nombre(a)}</th><td data-testid="puntos-fin-{i}">{vista.fichas[a]}</td></tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'tresillo'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const nombre = (a: number) => nombreNumerado(a, 3, yo, partida.sesion.red, T.brisca.rivalN)}
+      {#if ultima}
+        <ResumenTresillo resultado={ultima} {yo} {nombre} />
+      {/if}
+      <table data-testid="puntos-tresillo">
+        <caption>{T.tresillo.clasificacion}</caption>
+        <tbody>
+          {#each [...[0, 1, 2]].sort((a, b) => vista.fichas[b]! - vista.fichas[a]!) as a, i (a)}
             <tr><th scope="row">{nombre(a)}</th><td data-testid="puntos-fin-{i}">{vista.fichas[a]}</td></tr>
           {/each}
         </tbody>

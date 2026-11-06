@@ -119,6 +119,12 @@ import {
   CONFIG_RENTZ_POR_DEFECTO,
   bourre,
   CONFIG_BOURRE_POR_DEFECTO,
+  tresillo,
+  CONFIG_TRESILLO_POR_DEFECTO,
+  type AccionTresillo,
+  type ConfigTresillo,
+  type EstadoTresillo,
+  type VistaTresillo,
   type AccionBourre,
   type ConfigBourre,
   type EstadoBourre,
@@ -566,7 +572,8 @@ export type IdJuego =
   | 'tysiacha'
   | 'sheepshead'
   | 'rentz'
-  | 'bourre';
+  | 'bourre'
+  | 'tresillo';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -644,6 +651,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'sheepshead',
   'rentz',
   'bourre',
+  'tresillo',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2090,6 +2098,27 @@ export const DEF_BOURRE: DefBourre = {
   },
 };
 
+export type DefTresillo = DefJuego<ConfigTresillo, EstadoTresillo, AccionTresillo, VistaTresillo>;
+
+export const DEF_TRESILLO: DefTresillo = {
+  id: 'tresillo',
+  nombre: T.menu.tresillo,
+  juego: tresillo,
+  configPorDefecto: CONFIG_TRESILLO_POR_DEFECTO,
+  ia: IAS.tresillo,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada puja, el triunfo,
+  // cada cambio y cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    const dicho =
+      JSON.stringify(antes.pujas) !== JSON.stringify(despues.pujas) ||
+      antes.triunfo !== despues.triunfo ||
+      JSON.stringify(antes.cambiadas) !== JSON.stringify(despues.cambiadas);
+    if (dicho) return PAUSA_CANTE_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2166,6 +2195,7 @@ export const JUEGOS = {
   sheepshead: DEF_SHEEPSHEAD,
   rentz: DEF_RENTZ,
   bourre: DEF_BOURRE,
+  tresillo: DEF_TRESILLO,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

@@ -69,6 +69,7 @@ import { SIMULABLE_TYSIACHA } from './reconstruir/tysiacha';
 import { SIMULABLE_SHEEPSHEAD } from './reconstruir/sheepshead';
 import { SIMULABLE_RENTZ } from './reconstruir/rentz';
 import { SIMULABLE_BOURRE } from './reconstruir/bourre';
+import { SIMULABLE_TRESILLO } from './reconstruir/tresillo';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -120,6 +121,7 @@ import { iaTysiachaBasica } from './tysiacha-basica';
 import { iaSheepsheadBasica } from './sheepshead-basica';
 import { iaRentzBasica } from './rentz-basica';
 import { iaBourreBasica } from './bourre-basica';
+import { iaTresilloBasica } from './tresillo-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -241,4 +243,5 @@ export const IAS = {
   sheepshead: niveles(iaSheepsheadBasica, SIMULABLE_SHEEPSHEAD),
   rentz: niveles(iaRentzBasica, SIMULABLE_RENTZ),
   bourre: niveles(iaBourreBasica, SIMULABLE_BOURRE),
+  tresillo: niveles(iaTresilloBasica, SIMULABLE_TRESILLO),
 } as const;
