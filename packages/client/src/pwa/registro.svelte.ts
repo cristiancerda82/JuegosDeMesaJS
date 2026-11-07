@@ -43,7 +43,11 @@ class EstadoPwa {
       this.#actualizando = false;
       location.reload();
     });
-    void navigator.serviceWorker.register('./sw.js').then((registro) => {
+    // Si el navegador bloquea los service workers, `register` puede fallar o no devolver
+    // registro: la app sigue funcionando, solo que sin caché para jugar sin conexión.
+    const registrar = navigator.serviceWorker.register('./sw.js').catch(() => undefined);
+    void registrar.then((registro) => {
+      if (!registro) return;
       if (registro.waiting && navigator.serviceWorker.controller) this.#avisar(registro.waiting);
       registro.addEventListener('updatefound', () => {
         const nuevo = registro.installing;
