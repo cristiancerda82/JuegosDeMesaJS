@@ -3116,6 +3116,14 @@ export const T = {
   },
 
   cartas: {
+    diseno: 'Diseño de las cartas',
+    temas: {
+      minimal: 'Minimal',
+      castizo: 'Castizo',
+      napolitano: 'Napolitano',
+      victoriano: 'Victoriano',
+    },
+    temaDe: (baraja: string) => `Diseño de la ${baraja}`,
     figurasEspanolas: { 10: 'Sota', 11: 'Caballo', 12: 'Rey' } as Record<number, string>,
     figurasFrancesas: { 1: 'As', 11: 'Jota', 12: 'Reina', 13: 'Rey', 14: 'Caballo' } as Record<
       number,

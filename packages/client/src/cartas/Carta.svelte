@@ -8,28 +8,28 @@
     COLOR_TRIUNFO,
     COMODIN,
     ESTRELLA,
-    colorTinta,
-    type DibujoPalo,
-    figuraDe,
-    FIGURAS,
-    esFrancesa,
     indice,
     nombreCarta,
-    PALOS,
-    pips,
   } from './dibujo';
+  import { temas } from './tema.svelte';
+  import type { IdTema, Pieza } from './temas/tipos';
 
   interface Props {
     /** Carta a dibujar; `null` dibuja el dorso. */
     id?: IdCarta | null;
+    /** Fuerza un tema (vistas previas); sin él, el elegido para la baraja de la carta. */
+    tema?: IdTema;
   }
 
-  let { id = null }: Props = $props();
+  let { id = null, tema: temaForzado }: Props = $props();
 
   const carta = $derived(id === null ? null : cartaDeId(id));
-  const palo = $derived(carta === null ? null : PALOS[carta.palo]);
-  const tinta = $derived(carta === null ? '' : colorTinta(carta.palo));
-  const figura = $derived(carta === null ? null : figuraDe(carta.palo, carta.valor));
+  /** Tema con el que se dibuja: el forzado si ya está cargado, o el elegido (Minimal si no). */
+  const tema = $derived(
+    carta === null
+      ? null
+      : ((temaForzado ? temas.listo(temaForzado) : null) ?? temas.dePalo(carta.palo)),
+  );
   /** El número del triunfo del Tarot, o `null` si no lo es. */
   const triunfo = $derived(id !== null && esTriunfoTarot(id) ? numeroTriunfo(id) : null);
 </script>
@@ -91,7 +91,7 @@
     <text x="50" y="108" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="1" fill={COLOR_EXCUSA}>
       {T.cartas.excusa.toUpperCase()}
     </text>
-  {:else if carta === null || palo === null}
+  {:else if carta === null || tema === null}
     <defs>
       <pattern id="trama-dorso" width="12" height="12" patternUnits="userSpaceOnUse">
         <path d="M6 0L12 6L6 12L0 6Z" fill="var(--dorso-claro)" opacity="0.55" />
@@ -100,40 +100,53 @@
     <rect x="1" y="1" width="98" height="138" rx="8" fill="var(--dorso)" stroke="#fff" stroke-width="2" />
     <rect x="9" y="9" width="82" height="122" rx="4" fill="url(#trama-dorso)" stroke="var(--dorso-claro)" stroke-width="2" />
   {:else}
-    <rect x="1" y="1" width="98" height="138" rx="8" fill="var(--papel)" stroke="var(--borde-carta)" stroke-width="1.5" />
+    {@const texto = indice(carta.palo, carta.valor)}
+    <rect x="1" y="1" width="98" height="138" rx="8" fill={tema.papel} stroke={tema.borde} stroke-width="1.5" />
 
-    {#snippet esquina(texto: string, dibujo: DibujoPalo)}
-      <text x="12" y="27" text-anchor="middle" font-size={texto.length > 1 ? 21 : 26} letter-spacing={texto.length > 1 ? -1.5 : 0} font-weight="700" fill={tinta}>
-        {texto}
-      </text>
-      <path d={dibujo.d} fill={dibujo.color} fill-rule={dibujo.regla} transform={colocar(12, 41, 16)} />
+    {#snippet pieza(p: Pieza)}
+      {#if p.tipo === 'path'}
+        <path d={p.d} fill={p.fill} fill-rule={p.regla} transform={p.transform} />
+      {:else if p.tipo === 'rect'}
+        <rect
+          x={p.x}
+          y={p.y}
+          width={p.ancho}
+          height={p.alto}
+          rx={p.rx}
+          fill={p.fill}
+          fill-opacity={p.opacidadRelleno}
+          stroke={p.stroke}
+          stroke-width={p.grosor}
+        />
+      {:else}
+        <use href="#{p.ref}" x={p.x} y={p.y} width={p.ancho} height={p.alto} transform={p.transform} style={p.estilo} />
+      {/if}
     {/snippet}
 
-    {@render esquina(indice(carta.palo, carta.valor), palo)}
-    <g transform="rotate(180 50 70)">{@render esquina(indice(carta.palo, carta.valor), palo)}</g>
+    {#snippet esquina()}
+      <text
+        x="12"
+        y="27"
+        text-anchor="middle"
+        font-size={texto.length > 1 ? 21 : 26}
+        letter-spacing={texto.length > 1 ? -1.5 : 0}
+        font-weight={tema.indice.peso}
+        font-family={tema.indice.fuente}
+        fill={tema.indice.color(carta.palo)}
+      >
+        {texto}
+      </text>
+      {@render pieza(tema.paloEsquina(carta.palo, 12, 41, 16))}
+    {/snippet}
 
-    {#if figura !== null}
-      <rect x="27" y="14" width="46" height="112" rx="6" fill={palo.color} fill-opacity="0.1" stroke={palo.color} stroke-width="2" />
-      {#each FIGURAS[figura] as capa, i (i)}
-        <path
-          d={capa.d}
-          fill={capa.relleno === 'tinta' ? tinta : 'var(--papel)'}
-          transform={colocar(50, 56, 42)}
-        />
-      {/each}
-      <path d={palo.d} fill={palo.color} fill-rule={palo.regla} transform={colocar(50, 102, 22)} />
-    {:else if carta.valor === 1}
-      <path
-        d={palo.d}
-        fill={palo.color}
-        fill-rule={palo.regla}
-        transform={colocar(50, 70, esFrancesa(carta.palo) ? 40 : 54)}
-      />
-    {:else}
-      {#each pips(carta.valor) as [x, y], i (i)}
-        <path d={palo.d} fill={palo.color} fill-rule={palo.regla} transform={colocar(x, y, 20)} />
-      {/each}
-    {/if}
+    {#each tema.marco?.(carta.palo) ?? [] as p, i (i)}
+      {@render pieza(p)}
+    {/each}
+    {@render esquina()}
+    <g transform="rotate(180 50 70)">{@render esquina()}</g>
+    {#each tema.cuerpo(carta.palo, carta.valor) as p, i (i)}
+      {@render pieza(p)}
+    {/each}
   {/if}
 </svg>
 

@@ -2,6 +2,7 @@
   import { BARAJA_TAROT, crearBaraja } from '@juegos/engine';
   import { T } from '../textos';
   import Carta from './Carta.svelte';
+  import SelectorTemas from './SelectorTemas.svelte';
 
   interface Props {
     volver: () => void;
@@ -21,6 +22,11 @@
     <button onclick={volver}>← {T.opciones.volver}</button>
     <h1>{T.cartas.muestrario}</h1>
   </header>
+
+  <details class="diseno">
+    <summary>{T.cartas.diseno}</summary>
+    <SelectorTemas />
+  </details>
 
   {#each barajas as baraja (baraja.titulo)}
     <section>
@@ -59,6 +65,16 @@
     align-items: center;
     gap: 12px;
     margin-bottom: 8px;
+  }
+
+  .diseno summary {
+    min-height: 32px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .diseno[open] summary {
+    margin-bottom: 10px;
   }
 
   h2 {

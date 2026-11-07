@@ -1,4 +1,5 @@
 <script lang="ts">
+  import SelectorTemas from '../cartas/SelectorTemas.svelte';
   import AccesosRapidos from '../menu/AccesosRapidos.svelte';
   import {
     FAMILIAS,
@@ -186,6 +187,11 @@ ull. */
     <button class="enlace" onclick={verCartas}>{T.menu.verCartas}</button>
   </footer>
 
+  <details class="diseno" data-testid="diseno-cartas">
+    <summary>{T.cartas.diseno}</summary>
+    <SelectorTemas />
+  </details>
+
   {#if !pwa.instalada}
     {#if pwa.puedeInstalar}
       <section class="instalar" data-testid="instalar">
@@ -338,6 +344,23 @@ ull. */
     gap: 12px;
     margin-top: 28px;
     color: var(--texto-suave);
+  }
+
+  .diseno {
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: var(--radio);
+    background: rgb(0 0 0 / 0.2);
+  }
+
+  .diseno summary {
+    min-height: 32px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .diseno[open] summary {
+    margin-bottom: 10px;
   }
 
   .instalar {

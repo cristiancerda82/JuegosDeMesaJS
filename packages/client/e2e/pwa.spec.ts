@@ -94,3 +94,18 @@ test('una versión nueva muestra el aviso y se activa al pulsar «Actualizar»',
     await writeFile(archivo, original);
   }
 });
+
+test('sin conexión, con la app instalada, se puede elegir un tema de naipes', async ({
+  page,
+  context,
+}) => {
+  await controlada(page);
+  await context.setOffline(true);
+  await page.goto('./?rapido');
+  await page.getByTestId('diseno-cartas').locator('summary').click();
+  await page.getByTestId('tema-espanola-castizo').check({ force: true });
+  await expect(
+    page.getByTestId('temas-espanola').locator('svg.carta use[href^="#castizo-"]').first(),
+  ).toBeVisible();
+  await context.setOffline(false);
+});
