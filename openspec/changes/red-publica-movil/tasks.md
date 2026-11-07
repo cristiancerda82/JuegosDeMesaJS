@@ -1,20 +1,20 @@
 ## 1. Servidor preparado para Internet
 
-- [ ] 1.1 Montar el `WebSocketServer` sobre `http.createServer` con `GET /salud` (200 `ok`, sin datos) y 404 para el resto; `main.ts` lee `PORT` y si no `PUERTO`
-- [ ] 1.2 IP del cliente (`X-Forwarded-For` solo con `CONFIAR_PROXY=1`), límites de 20 conexiones y 5 salas de anfitrión por IP, y error `demasiadas-salas` en `protocolo.ts` y en los textos del cliente
-- [ ] 1.3 Latido del servidor: hora del último mensaje por conexión y revisión cada 15 s que cierra las conexiones calladas más de 60 s, pasando por la desconexión normal
-- [ ] 1.4 Tests del servidor: salud y 404, origen rechazado, límites por IP con y sin proxy de confianza, cierre por silencio que marca el asiento desconectado y deja jugar a la IA a los 10 s
+- [x] 1.1 Montar el `WebSocketServer` sobre `http.createServer` con `GET /salud` (200 `ok`, sin datos) y 404 para el resto; `main.ts` lee `PORT` y si no `PUERTO`
+- [x] 1.2 IP del cliente (`X-Forwarded-For` solo con `CONFIAR_PROXY=1`), límites de 20 conexiones y 5 salas de anfitrión por IP, y error `demasiadas-salas` en `protocolo.ts` y en los textos del cliente
+- [x] 1.3 Latido del servidor: hora del último mensaje por conexión y revisión cada 15 s que cierra las conexiones calladas más de 60 s, pasando por la desconexión normal
+- [x] 1.4 Tests del servidor: salud y 404, origen rechazado, límites por IP con y sin proxy de confianza, cierre por silencio que marca el asiento desconectado y deja jugar a la IA a los 10 s
 
 ## 2. Cliente: conexión robusta y servidor por defecto
 
-- [ ] 2.1 `ClienteRed`: `ping` cada 10 s con un tiempo máximo de 10 s para el `pong`, cerrando a mano el socket si vence, para que actúe la reconexión existente
-- [ ] 2.2 `visibilitychange`: al volver a visible, reconexión inmediata si el socket no está abierto, o ping de comprobación si parece abierto
-- [ ] 2.3 `servidorPorDefecto` desde `VITE_SERVIDOR_RED`; en la plataforma nativa, descartar una dirección `ws://` guardada y rechazar `ws://` en la pantalla de red con su explicación
-- [ ] 2.4 Tests unitarios de `ClienteRed` con un WebSocket simulado: pong perdido, socket zombi al volver a visible, reconexión con testigo
+- [x] 2.1 `ClienteRed`: `ping` cada 10 s con un tiempo máximo de 10 s para el `pong`, cerrando a mano el socket si vence, para que actúe la reconexión existente
+- [x] 2.2 `visibilitychange`: al volver a visible, reconexión inmediata si el socket no está abierto, o ping de comprobación si parece abierto
+- [x] 2.3 `servidorPorDefecto` desde `VITE_SERVIDOR_RED`; en la plataforma nativa, descartar una dirección `ws://` guardada y rechazar `ws://` en la pantalla de red con su explicación
+- [x] 2.4 Tests unitarios de `ClienteRed` con un WebSocket simulado: pong perdido, socket zombi al volver a visible, reconexión con testigo
 
 ## 3. Despliegue en Railway
 
-- [ ] 3.1 `railway.json` (Dockerfile, `healthcheckPath`, una réplica, reinicio en fallo) y documentar las variables `ORIGENES` y `CONFIAR_PROXY`
+- [x] 3.1 `railway.json` (Dockerfile, `healthcheckPath`, una réplica, reinicio en fallo) y documentar las variables `ORIGENES` y `CONFIAR_PROXY`
 - [ ] 3.2 Desplegar, comprobar `/salud` y crear y jugar una sala real por `wss://` desde dos navegadores
 - [ ] 3.3 Añadir `VITE_SERVIDOR_RED` como variable del repositorio en `pages.yml`, publicar y comprobar que la red funciona desde GitHub Pages
 

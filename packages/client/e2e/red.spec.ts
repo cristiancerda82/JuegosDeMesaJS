@@ -1,4 +1,5 @@
 import { expect, test, type Browser, type Page } from '@playwright/test';
+import { T } from '../src/textos';
 
 /** Un jugador en su propio navegador (contexto aislado, con su almacenamiento). */
 async function jugador(browser: Browser): Promise<Page> {
@@ -1508,4 +1509,81 @@ test('Treinta y uno en red: lo que roba uno lo ve el otro', async ({ browser }) 
   await ana.getByTestId('plantarse').click();
   await expect(luis.getByTestId('aviso-plantado')).toContainText('Ana se ha plantado');
   await expect(luis.getByTestId('asiento-0')).toContainText('Plantado');
+});
+
+// ── Conexión robusta (spec partidas-en-red: conexiones muertas y segundo plano) ──
+
+/**
+ * Intercepta los sockets de un jugador. Con `cortada`, los mensajes no pasan en ningún sentido
+ * (como una red que deja de transmitir sin cerrar el socket) y las conexiones nuevas fallan.
+ */
+async function redControlada(page: Page) {
+  const red = { cortada: false, abiertos: [] as { close: () => Promise<void> }[] };
+  await page.routeWebSocket(/:8787/, (ws) => {
+    if (red.cortada) {
+      void ws.close();
+      return;
+    }
+    const servidor = ws.connectToServer();
+    ws.onMessage((m) => {
+      if (!red.cortada) servidor.send(m);
+    });
+    servidor.onMessage((m) => {
+      if (!red.cortada) ws.send(m);
+    });
+    red.abiertos.push(ws);
+  });
+  return red;
+}
+
+/** Brisca de dos humanos empezada; Luis juega con la red controlada. */
+async function briscaEmpezada(browser: Browser) {
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const red = await redControlada(luis);
+  const codigo = await crearSala(ana, 'brisca');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  await expect(luis.getByTestId('franja-red')).toBeVisible();
+  return { ana, luis, red };
+}
+
+test('una red que deja de transmitir se detecta en menos de 30 s y se recupera el asiento', async ({
+  browser,
+}) => {
+  test.setTimeout(120_000);
+  const { luis, red } = await briscaEmpezada(browser);
+
+  red.cortada = true;
+  await expect(luis.getByText(T.red.reconectando)).toBeVisible({ timeout: 30_000 });
+
+  red.cortada = false;
+  await expect(luis.getByText(T.red.reconectando)).toBeHidden({ timeout: 20_000 });
+  await expect(luis.getByTestId('jugador-1')).toContainText('Luis');
+});
+
+test('al volver del segundo plano reconecta al momento, sin esperar al siguiente intento', async ({
+  browser,
+}) => {
+  test.setTimeout(120_000);
+  const { luis, red } = await briscaEmpezada(browser);
+  const visibilidad = (estado: 'hidden' | 'visible') =>
+    luis.evaluate((e) => {
+      Object.defineProperty(document, 'visibilityState', { value: e, configurable: true });
+      document.dispatchEvent(new Event('visibilitychange'));
+    }, estado);
+
+  // La app pasa a segundo plano y el sistema le corta la conexión un buen rato: los intentos de
+  // reconexión fallan y la espera entre ellos crece hasta 10 s.
+  await visibilidad('hidden');
+  red.cortada = true;
+  for (const ws of red.abiertos.splice(0)) await ws.close();
+  await expect(luis.getByText(T.red.reconectando)).toBeVisible();
+  await luis.waitForTimeout(16_000);
+
+  // Vuelve la red y el jugador abre la app: reconecta enseguida y sigue en su asiento.
+  red.cortada = false;
+  await visibilidad('visible');
+  await expect(luis.getByText(T.red.reconectando)).toBeHidden({ timeout: 3000 });
+  await expect(luis.getByTestId('jugador-1')).toContainText('Luis');
 });

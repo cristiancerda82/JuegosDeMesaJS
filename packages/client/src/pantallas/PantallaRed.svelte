@@ -2,7 +2,13 @@
   import { IDS_JUEGOS_EN_RED, type IdJuegoRed } from '@juegos/engine';
   import { LARGO_CODIGO, NOMBRE_MAXIMO, normalizarCodigo } from '@juegos/server/protocolo';
   import { JUEGOS } from '../sesion/juegos';
-  import { guardarNombre, guardarServidor, nombreGuardado, servidorGuardado } from '../sesion/red.svelte';
+  import {
+    guardarNombre,
+    guardarServidor,
+    nombreGuardado,
+    servidorAdmitido,
+    servidorGuardado,
+  } from '../sesion/red.svelte';
   import { T } from '../textos';
   import ComoSeJuega from './ComoSeJuega.svelte';
 
@@ -30,6 +36,10 @@
   function preparar(): boolean {
     if (!nombreValido) {
       error = T.red.faltaNombre;
+      return false;
+    }
+    if (!servidorAdmitido(servidor)) {
+      error = T.red.servidorInseguro;
       return false;
     }
     error = null;

@@ -58,6 +58,7 @@ export type CodigoError =
   | 'accion-ilegal'
   | 'desfase'
   | 'servidor-lleno'
+  | 'demasiadas-salas'
   | 'demasiados-mensajes';
 
 export type MensajeServidor =
@@ -110,6 +111,7 @@ export const MENSAJES_ERROR: Readonly<Record<CodigoError, string>> = {
   'accion-ilegal': 'Esa jugada no está permitida',
   desfase: 'La partida ha cambiado: vuelve a intentarlo',
   'servidor-lleno': 'El servidor está lleno: inténtalo más tarde',
+  'demasiadas-salas': 'Ya tienes demasiadas salas abiertas: cierra alguna antes de crear otra',
   'demasiados-mensajes': 'Demasiados mensajes',
 };
 

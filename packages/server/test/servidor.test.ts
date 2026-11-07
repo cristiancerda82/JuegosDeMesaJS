@@ -3,6 +3,16 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { MensajeServidor } from '../src/protocolo';
 import { crearServidor, MENSAJES_POR_SEGUNDO, type Servidor } from '../src/servidor';
 
+const CONFIG_BRISCA = { jugadores: 2, cambioMuestra: 'libre', arrastreFinal: false, manos: 1 };
+
+/** Intenta abrir una conexión; `true` si el servidor la acepta. */
+async function seAbre(cliente: Cliente): Promise<boolean> {
+  return cliente.abierto().then(
+    () => true,
+    () => false,
+  );
+}
+
 // ── Un cliente de prueba ─────────────────────────────────────────────────────
 
 class Cliente {
@@ -11,9 +21,9 @@ class Cliente {
   #esperas: (() => void)[] = [];
   cerrado = false;
 
-  constructor(puerto: number, origen?: string) {
+  constructor(puerto: number, origen?: string, cabeceras: Record<string, string> = {}) {
     this.#ws = new WebSocket(`ws://localhost:${puerto}`, {
-      headers: origen ? { origin: origen } : {},
+      headers: { ...cabeceras, ...(origen ? { origin: origen } : {}) },
     } as never);
     this.#ws.addEventListener('message', (ev) => {
       this.recibidos.push(JSON.parse(String(ev.data)) as MensajeServidor);
@@ -176,5 +186,90 @@ describe('servidor de salas', () => {
     await otra.esperar((c) => c.ultimo('partida') !== undefined);
     expect(otra.ultimo('entrada')!.asiento).toBe(1);
     await ana.esperar((c) => c.ultimo('sala')!.asientos[1]?.conectado === true);
+  });
+
+  describe('servidor público', () => {
+    it('responde a /salud sin datos de las salas, y 404 al resto', async () => {
+      servidor = await crearServidor({ puerto: 0, origenes: '*' });
+      const salud = await fetch(`http://localhost:${servidor.puerto}/salud`);
+      expect(salud.status).toBe(200);
+      expect(await salud.text()).toBe('ok');
+      expect((await fetch(`http://localhost:${servidor.puerto}/salas`)).status).toBe(404);
+    });
+
+    it('limita las conexiones por IP', async () => {
+      servidor = await crearServidor({ puerto: 0, origenes: '*', maxConexionesPorIp: 2 });
+      const puerto = servidor.puerto;
+      expect(await seAbre(new Cliente(puerto))).toBe(true);
+      expect(await seAbre(new Cliente(puerto))).toBe(true);
+      expect(await seAbre(new Cliente(puerto))).toBe(false);
+    });
+
+    it('sin proxy de confianza ignora X-Forwarded-For; con él, cuenta la IP del cliente', async () => {
+      servidor = await crearServidor({ puerto: 0, origenes: '*', maxConexionesPorIp: 1 });
+      const ip = (n: number) => ({ 'x-forwarded-for': `203.0.113.${n}, 10.0.0.1` });
+      expect(await seAbre(new Cliente(servidor.puerto, undefined, ip(1)))).toBe(true);
+      expect(await seAbre(new Cliente(servidor.puerto, undefined, ip(2)))).toBe(false);
+      await servidor.cerrar();
+
+      servidor = await crearServidor({
+        puerto: 0,
+        origenes: '*',
+        maxConexionesPorIp: 1,
+        confiarProxy: true,
+      });
+      expect(await seAbre(new Cliente(servidor.puerto, undefined, ip(1)))).toBe(true);
+      expect(await seAbre(new Cliente(servidor.puerto, undefined, ip(2)))).toBe(true);
+      expect(await seAbre(new Cliente(servidor.puerto, undefined, ip(1)))).toBe(false);
+    });
+
+    it('limita las salas abiertas por IP', async () => {
+      servidor = await crearServidor({ puerto: 0, origenes: '*', maxSalasPorIp: 1 });
+      const ana = new Cliente(servidor.puerto);
+      const otra = new Cliente(servidor.puerto);
+      await Promise.all([ana.abierto(), otra.abierto()]);
+      const crear = { tipo: 'crear', juego: 'brisca', config: CONFIG_BRISCA, nivel: 'normal' };
+      ana.enviar({ ...crear, nombre: 'Ana' });
+      await ana.esperar((c) => c.ultimo('sala') !== undefined);
+      otra.enviar({ ...crear, nombre: 'Otra' });
+      await otra.esperar((c) => c.ultimo('error') !== undefined);
+      expect(otra.ultimo('error')!.codigo).toBe('demasiadas-salas');
+      expect(servidor.salas.size).toBe(1);
+    });
+
+    it('cierra la conexión callada y la IA cubre su asiento', async () => {
+      servidor = await crearServidor({
+        puerto: 0,
+        origenes: '*',
+        silencioMaximoMs: 300,
+        revisionLatidoMs: 50,
+      });
+      const ana = new Cliente(servidor.puerto);
+      const luis = new Cliente(servidor.puerto);
+      await Promise.all([ana.abierto(), luis.abierto()]);
+      // Ana sigue dando señales de vida; Luis deja de enviar mensajes.
+      const latido = setInterval(() => ana.enviar({ tipo: 'ping' }), 100);
+      try {
+        ana.enviar({
+          tipo: 'crear',
+          juego: 'brisca',
+          config: CONFIG_BRISCA,
+          nivel: 'normal',
+          nombre: 'Ana',
+        });
+        await ana.esperar((c) => c.ultimo('sala') !== undefined);
+        luis.enviar({ tipo: 'unirse', codigo: ana.ultimo('sala')!.codigo, nombre: 'Luis' });
+        await luis.esperar((c) => c.ultimo('sala') !== undefined);
+        ana.enviar({ tipo: 'empezar' });
+        await ana.esperar((c) => c.ultimo('sala')?.empezada === true);
+
+        await luis.esperar((c) => c.cerrado, 3000).catch(() => undefined);
+        expect(luis.cerrado).toBe(true);
+        await ana.esperar((c) => c.ultimo('sala')?.asientos[1]?.conectado === false);
+        await ana.esperar((c) => c.ultimo('sala')?.asientos[1]?.relevado === true, 15_000);
+      } finally {
+        clearInterval(latido);
+      }
+    }, 20_000);
   });
 });

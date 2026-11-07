@@ -2876,6 +2876,8 @@ export const T = {
     nombre: 'Tu nombre',
     servidor: 'Servidor',
     servidorDesc: 'La dirección del servidor de salas (por ejemplo ws://192.168.1.20:8787).',
+    servidorInseguro:
+      'En la app solo se pueden usar servidores seguros, que empiezan por wss://. Para jugar con un servidor de tu red local (ws://), abre el juego en el navegador.',
     crear: 'Crear sala',
     crearDesc: 'Elige el juego y sus opciones; los demás entrarán con el código.',
     unirse: 'Unirse',
@@ -6699,7 +6701,8 @@ export const T = {
       {
         titulo: 'El servidor',
         texto: [
-          'Hace falta un servidor de salas. En casa, arráncalo en un ordenador con «pnpm servidor» y escribe su dirección en la pantalla de red, por ejemplo ws://192.168.1.20:8787. Todos tenéis que estar en la misma red.',
+          'La versión publicada se conecta sola al servidor de salas de internet: no hay que configurar nada.',
+          'Si prefieres jugar en tu red local, arranca un servidor en un ordenador con «pnpm servidor» y escribe su dirección en la pantalla de red, por ejemplo ws://192.168.1.20:8787. Esto solo funciona desde el navegador, no desde la app.',
         ],
       },
       {

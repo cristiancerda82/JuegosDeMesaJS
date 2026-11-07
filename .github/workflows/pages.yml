@@ -29,6 +29,9 @@ jobs:
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
       - run: pnpm -r build
+        env:
+          # Servidor de salas público (wss://…), configurado como variable del repositorio.
+          VITE_SERVIDOR_RED: ${{ vars.SERVIDOR_RED }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: packages/client/dist

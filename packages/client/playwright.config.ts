@@ -53,6 +53,8 @@ export default defineConfig({
     {
       command: 'corepack pnpm --filter @juegos/server build && node ../server/dist/main.js',
       port: 8787,
+      // Todos los jugadores de los e2e llegan desde la misma IP: sin límites por IP.
+      env: { MAX_CONEXIONES_POR_IP: '100000', MAX_SALAS_POR_IP: '100000' },
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
     },
