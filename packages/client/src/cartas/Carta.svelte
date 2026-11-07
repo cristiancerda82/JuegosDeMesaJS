@@ -99,6 +99,9 @@
     </defs>
     <rect x="1" y="1" width="98" height="138" rx="8" fill="var(--dorso)" stroke="#fff" stroke-width="2" />
     <rect x="9" y="9" width="82" height="122" rx="4" fill="url(#trama-dorso)" stroke="var(--dorso-claro)" stroke-width="2" />
+  {:else if tema.completa?.(carta.palo, carta.valor)}
+    <!-- Diseño propio que dibuja la carta entera, con sus índices (temas-naipes, decisión 9). -->
+    <use href="#{tema.completa(carta.palo, carta.valor)}" x="0" y="0" width="100" height="140" />
   {:else}
     {@const texto = indice(carta.palo, carta.valor)}
     <rect x="1" y="1" width="98" height="138" rx="8" fill={tema.papel} stroke={tema.borde} stroke-width="1.5" />

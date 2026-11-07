@@ -7,6 +7,7 @@ Todas las cartas de la suite usan un único diseño minimalista y propio: palos 
 - **Temas de naipes** seleccionables, uno para la baraja española y otro para la francesa, independientes entre sí:
   - Española: **Minimal** (el diseño actual), **Castizo** (inspirado en el naipe español clásico de fines del XIX) y **Napolitano** (inspirado en los naipes regionales italianos).
   - Francesa: **Minimal** (el actual) y **Victoriano** (inspirado en las barajas inglesas y americanas de hacia 1880).
+- **Diseños propios del usuario** (24 barajas): 11 españolas (Tradicional, Clásica, Egipcia, Espacial, Fantasía, Terror, Mitología, Día de Muertos, Navidad, Piratas y Samurái) y 13 francesas (las mismas temáticas más Antigua y De gala). Se incorporan sus generadores de SVG tal cual y se suman al catálogo junto a los temas anteriores.
 - Todo el arte es **propio e inspirado en esos estilos**: no se copian ni calcan ilustraciones existentes, ni se usan marcas, logotipos o nombres de fabricantes.
 - Cada tema define el papel, el marco, la tipografía de los índices, los dibujos de los palos, la disposición de los numerales y las **figuras ilustradas** (sota, caballo y rey; jota, reina y rey).
 - Todos los temas conservan los **índices en las esquinas** y el nombre accesible de cada carta, aunque la baraja histórica no los tuviera, para que se pueda jugar en abanico y con lector de pantalla.

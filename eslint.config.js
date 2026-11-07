@@ -6,7 +6,15 @@ import tseslint from 'typescript-eslint';
 const mensajePureza = 'El motor debe ser puro y determinista: sin hora, azar externo, DOM ni Node.';
 
 export default tseslint.config(
-  { ignores: ['**/node_modules/', '**/dist/', '**/coverage/'] },
+  {
+    ignores: [
+      '**/node_modules/',
+      '**/dist/',
+      '**/coverage/',
+      // Generadores de naipes del usuario: se copian tal cual (temas-naipes, decisión 9).
+      'packages/client/src/cartas/temas/propios/vendor/',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

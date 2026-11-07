@@ -51,6 +51,8 @@ ull. */
 
   const filtros = ['todas', 'espanola', 'francesa'] as const;
 
+  let verDiseno = $state(false);
+
   /** Juegos de cada familia que pasan el filtro; las familias vacías no se muestran. */
   const familias = $derived(
     FAMILIAS.map((f) => ({
@@ -187,9 +189,10 @@ ull. */
     <button class="enlace" onclick={verCartas}>{T.menu.verCartas}</button>
   </footer>
 
-  <details class="diseno" data-testid="diseno-cartas">
+  <!-- Las vistas previas solo se montan al abrir: así no se descargan todos los temas. -->
+  <details class="diseno" data-testid="diseno-cartas" bind:open={verDiseno}>
     <summary>{T.cartas.diseno}</summary>
-    <SelectorTemas />
+    {#if verDiseno}<SelectorTemas />{/if}
   </details>
 
   {#if !pwa.instalada}

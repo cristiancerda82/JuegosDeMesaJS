@@ -89,6 +89,13 @@ Al arrancar, `main.ts` lanza la carga de los temas guardados y espera como mucho
 - **E2E:** cambiar el tema y que se recuerde al recargar; Escoba con Napolitano y Klondike con Minimal; columna de Klondike con 12 cartas solapadas en Victoriano; mano de la Escoba a 360 × 640 en Castizo; el mismo nombre accesible con todos los temas; sin conexión con la app instalada (ampliando `pwa.spec.ts`); fallo de carga simulado bloqueando la petición del trozo.
 - **Rendimiento:** e2e que mide el tiempo hasta mostrar Spider de 4 palos con Minimal y con Victoriano en la misma ejecución, y exige que el segundo no pase del doble del primero.
 
+### 9. Diseños propios del usuario: generadores incorporados y sprite al cargar
+Las 24 barajas del usuario son librerías JS (una por baraja) que generan cada carta como un SVG completo de 240 × 336 (`svgCarta(valor, palo)`), la misma proporción que nuestras cartas. Se copian **sin modificar** en `cartas/temas/propios/vendor/`, para que el usuario pueda actualizarlas copiando sus archivos, y se cargan con `import.meta.glob` diferido: un trozo por baraja (5–19 KB comprimido). Al cargar el tema se generan todas sus cartas y se convierten en `<symbol>` (uno por carta), reescribiendo los ids internos de cada una (degradados, patrones) con un prefijo único, porque varias barajas usan los mismos ids. `TemaNaipes` gana `completa(palo, valor)`, que devuelve el símbolo de la carta entera: `Carta.svelte` dibuja entonces un solo `<use>`, sin papel ni índices propios (la carta del usuario ya los trae). Las cartas que una baraja no tiene (el caballo francés del Tarot) caen en el dibujo de Minimal.
+
+- *Alternativa:* pregenerar los SVG en el build. Se descarta: el sprite generado pesa 7–30 KB comprimido frente a 5–19 KB del generador, y obligaría a regenerar a mano cada vez que el usuario cambie un diseño.
+- Los generadores quedan fuera de lint y formato (son del usuario) y su salida se valida en el test de contrato (sin `<script>`, `on*`, `<foreignObject>`, imágenes ni referencias externas).
+- El selector solo monta sus vistas previas al abrirse, para no descargar las 24 barajas al cargar el menú.
+
 ## Risks / Trade-offs
 
 - [La calidad de las ilustraciones vectoriales hechas en el proyecto puede quedar lejos de un grabado tradicional] → El estilo plano es intencionado y coherente con las referencias de colores planos. El contrato de arte permite sustituir los SVG por otros mejores sin tocar código. Cada tema se revisa visualmente con el usuario antes de cerrarlo.

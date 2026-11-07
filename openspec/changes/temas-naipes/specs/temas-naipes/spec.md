@@ -9,11 +9,19 @@ El cliente MUST ofrecer estos temas, con estos nombres visibles:
 - Baraja española: «Minimal», «Castizo» y «Napolitano».
 - Baraja francesa: «Minimal» y «Victoriano».
 
+Además, el cliente MUST ofrecer los diseños propios del usuario:
+- Baraja española: «Tradicional», «Clásica», «Egipcia», «Espacial», «Fantasía», «Terror», «Mitología», «Día de Muertos», «Navidad», «Piratas» y «Samurái».
+- Baraja francesa: «Tradicional», «Antigua», «Clásica», «Egipcia», «Espacial», «Fantasía», «De gala», «Terror», «Mitología», «Día de Muertos», «Navidad», «Piratas» y «Samurái».
+
 «Minimal» MUST ser el diseño que la suite usa antes de este cambio, sin alteraciones visibles, y es el tema por defecto de las dos barajas. El tema español se aplica a las cartas de oros, copas, espadas y bastos; el francés, a las de picas, corazones, diamantes y tréboles. Los comodines, los triunfos y la Excusa del Tarot y los dorsos MUST verse igual con cualquier tema.
 
 #### Scenario: Por defecto, sin cambios
 - **WHEN** un jugador que nunca ha elegido tema abre el muestrario
 - **THEN** todas las cartas se ven exactamente como antes de este cambio
+
+#### Scenario: Diseños propios en el selector
+- **WHEN** el jugador abre el selector de la baraja francesa
+- **THEN** puede elegir cualquiera de los 13 diseños propios además de Minimal y Victoriano, cada uno con su vista previa
 
 #### Scenario: Temas independientes
 - **WHEN** el jugador elige «Napolitano» para la española y deja «Minimal» en la francesa
@@ -37,7 +45,7 @@ La elección MUST aplicarse en cuanto se hace, en todas las cartas que se ven (m
 - **THEN** las cartas se ven con «Minimal» y no aparece ningún error
 
 ### Requirement: Cada tema cubre toda su baraja
-Un tema español MUST dibujar todas las cartas de la baraja española de 48, del 1 al 12 de cada palo, incluidos el 8 y el 9 aunque la baraja histórica en la que se inspira no los tenga. Un tema francés MUST dibujar todas las cartas francesas del 1 al 13 de cada palo y también el caballo (valor 14) que usa el Tarot. Las figuras MUST ser ilustraciones del tema: sota, caballo y rey en la española; jota, reina, rey y caballo en la francesa. Cada figura MUST llevar el palo al que pertenece, de modo que las cuatro figuras del mismo rango se distingan por el dibujo y no solo por el índice.
+Un tema español MUST dibujar todas las cartas de la baraja española de 48, del 1 al 12 de cada palo, incluidos el 8 y el 9 aunque la baraja histórica en la que se inspira no los tenga. Un tema francés MUST dibujar todas las cartas francesas del 1 al 13 de cada palo y también el caballo (valor 14) que usa el Tarot; en los diseños propios del usuario, que no traen caballo, ese caballo se dibuja con Minimal. Las figuras MUST ser ilustraciones del tema: sota, caballo y rey en la española; jota, reina, rey y caballo en la francesa. Cada figura MUST llevar el palo al que pertenece, de modo que las cuatro figuras del mismo rango se distingan por el dibujo y no solo por el índice.
 
 #### Scenario: Baraja de 48 con el tema Napolitano
 - **WHEN** el muestrario enseña la baraja española de 48 con el tema Napolitano
@@ -66,7 +74,7 @@ El nombre accesible de cada carta MUST ser el mismo con todos los temas (por eje
 - **THEN** anuncia cada carta con el mismo nombre que con el tema Minimal
 
 ### Requirement: Originalidad del arte
-Todas las ilustraciones de los temas MUST ser de autoría propia del proyecto. Se inspiran en estilos tradicionales (paleta, marcos, proporciones, convenciones como las pintas del naipe español) sin reproducir ni calcar ilustraciones concretas de barajas existentes. Ninguna carta MUST incluir marcas, logotipos, nombres de fabricantes, de imprentas o de lugares de edición.
+Todas las ilustraciones de los temas MUST ser de autoría propia del proyecto o del usuario (sus diseños propios). Se inspiran en estilos tradicionales (paleta, marcos, proporciones, convenciones como las pintas del naipe español) sin reproducir ni calcar ilustraciones concretas de barajas existentes. Ninguna carta MUST incluir marcas, logotipos, nombres de fabricantes, de imprentas o de lugares de edición.
 
 #### Scenario: Revisión del arte
 - **WHEN** se revisa el arte de un tema antes de darlo por terminado

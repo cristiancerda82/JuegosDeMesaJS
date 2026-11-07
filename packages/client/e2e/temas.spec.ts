@@ -58,7 +58,9 @@ test('elegir Castizo para la española: se recuerda y no cambia la francesa', as
   await page.goto('./?rapido&semilla=temas');
   await elegirTema(page, 'espanola', 'castizo');
   await page.reload();
+  await page.getByTestId('diseno-cartas').locator('summary').click();
   await expect(page.getByTestId('tema-espanola-castizo')).toBeChecked();
+  await page.getByTestId('diseno-cartas').locator('summary').click();
 
   await empezarBrisca(page);
   await expect(conTema(page, 'castizo').first()).toBeVisible();
@@ -156,4 +158,18 @@ test.describe('capturas de los temas ilustrados', () => {
       await expect(s).toHaveScreenshot(`${tema}-muestrario.png`);
     });
   }
+});
+
+test('un diseño propio: se elige en el selector y se ve en la partida', async ({ page }) => {
+  await page.goto('./?rapido&semilla=propio');
+  await expect(page.getByTestId('tema-espanola-esp-piratas')).toHaveCount(0); // Selector cerrado: sin vistas previas.
+  await elegirTema(page, 'espanola', 'esp-piratas');
+  await expect(
+    page.getByTestId('temas-espanola').locator('[data-testid^="tema-espanola-"]'),
+  ).toHaveCount(13);
+  await expect(
+    page.getByTestId('temas-francesa').locator('[data-testid^="tema-francesa-"]'),
+  ).toHaveCount(15);
+  await empezarBrisca(page);
+  await expect(conTema(page, 'esp-piratas').first()).toBeVisible();
 });

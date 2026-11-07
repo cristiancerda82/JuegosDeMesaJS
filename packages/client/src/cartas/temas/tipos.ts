@@ -1,4 +1,5 @@
 import type { Palo } from '@juegos/engine';
+import type { IdPropio } from './propios/catalogo';
 
 /**
  * Modelo de tema de naipes (spec temas-naipes; design, decisión 1). Un tema dice cómo se ve cada
@@ -8,7 +9,7 @@ import type { Palo } from '@juegos/engine';
 
 export type Baraja = 'espanola' | 'francesa';
 
-export type IdTema = 'minimal' | 'castizo' | 'napolitano' | 'victoriano';
+export type IdTema = 'minimal' | 'castizo' | 'napolitano' | 'victoriano' | IdPropio;
 
 /** Una pieza de dibujo, en coordenadas de la carta (100 × 140). */
 export type Pieza =
@@ -61,6 +62,11 @@ export interface TemaNaipes {
   marco?(palo: Palo): readonly Pieza[];
   /** Todo lo que va dentro: numerales, as o figura. */
   cuerpo(palo: Palo, valor: number): readonly Pieza[];
+  /**
+   * Diseños que dibujan la carta entera (los propios del usuario): el símbolo de la carta, o
+   * `null` si el diseño no la tiene y se dibuja con las piezas de arriba.
+   */
+  completa?(palo: Palo, valor: number): string | null;
   /** Símbolos (`<symbol>`) del tema, que se insertan una vez en el documento. */
   readonly sprite?: string;
 }

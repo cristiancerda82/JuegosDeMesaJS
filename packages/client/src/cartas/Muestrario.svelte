@@ -10,6 +10,8 @@
 
   let { volver }: Props = $props();
 
+  let verDiseno = $state(false);
+
   const barajas = [
     { titulo: T.cartas.barajaEspanola, cartas: crearBaraja('espanola48', { comodines: true }) },
     { titulo: T.cartas.barajaFrancesa, cartas: crearBaraja('francesa52') },
@@ -23,9 +25,10 @@
     <h1>{T.cartas.muestrario}</h1>
   </header>
 
-  <details class="diseno">
+  <!-- Las vistas previas solo se montan al abrir: así no se descargan todos los temas. -->
+  <details class="diseno" bind:open={verDiseno}>
     <summary>{T.cartas.diseno}</summary>
-    <SelectorTemas />
+    {#if verDiseno}<SelectorTemas />{/if}
   </details>
 
   {#each barajas as baraja (baraja.titulo)}

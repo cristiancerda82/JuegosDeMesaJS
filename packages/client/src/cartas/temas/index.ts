@@ -1,4 +1,6 @@
 import { MINIMAL } from './minimal';
+import { PROPIOS } from './propios/catalogo';
+import { cargarPropio } from './propios/cargar';
 import type { Baraja, IdTema, TemaNaipes } from './tipos';
 
 /**
@@ -8,8 +10,16 @@ import type { Baraja, IdTema, TemaNaipes } from './tipos';
 
 /** Temas de cada baraja, en el orden del selector; el primero es el de por defecto. */
 export const TEMAS: Readonly<Record<Baraja, readonly IdTema[]>> = {
-  espanola: ['minimal', 'castizo'],
-  francesa: ['minimal', 'victoriano'],
+  espanola: [
+    'minimal',
+    'castizo',
+    ...PROPIOS.filter((d) => d.baraja === 'espanola').map((d) => d.id),
+  ],
+  francesa: [
+    'minimal',
+    'victoriano',
+    ...PROPIOS.filter((d) => d.baraja === 'francesa').map((d) => d.id),
+  ],
 };
 
 export const CARGAR: Readonly<Record<IdTema, () => Promise<TemaNaipes>>> = {
@@ -18,6 +28,10 @@ export const CARGAR: Readonly<Record<IdTema, () => Promise<TemaNaipes>>> = {
   // Aún sin dibujar: si llegaran a pedirse, se queda Minimal.
   napolitano: () => Promise.reject(new Error('tema sin dibujar')),
   victoriano: () => import('./victoriano/tema').then((m) => m.VICTORIANO),
+  ...(Object.fromEntries(PROPIOS.map((d) => [d.id, () => cargarPropio(d)])) as Record<
+    (typeof PROPIOS)[number]['id'],
+    () => Promise<TemaNaipes>
+  >),
 };
 
 export const CLAVES_TEMA: Readonly<Record<Baraja, string>> = {

@@ -2,3 +2,4 @@ pnpm-lock.yaml
 openspec/
 .amazonq/
 .claude/
+packages/client/src/cartas/temas/propios/vendor/

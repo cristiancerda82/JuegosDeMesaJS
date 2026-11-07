@@ -41,10 +41,17 @@
 - [ ] 6.3 Figuras base fante, cavallo y re de cuerpo entero, con atributos y paleta por palo
 - [ ] 6.4 Pasar el test de contrato, añadir capturas del muestrario y revisar el tema con el usuario antes de darlo por terminado
 
-## 7. Verificación
+## 7. Diseños propios del usuario
 
-- [ ] 7.1 E2E: cambiar el tema y que se recuerde al recargar; Escoba con Napolitano y Klondike con Minimal a la vez; el valor guardado inválido
-- [ ] 7.2 E2E de legibilidad: columna de Klondike de 12 cartas en Victoriano y mano de la Escoba a 360 × 640 en Castizo; el mismo nombre accesible de las cartas con todos los temas
-- [ ] 7.3 E2E sin conexión con la app instalada (ampliando `pwa.spec.ts`) y fallo de carga simulado que deja Minimal sin errores
-- [ ] 7.4 E2E de rendimiento: Spider de 4 palos con Victoriano en menos del doble del tiempo de Minimal, en Chromium y WebKit
-- [ ] 7.5 Ejecutar todos los tests (motor, servidor, cliente y E2E), la comprobación de tipos, el lint, el formato y `openspec validate --strict`
+- [x] 7.1 Copiar sin cambios los 24 generadores a `cartas/temas/propios/vendor/` y excluirlos de lint y formato
+- [x] 7.2 Adaptador `propios`: catálogo de las 24 barajas (id, baraja, nombre, archivo, objeto global), carga diferida, generación de las cartas como `<symbol>` con ids reescritos y `completa(palo, valor)`, con caída a Minimal para las cartas que falten
+- [x] 7.3 `Carta.svelte` dibuja la carta completa del tema cuando la hay; registrar los temas en `TEMAS`, `CARGAR` y los textos; el selector solo monta las vistas previas al abrirse
+- [x] 7.4 Test de contrato de los diseños propios (todas las cartas, contenido seguro, tamaño) y e2e de elegir uno y verlo en una partida
+
+## 8. Verificación
+
+- [ ] 8.1 E2E: cambiar el tema y que se recuerde al recargar; Escoba con Napolitano y Klondike con Minimal a la vez; el valor guardado inválido
+- [ ] 8.2 E2E de legibilidad: columna de Klondike de 12 cartas en Victoriano y mano de la Escoba a 360 × 640 en Castizo; el mismo nombre accesible de las cartas con todos los temas
+- [ ] 8.3 E2E sin conexión con la app instalada (ampliando `pwa.spec.ts`) y fallo de carga simulado que deja Minimal sin errores
+- [ ] 8.4 E2E de rendimiento: Spider de 4 palos con Victoriano en menos del doble del tiempo de Minimal, en Chromium y WebKit
+- [ ] 8.5 Ejecutar todos los tests (motor, servidor, cliente y E2E), la comprobación de tipos, el lint, el formato y `openspec validate --strict`
