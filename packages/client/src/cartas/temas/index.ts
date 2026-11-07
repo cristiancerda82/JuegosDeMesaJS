@@ -9,7 +9,7 @@ import type { Baraja, IdTema, TemaNaipes } from './tipos';
 /** Temas de cada baraja, en el orden del selector; el primero es el de por defecto. */
 export const TEMAS: Readonly<Record<Baraja, readonly IdTema[]>> = {
   espanola: ['minimal', 'castizo'],
-  francesa: ['minimal'],
+  francesa: ['minimal', 'victoriano'],
 };
 
 export const CARGAR: Readonly<Record<IdTema, () => Promise<TemaNaipes>>> = {
@@ -17,7 +17,7 @@ export const CARGAR: Readonly<Record<IdTema, () => Promise<TemaNaipes>>> = {
   castizo: () => import('./castizo/tema').then((m) => m.CASTIZO),
   // Aún sin dibujar: si llegaran a pedirse, se queda Minimal.
   napolitano: () => Promise.reject(new Error('tema sin dibujar')),
-  victoriano: () => Promise.reject(new Error('tema sin dibujar')),
+  victoriano: () => import('./victoriano/tema').then((m) => m.VICTORIANO),
 };
 
 export const CLAVES_TEMA: Readonly<Record<Baraja, string>> = {

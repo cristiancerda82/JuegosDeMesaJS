@@ -100,3 +100,60 @@ test('si el tema no se puede cargar, las cartas siguen en Minimal y se puede jug
   await page.locator('.carta-mano.jugable').first().click();
   expect(errores).toEqual([]);
 });
+
+test('Victoriano para la francesa: el Klondike lo usa y la Brisca sigue en Minimal', async ({
+  page,
+}) => {
+  await page.goto('./?rapido&semilla=temas');
+  await elegirTema(page, 'francesa', 'victoriano');
+  await abrirJuego(page, 'klondike');
+  await page.getByTestId('empezar').click();
+  await expect(conTema(page, 'victoriano').first()).toBeVisible();
+  await page.getByTestId('volver-menu').click();
+  await empezarBrisca(page);
+  await expect(conTema(page, 'victoriano')).toHaveCount(0);
+});
+
+test('Spider de 4 palos con Victoriano: la mesa aparece en menos del doble que con Minimal', async ({
+  page,
+}) => {
+  /** Milisegundos desde «Empezar» hasta que las 54 cartas de la mesa están dibujadas. */
+  const medir = async () => {
+    await page.goto('./?rapido&semilla=rendimiento');
+    await abrirJuego(page, 'spider');
+    await page.getByLabel('4 palos').check();
+    const inicio = Date.now();
+    await page.getByTestId('empezar').click();
+    await expect(page.locator('svg.carta')).not.toHaveCount(0);
+    await page.waitForFunction(() => document.querySelectorAll('svg.carta').length >= 54);
+    return Date.now() - inicio;
+  };
+  await medir(); // Calentamiento: la primera carga compila y cachea.
+  const minimal = await medir();
+  await page.evaluate(() => localStorage.setItem('juegos-de-mesa/tema-francesa', 'victoriano'));
+  await medir();
+  const victoriano = await medir();
+  await expect(conTema(page, 'victoriano').first()).toBeVisible();
+  // Un margen fijo pequeño evita falsos fallos cuando los dos tiempos son de pocos milisegundos.
+  expect(victoriano).toBeLessThan(2 * minimal + 150);
+});
+
+test.describe('capturas de los temas ilustrados', () => {
+  test.skip(({ isMobile }) => isMobile, 'solo escritorio');
+
+  for (const [baraja, tema, seccion] of [
+    ['espanola', 'castizo', 0],
+    ['francesa', 'victoriano', 1],
+  ] as const) {
+    test(`muestrario con ${tema}`, async ({ page }) => {
+      await page.addInitScript(
+        ([b, t]) => localStorage.setItem(`juegos-de-mesa/tema-${b}`, t),
+        [baraja, tema],
+      );
+      await abrirMuestrario(page);
+      const s = page.locator('main section').nth(seccion);
+      await expect(s.locator(`use[href^="#${tema}-"]`).first()).toBeVisible();
+      await expect(s).toHaveScreenshot(`${tema}-muestrario.png`);
+    });
+  }
+});

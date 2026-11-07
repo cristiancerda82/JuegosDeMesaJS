@@ -25,13 +25,13 @@
 - [x] 4.1 Palos (oros, copas, espadas y bastos), marco con pintas por palo, papel, color y tipografía de los índices
 - [x] 4.2 Ases y numerales del 2 al 9, con composiciones propias para bastos y espadas cruzados
 - [x] 4.3 Figuras base sota, caballo y rey de cuerpo entero, los 4 atributos por palo y la paleta por palo
-- [ ] 4.4 Pasar el test de contrato, añadir capturas del muestrario y revisar el tema con el usuario (originalidad y estilo) antes de darlo por terminado
+- [x] 4.4 Pasar el test de contrato, añadir capturas del muestrario y revisar el tema con el usuario (originalidad y estilo) antes de darlo por terminado
 
 ## 5. Tema Victoriano (francesa)
 
-- [ ] 5.1 Palos, papel, filete, índices con serifa y as de picas ornamental propio
-- [ ] 5.2 Numerales del 2 al 10 con la disposición clásica francesa
-- [ ] 5.3 Medias figuras jota, reina, rey y caballo con reflejo de doble cabeza, atributos y paleta por palo
+- [x] 5.1 Palos, papel, filete, índices con serifa y as de picas ornamental propio
+- [x] 5.2 Numerales del 2 al 10 con la disposición clásica francesa
+- [x] 5.3 Medias figuras jota, reina, rey y caballo con reflejo de doble cabeza, atributos y paleta por palo
 - [ ] 5.4 Pasar el test de contrato, añadir capturas del muestrario y revisar el tema con el usuario antes de darlo por terminado
 
 ## 6. Tema Napolitano (española)
