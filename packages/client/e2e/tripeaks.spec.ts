@@ -1,9 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import { pistaTriPeaks, tripeaks, type AccionTriPeaks, type EstadoTriPeaks } from '@juegos/engine';
 
 async function empezarTriPeaks(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-tripeaks').click();
+  await abrirJuego(page, 'tripeaks');
   await page.getByTestId('empezar').click();
 }
 

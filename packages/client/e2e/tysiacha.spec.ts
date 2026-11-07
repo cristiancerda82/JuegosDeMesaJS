@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   BONO_PRIKUP_TYSIACHA,
   CONFIG_TYSIACHA_POR_DEFECTO,
@@ -9,7 +10,7 @@ import {
 
 async function empezar(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-tysiacha').click();
+  await abrirJuego(page, 'tysiacha');
   await page.getByTestId('empezar').click();
 }
 

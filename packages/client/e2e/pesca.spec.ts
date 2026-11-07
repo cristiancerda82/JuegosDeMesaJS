@@ -1,8 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 
 async function empezar(page: Page, query: string, jugadores?: number) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-pesca').click();
+  await abrirJuego(page, 'pesca');
   if (jugadores !== undefined) {
     await page.getByRole('radio', { name: `${jugadores} jugadores` }).check();
   }

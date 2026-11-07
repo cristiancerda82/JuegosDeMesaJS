@@ -1,8 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 
 async function empezarBarbu(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-barbu').click();
+  await abrirJuego(page, 'barbu');
   await page.getByTestId('empezar').click();
 }
 

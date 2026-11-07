@@ -1,9 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import { burro, sonCuatroIguales, type EstadoBurro } from '@juegos/engine';
 
 async function empezar(page: Page, query: string, jugadores?: 3 | 5) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-burro').click();
+  await abrirJuego(page, 'burro');
   if (jugadores) await page.getByLabel(`${jugadores} jugadores`).check();
   await page.getByTestId('empezar').click();
 }

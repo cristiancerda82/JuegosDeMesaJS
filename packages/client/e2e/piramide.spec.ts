@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   piramide,
   pistaPiramide,
@@ -9,7 +10,7 @@ import {
 
 async function empezarPiramide(page: Page, query: string, pasadas?: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-piramide').click();
+  await abrirJuego(page, 'piramide');
   if (pasadas) await page.getByLabel(pasadas, { exact: true }).check();
   await page.getByTestId('empezar').click();
 }

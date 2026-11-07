@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   aplicar,
   CONFIG_CORAZONES_POR_DEFECTO,
@@ -14,7 +15,7 @@ const ESQUINA = { position: { x: 6, y: 8 } };
 
 async function empezar(page: Page, query: string, aCincuenta = false) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-corazones').click();
+  await abrirJuego(page, 'corazones');
   if (aCincuenta) await page.getByLabel('A 50 puntos').check();
   await page.getByTestId('empezar').click();
 }
@@ -144,7 +145,7 @@ test('la mesa de los Corazones entra en 360 × 640', async ({ page }) => {
 
 async function empezarCon(page: Page, query: string, jugadores: number) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-corazones').click();
+  await abrirJuego(page, 'corazones');
   await page.getByTestId(`corazones-jugadores-${jugadores}`).check();
   await page.getByLabel('A 50 puntos').check();
   await page.getByTestId('empezar').click();
@@ -152,7 +153,7 @@ async function empezarCon(page: Page, query: string, jugadores: number) {
 
 test('Corazones de 3: 17 cartas, sin pase y sin el 2 de diamantes', async ({ page }) => {
   await page.goto('./?semilla=corazones-tres');
-  await page.getByTestId('juego-corazones').click();
+  await abrirJuego(page, 'corazones');
   await expect(page.getByTestId('corazones-pase')).toBeVisible();
   await page.getByTestId('corazones-jugadores-3').check();
   await expect(page.getByTestId('corazones-pase')).toHaveCount(0);

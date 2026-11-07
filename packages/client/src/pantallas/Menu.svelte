@@ -1,5 +1,16 @@
 <script lang="ts">
-  import Carta from '../cartas/Carta.svelte';
+  import AccesosRapidos from '../menu/AccesosRapidos.svelte';
+  import {
+    FAMILIAS,
+    juegosDeFamilia,
+    juegosEnOrden,
+    normalizar,
+    pasaFiltro,
+  } from '../menu/catalogo';
+  import { navegacion } from '../menu/navegacion.svelte';
+  import { preferencias } from '../menu/preferencias.svelte';
+  import TarjetaFamilia from '../menu/TarjetaFamilia.svelte';
+  import TarjetaJuego from '../menu/TarjetaJuego.svelte';
   import { pwa } from '../pwa/registro.svelte';
   import type { Guardado } from '../sesion/guardado';
   import { JUEGOS, type IdJuego } from '../sesion/juegos';
@@ -37,102 +48,28 @@ ull. */
     volverSala,
   }: Props = $props();
 
-  const juegos = [
-    { id: 'klondike', desc: T.menu.klondikeDesc, cartas: ['picas-1', 'corazones-13', 'diamantes-12'] },
-    { id: 'freecell', desc: T.menu.freecellDesc, cartas: ['treboles-1', 'corazones-2', 'picas-13'] },
-    { id: 'spider', desc: T.menu.spiderDesc, cartas: ['picas-13', 'picas-12', 'picas-11'] },
-    { id: 'belleLucie', desc: T.menu.belleLucieDesc, cartas: ['corazones-1', 'corazones-2', 'corazones-3'] },
-    { id: 'scorpion', desc: T.menu.scorpionDesc, cartas: ['picas-13', 'corazones-2', 'picas-12'] },
-    { id: 'cuarentaLadrones', desc: T.menu.cuarentaLadronesDesc, cartas: ['picas-7', 'picas-6', 'picas-5'] },
-    { id: 'canfield', desc: T.menu.canfieldDesc, cartas: ['picas-9', 'corazones-8', 'treboles-7'] },
-    { id: 'yukon', desc: T.menu.yukonDesc, cartas: ['treboles-13', 'corazones-4', 'picas-9'] },
-    { id: 'tripeaks', desc: T.menu.tripeaksDesc, cartas: ['corazones-9', 'picas-10', 'diamantes-11'] },
-    { id: 'golf', desc: T.menu.golfDesc, cartas: ['treboles-7', 'corazones-8', 'picas-9'] },
-    { id: 'piramide', desc: T.menu.piramideDesc, cartas: ['corazones-6', 'picas-7', 'diamantes-13'] },
-    { id: 'brisca', desc: T.menu.briscaDesc, cartas: ['oros-1', 'copas-3', 'espadas-12'] },
-    { id: 'tute', desc: T.menu.tuteDesc, cartas: ['bastos-12', 'oros-11', 'copas-12'] },
-    { id: 'scopa', desc: T.menu.scopaDesc, cartas: ['oros-7', 'copas-7', 'bastos-1'] },
-    { id: 'tressette', desc: T.menu.tressetteDesc, cartas: ['oros-3', 'oros-2', 'oros-1'] },
-    {
-      id: 'schafkopf',
-      desc: T.menu.schafkopfDesc,
-      cartas: ['treboles-12', 'picas-12', 'corazones-1'],
-    },
-    {
-      id: 'fiveHundred',
-      desc: T.menu.fiveHundredDesc,
-      cartas: ['comodin-1', 'corazones-11', 'diamantes-11'],
-    },
-    { id: 'barbu', desc: T.menu.barbuDesc, cartas: ['corazones-13', 'picas-12', 'treboles-11'] },
-    {
-      id: 'klaverjas',
-      desc: T.menu.klaverjasDesc,
-      cartas: ['picas-11', 'picas-9', 'corazones-10'],
-    },
-    { id: 'jass', desc: T.menu.jassDesc, cartas: ['treboles-11', 'treboles-9', 'treboles-1'] },
-    { id: 'piquet', desc: T.menu.piquetDesc, cartas: ['corazones-1', 'corazones-13', 'corazones-12'] },
-    { id: 'sueca', desc: T.menu.suecaDesc, cartas: ['picas-1', 'picas-7', 'corazones-13'] },
-    { id: 'tarot', desc: T.menu.tarotDesc, cartas: ['triunfo-21', 'excusa', 'picas-14'] },
-    { id: 'doppelkopf', desc: T.menu.doppelkopfDesc, cartas: ['treboles-12', 'corazones-10', 'diamantes-1'] },
-    { id: 'bezique', desc: T.menu.beziqueDesc, cartas: ['picas-12', 'diamantes-11', 'corazones-1'] },
-    { id: 'kingsCorner', desc: T.menu.kingsCornerDesc, cartas: ['picas-13', 'corazones-12', 'treboles-11'] },
-    { id: 'pesca', desc: T.menu.pescaDesc, cartas: ['corazones-7', 'picas-7', 'treboles-7'] },
-    { id: 'bridge', desc: T.menu.bridgeDesc, cartas: ['picas-1', 'corazones-13', 'treboles-12'] },
-    { id: 'spiteMalice', desc: T.menu.spiteMaliceDesc, cartas: ['picas-1', 'corazones-2', 'treboles-13'] },
-    { id: 'ohHell', desc: T.menu.ohHellDesc, cartas: ['picas-1', 'corazones-13', 'diamantes-2'] },
-    { id: 'skat', desc: T.menu.skatDesc, cartas: ['treboles-11', 'picas-11', 'corazones-1'] },
-    { id: 'schnapsen', desc: T.menu.schnapsenDesc, cartas: ['corazones-13', 'corazones-12', 'corazones-1'] },
-    { id: 'sixtySix', desc: T.menu.sixtySixDesc, cartas: ['picas-9', 'picas-13', 'picas-12'] },
-    { id: 'belote', desc: T.menu.beloteDesc, cartas: ['corazones-11', 'corazones-9', 'corazones-13'] },
-    { id: 'cribbage', desc: T.menu.cribbageDesc, cartas: ['treboles-5', 'corazones-5', 'picas-11'] },
-    { id: 'bigTwo', desc: T.menu.bigTwoDesc, cartas: ['picas-2', 'corazones-2', 'diamantes-3'] },
-    { id: 'euchre', desc: T.menu.euchreDesc, cartas: ['corazones-11', 'diamantes-11', 'corazones-1'] },
-    { id: 'durak', desc: T.menu.durakDesc, cartas: ['picas-6', 'picas-1', 'corazones-13'] },
-    { id: 'casino', desc: T.menu.casinoDesc, cartas: ['diamantes-10', 'picas-2', 'corazones-1'] },
-    { id: 'sevens', desc: T.menu.sevensDesc, cartas: ['diamantes-7', 'diamantes-8', 'diamantes-6'] },
-    { id: 'whist', desc: T.menu.whistDesc, cartas: ['picas-1', 'corazones-13', 'treboles-12'] },
-    { id: 'canasta', desc: T.menu.canastaDesc, cartas: ['comodin-1', 'corazones-3', 'picas-1'] },
-    { id: 'culo', desc: T.menu.culoDesc, cartas: ['oros-2', 'copas-1', 'espadas-3'] },
-    { id: 'holdem', desc: T.menu.holdemDesc, cartas: ['picas-1', 'corazones-1', 'diamantes-13'] },
-    { id: 'rummy500', desc: T.menu.rummy500Desc, cartas: ['diamantes-4', 'diamantes-5', 'diamantes-6'] },
-    { id: 'ginRummy', desc: T.menu.ginRummyDesc, cartas: ['picas-5', 'picas-6', 'picas-7'] },
-    { id: 'blackjack', desc: T.menu.blackjackDesc, cartas: ['picas-1', 'corazones-13', 'treboles-10'] },
-    { id: 'picas', desc: T.menu.picasDesc, cartas: ['picas-1', 'picas-13', 'corazones-1'] },
-    { id: 'ochoLoco', desc: T.menu.ochoLocoDesc, cartas: ['picas-8', 'corazones-8', 'corazones-4'] },
-    { id: 'mentiroso', desc: T.menu.mentirosoDesc, cartas: ['picas-13', 'corazones-13', 'treboles-5'] },
-    { id: 'cuatrola', desc: T.menu.cuatrolaDesc, cartas: ['espadas-1', 'oros-7', 'bastos-1'] },
-    { id: 'tuteSubastado', desc: T.menu.tuteSubastadoDesc, cartas: ['oros-1', 'oros-12', 'oros-11'] },
-    { id: 'guinote', desc: T.menu.guinoteDesc, cartas: ['espadas-12', 'espadas-10', 'oros-7'] },
-    { id: 'corazones', desc: T.menu.corazonesDesc, cartas: ['corazones-1', 'picas-12', 'treboles-2'] },
-    { id: 'escoba', desc: T.menu.escobaDesc, cartas: ['oros-7', 'copas-11', 'espadas-6'] },
-    { id: 'chinchon', desc: T.menu.chinchonDesc, cartas: ['copas-5', 'copas-6', 'comodin-1'] },
-    { id: 'remigio', desc: T.menu.remigioDesc, cartas: ['copas-5', 'copas-6', 'comodin-1'] },
-    { id: 'julepe', desc: T.menu.julepeDesc, cartas: ['copas-1', 'copas-3', 'oros-12'] },
-    { id: 'truc', desc: T.menu.trucDesc, cartas: ['espadas-1', 'bastos-1', 'oros-7'] },
-    { id: 'truco', desc: T.menu.trucoDesc, cartas: ['espadas-1', 'espadas-7', 'oros-7'] },
-    { id: 'cuarenta', desc: T.menu.cuarentaDesc, cartas: ['corazones-5', 'picas-5', 'diamantes-6'] },
-    { id: 'pishti', desc: T.menu.pishtiDesc, cartas: ['treboles-11', 'diamantes-10', 'treboles-2'] },
-    { id: 'ecarte', desc: T.menu.ecarteDesc, cartas: ['corazones-13', 'corazones-12', 'picas-11'] },
-    { id: 'tysiacha', desc: T.menu.tysiachaDesc, cartas: ['corazones-12', 'corazones-13', 'corazones-1'] },
-    { id: 'sheepshead', desc: T.menu.sheepsheadDesc, cartas: ['treboles-12', 'diamantes-11', 'diamantes-1'] },
-    { id: 'rentz', desc: T.menu.rentzDesc, cartas: ['corazones-13', 'picas-12', 'treboles-11'] },
-    { id: 'bourre', desc: T.menu.bourreDesc, cartas: ['diamantes-1', 'diamantes-13', 'picas-1'] },
-    { id: 'tresillo', desc: T.menu.tresilloDesc, cartas: ['espadas-1', 'oros-7', 'bastos-1'] },
-    { id: 'conquian', desc: T.menu.conquianDesc, cartas: ['copas-6', 'copas-7', 'copas-10'] },
-    { id: 'treintaYUno', desc: T.menu.treintaYUnoDesc, cartas: ['treboles-1', 'treboles-13', 'treboles-10'] },
-    {
-      id: 'preference',
-      desc: T.menu.preferenceDesc,
-      cartas: ['corazones-1', 'corazones-13', 'picas-1'],
-    },
-    { id: 'butifarra', desc: T.menu.butifarraDesc, cartas: ['oros-9', 'oros-1', 'copas-9'] },
-    { id: 'pinacle', desc: T.menu.pinacleDesc, cartas: ['corazones-13', 'corazones-12', 'comodin-1'] },
-    { id: 'mus', desc: T.menu.musDesc, cartas: ['oros-12', 'copas-3', 'espadas-1'] },
-    { id: 'pocha', desc: T.menu.pochaDesc, cartas: ['copas-1', 'oros-3', 'bastos-12'] },
-    { id: 'burro', desc: T.menu.burroDesc, cartas: ['oros-12', 'copas-12', 'espadas-12'] },
-    { id: 'cinquillo', desc: T.menu.cinquilloDesc, cartas: ['oros-5', 'oros-6', 'copas-5'] },
-    { id: 'sieteYMedia', desc: T.menu.sieteYMediaDesc, cartas: ['oros-7', 'bastos-12', 'copas-1'] },
-  ] as const;
+  const filtros = ['todas', 'espanola', 'francesa'] as const;
+
+  /** Juegos de cada familia que pasan el filtro; las familias vacías no se muestran. */
+  const familias = $derived(
+    FAMILIAS.map((f) => ({
+      familia: f,
+      juegos: juegosDeFamilia(f.id).filter((id) => pasaFiltro(id, preferencias.filtro)),
+    })).filter((f) => f.juegos.length > 0),
+  );
+
+  const busqueda = $derived(normalizar(navegacion.busqueda));
+
+  const resultados = $derived(
+    busqueda === ''
+      ? []
+      : juegosEnOrden().filter(
+          (id) => pasaFiltro(id, preferencias.filtro) && normalizar(JUEGOS[id].nombre).includes(busqueda),
+        ),
+  );
+
+  /** La familia abierta, si sigue teniendo juegos con el filtro actual. */
+  const abierta = $derived(familias.find((f) => f.familia.id === navegacion.familia) ?? null);
 </script>
 
 <main class="menu">
@@ -180,21 +117,61 @@ ull. */
     </div>
   </section>
 
-  <h2 class="elegir">{T.menu.elegir}</h2>
-  <div class="juegos">
-    {#each juegos as juego (juego.id)}
-      <button class="juego" onclick={() => elegir(juego.id)} data-testid="juego-{juego.id}">
-        <span class="abanico" aria-hidden="true">
-          {#each juego.cartas as id (id)}
-            <span class="hueco"><Carta {id} /></span>
-          {/each}
-        </span>
-        <span class="titulo">{JUEGOS[juego.id].nombre}</span>
-        <span class="desc">{juego.desc}</span>
-        <span class="jugar">{T.menu.jugar}</span>
-      </button>
-    {/each}
+  <div class="buscador">
+    <label class="buscar">
+      <span class="oculto-visual">{T.menu.buscar}</span>
+      <input
+        type="search"
+        placeholder={T.menu.buscarEjemplo}
+        bind:value={navegacion.busqueda}
+        autocomplete="off"
+        data-testid="buscar"
+      />
+    </label>
+    <div class="filtros" role="group" aria-label={T.menu.baraja}>
+      {#each filtros as f (f)}
+        <button
+          type="button"
+          class="filtro"
+          aria-pressed={preferencias.filtro === f}
+          onclick={() => preferencias.cambiarFiltro(f)}
+          data-testid="filtro-{f}">{T.menu.filtros[f]}</button
+        >
+      {/each}
+    </div>
   </div>
+
+  {#if busqueda !== ''}
+    <h2 class="elegir" aria-live="polite">{T.menu.resultados(resultados.length)}</h2>
+    {#if resultados.length === 0}
+      <p class="sin-resultados" data-testid="sin-resultados">{T.menu.sinResultados(navegacion.busqueda.trim())}</p>
+    {:else}
+      <div class="juegos">
+        {#each resultados as juego (juego)}
+          <TarjetaJuego {juego} {elegir} />
+        {/each}
+      </div>
+    {/if}
+  {:else if abierta}
+    <div class="cabecera-familia">
+      <button type="button" class="volver" onclick={() => (navegacion.familia = null)} data-testid="volver-familias">
+        ‹ {T.menu.volverFamilias}
+      </button>
+      <h2>{abierta.familia.nombre}</h2>
+    </div>
+    <div class="juegos">
+      {#each abierta.juegos as juego (juego)}
+        <TarjetaJuego {juego} {elegir} />
+      {/each}
+    </div>
+  {:else}
+    <h2 class="elegir">{T.menu.elegir}</h2>
+    <div class="familias">
+      {#each familias as f (f.familia.id)}
+        <TarjetaFamilia familia={f.familia} juegos={f.juegos} abrir={() => (navegacion.familia = f.familia.id)} />
+      {/each}
+    </div>
+  {/if}
 
   <footer>
     <label>
@@ -221,13 +198,16 @@ ull. */
       </section>
     {/if}
   {/if}
+
+  <AccesosRapidos {elegir} />
 </main>
 
 <style>
   .menu {
     max-width: 720px;
     margin: 0 auto;
-    padding: 24px 16px 32px;
+    /* Hueco para los botones flotantes: la última tarjeta nunca queda tapada. */
+    padding: 24px 16px calc(150px + env(safe-area-inset-bottom));
   }
 
   header {
@@ -285,63 +265,69 @@ ull. */
     margin: 8px 0 12px;
   }
 
+  .buscador {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+    margin-bottom: 14px;
+  }
+
+  .buscar {
+    flex: 1 1 220px;
+  }
+
+  .buscar input {
+    width: 100%;
+    min-height: 44px;
+    padding: 6px 12px;
+    border-radius: var(--radio);
+    background: rgb(0 0 0 / 0.3);
+    border: 1px solid rgb(255 255 255 / 0.25);
+  }
+
+  .filtros {
+    display: flex;
+    gap: 6px;
+  }
+
+  .filtro {
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+  }
+
+  .filtro[aria-pressed='true'] {
+    background: var(--acento);
+    color: #2b2005;
+    border-color: transparent;
+    font-weight: 700;
+  }
+
+  .sin-resultados {
+    color: var(--texto-suave);
+  }
+
+  .cabecera-familia {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0 12px;
+  }
+
+  .cabecera-familia h2 {
+    font-size: 1.2rem;
+  }
+
+  .familias {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
   .juegos {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 14px;
-  }
-
-  .juego {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 18px 14px;
-    text-align: center;
-    background: rgb(0 0 0 / 0.22);
-  }
-
-  .abanico {
-    display: flex;
-    height: 92px;
-    margin-bottom: 6px;
-  }
-
-  .hueco {
-    width: 58px;
-    aspect-ratio: 100 / 140;
-    display: block;
-  }
-
-  .hueco + .hueco {
-    margin-left: -22px;
-  }
-
-  .hueco:nth-child(1) {
-    rotate: -10deg;
-  }
-
-  .hueco:nth-child(3) {
-    rotate: 10deg;
-  }
-
-  .titulo {
-    font-size: 1.35rem;
-    font-weight: 700;
-  }
-
-  .desc {
-    color: var(--texto-suave);
-    font-size: 0.92rem;
-  }
-
-  .jugar {
-    margin-top: 6px;
-    padding: 6px 18px;
-    border-radius: var(--radio);
-    background: var(--acento);
-    color: #2b2005;
-    font-weight: 700;
   }
 
   footer {

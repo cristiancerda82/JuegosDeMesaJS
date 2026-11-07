@@ -1,8 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 
 async function empezarMentiroso(page: Page, query: string, jugadores?: number) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-mentiroso').click();
+  await abrirJuego(page, 'mentiroso');
   if (jugadores) await page.getByLabel(`${jugadores} jugadores`, { exact: true }).check();
   await page.getByTestId('empezar').click();
 }

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   belote,
   CONFIG_BELOTE_POR_DEFECTO,
@@ -21,7 +22,7 @@ const NOMBRE_PALO: Record<string, string> = {
 
 async function empezar(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-belote').click();
+  await abrirJuego(page, 'belote');
   await page.getByTestId('empezar').click();
 }
 

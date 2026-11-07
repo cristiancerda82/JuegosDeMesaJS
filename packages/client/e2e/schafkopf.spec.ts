@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   CONFIG_SCHAFKOPF_POR_DEFECTO,
   crearAzar,
@@ -9,7 +10,7 @@ import {
 
 async function empezarSchafkopf(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-schafkopf').click();
+  await abrirJuego(page, 'schafkopf');
   await page.getByTestId('empezar').click();
 }
 

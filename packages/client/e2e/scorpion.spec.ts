@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import { scorpion, type AccionScorpion, type EstadoScorpion } from '@juegos/engine';
 import { cartaOrigenScorpion, estadosScorpion, solucionarScorpion } from './scorpion-solucion';
 
@@ -8,7 +9,7 @@ const SEMILLA_GANABLE = 'scorpion-10';
 
 async function empezar(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-scorpion').click();
+  await abrirJuego(page, 'scorpion');
   await page.getByTestId('empezar').click();
 }
 

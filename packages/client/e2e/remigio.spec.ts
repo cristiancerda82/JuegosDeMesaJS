@@ -1,9 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import { bajadasRemigio, type CartaRemigio } from '@juegos/engine';
 
 async function empezarRemigio(page: Page, query: string, jugadores?: number) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-remigio').click();
+  await abrirJuego(page, 'remigio');
   if (jugadores) await page.getByLabel(`${jugadores} jugadores`, { exact: true }).check();
   await page.getByTestId('empezar').click();
 }

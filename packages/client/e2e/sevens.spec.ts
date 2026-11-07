@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import { sevens } from '@juegos/engine';
 
 /** Toca la esquina superior izquierda, que queda a la vista aunque las cartas se solapen. */
@@ -6,7 +7,7 @@ const ESQUINA = { position: { x: 6, y: 8 } };
 
 async function empezar(page: Page, query: string, jugadores = 4) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-sevens').click();
+  await abrirJuego(page, 'sevens');
   await page.getByLabel(`${jugadores} jugadores`, { exact: true }).check();
   await page.getByTestId('empezar').click();
 }

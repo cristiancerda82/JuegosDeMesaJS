@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test';
+import { abrirJuego } from './menu';
 
 test('una pista resalta un movimiento sin hacerlo, y se cuenta en el fin', async ({ page }) => {
   page.on('dialog', (d) => d.accept());
   await page.goto('./?rapido&semilla=e2e-1');
-  await page.getByTestId('juego-klondike').click();
+  await abrirJuego(page, 'klondike');
   await page.getByTestId('empezar').click();
   await expect(page.getByTestId('movimientos')).toHaveText('0');
 
@@ -26,7 +27,7 @@ test('sin movimientos, el aviso de atasco deja deshacer', async ({ page }) => {
   // Semilla buscada con el motor: robando de 3 en 3 sin vueltas, al vaciar el mazo no queda
   // ninguna jugada.
   await page.goto('./?rapido&semilla=atasco-18');
-  await page.getByTestId('juego-klondike').click();
+  await abrirJuego(page, 'klondike');
   await page.getByLabel('De 3 en 3').check();
   await page.getByLabel('Ninguna').check();
   await page.getByTestId('empezar').click();

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   esComodinPinacle,
   pinacle,
@@ -13,7 +14,7 @@ import {
 
 async function empezar(page: Page, query: string, cuatro = false) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-pinacle').click();
+  await abrirJuego(page, 'pinacle');
   if (cuatro) await page.getByLabel('4 jugadores en parejas').check();
   await page.getByTestId('empezar').click();
 }

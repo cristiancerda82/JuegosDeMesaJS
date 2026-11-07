@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   CONFIG_SIXTY_SIX,
   schnapsen,
@@ -11,7 +12,7 @@ const ESQUINA = { position: { x: 6, y: 8 } };
 
 async function empezar(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-sixtySix').click();
+  await abrirJuego(page, 'sixtySix');
   await page.getByTestId('empezar').click();
 }
 

@@ -1,9 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import { crearAzar, holdem, iaHoldemBasica } from '@juegos/engine';
 
 async function empezarHoldem(page: Page, query: string, jugadores?: number) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-holdem').click();
+  await abrirJuego(page, 'holdem');
   if (jugadores) await page.getByLabel(`${jugadores} jugadores`, { exact: true }).check();
   await page.getByTestId('empezar').click();
 }

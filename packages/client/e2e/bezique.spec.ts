@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   aplicar,
   bezique,
@@ -12,7 +13,7 @@ import {
 
 async function empezar(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-bezique').click();
+  await abrirJuego(page, 'bezique');
   await page.getByTestId('empezar').click();
 }
 

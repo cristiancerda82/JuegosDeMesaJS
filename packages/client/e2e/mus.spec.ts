@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   aplicar,
   CONFIG_MUS_POR_DEFECTO,
@@ -11,7 +12,7 @@ import {
 
 async function empezar(page: Page, query: string, corta = false) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-mus').click();
+  await abrirJuego(page, 'mus');
   if (corta) {
     await page.getByLabel('A un juego').check();
     await page.getByLabel('A 30 piedras').check();

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import type { IdCarta } from '@juegos/engine';
 
 /** Toca la esquina superior izquierda, que queda a la vista aunque las cartas se solapen. */
@@ -10,7 +11,7 @@ async function empezarJulepe(
   opciones: { jugadores?: number; manos?: number } = {},
 ) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-julepe').click();
+  await abrirJuego(page, 'julepe');
   if (opciones.jugadores)
     await page.getByLabel(`${opciones.jugadores} jugadores`, { exact: true }).check();
   if (opciones.manos) await page.getByLabel(`${opciones.manos} manos`, { exact: true }).check();

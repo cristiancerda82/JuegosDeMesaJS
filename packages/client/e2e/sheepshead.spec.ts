@@ -1,9 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import { cogeSheepshead, CONFIG_SHEEPSHEAD_POR_DEFECTO, sheepshead } from '@juegos/engine';
 
 async function empezar(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-sheepshead').click();
+  await abrirJuego(page, 'sheepshead');
   await page.getByTestId('empezar').click();
 }
 

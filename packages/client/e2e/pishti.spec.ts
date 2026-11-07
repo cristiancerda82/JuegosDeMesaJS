@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import { CONFIG_PISHTI_POR_DEFECTO, efectoPishti, pishti, type IdCarta } from '@juegos/engine';
 
 /** Toca la esquina superior izquierda, que queda a la vista aunque las cartas se solapen. */
@@ -6,7 +7,7 @@ const ESQUINA = { position: { x: 8, y: 8 } };
 
 async function empezarPishti(page: Page, query: string, opciones: { cuatro?: boolean } = {}) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-pishti').click();
+  await abrirJuego(page, 'pishti');
   if (opciones.cuatro) await page.getByTestId('pishti-cuatro').check();
   await page.getByTestId('empezar').click();
 }

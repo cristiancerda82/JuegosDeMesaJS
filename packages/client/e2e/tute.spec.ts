@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import { CONFIG_TUTE_POR_DEFECTO, type IdCarta } from '@juegos/engine';
 import { eleccionHumana, simularTute } from './tute-simulacion';
 
@@ -7,7 +8,7 @@ const ESQUINA = { position: { x: 8, y: 8 } };
 
 async function empezarTute(page: Page, query: string, cuatro = false) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-tute').click();
+  await abrirJuego(page, 'tute');
   if (cuatro) await page.getByLabel('4 jugadores en parejas').check();
   await page.getByTestId('empezar').click();
 }

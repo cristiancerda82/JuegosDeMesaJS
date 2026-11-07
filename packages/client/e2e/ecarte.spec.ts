@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   bazasEsperadasEcarte,
   CONFIG_ECARTE_POR_DEFECTO,
@@ -8,7 +9,7 @@ import {
 
 async function empezar(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-ecarte').click();
+  await abrirJuego(page, 'ecarte');
   await page.getByTestId('empezar').click();
 }
 

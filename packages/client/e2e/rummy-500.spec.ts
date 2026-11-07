@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   cartaDeId,
   crearAzar,
@@ -15,7 +16,7 @@ const ESQUINA = { position: { x: 6, y: 6 } };
 
 async function empezarRummy(page: Page, query: string, jugadores?: number) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-rummy500').click();
+  await abrirJuego(page, 'rummy500');
   if (jugadores) await page.getByLabel(`${jugadores} jugadores`, { exact: true }).check();
   await page.getByTestId('empezar').click();
 }

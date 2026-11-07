@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import type { IdCarta } from '@juegos/engine';
 
 /** Toca la esquina superior izquierda, que queda a la vista aunque las cartas se solapen. */
@@ -6,7 +7,7 @@ const ESQUINA = { position: { x: 8, y: 8 } };
 
 async function empezarCuatrola(page: Page, query: string, manos?: number) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-cuatrola').click();
+  await abrirJuego(page, 'cuatrola');
   if (manos) await page.getByLabel(`${manos} manos`, { exact: true }).check();
   await page.getByTestId('empezar').click();
 }

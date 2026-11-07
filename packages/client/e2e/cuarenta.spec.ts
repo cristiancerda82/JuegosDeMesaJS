@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   capturasCuarenta,
   CONFIG_CUARENTA_POR_DEFECTO,
@@ -13,7 +14,7 @@ const ESQUINA = { position: { x: 8, y: 8 } };
 
 async function empezarCuarenta(page: Page, query: string, opciones: { cuatro?: boolean } = {}) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-cuarenta').click();
+  await abrirJuego(page, 'cuarenta');
   if (opciones.cuatro) await page.getByTestId('cuarenta-cuatro').check();
   await page.getByTestId('empezar').click();
 }

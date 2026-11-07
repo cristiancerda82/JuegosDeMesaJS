@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   CONFIG_YUKON_POR_DEFECTO,
   yukon,
@@ -12,7 +13,7 @@ const ESQUINA = { position: { x: 8, y: 8 } };
 
 async function empezarYukon(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-yukon').click();
+  await abrirJuego(page, 'yukon');
   await page.getByTestId('empezar').click();
 }
 
@@ -125,7 +126,7 @@ test('ganar un Yukon jugando desde la mesa', async ({ page }) => {
 
 test('el Solitario ruso se elige en las opciones', async ({ page }) => {
   await page.goto('./?rapido&semilla=ruso');
-  await page.getByTestId('juego-yukon').click();
+  await abrirJuego(page, 'yukon');
   await page.getByLabel('Mismo palo (Solitario ruso)').check();
   await page.getByTestId('empezar').click();
   await expect(page.getByTestId('construccion')).toHaveText('Mismo palo');

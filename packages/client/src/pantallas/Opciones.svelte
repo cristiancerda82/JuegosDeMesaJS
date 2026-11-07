@@ -85,6 +85,7 @@
   import { JUEGOS, type IdJuego } from '../sesion/juegos';
   import type { ConfigJuego } from '../sesion/partida';
   import { T } from '../textos';
+  import BotonFavorito from '../menu/BotonFavorito.svelte';
   import ComoSeJuega from './ComoSeJuega.svelte';
   import { guardarNivel, leerNivel } from './nivel';
 
@@ -294,7 +295,10 @@
 </script>
 
 <main class="opciones">
-  <h1>{T.opciones.titulo(JUEGOS[juego].nombre)}</h1>
+  <div class="titulo">
+    <h1>{T.opciones.titulo(JUEGOS[juego].nombre)}</h1>
+    <BotonFavorito {juego} />
+  </div>
 
   <button type="button" class="ayuda" onclick={() => (verAyuda = true)} data-testid="ver-ayuda">
     {T.ayuda.boton}
@@ -903,9 +907,16 @@
     padding: 24px 16px 32px;
   }
 
+  .titulo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
   h1 {
     font-size: 1.6rem;
-    margin-bottom: 12px;
   }
 
   .ayuda {

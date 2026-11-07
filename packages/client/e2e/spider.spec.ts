@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   CONFIG_SPIDER_POR_DEFECTO,
   spider,
@@ -12,7 +13,7 @@ const ESQUINA = { position: { x: 4, y: 6 } };
 
 async function empezar(page: Page, semilla: string, palos?: 2 | 4) {
   await page.goto(`./?rapido&semilla=${semilla}`);
-  await page.getByTestId('juego-spider').click();
+  await abrirJuego(page, 'spider');
   if (palos) await page.getByLabel(`${palos} palos`).check();
   await page.getByTestId('empezar').click();
 }

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   aplicar,
   cartaDeId,
@@ -18,7 +19,7 @@ const CONFIG: ConfigChinchon = { ...CONFIG_CHINCHON_POR_DEFECTO, limite: 50 };
 
 async function empezarChinchon(page: Page, query: string, jugadores = 2) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-chinchon').click();
+  await abrirJuego(page, 'chinchon');
   await page.getByLabel(`${jugadores} jugadores`).check();
   await page.getByLabel('Al pasar de 50 puntos').check();
   await page.getByTestId('empezar').click();

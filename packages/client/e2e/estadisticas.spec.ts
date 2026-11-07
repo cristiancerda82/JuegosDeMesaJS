@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import type { AccionKlondike } from '@juegos/engine';
 import { jugarKlondike, solucionarKlondike } from './klondike-solucion';
 
@@ -47,7 +48,7 @@ test('ganar un Klondike registra la partida y sus récords, una sola vez', async
     klondike: juego({ mejorTiempoMs: 99_000_000, menosMovimientos: 9_999 }),
   });
   await page.goto(`./?rapido&semilla=${semilla}`);
-  await page.getByTestId('juego-klondike').click();
+  await abrirJuego(page, 'klondike');
   await page.getByTestId('empezar').click();
   await jugarKlondike(page, semilla, solucion!);
 
@@ -77,7 +78,7 @@ test('abandonar un solitario cuenta como perdida y corta la racha; borrar lo vac
 }) => {
   await sembrar(page, { spider: juego({ jugadas: 3, ganadas: 3, racha: 3, mejorRacha: 3 }) });
   await page.goto('./?rapido&semilla=abandono');
-  await page.getByTestId('juego-spider').click();
+  await abrirJuego(page, 'spider');
   await page.getByTestId('empezar').click();
   page.on('dialog', (d) => void d.accept());
   await page.getByRole('button', { name: 'Abandonar' }).click();

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   casino,
   CONFIG_CASINO_POR_DEFECTO,
@@ -13,7 +14,7 @@ const ESQUINA = { position: { x: 6, y: 8 } };
 
 async function empezar(page: Page, query: string, jugadores = 2) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-casino').click();
+  await abrirJuego(page, 'casino');
   await page.getByLabel(`${jugadores} jugadores`, { exact: true }).check();
   await page.getByTestId('empezar').click();
 }
@@ -173,7 +174,7 @@ test('al recargar una partida de Casino se continúa con la misma mano', async (
 test('el Casino de 4 entra en 360 × 640 sin scroll horizontal', async ({ page }) => {
   test.skip(page.viewportSize()?.width !== 360, 'solo en el perfil móvil');
   await page.goto('./?rapido&semilla=pequena');
-  await page.getByTestId('juego-casino').click();
+  await abrirJuego(page, 'casino');
   await page.getByLabel('4 jugadores', { exact: true }).check();
   await page.getByTestId('parejas').check();
   await page.getByTestId('empezar').click();

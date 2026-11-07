@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   aplicar,
   CONFIG_FREECELL_POR_DEFECTO,
@@ -15,7 +16,7 @@ const ESQUINA = { position: { x: 6, y: 6 } };
 
 async function empezar(page: Page, numero: number, query = 'rapido') {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-freecell').click();
+  await abrirJuego(page, 'freecell');
   await page.getByLabel('Por número').check();
   await page.getByTestId('numero-partida').fill(String(numero));
   await page.getByTestId('empezar').click();

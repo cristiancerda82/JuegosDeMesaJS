@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   CONFIG_CRIBBAGE_POR_DEFECTO,
   crearAzar,
@@ -10,7 +11,7 @@ import {
 
 async function empezar(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-cribbage').click();
+  await abrirJuego(page, 'cribbage');
   await page.getByTestId('empezar').click();
 }
 

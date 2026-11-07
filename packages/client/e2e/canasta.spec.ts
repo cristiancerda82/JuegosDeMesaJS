@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   canasta,
   esComodinCanasta,
@@ -10,7 +11,7 @@ import {
 
 async function empezarCanasta(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-canasta').click();
+  await abrirJuego(page, 'canasta');
   await page.getByTestId('empezar').click();
 }
 

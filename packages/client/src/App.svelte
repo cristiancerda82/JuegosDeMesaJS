@@ -17,6 +17,7 @@
   } from './sesion/red.svelte';
   import { SesionRed } from './sesion/sesion-red.svelte';
   import { pwa } from './pwa/registro.svelte';
+  import { preferencias } from './menu/preferencias.svelte';
   import { borrarGuardado, leerGuardado, type Guardado } from './sesion/guardado';
   import type { IdJuego } from './sesion/juegos';
   import {
@@ -80,6 +81,7 @@ ull. */
     const r = nuevaPartida(juego, config, nivel);
     if (r.ok) {
       aviso = null;
+      preferencias.registrarReciente(juego);
       pantalla = { tipo: 'partida', partida: r.valor };
     } else {
       aviso = r.error;
@@ -91,6 +93,7 @@ ull. */
     const r = partidaGuardada(guardado);
     if (r.ok) {
       aviso = null;
+      preferencias.registrarReciente(guardado.juego);
       pantalla = { tipo: 'partida', partida: r.valor };
     } else {
       borrarGuardado();
@@ -146,6 +149,18 @@ ull. */
     if (!s) return;
     void entrarEnRed(new ClienteRed(s.servidor), { tipo: 'volver', codigo: s.codigo, testigo: s.testigo });
   }
+
+  // Al crear una sala, unirse o volver, el juego de la sala pasa a los últimos jugados: quien
+  // se une solo lo sabe cuando llega la sala (design, decisión 3).
+  const salasRegistradas = new WeakSet<ClienteRed>();
+  $effect(() => {
+    if (pantalla.tipo !== 'espera') return;
+    const { cliente } = pantalla;
+    if (cliente.sala && !salasRegistradas.has(cliente)) {
+      salasRegistradas.add(cliente);
+      preferencias.registrarReciente(cliente.sala.juego);
+    }
+  });
 
   // Cuando el anfitrión empieza (o al volver a una partida en marcha), se pasa a la mesa.
   $effect(() => {

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   cuarentaLadrones,
   type AccionCuarentaLadrones,
@@ -15,7 +16,7 @@ const ESQUINA = { position: { x: 5, y: 5 } };
 
 async function empezar(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-cuarentaLadrones').click();
+  await abrirJuego(page, 'cuarentaLadrones');
   await page.getByTestId('empezar').click();
 }
 

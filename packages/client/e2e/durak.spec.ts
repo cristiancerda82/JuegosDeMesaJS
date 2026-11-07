@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   CONFIG_DURAK_POR_DEFECTO,
   crearAzar,
@@ -13,7 +14,7 @@ const ESQUINA = { position: { x: 6, y: 8 } };
 
 async function empezar(page: Page, query: string, jugadores = 2) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-durak').click();
+  await abrirJuego(page, 'durak');
   await page.getByLabel(`${jugadores} jugadores`, { exact: true }).check();
   await page.getByTestId('empezar').click();
 }

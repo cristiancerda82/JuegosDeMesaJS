@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import { CONFIG_ESCOBA_POR_DEFECTO, escoba, type AccionEscoba } from '@juegos/engine';
 
 /** Toca la esquina superior izquierda, que queda a la vista aunque las cartas se solapen. */
@@ -6,7 +7,7 @@ const ESQUINA = { position: { x: 8, y: 8 } };
 
 async function empezarEscoba(page: Page, query: string, opciones: { cuatro?: boolean } = {}) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-escoba').click();
+  await abrirJuego(page, 'escoba');
   if (opciones.cuatro) await page.getByLabel('4 jugadores en parejas').check();
   await page.getByLabel('A 15 puntos').check();
   await page.getByTestId('empezar').click();

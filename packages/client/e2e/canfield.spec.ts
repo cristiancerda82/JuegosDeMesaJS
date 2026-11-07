@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import { canfield, CONFIG_CANFIELD_POR_DEFECTO, type EstadoCanfield } from '@juegos/engine';
 import { CONFIG_SOLUCION, jugarCanfield, solucionarCanfield } from './canfield-solucion';
 
@@ -7,7 +8,7 @@ const ESQUINA = { position: { x: 8, y: 8 } };
 
 async function empezarCanfield(page: Page, query: string, roboDeUno = false) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-canfield').click();
+  await abrirJuego(page, 'canfield');
   if (roboDeUno) await page.getByLabel('De 1 en 1').check();
   await page.getByTestId('empezar').click();
 }

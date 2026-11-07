@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   CONFIG_SPITE_MALICE_POR_DEFECTO,
   spiteMalice,
@@ -8,7 +9,7 @@ import {
 
 async function empezar(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-spiteMalice').click();
+  await abrirJuego(page, 'spiteMalice');
   await page.getByTestId('empezar').click();
 }
 

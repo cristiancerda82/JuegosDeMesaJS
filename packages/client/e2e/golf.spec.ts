@@ -1,9 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import { golf, pistaGolf, type AccionGolf, type EstadoGolf } from '@juegos/engine';
 
 async function empezarGolf(page: Page, query: string, vuelta = false) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-golf').click();
+  await abrirJuego(page, 'golf');
   if (vuelta) await page.getByTestId('vuelta-golf').check();
   await page.getByTestId('empezar').click();
 }

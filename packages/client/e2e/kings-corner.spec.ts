@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   CONFIG_KINGS_CORNER_POR_DEFECTO,
   kingsCorner,
@@ -7,7 +8,7 @@ import {
 
 async function empezar(page: Page, query: string, jugadores?: number) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-kingsCorner').click();
+  await abrirJuego(page, 'kingsCorner');
   if (jugadores !== undefined) {
     await page.getByRole('radio', { name: `${jugadores} jugadores` }).check();
   }

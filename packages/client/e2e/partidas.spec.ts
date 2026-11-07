@@ -1,12 +1,14 @@
 import { expect, test, type Page } from '@playwright/test';
 import type { AccionKlondike } from '@juegos/engine';
 import { jugarKlondike, solucionarKlondike } from './klondike-solucion';
+import { abrirJuego as abrirEnMenu } from './menu';
+import type { IdJuego } from '../src/sesion/juegos';
 
 // ── Utilidades ───────────────────────────────────────────────────────────────
 
-async function abrirJuego(page: Page, juego: string, query = '') {
+async function abrirJuego(page: Page, juego: IdJuego, query = '') {
   await page.goto(`./?rapido${query}`);
-  await page.getByTestId(`juego-${juego}`).click();
+  await abrirEnMenu(page, juego);
 }
 
 /** Toca la esquina superior izquierda, que siempre queda a la vista aunque haya cartas encima. */
@@ -158,7 +160,7 @@ test('sin conexión tras la carga se juega una partida completa sin peticiones',
   page.on('request', (r) => peticiones.push(r.url()));
   await context.setOffline(true);
 
-  await page.getByTestId('juego-brisca').click();
+  await abrirEnMenu(page, 'brisca');
   await page.getByTestId('empezar').click();
   await jugarBrisca(page);
   await expect(page.getByTestId('fin')).toBeVisible();
@@ -211,7 +213,7 @@ test.describe('pantalla de 360 × 640', () => {
     await page.screenshot({ path: 'test-results/brisca-360.png' });
 
     await page.getByTestId('volver-menu').click();
-    await page.getByTestId('juego-brisca').click();
+    await abrirEnMenu(page, 'brisca');
     await page.getByLabel('4 jugadores en parejas').check();
     await page.getByTestId('empezar').click();
     await sinScrollHorizontal(page);

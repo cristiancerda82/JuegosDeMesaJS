@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   aplicar,
   CONFIG_GUINOTE_POR_DEFECTO,
@@ -15,7 +16,7 @@ const ESQUINA = { position: { x: 8, y: 8 } };
 
 async function empezarGuinote(page: Page, query: string, cuatro = false) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-guinote').click();
+  await abrirJuego(page, 'guinote');
   if (cuatro) await page.getByLabel('4 jugadores en parejas').check();
   await page.getByTestId('empezar').click();
 }

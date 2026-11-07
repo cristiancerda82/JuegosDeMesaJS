@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import type { IdCarta } from '@juegos/engine';
 
 /** Toca la esquina superior izquierda, que queda a la vista aunque las cartas se solapen. */
@@ -10,7 +11,7 @@ async function empezarTruc(
   opciones: { cuatro?: boolean; unaCame?: boolean } = {},
 ) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-truc').click();
+  await abrirJuego(page, 'truc');
   if (opciones.cuatro) await page.getByLabel('4 jugadores en parejas').check();
   if (opciones.unaCame) await page.getByLabel('Una came de 12').check();
   await page.getByTestId('empezar').click();

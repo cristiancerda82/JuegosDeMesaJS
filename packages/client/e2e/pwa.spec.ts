@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
@@ -19,7 +20,7 @@ async function controlada(page: Page) {
 
 /** Juega una Brisca entera tocando la primera carta jugable y la mesa. */
 async function jugarBrisca(page: Page) {
-  await page.getByTestId('juego-brisca').click();
+  await abrirJuego(page, 'brisca');
   await page.getByTestId('empezar').click();
   for (let jugadas = 0; jugadas < 200; jugadas++) {
     await page.locator('.carta-mano.jugable, [data-testid="fin"]').first().waitFor();
@@ -63,7 +64,7 @@ test('sin conexión, tras la primera visita, se abre y se juega una partida', as
   await controlada(page);
   await context.setOffline(true);
   await page.goto('./?rapido');
-  await expect(page.getByTestId('juego-brisca')).toBeVisible();
+  await expect(page.getByTestId('familia-bazasPuntos')).toBeVisible();
   await jugarBrisca(page);
   await expect(page.getByTestId('fin')).toContainText(/¡Has ganado!|Has perdido|Empate/);
   await context.setOffline(false);

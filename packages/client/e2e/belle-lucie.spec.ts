@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import { belleLucie, type AccionBelleLucie, type EstadoBelleLucie } from '@juegos/engine';
 import { estadosBelleLucie, solucionarBelleLucie } from './belle-lucie-solucion';
 
@@ -9,7 +10,7 @@ const SEMILLA_GANABLE = 'lucie-17';
 
 async function empezar(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-belleLucie').click();
+  await abrirJuego(page, 'belleLucie');
   await page.getByTestId('empezar').click();
 }
 

@@ -1,11 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 
 /** Toca la esquina superior izquierda, que queda a la vista aunque las cartas se solapen. */
 const ESQUINA = { position: { x: 6, y: 8 } };
 
 async function empezar(page: Page, query: string, jugadores?: number) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-ohHell').click();
+  await abrirJuego(page, 'ohHell');
   if (jugadores) await page.getByLabel(`${jugadores} jugadores`).check();
   await page.getByTestId('empezar').click();
 }

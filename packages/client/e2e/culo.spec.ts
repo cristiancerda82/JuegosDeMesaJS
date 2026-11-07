@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   compararCulo,
   crearAzar,
@@ -12,7 +13,7 @@ import {
 
 async function empezarCulo(page: Page, query: string, jugadores?: number) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-culo').click();
+  await abrirJuego(page, 'culo');
   if (jugadores) await page.getByLabel(`${jugadores} jugadores`, { exact: true }).check();
   await page.getByTestId('empezar').click();
 }

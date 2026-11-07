@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { abrirJuego } from './menu';
 import {
   aplicar,
   cartaDeId,
@@ -16,7 +17,7 @@ const ESQUINA = { position: { x: 8, y: 8 } };
 
 async function empezarGin(page: Page, query: string) {
   await page.goto(`./?${query}`);
-  await page.getByTestId('juego-ginRummy').click();
+  await abrirJuego(page, 'ginRummy');
   await page.getByTestId('empezar').click();
 }
 
