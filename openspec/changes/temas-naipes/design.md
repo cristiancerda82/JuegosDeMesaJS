@@ -95,6 +95,7 @@ Las 24 barajas del usuario son librerías JS (una por baraja) que generan cada c
 - *Alternativa:* pregenerar los SVG en el build. Se descarta: el sprite generado pesa 7–30 KB comprimido frente a 5–19 KB del generador, y obligaría a regenerar a mano cada vez que el usuario cambie un diseño.
 - Los generadores quedan fuera de lint y formato (son del usuario) y su salida se valida en el test de contrato (sin `<script>`, `on*`, `<foreignObject>`, imágenes ni referencias externas).
 - El selector solo monta sus vistas previas al abrirse, para no descargar las 24 barajas al cargar el menú.
+- Los índices de las esquinas de estos diseños se **agrandan al integrarlos** (1,4× en la española, que solo lleva el número, y 1,3× en la francesa, número y palo), escalando desde la esquina de la carta los `<text>` y el palo pequeño de cada esquina, sin modificar los generadores. «Antigua», que imita las barajas sin índices, se genera con su opción `indices` para que los tenga.
 
 ## Risks / Trade-offs
 

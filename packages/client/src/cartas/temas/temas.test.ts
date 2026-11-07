@@ -2,7 +2,7 @@ import { cartaDeId, crearBaraja, type IdCarta } from '@juegos/engine';
 import { gzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { CARGAR, leerTema, TEMAS } from '.';
-import { aSimbolo } from './propios/cargar';
+import { agrandarIndices, aSimbolo } from './propios/cargar';
 import { PROPIOS } from './propios/catalogo';
 import type { Baraja, IdTema, Pieza, TemaNaipes } from './tipos';
 
@@ -116,5 +116,26 @@ describe('diseños propios: ids de cada carta', () => {
       [...(t.sprite ?? '').matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]),
     );
     expect(new Set(ids).size).toBe(ids.length);
+  });
+});
+
+describe('diseños propios: índices agrandados', () => {
+  it('escala los índices de las esquinas desde la esquina y deja el resto igual', () => {
+    const svg =
+      '<svg viewBox="0 0 240 336">' +
+      '<text x="20" y="40" font-size="30">7</text>' +
+      '<g fill="#000" transform="translate(20 57) translate(-8 -8) scale(0.16)"><path d="M0 0"/></g>' +
+      '<text x="223" y="326" font-size="24">7</text>' +
+      '<text x="120" y="168" font-size="30">centro</text>' +
+      '<g transform="translate(44 42) scale(0.3)"><path d="M0 0"/></g>' +
+      '</svg>';
+    const r = agrandarIndices(svg, 1.3);
+    expect(r).toContain('<text transform="translate(4 4) scale(1.3) translate(-4 -4)" x="20"');
+    expect(r).toContain('transform="translate(4 4) scale(1.3) translate(-4 -4) translate(20 57)');
+    expect(r).toContain(
+      '<text transform="translate(236 332) scale(1.3) translate(-236 -332)" x="223"',
+    );
+    expect(r).toContain('<text x="120" y="168"');
+    expect(r).toContain('<g transform="translate(44 42) scale(0.3)">');
   });
 });
