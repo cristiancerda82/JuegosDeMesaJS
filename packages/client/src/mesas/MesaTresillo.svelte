@@ -155,25 +155,25 @@
     {#if miTurno && vista.fase === 'subasta'}
       <div class="otras" data-testid="panel-subasta">
         {#each pujables as contrato (contrato)}
-          <button
+          <button data-accion="pujar"
             class="principal"
             data-testid="pujar-{contrato}"
             onclick={() => hacer({ tipo: 'pujar', contrato }, cancelar)}>{T.tresillo.nombreContrato(contrato)}</button
           >
         {/each}
-        <button data-testid="pasar" onclick={() => hacer({ tipo: 'pasar' }, cancelar)}>{T.tresillo.paso}</button>
+        <button data-accion="pasar" data-testid="pasar" onclick={() => hacer({ tipo: 'pasar' }, cancelar)}>{T.tresillo.paso}</button>
       </div>
     {:else if miTurno && vista.fase === 'triunfo'}
       <div class="otras" data-testid="panel-triunfo">
         {#each PALOS as palo (palo)}
-          <button data-testid="triunfo-{palo}" onclick={() => hacer({ tipo: 'triunfo', palo }, cancelar)}
+          <button data-accion="triunfo" data-testid="triunfo-{palo}" onclick={() => hacer({ tipo: 'triunfo', palo }, cancelar)}
             >{T.tresillo.palo(palo)}</button
           >
         {/each}
       </div>
     {:else if miTurno && vista.fase === 'cambio' && puede('robar')}
       <div class="otras" data-testid="panel-cambio">
-        <button class="principal" data-testid="robar" onclick={() => hacer({ tipo: 'robar' }, cancelar)}>
+        <button data-accion="robar" class="principal" data-testid="robar" onclick={() => hacer({ tipo: 'robar' }, cancelar)}>
           {vista.descartando === 0 ? T.tresillo.noCambiar : T.tresillo.cambiar(vista.descartando)}
         </button>
       </div>

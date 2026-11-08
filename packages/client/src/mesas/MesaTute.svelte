@@ -115,7 +115,7 @@
 
   {#snippet acciones(cancelar: () => void)}
     {#if tute}
-      <button
+      <button data-accion={tute.tipo} data-jugada={JSON.stringify(tute)}
         class="principal"
         data-testid="cantar-tute"
         onclick={() => {
@@ -125,7 +125,7 @@
       >
     {/if}
     {#each cantes as c (c.palo)}
-      <button
+      <button data-accion={c.tipo} data-jugada={JSON.stringify(c)}
         class="principal"
         data-testid="cantar-{c.palo}"
         onclick={() => {
@@ -135,7 +135,7 @@
       >
     {/each}
     {#if cambio && vista.muestra}
-      <button
+      <button data-accion={cambio.tipo} data-jugada={JSON.stringify(cambio)}
         class="principal"
         data-testid="cambiar-muestra"
         onclick={() => {

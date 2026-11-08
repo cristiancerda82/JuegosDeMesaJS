@@ -134,7 +134,7 @@
   {#snippet acciones(cancelar)}
     {#if puedeRobar}
       <div class="decisiones">
-        <button
+        <button data-accion="robar"
           class="principal"
           data-testid="robar"
           onclick={() => {

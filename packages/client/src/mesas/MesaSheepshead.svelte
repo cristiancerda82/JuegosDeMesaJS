@@ -139,7 +139,7 @@
   {#snippet acciones(cancelar)}
     {#if miTurno && vista.fase === 'coger'}
       <div class="otras" data-testid="panel-coger">
-        <button
+        <button data-accion="coger"
           class="principal"
           data-testid="coger"
           onclick={() => {
@@ -147,7 +147,7 @@
             sesion.jugar({ tipo: 'coger' });
           }}>{T.sheepshead.coger}</button
         >
-        <button
+        <button data-accion="pasar"
           data-testid="pasar"
           onclick={() => {
             cancelar();

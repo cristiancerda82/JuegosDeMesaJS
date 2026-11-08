@@ -129,7 +129,7 @@
       <div class="apuestas" role="group" aria-label={T.pocha.apuestaTitulo}>
         <span class="pregunta">{T.pocha.apuestaTitulo}</span>
         {#each apuestas as b (b)}
-          <button class="principal" data-testid="apostar-{b}" onclick={() => {
+          <button data-accion="apostar" class="principal" data-testid="apostar-{b}" onclick={() => {
               cancelar();
               sesion.jugar({ tipo: 'apostar', bazas: b });
             }}>

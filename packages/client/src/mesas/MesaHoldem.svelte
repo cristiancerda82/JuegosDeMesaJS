@@ -173,11 +173,11 @@
     <p class="turno" role="status" data-testid="turno">{turnoTexto}</p>
     {#if miTurno}
       <div class="botones">
-        <button data-testid="retirarse" onclick={() => jugar({ tipo: 'retirarse' })}>{T.holdem.retirarse}</button>
+        <button data-accion="retirarse" data-testid="retirarse" onclick={() => jugar({ tipo: 'retirarse' })}>{T.holdem.retirarse}</button>
         {#if puede('pasar')}
-          <button data-testid="pasar" onclick={() => jugar({ tipo: 'pasar' })}>{T.holdem.pasar}</button>
+          <button data-accion="pasar" data-testid="pasar" onclick={() => jugar({ tipo: 'pasar' })}>{T.holdem.pasar}</button>
         {:else}
-          <button data-testid="igualar" onclick={() => jugar({ tipo: 'igualar' })}>{T.holdem.igualar(aIgualar)}</button>
+          <button data-accion="igualar" data-testid="igualar" onclick={() => jugar({ tipo: 'igualar' })}>{T.holdem.igualar(aIgualar)}</button>
         {/if}
       </div>
       {#if subidas.length > 0}
@@ -228,7 +228,7 @@
     flex-direction: column;
     gap: 8px;
     width: min(100%, 760px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
   }

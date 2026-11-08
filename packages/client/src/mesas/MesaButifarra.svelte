@@ -156,7 +156,7 @@
       <div class="decision" role="group" aria-label={T.butifarra.eligeTitulo}>
         <span class="pregunta">{T.butifarra.eligeTitulo}</span>
         {#each elecciones as triunfo (triunfo ?? 'butifarra')}
-          <button
+          <button data-accion="elegir"
             class="principal"
             data-testid="elegir-{triunfo ?? 'butifarra'}"
             onclick={() => {
@@ -166,7 +166,7 @@
           >
         {/each}
         {#if puedeDelegar}
-          <button
+          <button data-accion="delegar"
             data-testid="delegar"
             onclick={() => {
               cancelar();
@@ -177,7 +177,7 @@
       </div>
     {:else if decideContro}
       <div class="decision" role="group" aria-label={T.butifarra.contros[vista.contros]}>
-        <button
+        <button data-accion="contro"
           class="principal"
           data-testid="contro"
           onclick={() => {
@@ -185,7 +185,7 @@
             sesion.jugar({ tipo: 'contro' });
           }}>{T.butifarra.contros[vista.contros]}</button
         >
-        <button
+        <button data-accion="pasar"
           data-testid="pasar"
           onclick={() => {
             cancelar();

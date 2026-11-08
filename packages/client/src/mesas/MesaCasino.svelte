@@ -268,7 +268,7 @@
     {#if elegida !== null && jugadas.length > 0}
       <div class="jugadas" data-testid="jugadas">
         {#each jugadas as jugada, i (i)}
-          <button
+          <button data-accion={jugada.tipo} data-jugada={JSON.stringify(jugada)}
             class:principal={jugada.tipo === 'recoger'}
             class:mirada={i === mirada}
             data-testid="jugada-{i}"
@@ -304,7 +304,7 @@
     align-items: center;
     gap: 8px;
     width: min(100%, 860px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     touch-action: none;

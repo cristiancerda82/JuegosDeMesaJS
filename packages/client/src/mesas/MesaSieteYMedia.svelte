@@ -186,17 +186,17 @@
           disabled={apuestaValida >= maxApuesta}
           onclick={() => (apuesta = apuestaValida + 1)}>+</button
         >
-        <button
+        <button data-accion="apostar"
           class="principal"
           data-testid="apostar"
           onclick={() => sesion.jugar({ tipo: 'apostar', fichas: apuestaValida })}
           >{T.sieteYMedia.apostar(apuestaValida)}</button
         >
       {:else if puedePlantarse}
-        <button class="principal" data-testid="pedir" disabled={!puedePedir} onclick={() => sesion.jugar({ tipo: 'pedir' })}
+        <button data-accion="pedir" class="principal" data-testid="pedir" disabled={!puedePedir} onclick={() => sesion.jugar({ tipo: 'pedir' })}
           >{T.sieteYMedia.pedir}</button
         >
-        <button data-testid="plantarse" onclick={() => sesion.jugar({ tipo: 'plantarse' })}
+        <button data-accion="plantarse" data-testid="plantarse" onclick={() => sesion.jugar({ tipo: 'plantarse' })}
           >{T.sieteYMedia.plantarse}</button
         >
       {/if}
@@ -230,7 +230,7 @@
       'abajo abajo abajo';
     gap: 8px;
     width: min(100%, 860px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     user-select: none;

@@ -251,7 +251,7 @@
       </div>
     </div>
     {#if pase}
-      <button data-testid="pasar" onclick={() => jugar(pase)}>{T.ginRummy.pasar}</button>
+      <button data-accion={pase.tipo} data-jugada={JSON.stringify(pase)} data-testid="pasar" onclick={() => jugar(pase)}>{T.ginRummy.pasar}</button>
     {/if}
     {#if avisoRival}
       <p class="aviso" role="status" data-testid="aviso">{avisoRival}</p>
@@ -319,7 +319,7 @@
       'abajo abajo abajo';
     gap: 8px;
     width: min(100%, 860px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     touch-action: none;

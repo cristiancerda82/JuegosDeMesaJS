@@ -72,6 +72,7 @@ export function reconstruirCulo(vista: VistaCulo, azar: EstadoAzar): EstadoCulo 
     turno: vista.turno ?? 0,
     mesa: vista.mesa,
     pasados: [...vista.pasados],
+    vuelta: [...vista.vuelta],
     salidos: [...vista.salidos],
     jugadas: [...vista.jugadas],
     cargos: vista.cargos,

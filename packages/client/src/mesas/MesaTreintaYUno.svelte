@@ -161,7 +161,7 @@
       <span class="valor" data-testid="valor">{T.treinta.valor(vista.valor ?? 0)}</span>
       <span class="turno" role="status" data-testid="turno">{turno}</span>
       {#if miTurno && plantarse}
-        <button class="principal" data-testid="plantarse" onclick={() => jugar(plantarse)}>
+        <button data-accion={plantarse.tipo} data-jugada={JSON.stringify(plantarse)} class="principal" data-testid="plantarse" onclick={() => jugar(plantarse)}>
           {T.treinta.plantarse}
         </button>
       {/if}
@@ -169,7 +169,7 @@
     <div class="mano" data-testid="mano">
       {#each manoOrdenada as c (c)}
         {@const accion = descarte(c)}
-        <button
+        <button data-accion={accion?.tipo} data-jugada={JSON.stringify(accion)}
           class="carta-mano"
           class:jugable={accion !== undefined}
           class:cogida={vista.cogida === c}
@@ -212,7 +212,7 @@
       'abajo abajo abajo';
     gap: 6px;
     width: min(100%, 860px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     user-select: none;

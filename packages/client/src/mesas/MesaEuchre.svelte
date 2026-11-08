@@ -157,7 +157,7 @@
     {#if decisiones.length > 0 && sesion.fin === null && !sesion.bloqueada}
       <div class="decisiones">
         {#each decisiones as a (idDe(a))}
-          <button
+          <button data-accion={a.tipo} data-jugada={JSON.stringify(a)}
             class:principal={a.tipo !== 'pasar' && !('solo' in a && a.solo)}
             data-testid={idDe(a)}
             onclick={() => {

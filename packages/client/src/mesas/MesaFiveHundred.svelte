@@ -184,7 +184,7 @@
           <div class="tabla">
             {#each PALOS_PUJA_FIVE_HUNDRED as palo (palo)}
               {@const puja: PujaFiveHundred = { tipo: 'bazas', bazas: nivel, palo }}
-              <button
+              <button data-accion={puja.tipo} data-jugada={JSON.stringify(puja)}
                 class="puja principal"
                 data-testid={idPuja(puja)}
                 disabled={!pujasLegales.has(idPuja(puja))}
@@ -198,7 +198,7 @@
         {/if}
         <div class="otras">
           {#each [{ tipo: 'misere' }, { tipo: 'misereAbierto' }] as const as puja (puja.tipo)}
-            <button
+            <button data-accion={puja.tipo} data-jugada={JSON.stringify(puja)}
               data-testid={idPuja(puja)}
               disabled={!pujasLegales.has(idPuja(puja))}
               onclick={() => {
@@ -208,7 +208,7 @@
             >
           {/each}
           {#if puedePasar}
-            <button
+            <button data-accion="pasar"
               data-testid="pasar"
               onclick={() => {
                 cancelar();
@@ -221,7 +221,7 @@
     {:else if miTurno && nombrando}
       <div class="otras">
         {#each PALOS as palo (palo)}
-          <button
+          <button data-accion="jugar"
             class="principal"
             data-testid="palo-{palo}"
             onclick={() => {

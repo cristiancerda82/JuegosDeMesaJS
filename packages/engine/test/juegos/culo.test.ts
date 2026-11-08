@@ -170,6 +170,37 @@ describe('Cortar con doses', () => {
   });
 });
 
+describe('Vuelta en curso del Culo', () => {
+  it('la vista muestra todas las jugadas de la vuelta, en orden y con su autor', () => {
+    let e = enJuego(['5o 5c 3o', '7o 7c 3c', 'Ro 3e', 'Co 3b'], { turno: 0 });
+    e = jugar(e, '5o 5c');
+    e = jugar(e, '7o 7c');
+    const vista = culo.vistaDe(e, 2);
+    expect(vista.vuelta).toEqual([
+      { asiento: 0, cartas: c('5o 5c') },
+      { asiento: 1, cartas: c('7o 7c') },
+    ]);
+    expect(vista.mesa).toEqual({ asiento: 1, cartas: c('7o 7c') });
+  });
+
+  it('se vacía cuando todos pasan', () => {
+    let e = enJuego(['4o 6o', 'Ro 5o', '4c 6c', '4e 6e'], { turno: 1 });
+    e = jugar(e, 'Ro');
+    expect(e.vuelta).toHaveLength(1);
+    e = pasar(pasar(pasar(e)));
+    expect(e.vuelta).toEqual([]);
+  });
+
+  it('se vacía cuando un 2 limpia la mesa', () => {
+    let e = enJuego(['2o 2c 4o', '5o', '5c', 'Ao Ac 6e'], {
+      mesa: { asiento: 3, cartas: c('Ao Ac') },
+      vuelta: [{ asiento: 3, cartas: c('Ao Ac') }],
+    });
+    e = jugar(e, '2o 2c');
+    expect(e.vuelta).toEqual([]);
+  });
+});
+
 describe('Salida y puestos del Culo', () => {
   it('fin de una mano de 4: presidente 3, vicepresidente 2, viceculo 1 y culo 0', () => {
     let e = enJuego(['', '4o 5o', '', '6o'], { salidos: [2, 0], turno: 3 });

@@ -61,6 +61,10 @@
   );
 
   const arriba = $derived(vista.descarte.at(-1) ?? null);
+  /** Quién tiró la carta de arriba del descarte (no la hay al empezar la mano). */
+  const autorArriba = $derived(
+    vista.ultimas.findIndex((u) => u?.tipo === 'jugar' && u.carta === arriba),
+  );
   /** El palo que toca lo eligió un 8 (no es el de la carta de arriba). */
   const elegido = $derived(arriba !== null && esOcho(arriba));
 
@@ -147,6 +151,9 @@
       </div>
       <div class="pila" data-testid="descarte" data-carta={arriba}>
         {#if arriba !== null}<Carta id={arriba} />{/if}
+        {#if autorArriba !== -1}
+          <span class="autor" data-testid="ultima-jugada">{T.partida.jugadaDe(nombre(autorArriba))}</span>
+        {/if}
       </div>
     </div>
     <p class="toca" class:elegido data-testid="palo" data-palo={vista.palo}>
@@ -172,12 +179,12 @@
     {:else if miTurno && (puede('robar') || puede('pasar'))}
       <div class="botones">
         {#if puede('robar')}
-          <button class="principal" data-testid="robar" onclick={() => sesion.jugar({ tipo: 'robar' })}>
+          <button data-accion="robar" class="principal" data-testid="robar" onclick={() => sesion.jugar({ tipo: 'robar' })}>
             {T.ochoLoco.robar}
           </button>
         {/if}
         {#if puede('pasar')}
-          <button data-testid="pasar" onclick={() => sesion.jugar({ tipo: 'pasar' })}>
+          <button data-accion="pasar" data-testid="pasar" onclick={() => sesion.jugar({ tipo: 'pasar' })}>
             {T.ochoLoco.pasar}
           </button>
         {/if}
@@ -260,7 +267,7 @@
       'abajo abajo abajo';
     gap: 6px;
     width: min(100%, 900px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     user-select: none;
@@ -297,6 +304,16 @@
   .pilas {
     display: flex;
     gap: 14px;
+  }
+
+  .autor {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    translate: -50% -4px;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    color: var(--texto-suave);
   }
 
   .pila {

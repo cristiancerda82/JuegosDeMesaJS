@@ -179,7 +179,7 @@
     {#if panelSubasta}
       <div class="otras" data-testid="subasta">
         {#if puedePujar}
-          <button
+          <button data-accion="pujar"
             class="principal"
             data-testid="pujar"
             onclick={() => {
@@ -188,7 +188,7 @@
             }}>{T.tysiacha.pujar(vista.puja + 5)}</button
           >
         {/if}
-        <button
+        <button data-accion="pasar"
           data-testid="pasar"
           onclick={() => {
             cancelar();
@@ -204,7 +204,7 @@
           disabled={valores.indexOf(contratoElegido) <= 0}
           onclick={() => cambiar(-1)}>−</button
         >
-        <button
+        <button data-accion="fijar"
           class="principal"
           data-testid="fijar"
           onclick={() => {

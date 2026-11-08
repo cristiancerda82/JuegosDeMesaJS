@@ -273,14 +273,14 @@
             {T.cuarenta.suma(suma, objetivo)}
           </span>
         {/if}
-        <button
+        <button data-accion={capturaElegida?.tipo} data-jugada={JSON.stringify(capturaElegida)}
           class="principal"
           data-testid="recoger"
           disabled={capturaElegida === null}
           onclick={() => capturaElegida && jugar(capturaElegida)}>{T.cuarenta.recoger}</button
         >
         {#if dejarLegal}
-          <button data-testid="dejar" onclick={() => dejarLegal && jugar(dejarLegal)}
+          <button data-accion={dejarLegal?.tipo} data-jugada={JSON.stringify(dejarLegal)} data-testid="dejar" onclick={() => dejarLegal && jugar(dejarLegal)}
             >{T.cuarenta.dejar}</button
           >
         {/if}
@@ -298,7 +298,7 @@
       <ul>
         {#each opciones.jugadas as jugada, i (i)}
           <li>
-            <button
+            <button data-accion={jugada.tipo} data-jugada={JSON.stringify(jugada)}
               class:principal={jugada.captura.length > 0}
               onclick={() => jugar(jugada)}
               data-testid={jugada.captura.length > 0 ? `opcion-${i}` : 'opcion-dejar'}
@@ -351,7 +351,7 @@
       'abajo abajo abajo';
     gap: 8px;
     width: min(100%, 860px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     touch-action: none;

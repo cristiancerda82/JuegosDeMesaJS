@@ -213,7 +213,7 @@
       <div class="decision" role="group" aria-label={T.cuatrola.eligeLlamada}>
         <span class="pregunta">{T.cuatrola.eligeLlamada}</span>
         {#each llamables as a (a.llamada)}
-          <button
+          <button data-accion={a.tipo} data-jugada={JSON.stringify(a)}
             class="principal"
             data-testid="llamar-{a.llamada}"
             onclick={() => {
@@ -252,18 +252,18 @@
         {/each}
       </ul>
       <div class="pujas">
-        <button data-testid="pasar" onclick={() => sesion.jugar({ tipo: 'pasar' })}>
+        <button data-accion="pasar" data-testid="pasar" onclick={() => sesion.jugar({ tipo: 'pasar' })}>
           {T.cuatrola.paso}
         </button>
         {#if puedoRey}
-          <button
+          <button data-accion="pujar"
             class="principal"
             data-testid="pujar-rey"
             onclick={() => sesion.jugar({ tipo: 'pujar', modalidad: 'rey' })}
             >{T.cuatrola.conRey}</button
           >
         {/if}
-        <button
+        <button data-accion="pujar"
           class="principal"
           data-testid="pujar-solo"
           onclick={() => sesion.jugar({ tipo: 'pujar', modalidad: 'solo' })}

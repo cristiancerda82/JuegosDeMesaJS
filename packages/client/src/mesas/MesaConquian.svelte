@@ -212,17 +212,17 @@
     </div>
     {#if decidiendo}
       <div class="botones">
-        <button class="principal" data-testid="bajar" disabled={!bajada} onclick={() => jugar(bajada)}>
+        <button data-accion={bajada?.tipo} data-jugada={JSON.stringify(bajada)} class="principal" data-testid="bajar" disabled={!bajada} onclick={() => jugar(bajada)}>
           {T.conquian.bajar}
         </button>
-        <button data-testid="pasar" onclick={() => jugar(pase)}>{T.conquian.pasar}</button>
+        <button data-accion={pase?.tipo} data-jugada={JSON.stringify(pase)} data-testid="pasar" onclick={() => jugar(pase)}>{T.conquian.pasar}</button>
         {#if seleccion.length > 0}
           <button data-testid="limpiar" onclick={() => (seleccion = [])}>{T.remigio.limpiar}</button>
         {/if}
       </div>
     {:else if miTurno && vista.fase === 'descartar'}
       <div class="botones">
-        <button class="principal" data-testid="descartar" disabled={!descarte} onclick={() => jugar(descarte)}>
+        <button data-accion={descarte?.tipo} data-jugada={JSON.stringify(descarte)} class="principal" data-testid="descartar" disabled={!descarte} onclick={() => jugar(descarte)}>
           {T.conquian.descartar}
         </button>
       </div>
@@ -282,7 +282,7 @@
       'abajo';
     gap: 6px;
     width: min(100%, 860px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     user-select: none;

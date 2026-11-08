@@ -133,17 +133,17 @@
     {#if puede('proponer') || puede('aceptar') || puede('robar')}
       <div class="decisiones">
         {#if puede('proponer')}
-          <button class="principal" data-testid="proponer" onclick={() => hacer({ tipo: 'proponer' }, cancelar)}
+          <button data-accion="proponer" class="principal" data-testid="proponer" onclick={() => hacer({ tipo: 'proponer' }, cancelar)}
             >{T.ecarte.proponer}</button
           >
-          <button data-testid="jugar" onclick={() => hacer({ tipo: 'jugar' }, cancelar)}>{T.ecarte.jugar}</button>
+          <button data-accion="jugar" data-testid="jugar" onclick={() => hacer({ tipo: 'jugar' }, cancelar)}>{T.ecarte.jugar}</button>
         {:else if puede('aceptar')}
-          <button class="principal" data-testid="aceptar" onclick={() => hacer({ tipo: 'aceptar' }, cancelar)}
+          <button data-accion="aceptar" class="principal" data-testid="aceptar" onclick={() => hacer({ tipo: 'aceptar' }, cancelar)}
             >{T.ecarte.aceptar}</button
           >
-          <button data-testid="rehusar" onclick={() => hacer({ tipo: 'rehusar' }, cancelar)}>{T.ecarte.rehusar}</button>
+          <button data-accion="rehusar" data-testid="rehusar" onclick={() => hacer({ tipo: 'rehusar' }, cancelar)}>{T.ecarte.rehusar}</button>
         {:else}
-          <button class="principal" data-testid="robar" onclick={() => hacer({ tipo: 'robar' }, cancelar)}
+          <button data-accion="robar" class="principal" data-testid="robar" onclick={() => hacer({ tipo: 'robar' }, cancelar)}
             >{vista.cambiando === 0 ? T.ecarte.noCambiar : T.ecarte.cambiar(vista.cambiando)}</button
           >
         {/if}

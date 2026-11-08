@@ -88,11 +88,24 @@
       vista.mesa.length === 0 &&
       vista.ultimaBaza !== null,
   );
-  const enMesa = $derived(viendoBaza ? vista.ultimaBaza!.cartas : vista.mesa);
+  /**
+   * Repaso de la última baza (spec mesa-cliente, «Ver la última baza»): se puede pedir hasta que
+   * se juega la primera carta de la siguiente, y cualquier cambio de la partida lo cierra.
+   */
+  let repasando = $state(false);
+  const puedeRepasar = $derived(
+    vista.ultimaBaza !== null && vista.mesa.length === 0 && !viendoBaza && sesion.fin === null,
+  );
+  $effect(() => {
+    void vista;
+    repasando = false;
+  });
+  const viendoUltima = $derived(viendoBaza || (repasando && puedeRepasar));
+  const enMesa = $derived(viendoUltima ? vista.ultimaBaza!.cartas : vista.mesa);
 
   const avisoBaza = $derived.by(() => {
     if (sesion.fin !== null) return null;
-    if (viendoBaza) return T.brisca.ganaBaza(nombre(vista.ultimaBaza!.ganador));
+    if (viendoUltima) return T.brisca.ganaBaza(nombre(vista.ultimaBaza!.ganador));
     const ultima = vista.resultadosManos.at(-1);
     const manoNueva = vista.bazas.every((b) => b === 0) && vista.mesa.length === 0;
     if (sesion.bloqueada && sesion.pensando === null && ultima && manoNueva) {
@@ -172,6 +185,9 @@
       {interaccion}
       aviso={aviso ?? avisoBaza}
       detalleAviso={aviso ? detalleAviso : undefined}
+      seguir={sesion.retenida ? () => sesion.seguir() : undefined}
+      {nombre}
+      conNombres={repasando && puedeRepasar}
     />
   </div>
 
@@ -181,6 +197,16 @@
         {nombre(yo)} <small data-testid="detalle-propio">{detalle(yo)}</small>
       </span>
       <span class="turno" role="status" data-testid="turno">{turno}</span>
+      {#if puedeRepasar}
+        <button
+          class="repaso"
+          aria-pressed={repasando}
+          onclick={() => (repasando = !repasando)}
+          data-testid="ver-ultima-baza"
+        >
+          {repasando ? T.partida.volverABaza : T.partida.ultimaBaza}
+        </button>
+      {/if}
       {@render acciones?.(() => interaccion.cancelar())}
     </div>
     <ManoPropia cartas={vista.miMano ?? []} {jugable} {interaccion} {marcadas} />
@@ -202,7 +228,7 @@
       'abajo abajo abajo';
     gap: 8px;
     width: min(100%, 860px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     touch-action: none;
@@ -292,5 +318,11 @@
 
   .turno {
     font-weight: 600;
+  }
+
+  .repaso {
+    min-height: 36px;
+    padding: 0.2rem 0.8rem;
+    font-size: 0.85rem;
   }
 </style>

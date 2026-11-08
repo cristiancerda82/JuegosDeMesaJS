@@ -144,7 +144,7 @@
       </p>
       <div class="botones-apuesta">
         {#each Array.from({ length: 14 }, (_, n) => n) as n (n)}
-          <button
+          <button data-accion="apostar"
             class:nil={n === 0}
             data-testid="apostar-{n}"
             onclick={() => sesion.jugar({ tipo: 'apostar', bazas: n })}

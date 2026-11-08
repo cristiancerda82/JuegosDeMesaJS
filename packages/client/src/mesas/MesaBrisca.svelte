@@ -41,7 +41,7 @@
 
   {#snippet acciones(cancelar: () => void)}
     {#if cambio && vista.muestra}
-      <button
+      <button data-accion={cambio.tipo} data-jugada={JSON.stringify(cambio)}
         class="principal"
         data-testid="cambiar-muestra"
         onclick={() => {

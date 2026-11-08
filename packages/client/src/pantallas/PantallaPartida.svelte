@@ -82,6 +82,9 @@
   import Fin from './Fin.svelte';
   import FranjaRed from './FranjaRed.svelte';
   import { SesionRed } from '../sesion/sesion-red.svelte';
+  import { ritmo } from '../ritmo/ritmo.svelte';
+  import Asistente from '../asistente/Asistente.svelte';
+  import type { SesionMesa } from '../sesion/sesion-mesa';
 
   interface Props {
     partida: Partida;
@@ -92,6 +95,12 @@
   let { partida, menu, revancha }: Props = $props();
 
   let verAyuda = $state(false);
+  let raiz: HTMLElement | undefined = $state();
+  /** Altura de los avisos del modo asistido: las mesas la descuentan de su altura mínima. */
+  let altoAsistente = $state(0);
+  const sesionMesa = $derived(
+    partida.sesion as unknown as SesionMesa<unknown, unknown, unknown, unknown>,
+  );
 
   // Mientras se consulta la guía, la IA espera: la partida sigue en el mismo punto al cerrarla.
   $effect(() => {
@@ -102,10 +111,11 @@
   });
 </script>
 
-<div class="partida">
+<div class="partida" bind:this={raiz} style:--alto-asistente="{altoAsistente}px">
   <header>
     <button onclick={menu} data-testid="volver-menu">← {T.partida.menu}</button>
     <h1>{partida.sesion.def.nombre}</h1>
+    <Asistente juego={partida.id} sesion={sesionMesa} {raiz} parte="interruptor" />
     <button
       class="ayuda"
       onclick={() => (verAyuda = true)}
@@ -122,6 +132,10 @@
       reconectando={partida.sesion instanceof SesionRed && partida.sesion.cliente.estado === 'reconectando'}
     />
   {/if}
+
+  <div bind:clientHeight={altoAsistente}>
+    <Asistente juego={partida.id} sesion={sesionMesa} {raiz} parte="avisos" />
+  </div>
 
   {#if partida.id === 'klondike'}
     <MesaKlondike sesion={partida.sesion} />
@@ -279,6 +293,13 @@
     <MesaBrisca sesion={partida.sesion} />
   {/if}
 
+  <!-- Velocidad Pausada: la baza terminada espera a que el jugador siga (vale para cualquier mesa). -->
+  {#if partida.sesion.retenida && ritmo.tapetes === 0}
+    <button class="seguir" onclick={() => partida.sesion.seguir()} data-testid="seguir">
+      {T.partida.seguir}
+    </button>
+  {/if}
+
   {#if partida.sesion.fin !== null}
     <Fin
       {partida}
@@ -310,6 +331,25 @@
 
   h1 {
     font-size: 1.15rem;
+  }
+
+  .seguir {
+    position: fixed;
+    left: 50%;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    translate: -50% 0;
+    z-index: 30;
+    min-height: 44px;
+    padding: 0.4rem 1.6rem;
+    font-weight: 700;
+    background: var(--acento);
+    color: #2b2005;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.4);
+  }
+
+  /* Con el interruptor del modo asistido, este ya empuja a la derecha. */
+  :global(header .asistente + .ayuda) {
+    margin-left: 0;
   }
 
   .ayuda {

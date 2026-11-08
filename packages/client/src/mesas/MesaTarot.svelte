@@ -161,7 +161,7 @@
     {#if subasta.length > 0}
       <div class="decisiones">
         {#each subasta as a (a.tipo === 'pujar' ? a.contrato : 'pasar')}
-          <button
+          <button data-accion={a.tipo} data-jugada={JSON.stringify(a)}
             class:principal={a.tipo === 'pujar'}
             data-testid={a.tipo === 'pujar' ? `contrato-${a.contrato}` : 'pasar'}
             onclick={() => {
@@ -174,7 +174,7 @@
     {:else if llamables.length > 0}
       <div class="decisiones">
         {#each llamables as carta (carta)}
-          <button
+          <button data-accion="llamar"
             class="principal"
             data-testid="llamar-{carta}"
             onclick={() => {
@@ -187,7 +187,7 @@
     {:else if poignee && poignee.tipo === 'poignee'}
       {@const nivel = poignee.nivel}
       <div class="decisiones">
-        <button
+        <button data-accion="poignee"
           class="principal"
           data-testid="poignee"
           onclick={() => {

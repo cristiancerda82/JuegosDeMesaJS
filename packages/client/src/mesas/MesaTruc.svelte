@@ -200,7 +200,7 @@
     {#if botones.length > 1}
       <div class="apuestas" role="group" aria-label={T.truc.envit}>
         {#each botones as b (b.tipo)}
-          <button
+          <button data-accion={b.tipo}
             class:principal={b.tipo !== 'meVoy' && b.tipo !== 'noVull'}
             data-testid="truc-{b.tipo}"
             onclick={() => {

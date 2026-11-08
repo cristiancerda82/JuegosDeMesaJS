@@ -153,7 +153,7 @@
     {#if reservas.length > 0}
       <div class="decisiones">
         {#each reservas as r (r)}
-          <button
+          <button data-accion="reservar"
             class:principal={r !== 'sano'}
             data-testid="reserva-{r}"
             onclick={() => {
@@ -165,7 +165,7 @@
       </div>
     {:else if anuncio}
       <div class="decisiones">
-        <button
+        <button data-accion="anunciar"
           class="principal"
           data-testid="anunciar"
           onclick={() => {

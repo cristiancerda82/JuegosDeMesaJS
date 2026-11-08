@@ -267,7 +267,7 @@
     </div>
     <div class="botones">
       {#each botones as b (b.id)}
-        <button class:principal={b.principal} data-testid="accion-{b.id}" onclick={() => sesion.jugar(b.accion)}>
+        <button data-accion={b.accion.tipo} data-jugada={JSON.stringify(b.accion)} class:principal={b.principal} data-testid="accion-{b.id}" onclick={() => sesion.jugar(b.accion)}>
           {b.texto}
         </button>
       {/each}
@@ -328,7 +328,7 @@
       'abajo abajo abajo';
     gap: 8px;
     width: min(100%, 860px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
   }

@@ -57,6 +57,11 @@ export interface EstadoCulo {
   readonly mesa: JugadaCulo | null;
   /** Quienes han pasado desde la jugada de la mesa, en orden. */
   readonly pasados: readonly Asiento[];
+  /**
+   * Las jugadas de la vuelta en curso, desde la que la abrió hasta la de la mesa; se vacía al
+   * cerrarse la vuelta (todos pasan o un 2 limpia la mesa). Es pública: todo estuvo en la mesa.
+   */
+  readonly vuelta: readonly JugadaCulo[];
   /** Quienes han salido de la mano, por orden. */
   readonly salidos: readonly Asiento[];
   /** Todas las jugadas de la mano, en orden. */
@@ -99,6 +104,7 @@ export interface VistaCulo {
   readonly turno: Asiento | null;
   readonly mesa: JugadaCulo | null;
   readonly pasados: readonly Asiento[];
+  readonly vuelta: readonly JugadaCulo[];
   readonly salidos: readonly Asiento[];
   readonly jugadas: readonly JugadaCulo[];
   readonly cargos: readonly CargoCulo[] | null;
@@ -220,6 +226,7 @@ function nuevaMano(
     numeroMano,
     mesa: null,
     pasados: [],
+    vuelta: [],
     salidos: [],
     jugadas: [],
     cargos,
@@ -295,9 +302,14 @@ function jugar(e: EstadoCulo, asiento: Asiento, cartas: readonly IdCarta[]): Est
   if (activos(tras).length <= 1) return cerrarMano(tras);
   if (corta) {
     const abre = salidos.includes(asiento) ? siguienteActivo(tras, asiento) : asiento;
-    return { ...tras, mesa: null, turno: abre };
+    return { ...tras, mesa: null, vuelta: [], turno: abre };
   }
-  return { ...tras, mesa: { asiento, cartas }, turno: siguienteActivo(tras, asiento) };
+  return {
+    ...tras,
+    mesa: { asiento, cartas },
+    vuelta: [...e.vuelta, { asiento, cartas }],
+    turno: siguienteActivo(tras, asiento),
+  };
 }
 
 function pasar(e: EstadoCulo, asiento: Asiento): EstadoCulo {
@@ -310,6 +322,7 @@ function pasar(e: EstadoCulo, asiento: Asiento): EstadoCulo {
       ...e,
       mesa: null,
       pasados: [],
+      vuelta: [],
       turno: autorActivo ? mesa.asiento : siguienteActivo(e, mesa.asiento),
       ultimaAccion: { asiento, tipo: 'pasar', cartas: [], limpia: true },
     };
@@ -399,6 +412,7 @@ export const culo: Juego<ConfigCulo, EstadoCulo, AccionCulo, VistaCulo> = {
       turno: terminada(e) ? null : e.turno,
       mesa: e.mesa,
       pasados: [...e.pasados],
+      vuelta: [...e.vuelta],
       salidos: [...e.salidos],
       jugadas: [...e.jugadas],
       cargos: e.cargos,

@@ -122,7 +122,7 @@
       <div class="apuestas" role="group" aria-label={T.ohHell.apuestaTitulo}>
         <span class="pregunta">{T.ohHell.apuestaTitulo}</span>
         {#each apuestas as b (b)}
-          <button
+          <button data-accion="apostar"
             class="principal"
             data-testid="apostar-{b}"
             onclick={() => {

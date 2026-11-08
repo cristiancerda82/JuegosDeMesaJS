@@ -253,25 +253,25 @@
       <div class="botones">
         {#if vista.fase === 'robar'}
           {#if robar}
-            <button class="principal" data-testid="robar" onclick={() => jugar(robar)}>{T.canasta.robar}</button>
+            <button data-accion={robar.tipo} data-jugada={JSON.stringify(robar)} class="principal" data-testid="robar" onclick={() => jugar(robar)}>{T.canasta.robar}</button>
           {/if}
           {#if puedePozo}
-            <button data-testid="coger-pozo" disabled={!cogerPozo} onclick={() => jugar(cogerPozo)}>
+            <button data-accion={cogerPozo?.tipo} data-jugada={JSON.stringify(cogerPozo)} data-testid="coger-pozo" disabled={!cogerPozo} onclick={() => jugar(cogerPozo)}>
               {T.canasta.cogerPozo}
             </button>
           {/if}
           {#if acabar}
-            <button data-testid="acabar" onclick={() => jugar(acabar)}>{T.canasta.acabar}</button>
+            <button data-accion={acabar.tipo} data-jugada={JSON.stringify(acabar)} data-testid="acabar" onclick={() => jugar(acabar)}>{T.canasta.acabar}</button>
           {/if}
         {:else}
-          <button class="principal" data-testid="bajar" disabled={!bajar} onclick={() => jugar(bajar)}>
+          <button data-accion={bajar?.tipo} data-jugada={JSON.stringify(bajar)} class="principal" data-testid="bajar" disabled={!bajar} onclick={() => jugar(bajar)}>
             {T.canasta.bajar}
           </button>
-          <button data-testid="descartar" disabled={!descartar} onclick={() => jugar(descartar)}>
+          <button data-accion={descartar?.tipo} data-jugada={JSON.stringify(descartar)} data-testid="descartar" disabled={!descartar} onclick={() => jugar(descartar)}>
             {T.canasta.descartar}
           </button>
           {#if deshacer}
-            <button data-testid="deshacer" onclick={() => jugar(deshacer)}>{T.canasta.deshacer}</button>
+            <button data-accion={deshacer.tipo} data-jugada={JSON.stringify(deshacer)} data-testid="deshacer" onclick={() => jugar(deshacer)}>{T.canasta.deshacer}</button>
           {/if}
         {/if}
         {#if seleccion.length > 0}
@@ -328,7 +328,7 @@
       'abajo abajo abajo';
     gap: 6px;
     width: min(100%, 900px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     user-select: none;

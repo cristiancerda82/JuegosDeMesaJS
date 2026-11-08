@@ -267,14 +267,14 @@
         <span class="suma" class:completa={suma === 15} data-testid="suma">
           {T.escoba.suma(suma)}
         </span>
-        <button
+        <button data-accion={capturaElegida?.tipo} data-jugada={JSON.stringify(capturaElegida)}
           class="principal"
           data-testid="recoger"
           disabled={capturaElegida === null}
           onclick={() => capturaElegida && jugar(capturaElegida)}>{T.escoba.recoger}</button
         >
         {#if dejarLegal}
-          <button data-testid="dejar" onclick={() => dejarLegal && jugar(dejarLegal)}
+          <button data-accion={dejarLegal?.tipo} data-jugada={JSON.stringify(dejarLegal)} data-testid="dejar" onclick={() => dejarLegal && jugar(dejarLegal)}
             >{T.escoba.dejar}</button
           >
         {/if}
@@ -292,7 +292,7 @@
       <ul>
         {#each opciones.jugadas as jugada, i (i)}
           <li>
-            <button class:principal={jugada.captura.length > 0} onclick={() => jugar(jugada)} data-testid="opcion-{i}">
+            <button data-accion={jugada.tipo} data-jugada={JSON.stringify(jugada)} class:principal={jugada.captura.length > 0} onclick={() => jugar(jugada)} data-testid="opcion-{i}">
               {#if jugada.captura.length > 0}
                 <span class="grupo">
                   {#each jugada.captura as id (id)}
@@ -345,7 +345,7 @@
       'abajo abajo abajo';
     gap: 8px;
     width: min(100%, 860px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     touch-action: none;

@@ -1,3 +1,5 @@
+import type { AccionBlackjack, VistaBlackjack } from '../juegos/blackjack';
+import type { AccionOchoLoco, VistaOchoLoco } from '../juegos/ocho-loco';
 import type { Asiento } from '../motor/contrato';
 import type { Agente } from './agente';
 import { iaBriscaBasica } from './brisca-basica';
@@ -130,7 +132,13 @@ import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
 
-export type IasPorNivel<V, A> = Readonly<Record<NivelIA, Agente<V, A>>>;
+/**
+ * Las IAs de un juego por nivel y, si el juego simula, lo que necesita para hacerlo: el modo
+ * asistido lo usa para explicar las jugadas (`ia/asistente`).
+ */
+export type IasPorNivel<V, A> = Readonly<Record<NivelIA, Agente<V, A>>> & {
+  readonly simulable?: Simulable<unknown, unknown, A, V>;
+};
 
 /** Parte de las decisiones en las que la IA fácil elige al azar. */
 export const ERRORES_FACIL = 0.3;
@@ -144,6 +152,7 @@ function niveles<C, E, A, V extends { readonly asiento: Asiento | null }>(
     facil: conErrores(normal, ERRORES_FACIL),
     normal,
     dificil: porSimulacion(normal, simulable),
+    simulable: simulable as unknown as Simulable<unknown, unknown, A, V>,
   };
 }
 
@@ -188,6 +197,12 @@ export const IAS = {
     facil: conErrores(iaOchoLocoBasica, ERRORES_FACIL),
     normal: iaOchoLocoBasica,
     dificil: porSimulacion(iaOchoLocoExperta, SIMULABLE_OCHO_LOCO),
+    simulable: SIMULABLE_OCHO_LOCO as unknown as Simulable<
+      unknown,
+      unknown,
+      AccionOchoLoco,
+      VistaOchoLoco
+    >,
   },
   // La apuesta de Picas la decide la base también en el difícil: solo simula las cartas.
   picas: niveles(iaPicasBasica, SIMULABLE_PICAS),
@@ -196,6 +211,12 @@ export const IAS = {
     facil: conErrores(iaBlackjackBasica, ERRORES_FACIL),
     normal: iaBlackjackBasica,
     dificil: porSimulacion(iaBlackjackExperta, SIMULABLE_BLACKJACK),
+    simulable: SIMULABLE_BLACKJACK as unknown as Simulable<
+      unknown,
+      unknown,
+      AccionBlackjack,
+      VistaBlackjack
+    >,
   },
   // Como en el Remigio, el difícil simula el robo y el descarte; cierra como la normal.
   ginRummy: niveles(iaGinRummyBasica, SIMULABLE_GIN_RUMMY),

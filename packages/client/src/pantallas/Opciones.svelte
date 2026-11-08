@@ -87,11 +87,12 @@
   import { T } from '../textos';
   import BotonFavorito from '../menu/BotonFavorito.svelte';
   import ComoSeJuega from './ComoSeJuega.svelte';
-  import { guardarNivel, leerNivel } from './nivel';
+  import { guardarAsistido, guardarNivel, leerAsistido, leerNivel } from './nivel';
+  import { TEXTOS_ASISTENTE } from '../asistente/textos';
 
   interface Props {
     juego: IdJuego;
-    empezar: (config: ConfigJuego, nivel: NivelIA) => void;
+    empezar: (config: ConfigJuego, nivel: NivelIA, asistido: boolean) => void;
     volver: () => void;
     /** Opciones para crear una sala en red: el botón dice «Crear sala». */
     red?: boolean;
@@ -200,6 +201,9 @@
   // Basta con el valor inicial: las opciones se montan de nuevo al elegir otro juego.
   // svelte-ignore state_referenced_locally
   let nivel: NivelIA = $state(leerNivel(juego));
+  /** Modo asistido, recordado por juego: solo contra la IA en local, no en red. */
+  // svelte-ignore state_referenced_locally
+  let asistido = $state(leerAsistido(juego));
 
   const VUELTAS: readonly (number | null)[] = [null, 3, 1, 0];
 
@@ -290,7 +294,8 @@
       casino: { ...casinoConfig, parejas: casinoConfig.jugadores === 4 && casinoConfig.parejas },
     };
     if (conIA) guardarNivel(juego, nivel);
-    empezar({ ...configs[juego] }, nivel);
+    if (conIA && !red) guardarAsistido(juego, asistido);
+    empezar({ ...configs[juego] }, nivel, conIA && !red && asistido);
   }
 </script>
 
@@ -318,6 +323,12 @@
           </label>
         {/each}
       </fieldset>
+      {#if !red}
+        <label class="asistido">
+          <input type="checkbox" bind:checked={asistido} data-testid="modo-asistido" />
+          <span><b>{TEXTOS_ASISTENTE.opcion}</b> · {TEXTOS_ASISTENTE.opcionDesc}</span>
+        </label>
+      {/if}
     {/if}
     {#if juego === 'klondike'}
       <fieldset>

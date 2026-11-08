@@ -182,7 +182,7 @@
       <div class="decision" role="group" aria-label={T.tuteSubastado.eligeTriunfo}>
         <span class="pregunta">{T.tuteSubastado.eligeTriunfo}</span>
         {#each palos as palo (palo)}
-          <button
+          <button data-accion="triunfo"
             class="principal"
             data-testid="triunfo-{palo}"
             onclick={() => {
@@ -194,7 +194,7 @@
       </div>
     {/if}
     {#if tute}
-      <button
+      <button data-accion={tute.tipo} data-jugada={JSON.stringify(tute)}
         class="principal"
         data-testid="cantar-tute"
         onclick={() => {
@@ -204,7 +204,7 @@
       >
     {/if}
     {#each cantes as c (c.palo)}
-      <button
+      <button data-accion={c.tipo} data-jugada={JSON.stringify(c)}
         class="principal"
         data-testid="cantar-{c.palo}"
         onclick={() => {
@@ -237,12 +237,12 @@
           <li>{nombre(a)}: {T.tuteSubastado.detalle(vista.dichos[a] ?? null, vista.fichas[a] ?? 0)}</li>
         {/each}
       </ul>
-      <button class="paso" data-testid="pasar" onclick={() => sesion.jugar({ tipo: 'pasar' })}>
+      <button data-accion="pasar" class="paso" data-testid="pasar" onclick={() => sesion.jugar({ tipo: 'pasar' })}>
         {T.tuteSubastado.paso}
       </button>
       <div class="pujas" role="group" aria-label={T.tuteSubastado.subasta}>
         {#each pujas as p (p)}
-          <button
+          <button data-accion="pujar"
             class="principal"
             data-testid="puja-{p}"
             onclick={() => sesion.jugar({ tipo: 'pujar', puntos: p })}>{p}</button

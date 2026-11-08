@@ -108,17 +108,17 @@
     {#if miTurno}
       <div class="botones">
         {#if puede('creer')}
-          <button class="principal" data-testid="creer" onclick={() => sesion.jugar({ tipo: 'creer' })}>
+          <button data-accion="creer" class="principal" data-testid="creer" onclick={() => sesion.jugar({ tipo: 'creer' })}>
             {T.mentiroso.creer}
           </button>
         {/if}
         {#if puede('desconfiar')}
-          <button class="alarma" data-testid="desconfiar" onclick={() => sesion.jugar({ tipo: 'desconfiar' })}>
+          <button data-accion="desconfiar" class="alarma" data-testid="desconfiar" onclick={() => sesion.jugar({ tipo: 'desconfiar' })}>
             {T.mentiroso.desconfiar}
           </button>
         {/if}
         {#if !puede('creer')}
-          <button class="principal" data-testid="bajar" disabled={!puede('bajar')} onclick={() => sesion.jugar({ tipo: 'bajar' })}>
+          <button data-accion="bajar" class="principal" data-testid="bajar" disabled={!puede('bajar')} onclick={() => sesion.jugar({ tipo: 'bajar' })}>
             {T.mentiroso.bajar(vista.marcadas.length)}
           </button>
         {/if}
@@ -156,7 +156,7 @@
       'abajo abajo abajo';
     gap: 6px;
     width: min(100%, 900px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     user-select: none;

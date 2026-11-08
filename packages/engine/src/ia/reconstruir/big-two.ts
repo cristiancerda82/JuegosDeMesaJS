@@ -35,6 +35,7 @@ export function reconstruirBigTwo(vista: VistaBigTwo, azar: EstadoAzar): EstadoB
     turno: vista.turno ?? 0,
     mesa: vista.mesa,
     pasesSeguidos: vista.pasesSeguidos,
+    vuelta: [...vista.vuelta],
     primera: vista.primera,
     jugadas: [...vista.jugadas],
     totales: [...vista.totales],

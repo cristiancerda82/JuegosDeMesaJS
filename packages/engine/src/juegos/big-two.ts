@@ -32,6 +32,12 @@ export interface MesaBigTwo extends JugadaBigTwo {
   readonly cartas: readonly IdCarta[];
 }
 
+/** Una jugada de la vuelta en curso, con su autor. */
+export interface JugadaVueltaBigTwo {
+  readonly asiento: Asiento;
+  readonly cartas: readonly IdCarta[];
+}
+
 export type AccionBigTwo =
   /** Las cartas, en el orden del juego (de menor a mayor). */
   { readonly tipo: 'jugar'; readonly cartas: readonly IdCarta[] } | { readonly tipo: 'pasar' };
@@ -58,6 +64,11 @@ export interface EstadoBigTwo {
   readonly mesa: MesaBigTwo | null;
   /** Pases seguidos desde la última jugada. */
   readonly pasesSeguidos: number;
+  /**
+   * Las jugadas de la vuelta en curso, desde la que la abrió hasta la de la mesa; se vacía
+   * cuando todos pasan. Es pública: todo estuvo en la mesa.
+   */
+  readonly vuelta: readonly JugadaVueltaBigTwo[];
   /** La próxima jugada es la primera de la mano: tiene que llevar el 3 de diamantes. */
   readonly primera: boolean;
   /** Cartas jugadas en la mano. */
@@ -75,6 +86,7 @@ export interface VistaBigTwo {
   readonly turno: Asiento | null;
   readonly mesa: MesaBigTwo | null;
   readonly pasesSeguidos: number;
+  readonly vuelta: readonly JugadaVueltaBigTwo[];
   readonly primera: boolean;
   readonly jugadas: readonly IdCarta[];
   readonly totales: readonly number[];
@@ -234,6 +246,7 @@ function nuevaMano(
     turno: manos.findIndex((m) => m.includes(TRES_DE_DIAMANTES)),
     mesa: null,
     pasesSeguidos: 0,
+    vuelta: [],
     primera: true,
     jugadas: [],
     totales: previo.totales,
@@ -293,7 +306,7 @@ export const bigTwo: Juego<ConfigBigTwo, EstadoBigTwo, AccionBigTwo, VistaBigTwo
         return { ...hecha, pasesSeguidos, turno: siguiente(asiento) };
       }
       // Todos pasaron: sale quien hizo la última jugada.
-      return { ...hecha, pasesSeguidos: 0, mesa: null, turno: e.mesa!.asiento };
+      return { ...hecha, pasesSeguidos: 0, mesa: null, vuelta: [], turno: e.mesa!.asiento };
     }
     const jugada = jugadaBigTwo(accion.cartas)!;
     const manos = e.manos.map((m, a) =>
@@ -304,6 +317,7 @@ export const bigTwo: Juego<ConfigBigTwo, EstadoBigTwo, AccionBigTwo, VistaBigTwo
       manos,
       mesa: { asiento, cartas: accion.cartas, ...jugada },
       pasesSeguidos: 0,
+      vuelta: [...e.vuelta, { asiento, cartas: accion.cartas }],
       primera: false,
       jugadas: [...e.jugadas, ...accion.cartas],
       turno: siguiente(asiento),
@@ -320,6 +334,7 @@ export const bigTwo: Juego<ConfigBigTwo, EstadoBigTwo, AccionBigTwo, VistaBigTwo
       turno: partidaTerminada(e) ? null : e.turno,
       mesa: e.mesa,
       pasesSeguidos: e.pasesSeguidos,
+      vuelta: [...e.vuelta],
       primera: e.primera,
       jugadas: [...e.jugadas],
       totales: [...e.totales],

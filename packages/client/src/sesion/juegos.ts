@@ -498,6 +498,11 @@ export interface DefJuego<C, E, A, V> {
    */
   pausaTras(antes: V, despues: V): number;
   /**
+   * Con la velocidad Pausada, cambios tras los que la mesa espera a que el jugador toque para
+   * seguir. Por defecto, cerrar una baza (`bazaCerrada`).
+   */
+  bazaTerminada?(antes: V, despues: V): boolean;
+  /**
    * Juegos en los que varios jugadores actúan a la vez en tiempo real: el humano no espera a la
    * IA y cada IA actúa tras el retraso en milisegundos que devuelve `esperaIA` para la acción
    * que va a hacer (antes de aplicar `FACTOR_PAUSAS`).

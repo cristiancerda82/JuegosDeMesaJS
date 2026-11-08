@@ -194,18 +194,18 @@
       <div class="decisiones">
         {#if vista.fase === 'subasta'}
           {#if puede('pujar')}
-            <button class="principal" data-testid="pujar" onclick={() => hacer({ tipo: 'pujar' }, cancelar)}>
+            <button data-accion="pujar" class="principal" data-testid="pujar" onclick={() => hacer({ tipo: 'pujar' }, cancelar)}>
               {vista.subasta.tramo === 3 ? T.skat.jugarCon(valorPuja) : String(valorPuja)}
             </button>
           {/if}
           {#if puede('aceptar')}
-            <button class="principal" data-testid="aceptar" onclick={() => hacer({ tipo: 'aceptar' }, cancelar)}>
+            <button data-accion="aceptar" class="principal" data-testid="aceptar" onclick={() => hacer({ tipo: 'aceptar' }, cancelar)}>
               {T.skat.si(vista.subasta.valor)}
             </button>
           {/if}
-          <button data-testid="paso" onclick={() => hacer({ tipo: 'pasar' }, cancelar)}>{T.skat.paso}</button>
+          <button data-accion="pasar" data-testid="paso" onclick={() => hacer({ tipo: 'pasar' }, cancelar)}>{T.skat.paso}</button>
         {:else if vista.fase === 'skat' && !deMano}
-          <button class="principal" data-testid="coger-skat" onclick={() => hacer({ tipo: 'cogerSkat' }, cancelar)}>
+          <button data-accion="cogerSkat" class="principal" data-testid="coger-skat" onclick={() => hacer({ tipo: 'cogerSkat' }, cancelar)}>
             {T.skat.cogerSkat}
           </button>
           <button data-testid="de-mano" onclick={() => (deMano = true)}>{T.skat.deMano}</button>
@@ -225,7 +225,7 @@
           {/if}
           {#each JUEGOS as j (j)}
             {@const accion = declaracion(j, vista.fase === 'skat' ? anuncio : 'ninguno')}
-            <button
+            <button data-accion={accion?.tipo} data-jugada={JSON.stringify(accion)}
               class="principal"
               disabled={accion === null}
               data-testid="declarar-{j}"

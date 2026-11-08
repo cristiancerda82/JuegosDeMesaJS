@@ -224,12 +224,12 @@
       </span>
       <span class="turno" role="status" data-testid="turno">{turno}</span>
       {#if miTurno && echando}
-        <button class="principal" data-testid="al-crib" disabled={!echar} onclick={() => echar && sesion.jugar(echar)}>
+        <button data-accion={echar?.tipo} data-jugada={JSON.stringify(echar)} class="principal" data-testid="al-crib" disabled={!echar} onclick={() => echar && sesion.jugar(echar)}>
           {T.cribbage.alCrib}
         </button>
       {/if}
       {#if miTurno && soloGo}
-        <button class="principal" data-testid="go" onclick={() => sesion.jugar({ tipo: 'go' })}>{T.cribbage.go}</button>
+        <button data-accion="go" class="principal" data-testid="go" onclick={() => sesion.jugar({ tipo: 'go' })}>{T.cribbage.go}</button>
       {/if}
     </div>
     <div class="mano" data-testid="mano">
@@ -271,7 +271,7 @@
     align-items: center;
     gap: 10px;
     width: min(100%, 760px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     touch-action: manipulation;

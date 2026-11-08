@@ -219,7 +219,7 @@
           </div>
           <div class="rejilla denominaciones">
             {#each DENOMINACIONES_BRIDGE as d (d)}
-              <button
+              <button data-accion="pujar"
                 type="button"
                 class="puja"
                 class:roja={d === 'corazones' || d === 'diamantes'}
@@ -235,7 +235,7 @@
           </div>
           <div class="especiales">
             {#each especiales as a (a.tipo)}
-              <button
+              <button data-accion={a.tipo} data-jugada={JSON.stringify(a)}
                 type="button"
                 class:principal={a.tipo !== 'pasar'}
                 data-testid={a.tipo}

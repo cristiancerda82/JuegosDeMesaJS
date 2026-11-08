@@ -153,7 +153,7 @@
       <span class="nombre" class:activo={vista.turno === yo && sesion.fin === null}>{T.brisca.tu}</span>
       <span class="turno" data-testid="turno">{turno}</span>
       {#if pasar && miTurno}
-        <button type="button" data-testid="pasar" onclick={() => hacer(pasar)}>{T.kings.pasar}</button>
+        <button data-accion={pasar.tipo} data-jugada={JSON.stringify(pasar)} type="button" data-testid="pasar" onclick={() => hacer(pasar)}>{T.kings.pasar}</button>
       {/if}
     </div>
     <div class="mano" data-testid="mano">
@@ -183,7 +183,7 @@
     align-items: center;
     gap: 8px;
     width: min(100%, 860px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
   }

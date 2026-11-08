@@ -318,6 +318,7 @@ export const T = {
     guardadoInvalido:
       'No se pudo recuperar la partida guardada (es de otra versión o está dañada) y se descartó.',
     dorso: 'Dorso de las cartas',
+    velocidad: 'Velocidad de las jugadas',
     verCartas: 'Ver todas las cartas',
     estadisticas: 'Estadísticas',
     familias: {
@@ -465,6 +466,12 @@ export const T = {
 
   partida: {
     menu: 'Menú',
+    seguir: 'Seguir',
+    ultimaBaza: 'Última baza',
+    vuelta: 'Jugadas anteriores de la vuelta',
+    jugadaDe: (nombre: string) => `De ${nombre}`,
+    volverABaza: 'Volver',
+    tocaParaSeguir: 'Toca la mesa o pulsa «Seguir» para recoger la baza',
     movimientos: 'Movimientos',
     tiempo: 'Tiempo',
     deshacer: 'Deshacer',
@@ -3177,6 +3184,8 @@ export const T = {
   },
 
   dorsos: { azul: 'Azul', rojo: 'Rojo', verde: 'Verde' } as Record<string, string>,
+
+  velocidades: { rapida: 'Rápida', normal: 'Normal', pausada: 'Pausada' },
 
   /** Guía para quien no ha jugado nunca. */
   ayuda: {

@@ -149,7 +149,7 @@
     {#if declarando}
       <div class="decisiones">
         {#each legales as a (idDe(a))}
-          <button
+          <button data-accion={a.tipo} data-jugada={JSON.stringify(a)}
             class:principal={a.tipo !== 'pasar'}
             data-testid={idDe(a)}
             onclick={() => {

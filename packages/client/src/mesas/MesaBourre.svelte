@@ -139,14 +139,14 @@
   {#snippet acciones(cancelar)}
     {#if miTurno && vista.fase === 'decidir'}
       <div class="otras" data-testid="panel-decidir">
-        <button class="principal" data-testid="jugar" onclick={() => hacer({ tipo: 'jugar' }, cancelar)}
+        <button data-accion="jugar" class="principal" data-testid="jugar" onclick={() => hacer({ tipo: 'jugar' }, cancelar)}
           >{T.bourre.jugar}</button
         >
-        <button data-testid="pasar" onclick={() => hacer({ tipo: 'pasar' }, cancelar)}>{T.bourre.pasar}</button>
+        <button data-accion="pasar" data-testid="pasar" onclick={() => hacer({ tipo: 'pasar' }, cancelar)}>{T.bourre.pasar}</button>
       </div>
     {:else if miTurno && vista.fase === 'cambio' && puede('robar')}
       <div class="otras" data-testid="panel-cambio">
-        <button class="principal" data-testid="robar" onclick={() => hacer({ tipo: 'robar' }, cancelar)}>
+        <button data-accion="robar" class="principal" data-testid="robar" onclick={() => hacer({ tipo: 'robar' }, cancelar)}>
           {vista.cambiando === 0 ? T.bourre.noCambiar : T.bourre.cambiar(vista.cambiando)}
         </button>
       </div>

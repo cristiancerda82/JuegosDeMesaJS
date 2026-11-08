@@ -1,7 +1,7 @@
 import { Generador, type EstadoAzar } from '../baraja/azar';
 import type { Asiento, Juego } from '../motor/contrato';
 import { igualesJSON } from '../motor/json';
-import type { Agente } from './agente';
+import type { Agente, Decision } from './agente';
 
 /** Nivel de la IA que elige el jugador. `normal` es la IA básica de cada juego. */
 export type NivelIA = 'facil' | 'normal' | 'dificil';
@@ -134,6 +134,70 @@ function mejorQueLaBase(valores: readonly (readonly number[])[], deBase: number)
   return mejor;
 }
 
+/** Lo que midió la IA difícil para decidir: el valor de cada acción simulada en cada reconstrucción. */
+export interface Simulacion<A> {
+  readonly decision: Decision<A>;
+  /** Las acciones simuladas y su valor (desde el punto de vista de quien decide) por reconstrucción. */
+  readonly simuladas: readonly A[];
+  readonly valores: readonly (readonly number[])[];
+}
+
+/** Decide como la IA difícil y devuelve también lo simulado (vacío si decidió la base sin simular). */
+function decidirSimulando<C, E, A, V extends { readonly asiento: Asiento | null }>(
+  base: Agente<V, A>,
+  s: Simulable<C, E, A, V>,
+  vista: V,
+  acciones: readonly A[],
+  azar: EstadoAzar,
+): Simulacion<A> {
+  if (acciones.length === 0) throw new Error('El agente no tiene acciones legales');
+  const normal = base.decidir(vista, acciones, azar);
+  const sinSimular = { decision: normal, simuladas: [], valores: [] };
+  const asiento = vista.asiento;
+  if (acciones.length === 1 || asiento === null) return sinSimular;
+  const elegidas = s.candidatas?.(vista, acciones, normal.accion) ?? acciones;
+  const simuladas = elegidas.some((a) => igualesJSON(a, normal.accion))
+    ? elegidas
+    : [normal.accion, ...elegidas];
+  if (simuladas.length === 1) return sinSimular;
+  const reconstrucciones = Math.min(
+    s.reconstrucciones,
+    Math.floor(s.presupuesto / simuladas.length),
+  );
+  if (reconstrucciones < RECONSTRUCCIONES_MINIMAS || s.decideLaBase?.(vista)) return sinSimular;
+  const g = new Generador(normal.azar);
+  /** Valor de cada acción en cada reconstrucción que se pudo jugar. */
+  const valores: number[][] = [];
+  for (let r = 0; r < reconstrucciones; r++) {
+    const estado = s.reconstruir(vista, azarDe(g));
+    const azarSimulacion = azarDe(g);
+    // Una reconstrucción que no se pueda jugar hasta el final no cuenta: la IA no debe
+    // romper la partida por una suposición imposible sobre las cartas ocultas.
+    try {
+      valores.push(
+        simuladas.map((accion) => {
+          const tras = s.juego.transicion(estado, asiento, accion);
+          return s.valorar(estado, simular(s, base, estado, tras, azarSimulacion), asiento);
+        }),
+      );
+    } catch {
+      continue;
+    }
+  }
+  const deBase = Math.max(
+    0,
+    simuladas.findIndex((a) => igualesJSON(a, normal.accion)),
+  );
+  const mejor = mejorQueLaBase(valores, deBase);
+  return { decision: { accion: simuladas[mejor]!, azar: g.estado() }, simuladas, valores };
+}
+
+/** Cómo decide cada agente difícil por simulación, para poder repetir su análisis. */
+const SIMULADORES = new WeakMap<
+  object,
+  (vista: unknown, acciones: readonly unknown[], azar: EstadoAzar) => Simulacion<unknown>
+>();
+
 /**
  * Nivel difícil: reconstruye varias veces las cartas ocultas y, en cada reconstrucción,
  * prueba cada acción legal jugando el resto de la mano con `base`. Se aparta de lo que haría
@@ -143,48 +207,27 @@ export function porSimulacion<C, E, A, V extends { readonly asiento: Asiento | n
   base: Agente<V, A>,
   s: Simulable<C, E, A, V>,
 ): Agente<V, A> {
-  return {
+  const agente: Agente<V, A> = {
     id: `${base.id}-dificil`,
-    decidir(vista, acciones, azar) {
-      if (acciones.length === 0) throw new Error('El agente no tiene acciones legales');
-      const normal = base.decidir(vista, acciones, azar);
-      const asiento = vista.asiento;
-      if (acciones.length === 1 || asiento === null) return normal;
-      const elegidas = s.candidatas?.(vista, acciones, normal.accion) ?? acciones;
-      const simuladas = elegidas.some((a) => igualesJSON(a, normal.accion))
-        ? elegidas
-        : [normal.accion, ...elegidas];
-      if (simuladas.length === 1) return normal;
-      const reconstrucciones = Math.min(
-        s.reconstrucciones,
-        Math.floor(s.presupuesto / simuladas.length),
-      );
-      if (reconstrucciones < RECONSTRUCCIONES_MINIMAS || s.decideLaBase?.(vista)) return normal;
-      const g = new Generador(normal.azar);
-      /** Valor de cada acción en cada reconstrucción que se pudo jugar. */
-      const valores: number[][] = [];
-      for (let r = 0; r < reconstrucciones; r++) {
-        const estado = s.reconstruir(vista, azarDe(g));
-        const azarSimulacion = azarDe(g);
-        // Una reconstrucción que no se pueda jugar hasta el final no cuenta: la IA no debe
-        // romper la partida por una suposición imposible sobre las cartas ocultas.
-        try {
-          valores.push(
-            simuladas.map((accion) => {
-              const tras = s.juego.transicion(estado, asiento, accion);
-              return s.valorar(estado, simular(s, base, estado, tras, azarSimulacion), asiento);
-            }),
-          );
-        } catch {
-          continue;
-        }
-      }
-      const deBase = Math.max(
-        0,
-        simuladas.findIndex((a) => igualesJSON(a, normal.accion)),
-      );
-      const mejor = mejorQueLaBase(valores, deBase);
-      return { accion: simuladas[mejor]!, azar: g.estado() };
-    },
+    decidir: (vista, acciones, azar) => decidirSimulando(base, s, vista, acciones, azar).decision,
   };
+  SIMULADORES.set(agente, (vista, acciones, azar) =>
+    decidirSimulando(base, s, vista as V, acciones as readonly A[], azar),
+  );
+  return agente;
+}
+
+/**
+ * La decisión de `agente` con lo que simuló para tomarla, si es un agente difícil por
+ * simulación; si no, solo la decisión. La decisión es la misma que `agente.decidir`.
+ */
+export function analizar<V, A>(
+  agente: Agente<V, A>,
+  vista: V,
+  acciones: readonly A[],
+  azar: EstadoAzar,
+): Simulacion<A> {
+  const simulador = SIMULADORES.get(agente);
+  if (simulador) return simulador(vista, acciones, azar) as Simulacion<A>;
+  return { decision: agente.decidir(vista, acciones, azar), simuladas: [], valores: [] };
 }

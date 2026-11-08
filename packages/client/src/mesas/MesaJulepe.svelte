@@ -153,7 +153,7 @@
   {#snippet acciones(cancelar: () => void)}
     {#if puedeDecidir && vista.fase === 'decidir'}
       <div class="decision" role="group" aria-label={T.julepe.decidir}>
-        <button
+        <button data-accion="jugar"
           class="principal"
           data-testid="julepe-jugar"
           onclick={() => {
@@ -162,7 +162,7 @@
           }}>{T.julepe.juego}</button
         >
         {#if puedePasar}
-          <button
+          <button data-accion="pasar"
             data-testid="julepe-pasar"
             onclick={() => {
               cancelar();

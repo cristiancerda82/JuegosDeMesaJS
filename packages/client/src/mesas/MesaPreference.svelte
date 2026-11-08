@@ -193,7 +193,7 @@
           <div class="tabla">
             {#each PALOS_PUJA_PREFERENCE as palo (palo)}
               {@const puja: PujaPreference = { tipo: 'bazas', bazas: nivel, palo }}
-              <button
+              <button data-accion={puja.tipo} data-jugada={JSON.stringify(puja)}
                 class="puja principal"
                 data-testid={idPuja(puja)}
                 disabled={!pujasLegales.has(idPuja(puja))}
@@ -207,7 +207,7 @@
         {/if}
         {#if tipoPanel === 'pujar'}
           <div class="otras">
-            <button
+            <button data-accion="miseria"
               data-testid="puja-miseria"
               disabled={!pujasLegales.has('puja-miseria')}
               onclick={() => {
@@ -216,7 +216,7 @@
               }}>{T.preference.miseria}</button
             >
             {#if puedePasar}
-              <button
+              <button data-accion="pasar"
                 data-testid="pasar"
                 onclick={() => {
                   cancelar();
@@ -230,7 +230,7 @@
       </div>
     {:else if miTurno && vista.fase === 'whist'}
       <div class="otras" data-testid="panel-whist">
-        <button
+        <button data-accion="whist"
           class="principal"
           data-testid="whist"
           onclick={() => {
@@ -238,7 +238,7 @@
             sesion.jugar({ tipo: 'whist' });
           }}>{T.preference.whist}</button
         >
-        <button
+        <button data-accion="pasarWhist"
           data-testid="pasar-whist"
           onclick={() => {
             cancelar();

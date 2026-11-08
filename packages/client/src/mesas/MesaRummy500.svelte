@@ -212,7 +212,7 @@
     <div class="descarte" data-testid="descarte" aria-label={T.rummy500.descarte}>
       {#each vista.descarte as carta, i (carta)}
         {@const robo = roboDesde(i)}
-        <button
+        <button data-accion={robo?.tipo} data-jugada={JSON.stringify(robo)}
           class="carta-descarte"
           class:robable={robo !== undefined}
           data-testid="descarte-{i}"
@@ -264,10 +264,10 @@
     </div>
     {#if miTurno && vista.fase === 'bajar'}
       <div class="botones">
-        <button class="principal" data-testid="bajar" disabled={!bajada} onclick={() => jugar(bajada)}>
+        <button data-accion={bajada?.tipo} data-jugada={JSON.stringify(bajada)} class="principal" data-testid="bajar" disabled={!bajada} onclick={() => jugar(bajada)}>
           {T.rummy500.bajar}
         </button>
-        <button data-testid="descartar" disabled={!descarte} onclick={() => jugar(descarte)}>{T.rummy500.descartar}</button>
+        <button data-accion={descarte?.tipo} data-jugada={JSON.stringify(descarte)} data-testid="descartar" disabled={!descarte} onclick={() => jugar(descarte)}>{T.rummy500.descartar}</button>
         {#if seleccion.length > 0}
           <button data-testid="limpiar" onclick={() => (seleccion = [])}>{T.rummy500.limpiar}</button>
         {/if}
@@ -341,7 +341,7 @@
       'abajo abajo abajo';
     gap: 6px;
     width: min(100%, 900px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     user-select: none;

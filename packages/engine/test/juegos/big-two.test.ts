@@ -152,6 +152,23 @@ describe('rondas', () => {
   });
 });
 
+describe('vuelta en curso', () => {
+  it('la vista muestra todas las jugadas de la vuelta con su autor, y se vacía cuando todos pasan', () => {
+    let e = conManos(['3d 9p', '5c 9c', '7t 9d', '8p 9t']);
+    e = jugar(e, juega('3d'));
+    e = jugar(e, juega('5c'));
+    e = jugar(e, juega('7t'));
+    expect(bigTwo.vistaDe(e, 3).vuelta).toEqual([
+      { asiento: 0, cartas: c('3d') },
+      { asiento: 1, cartas: c('5c') },
+      { asiento: 2, cartas: c('7t') },
+    ]);
+    e = jugar(jugar(jugar(e, pasar), pasar), pasar);
+    expect(e.mesa).toBeNull();
+    expect(bigTwo.vistaDe(e, 3).vuelta).toEqual([]);
+  });
+});
+
 describe('puntos y partida', () => {
   it('puntos de las cartas que quedan', () => {
     expect([3, 10, 13].map(puntosBigTwo)).toEqual([3, 20, 39]);

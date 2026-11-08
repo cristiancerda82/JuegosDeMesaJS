@@ -76,9 +76,9 @@ ull. */
     pantalla = { tipo: 'menu' };
   }
 
-  function empezar(juego: IdJuego, config: ConfigJuego, nivel: NivelIA) {
+  function empezar(juego: IdJuego, config: ConfigJuego, nivel: NivelIA, asistido = false) {
     cerrarPartida();
-    const r = nuevaPartida(juego, config, nivel);
+    const r = nuevaPartida(juego, config, nivel, asistido);
     if (r.ok) {
       aviso = null;
       preferencias.registrarReciente(juego);
@@ -114,7 +114,7 @@ ull. */
       partida.sesion.cliente.enviar({ tipo: 'revancha' });
       return;
     }
-    empezar(partida.id, partida.sesion.config, partida.sesion.nivel);
+    empezar(partida.id, partida.sesion.config, partida.sesion.nivel, partida.sesion.asistido);
   }
 
   // ── Partidas en red ──────────────────────────────────────────────────────────
@@ -243,7 +243,7 @@ ull. */
   <SalaEspera cliente={pantalla.cliente} salir={irAlMenu} />
 {:else if pantalla.tipo === 'opciones'}
   {@const juego = pantalla.juego}
-  <Opciones {juego} empezar={(config, nivel) => empezar(juego, config, nivel)} volver={irAlMenu} />
+  <Opciones {juego} empezar={(config, nivel, asistido) => empezar(juego, config, nivel, asistido)} volver={irAlMenu} />
 {:else if pantalla.tipo === 'partida'}
   {#key pantalla.partida}
     <PantallaPartida partida={pantalla.partida} menu={irAlMenu} {revancha} />

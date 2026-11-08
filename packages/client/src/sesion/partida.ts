@@ -989,9 +989,12 @@ export function nuevaPartida(
   id: IdJuego,
   config: ConfigJuego,
   nivel: NivelIA = 'normal',
+  asistido = false,
 ): Resultado<Partida> {
   const semilla = semillaNueva();
-  return conDef(id, (def) => etiquetar(id, Sesion.nueva(def, config as never, semilla, nivel)));
+  return conDef(id, (def) =>
+    etiquetar(id, Sesion.nueva(def, config as never, semilla, nivel, asistido)),
+  );
 }
 
 /** Comprueba sin crear sesión (ni turnos de la IA) que el guardado se repite y sigue en juego. */

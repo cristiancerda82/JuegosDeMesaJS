@@ -133,7 +133,7 @@
       </div>
       {#each vista.escaleras as escalera, e (e)}
         {@const accion = aEscalera(e)}
-        <button
+        <button data-accion={accion?.tipo} data-jugada={JSON.stringify(accion)}
           class="hueco escalera"
           class:destino={accion !== null}
           disabled={accion === null}
@@ -155,7 +155,7 @@
   <!-- El jugador -->
   <section class="lado propio" class:activo={vista.turno === yo}>
     <div class="fila">
-      <button
+      <button data-accion="monton"
         class="hueco monton"
         class:jugable={puedeOrigen({ tipo: 'monton' })}
         class:marcado={marcado({ tipo: 'monton' })}
@@ -167,7 +167,7 @@
       </button>
       {#each vista.descartes[yo]! as pila, p (p)}
         {@const descarte = aDescarte(p)}
-        <button
+        <button data-accion="descarte"
           class="hueco"
           class:jugable={pila.length > 0 && puedeOrigen({ tipo: 'descarte', pila: p })}
           class:marcado={marcado({ tipo: 'descarte', pila: p })}
@@ -186,12 +186,12 @@
       <span class="nombre">{nombre(yo)}</span>
       <span class="turno" role="status" data-testid="turno">{turno}</span>
       {#if pasar && miTurno}
-        <button data-testid="pasar" onclick={() => hacer(pasar)}>{T.spite.pasar}</button>
+        <button data-accion={pasar.tipo} data-jugada={JSON.stringify(pasar)} data-testid="pasar" onclick={() => hacer(pasar)}>{T.spite.pasar}</button>
       {/if}
     </div>
     <div class="mano" data-testid="mano">
       {#each vista.miMano ?? [] as carta, i (i)}
-        <button
+        <button data-accion="mano"
           class="carta-mano"
           class:jugable={puedeOrigen({ tipo: 'mano', carta })}
           class:marcado={origen?.tipo === 'mano' && origen.indice === i}
@@ -214,7 +214,7 @@
     align-items: center;
     gap: 8px;
     width: min(100%, 640px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     user-select: none;

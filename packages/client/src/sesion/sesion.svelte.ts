@@ -1,5 +1,7 @@
 import {
   aplicar,
+  asistir,
+  comentar,
   crearAzar,
   error,
   Generador,
@@ -7,23 +9,33 @@ import {
   ok,
   repetir,
   type Asiento,
+  type Asistencia,
+  type CodigoComentario,
+  type ContextoAsistente,
   type EstadoAzar,
+  type Motivo,
   type Fin,
   type Jugada,
   type NivelIA,
   type Resultado,
 } from '@juegos/engine';
 import { FACTOR_PAUSAS } from '../ajustes';
+import { contextoAsistente } from '../asistente/contexto';
+import { claveConsejo, consejoDe } from '../asistente/textos';
+import { ritmo } from '../ritmo/ritmo.svelte';
 import { registrarPartida, resultadoDe, type Novedades } from '../estadisticas/estadisticas';
 import { borrarGuardado, guardar, type Guardado } from './guardado';
 import type { DefJuego } from './juegos';
-import type { InfoRed, SesionMesa } from './sesion-mesa';
+import { bazaCerrada, type InfoRed, type SesionMesa } from './sesion-mesa';
 
 /** En modo local el humano ocupa siempre el asiento 0. */
 export const HUMANO: Asiento = 0;
 
-/** Pausa antes de cada jugada de la IA, para que el jugador pueda seguirla. */
-const PAUSA_IA_MS = 750 * FACTOR_PAUSAS;
+/**
+ * Pausa antes de cada jugada de la IA, para que el jugador pueda seguirla, con la velocidad
+ * Rápida; las demás la multiplican (`ritmo.factor`).
+ */
+const PAUSA_IA_MS = 750;
 
 /**
  * Sesión de juego local. Es la única que conoce el estado completo: los componentes de la
@@ -49,6 +61,20 @@ export class Sesion<C, E, A, V> implements SesionMesa<C, E, A, V> {
   novedades = $state<Novedades | null>(null);
   /** Pistas pedidas en la partida (solitarios). */
   pistas = $state(0);
+  /** Velocidad Pausada: la baza terminada espera a `seguir()`. */
+  retenida = $state(false);
+
+  // ── Modo asistido (spec modo-asistido) ──
+  /** El juego tiene modo asistido: es contra la IA (los solitarios no lo tienen). */
+  readonly puedeAsistir: boolean;
+  asistido = $state(false);
+  /** Sugerencia para la decisión actual del jugador; `null` mientras se calcula o si no le toca. */
+  asistencia = $state.raw<Asistencia<A> | null>(null);
+  pensandoSugerencia = $state(false);
+  /** Comentario de la última jugada del jugador, si le costó algo frente a la sugerida. */
+  comentario = $state.raw<Motivo<CodigoComentario> | null>(null);
+  /** Consejo (clave de fase) de la fase a la que acaba de llegar el jugador por primera vez. */
+  consejo = $state<string | null>(null);
 
   readonly vista: V = $derived.by(() => this.def.juego.vistaDe(this.#estado, HUMANO));
   readonly fin: Fin | null = $derived.by(() => this.def.juego.resultado(this.#estado));
@@ -72,6 +98,10 @@ export class Sesion<C, E, A, V> implements SesionMesa<C, E, A, V> {
   #pausada = false;
   /** Al pausar quedó una pausa o un turno de la IA por ejecutar. */
   #pendiente = false;
+  #ctxAsistente: ContextoAsistente<V, A> | null;
+  /** Fases (claves de consejo) ya aconsejadas en la partida. */
+  #fasesAconsejadas: string[];
+  #temporizadorAsistente: ReturnType<typeof setTimeout> | null = null;
 
   private constructor(
     def: DefJuego<C, E, A, V>,
@@ -82,8 +112,14 @@ export class Sesion<C, E, A, V> implements SesionMesa<C, E, A, V> {
     tiempoMs: number,
     nivel: NivelIA,
     pistas = 0,
+    asistido = false,
+    fasesAconsejadas: readonly string[] = [],
   ) {
     this.pistas = pistas;
+    this.#ctxAsistente = contextoAsistente(def, config);
+    this.puedeAsistir = this.#ctxAsistente !== null;
+    this.asistido = asistido && this.puedeAsistir;
+    this.#fasesAconsejadas = [...fasesAconsejadas];
     this.def = def;
     this.config = config;
     this.semilla = semilla;
@@ -101,10 +137,11 @@ export class Sesion<C, E, A, V> implements SesionMesa<C, E, A, V> {
     config: C,
     semilla: string,
     nivel: NivelIA = 'normal',
+    asistido = false,
   ): Resultado<Sesion<C, E, A, V>> {
     const r = def.juego.crear(config, semilla);
     if (!r.ok) return r;
-    return ok(new Sesion(def, config, semilla, r.valor, [], 0, nivel));
+    return ok(new Sesion(def, config, semilla, r.valor, [], 0, nivel, 0, asistido));
   }
 
   static desdeGuardado<C, E, A, V>(
@@ -130,6 +167,9 @@ export class Sesion<C, E, A, V> implements SesionMesa<C, E, A, V> {
         // Las partidas guardadas antes de los niveles se retoman en Normal.
         g.nivel ?? 'normal',
         g.pistas ?? 0,
+        // Las partidas guardadas antes del modo asistido se retoman sin él.
+        g.asistido ?? false,
+        g.fasesAconsejadas ?? [],
       ),
     );
   }
@@ -142,7 +182,75 @@ export class Sesion<C, E, A, V> implements SesionMesa<C, E, A, V> {
   /** Intenta una acción del humano. Devuelve `false` si no es legal o no es su momento. */
   jugar(accion: A): boolean {
     if (this.bloqueada || this.#cerrada) return false;
-    return this.#aplicar(HUMANO, accion);
+    const comentario = this.#comentar(accion);
+    if (!this.#aplicar(HUMANO, accion)) return false;
+    this.comentario = comentario;
+    return true;
+  }
+
+  /** Activa o desactiva el modo asistido sin cambiar la partida. */
+  alternarAsistido(): void {
+    if (!this.puedeAsistir) return;
+    this.asistido = !this.asistido;
+    this.comentario = null;
+    this.consejo = null;
+    this.#guardar();
+    this.#actualizarAsistente();
+  }
+
+  cerrarConsejo(): void {
+    this.consejo = null;
+  }
+
+  cerrarComentario(): void {
+    this.comentario = null;
+  }
+
+  /** Lo que ha costado `accion` frente a la sugerencia, con la vista de antes de jugar. */
+  #comentar(accion: A): Motivo<CodigoComentario> | null {
+    const a = this.asistencia;
+    if (!this.asistido || this.#ctxAsistente === null || a === null) return null;
+    const azar = crearAzar(`${this.semilla}/asistente/${this.#jugadas.length}/comentario`);
+    return comentar(this.#ctxAsistente, this.vista, a.sugerida, accion, azar, a.simulacion);
+  }
+
+  /**
+   * Cuando le toca decidir al jugador con el modo asistido, calcula la sugerencia fuera del
+   * render y la descarta si la partida cambia antes (design, decisión 2). Su azar es propio: no
+   * cambia nada de lo que hace la IA rival. La primera vez en cada fase, pone su consejo.
+   */
+  #actualizarAsistente(): void {
+    if (this.#temporizadorAsistente !== null) clearTimeout(this.#temporizadorAsistente);
+    this.#temporizadorAsistente = null;
+    this.asistencia = null;
+    const ctx = this.#ctxAsistente;
+    const juego = this.def.juego;
+    const legales =
+      this.asistido && ctx !== null && !this.#cerrada && this.fin === null
+        ? juego.accionesLegales(this.#estado, HUMANO)
+        : [];
+    if (ctx === null || legales.length === 0 || (this.bloqueada && !this.def.simultaneo)) {
+      this.pensandoSugerencia = false;
+      return;
+    }
+    const vista = this.vista;
+    const fase = (vista as { readonly fase?: unknown }).fase;
+    const clave = claveConsejo(typeof fase === 'string' ? fase : 'juego');
+    if (!this.#fasesAconsejadas.includes(clave) && consejoDe(this.def.id, clave) !== null) {
+      this.#fasesAconsejadas.push(clave);
+      this.consejo = clave;
+      this.#guardar();
+    }
+    this.pensandoSugerencia = true;
+    const n = this.#jugadas.length;
+    this.#temporizadorAsistente = setTimeout(() => {
+      this.#temporizadorAsistente = null;
+      if (this.#cerrada || n !== this.#jugadas.length || !this.asistido) return;
+      const azar = crearAzar(`${this.semilla}/asistente/${n}`);
+      // La sugerencia es siempre la de la IA difícil, sea cual sea el nivel de los rivales.
+      this.asistencia = asistir(this.def.ia!.dificil, ctx, vista, legales, azar);
+      this.pensandoSugerencia = false;
+    }, 0);
   }
 
   /**
@@ -159,12 +267,19 @@ export class Sesion<C, E, A, V> implements SesionMesa<C, E, A, V> {
     return pista;
   }
 
+  seguir(): void {
+    if (!this.retenida || this.#cerrada) return;
+    this.retenida = false;
+    this.#continuar();
+  }
+
   /** Guarda el tiempo y detiene la IA. La sesión deja de responder. */
   cerrar(): void {
     if (this.#cerrada) return;
     this.#guardar();
     this.#cerrada = true;
     if (this.#temporizador !== null) clearTimeout(this.#temporizador);
+    if (this.#temporizadorAsistente !== null) clearTimeout(this.#temporizadorAsistente);
     this.#cancelarEsperas();
   }
 
@@ -211,8 +326,19 @@ export class Sesion<C, E, A, V> implements SesionMesa<C, E, A, V> {
     } else {
       this.#guardar();
     }
-    const pausa = this.def.pausaTras(antes, this.vista) * FACTOR_PAUSAS;
-    if (pausa > 0) {
+    const pausa = this.def.pausaTras(antes, this.vista) * ritmo.factor;
+    const retener =
+      ritmo.retieneBazas &&
+      this.fin === null &&
+      (this.def.bazaTerminada?.(antes, this.vista) ?? bazaCerrada(antes, this.vista));
+    if (retener || pausa > 0) {
+      this.bloqueada = true;
+      this.#actualizarAsistente();
+    }
+    if (retener) {
+      this.retenida = true;
+      this.#cancelarEsperas();
+    } else if (pausa > 0) {
       this.bloqueada = true;
       // La pausa detiene a todos, también a las IAs que esperaban para actuar.
       this.#cancelarEsperas();
@@ -239,11 +365,13 @@ export class Sesion<C, E, A, V> implements SesionMesa<C, E, A, V> {
     if (turnoIA === undefined) {
       this.pensando = null;
       this.bloqueada = false;
+      this.#actualizarAsistente();
       return;
     }
     this.pensando = turnoIA;
     this.bloqueada = true;
-    this.#programar(PAUSA_IA_MS, () => this.#jugarIA(turnoIA));
+    this.#actualizarAsistente();
+    this.#programar(PAUSA_IA_MS * ritmo.factor, () => this.#jugarIA(turnoIA));
   }
 
   /**
@@ -254,6 +382,7 @@ export class Sesion<C, E, A, V> implements SesionMesa<C, E, A, V> {
   #continuarSimultaneo(): void {
     this.pensando = null;
     this.bloqueada = false;
+    this.#actualizarAsistente();
     if (this.fin !== null) {
       this.#cancelarEsperas();
       return;
@@ -363,6 +492,8 @@ export class Sesion<C, E, A, V> implements SesionMesa<C, E, A, V> {
       tiempoMs: this.tiempoMs(),
       nivel: this.nivel,
       pistas: this.pistas,
+      asistido: this.asistido,
+      fasesAconsejadas: this.#fasesAconsejadas,
     });
   }
 }

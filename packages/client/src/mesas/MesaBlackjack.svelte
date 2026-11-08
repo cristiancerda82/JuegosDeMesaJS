@@ -144,26 +144,26 @@
     {#if miTurno && vista.fase === 'apuesta'}
       <div class="botones apuestas">
         {#each apuestas as f (f)}
-          <button data-testid="apostar-{f}" onclick={() => sesion.jugar({ tipo: 'apostar', fichas: f })}>
+          <button data-accion="apostar" data-testid="apostar-{f}" onclick={() => sesion.jugar({ tipo: 'apostar', fichas: f })}>
             {f}
           </button>
         {/each}
       </div>
     {:else if miTurno}
       <div class="botones">
-        <button class="principal" data-testid="pedir" onclick={() => sesion.jugar({ tipo: 'pedir' })}>
+        <button data-accion="pedir" class="principal" data-testid="pedir" onclick={() => sesion.jugar({ tipo: 'pedir' })}>
           {T.blackjack.pedir}
         </button>
-        <button data-testid="plantarse" onclick={() => sesion.jugar({ tipo: 'plantarse' })}>
+        <button data-accion="plantarse" data-testid="plantarse" onclick={() => sesion.jugar({ tipo: 'plantarse' })}>
           {T.blackjack.plantarse}
         </button>
         {#if puede('doblar')}
-          <button data-testid="doblar" onclick={() => sesion.jugar({ tipo: 'doblar' })}>
+          <button data-accion="doblar" data-testid="doblar" onclick={() => sesion.jugar({ tipo: 'doblar' })}>
             {T.blackjack.doblar}
           </button>
         {/if}
         {#if puede('separar')}
-          <button data-testid="separar" onclick={() => sesion.jugar({ tipo: 'separar' })}>
+          <button data-accion="separar" data-testid="separar" onclick={() => sesion.jugar({ tipo: 'separar' })}>
             {T.blackjack.separar}
           </button>
         {/if}
@@ -198,7 +198,7 @@
     flex-direction: column;
     gap: 8px;
     width: min(100%, 720px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
   }

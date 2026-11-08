@@ -156,7 +156,7 @@
         {#each [fila1, fila2] as fila, i (i)}
           <div class="fila">
             {#if i === 0}
-              <button
+              <button data-accion="pasar"
                 data-testid="pasar"
                 onclick={() => {
                   cancelar();
@@ -165,7 +165,7 @@
               >
             {/if}
             {#each fila as contrato (clave(contrato))}
-              <button
+              <button data-accion="anunciar"
                 class="principal"
                 data-testid={testid(contrato)}
                 disabled={!posibles.has(clave(contrato))}

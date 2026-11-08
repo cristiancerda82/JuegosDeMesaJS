@@ -11,6 +11,7 @@
     type VistaCulo,
   } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
+  import VueltaPrevia from './VueltaPrevia.svelte';
   import { FACTOR_PAUSAS } from '../ajustes';
   import type { SesionMesa } from '../sesion/sesion-mesa';
   import { T } from '../textos';
@@ -190,6 +191,7 @@
     {:else}
       <div class="mesa" data-testid="mesa">
         {#if vista.mesa}
+          <VueltaPrevia vuelta={vista.vuelta} {nombre} />
           <div class="abanico">
             {#each vista.mesa.cartas as c (c)}<span class="naipe" data-carta={c}><Carta id={c} /></span>{/each}
           </div>
@@ -227,7 +229,7 @@
           </button>
         {:else}
           {#if puedePasar}
-            <button data-testid="pasar" onclick={() => sesion.jugar({ tipo: 'pasar' })}>{T.culo.pasar}</button>
+            <button data-accion="pasar" data-testid="pasar" onclick={() => sesion.jugar({ tipo: 'pasar' })}>{T.culo.pasar}</button>
           {/if}
           <button class="principal" data-testid="jugar" disabled={!accionMarcada} onclick={hacer}>
             {T.culo.jugar}
@@ -274,7 +276,7 @@
     flex-direction: column;
     gap: 8px;
     width: min(100%, 760px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     user-select: none;

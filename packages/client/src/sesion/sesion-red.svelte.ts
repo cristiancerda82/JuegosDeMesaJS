@@ -1,8 +1,8 @@
 import type { Asiento, Fin, NivelIA } from '@juegos/engine';
-import { FACTOR_PAUSAS } from '../ajustes';
+import { ritmo } from '../ritmo/ritmo.svelte';
 import type { DefJuego } from './juegos';
 import type { ClienteRed, MensajePartida } from './red.svelte';
-import type { InfoRed, SesionMesa } from './sesion-mesa';
+import { bazaCerrada, type InfoRed, type SesionMesa } from './sesion-mesa';
 
 /**
  * Sesión de una partida en red (spec partidas-en-red; design, decisión 5). El estado lo tiene
@@ -16,11 +16,20 @@ export class SesionRed<C, E, A, V> implements SesionMesa<C, E, A, V> {
   readonly cliente: ClienteRed;
   readonly novedades = null;
   readonly pistas = 0;
+  // El modo asistido no se ofrece en red: daría ventaja a un jugador sobre los demás.
+  readonly puedeAsistir = false;
+  readonly asistido = false;
+  readonly asistencia = null;
+  readonly pensandoSugerencia = false;
+  readonly comentario = null;
+  readonly consejo = null;
 
   vista: V = $state.raw() as V;
   fin = $state.raw<Fin | null>(null);
   bloqueada = $state(false);
   pensando = $state<Asiento | null>(null);
+  /** Velocidad Pausada: la baza terminada espera a `seguir()`; lo que llega espera en la cola. */
+  retenida = $state(false);
   /** Número de partida en la sala (cambia con la revancha). */
   partida = $state(0);
 
@@ -74,6 +83,18 @@ export class SesionRed<C, E, A, V> implements SesionMesa<C, E, A, V> {
     return null;
   }
 
+  alternarAsistido(): void {}
+
+  cerrarConsejo(): void {}
+
+  cerrarComentario(): void {}
+
+  seguir(): void {
+    if (!this.retenida || this.#cerrada) return;
+    this.retenida = false;
+    this.#siguiente();
+  }
+
   tiempoMs(): number {
     return Date.now() - this.#desde;
   }
@@ -106,6 +127,7 @@ export class SesionRed<C, E, A, V> implements SesionMesa<C, E, A, V> {
     // Una partida nueva (revancha) empieza sin esperar a las pausas de la anterior.
     if (m.partida !== this.partida) {
       this.#cola = [];
+      this.retenida = false;
       if (this.#temporizador !== null) clearTimeout(this.#temporizador);
       this.#temporizador = null;
       this.#desde = Date.now();
@@ -113,7 +135,7 @@ export class SesionRed<C, E, A, V> implements SesionMesa<C, E, A, V> {
       return;
     }
     this.#cola.push(m);
-    if (this.#temporizador === null) this.#siguiente();
+    if (this.#temporizador === null && !this.retenida) this.#siguiente();
   }
 
   /** Muestra la siguiente vista de la cola, con la pausa que pida el juego. */
@@ -125,7 +147,10 @@ export class SesionRed<C, E, A, V> implements SesionMesa<C, E, A, V> {
       return;
     }
     const pausa = this.#mostrar(m, true);
-    if (pausa > 0) {
+    if (this.retenida) {
+      this.#temporizador = null;
+      this.bloqueada = true;
+    } else if (pausa > 0) {
       this.#temporizador = setTimeout(() => this.#siguiente(), pausa);
     } else {
       this.#siguiente();
@@ -143,12 +168,19 @@ export class SesionRed<C, E, A, V> implements SesionMesa<C, E, A, V> {
     this.pensando = m.piensa;
     this.#esperando = false;
     const pausa =
-      conPausa && antes !== undefined ? this.def.pausaTras(antes, this.vista) * FACTOR_PAUSAS : 0;
-    this.bloqueada = pausa > 0 || this.#cola.length > 0;
+      conPausa && antes !== undefined ? this.def.pausaTras(antes, this.vista) * ritmo.factor : 0;
+    this.retenida =
+      conPausa &&
+      antes !== undefined &&
+      ritmo.retieneBazas &&
+      m.fin === null &&
+      (this.def.bazaTerminada?.(antes, this.vista) ?? bazaCerrada(antes, this.vista));
+    this.bloqueada = this.retenida || pausa > 0 || this.#cola.length > 0;
     return pausa;
   }
 
   #actualizarBloqueo() {
-    this.bloqueada = this.#esperando || this.#temporizador !== null || this.#cola.length > 0;
+    this.bloqueada =
+      this.retenida || this.#esperando || this.#temporizador !== null || this.#cola.length > 0;
   }
 }

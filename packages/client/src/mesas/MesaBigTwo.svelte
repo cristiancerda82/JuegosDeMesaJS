@@ -9,6 +9,7 @@
     type VistaBigTwo,
   } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
+  import VueltaPrevia from './VueltaPrevia.svelte';
   import { animar, medir, type Posiciones } from '../interaccion/flip';
   import type { SesionMesa } from '../sesion/sesion-mesa';
   import { T } from '../textos';
@@ -145,6 +146,7 @@
 
   <div class="mesa" data-testid="mesa" aria-label={T.bigTwo.mesa}>
     {#if vista.mesa}
+      <VueltaPrevia vuelta={vista.vuelta} {nombre} />
       <p class="tipo" data-testid="tipo-mesa">
         {T.bigTwo.deQuien(T.bigTwo.tipos[vista.mesa.tipo] ?? '', nombre(vista.mesa.asiento))}
       </p>
@@ -173,9 +175,9 @@
     {#if miTurno}
       <div class="botones">
         {#if puedePasar}
-          <button data-testid="paso" onclick={() => sesion.jugar({ tipo: 'pasar' })}>{T.bigTwo.paso}</button>
+          <button data-accion="pasar" data-testid="paso" onclick={() => sesion.jugar({ tipo: 'pasar' })}>{T.bigTwo.paso}</button>
         {/if}
-        <button
+        <button data-accion={accionMarcada?.tipo} data-jugada={JSON.stringify(accionMarcada)}
           class="principal"
           data-testid="jugar"
           disabled={!accionMarcada}
@@ -222,7 +224,7 @@
     align-items: center;
     gap: 10px;
     width: min(100%, 860px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     touch-action: manipulation;

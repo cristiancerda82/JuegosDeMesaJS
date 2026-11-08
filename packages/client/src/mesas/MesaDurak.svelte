@@ -189,10 +189,10 @@
       <span class="nombre">{T.brisca.tu} {@render papel(yo)}</span>
       <span class="turno" role="status" data-testid="turno">{turno}</span>
       {#if puedeTomar && activo(yo)}
-        <button data-testid="tomar" onclick={() => jugar({ tipo: 'tomar' })}>{T.durak.tomar}</button>
+        <button data-accion="tomar" data-testid="tomar" onclick={() => jugar({ tipo: 'tomar' })}>{T.durak.tomar}</button>
       {/if}
       {#if puedePasar && activo(yo)}
-        <button data-testid="paso" onclick={() => jugar({ tipo: 'pasar' })}>{T.durak.paso}</button>
+        <button data-accion="pasar" data-testid="paso" onclick={() => jugar({ tipo: 'pasar' })}>{T.durak.paso}</button>
       {/if}
     </div>
     <ManoPropia cartas={mano} {jugable} {interaccion} />
@@ -207,7 +207,7 @@
     align-items: center;
     gap: 10px;
     width: min(100%, 860px);
-    min-height: calc(100dvh - 60px);
+    min-height: calc(100dvh - 60px - var(--alto-asistente, 0px));
     margin: 0 auto;
     padding: 0 8px 12px;
     touch-action: none;

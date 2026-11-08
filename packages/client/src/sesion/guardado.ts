@@ -18,6 +18,10 @@ export interface Guardado {
   readonly nivel?: NivelIA;
   /** Pistas pedidas en los solitarios; falta en las partidas guardadas antes de las pistas. */
   readonly pistas?: number;
+  /** Modo asistido activo; falta en las partidas guardadas antes del modo asistido. */
+  readonly asistido?: boolean;
+  /** Fases ya aconsejadas por el modo asistido en la partida. */
+  readonly fasesAconsejadas?: readonly string[];
 }
 
 export const VERSION_GUARDADO = 1;

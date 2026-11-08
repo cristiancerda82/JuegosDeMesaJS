@@ -13,6 +13,8 @@
   import TarjetaFamilia from '../menu/TarjetaFamilia.svelte';
   import TarjetaJuego from '../menu/TarjetaJuego.svelte';
   import { pwa } from '../pwa/registro.svelte';
+  import { VELOCIDADES, type Velocidad } from '../ritmo/ritmo';
+  import { ritmo } from '../ritmo/ritmo.svelte';
   import type { Guardado } from '../sesion/guardado';
   import { JUEGOS, type IdJuego } from '../sesion/juegos';
   import { T } from '../textos';
@@ -182,6 +184,18 @@ ull. */
       <select value={dorso} onchange={(e) => cambiarDorso(e.currentTarget.value)}>
         {#each Object.entries(T.dorsos) as [valor, texto] (valor)}
           <option value={valor}>{texto}</option>
+        {/each}
+      </select>
+    </label>
+    <label>
+      {T.menu.velocidad}
+      <select
+        data-testid="velocidad"
+        value={ritmo.velocidad}
+        onchange={(e) => ritmo.elegir(e.currentTarget.value as Velocidad)}
+      >
+        {#each VELOCIDADES as v (v)}
+          <option value={v}>{T.velocidades[v]}</option>
         {/each}
       </select>
     </label>
