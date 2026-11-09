@@ -43,3 +43,26 @@ export function asistir<V, A>(
     simulacion,
   };
 }
+
+/**
+ * Por qué un rival hizo `accion`, medido con su propia vista (spec modo-asistido, «Lectura de
+ * las jugadas de los rivales»). Sin simulación de la IA difícil: si no hay un hecho concreto,
+ * queda su tipo de acción. «Era su única jugada» no se dice: delataría cartas que el jugador no ve.
+ */
+export function leer<V, A>(
+  ctx: ContextoAsistente<V, A>,
+  vista: V,
+  legales: readonly A[],
+  accion: A,
+  azar: EstadoAzar,
+): Motivo {
+  // Con una sola acción, `explicar` no mide nada: se le da la jugada como única opción conocida.
+  const motivo = explicar(
+    ctx,
+    vista,
+    legales.length > 1 ? legales : [accion, accion],
+    accion,
+    azar,
+  );
+  return motivo.codigo === 'unica' ? { codigo: 'jugada', datos: motivo.datos } : motivo;
+}

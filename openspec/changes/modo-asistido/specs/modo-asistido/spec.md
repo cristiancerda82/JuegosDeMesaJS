@@ -66,6 +66,21 @@ Con el modo asistido activo, cuando el jugador hace una jugada distinta de la su
 - **WHEN** el jugador juega una carta distinta de la sugerida, pero sin ningún coste concreto frente a ella
 - **THEN** no aparece ningún comentario
 
+### Requirement: Lectura de las jugadas de los rivales
+Con el modo asistido activo, cada jugada de un rival de la IA MUST ir acompañada de una frase que explique por qué la hizo, con su nombre visto desde el jugador («Rival 1», «Compañero»…). Por ejemplo, juega una carta para llevarse la baza y sus puntos, entrega la que menos da porque no le compensa pelear la baza, se descarta de la carta que menos le sirve o se planta para no pasarse. El motivo MUST medirse con la vista de ese rival, que es quien decidió, pero la frase MUST NOT revelar sus cartas ocultas: no dice qué más tiene ni que era su única jugada posible. La mesa MUST enseñar las lecturas de los rivales desde la última jugada del jugador (al menos la última en el móvil). Calcularlas MUST NOT retrasar ni bloquear la partida ni la interacción con la mesa.
+
+#### Scenario: El rival gana la baza
+- **WHEN** en la Brisca asistida un rival juega el as de su palo y se lleva la baza con 21 puntos
+- **THEN** la mesa explica que el rival juega el as para llevarse la baza, que vale 21 puntos
+
+#### Scenario: Sin delatar sus cartas
+- **WHEN** un rival juega la única carta que podía jugar
+- **THEN** la frase explica qué consigue con ella, pero no dice que era su única jugada
+
+#### Scenario: La mesa sigue fluida
+- **WHEN** el asistente está calculando una sugerencia o una lectura y el jugador arrastra una carta
+- **THEN** la carta sigue al dedo sin quedarse pegada
+
 ### Requirement: Consejos de fase
 Con el modo asistido activo, la primera vez que el jugador llega a cada fase del juego en una partida (por ejemplo, la subasta, el cambio de cartas, el cante o el recuento), la mesa MUST mostrar un consejo breve que explica qué se decide en esa fase y qué tener en cuenta. Cada juego MUST tener al menos un consejo, el de su jugada principal. El consejo MUST poder cerrarse y MUST NOT volver a aparecer en esa partida para la misma fase.
 

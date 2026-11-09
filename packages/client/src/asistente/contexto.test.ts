@@ -3,13 +3,14 @@ import {
   comentar,
   crearAzar,
   igualesJSON,
+  leer,
   type CodigoComentario,
   type CodigoMotivo,
 } from '@juegos/engine';
 import { describe, expect, it } from 'vitest';
 import { JUEGOS, type DefJuego, type IdJuego } from '../sesion/juegos';
 import { contextoAsistente } from './contexto';
-import { claveConsejo, consejoDe, CONSEJOS_JUEGO } from './textos';
+import { claveConsejo, consejoDe, CONSEJOS_JUEGO, fraseLectura } from './textos';
 
 // Contrato del modo asistido en cada juego con IA (tarea 3.7) y lo que tarda (tarea 3.8).
 
@@ -55,6 +56,9 @@ interface Medida {
   readonly juego: IdJuego;
   readonly motivos: CodigoMotivo[];
   readonly comentarios: (CodigoComentario | null)[];
+  /** Frases de las jugadas de los rivales leídas. */
+  readonly lecturas: string[];
+  readonly lecturasMs: number;
   readonly maxMs: number;
 }
 
@@ -66,9 +70,17 @@ function medir(id: IdJuego, def: Def, semilla: string, parar?: (m: Medida) => bo
   const r = juego.crear(config, semilla);
   if (!r.ok) throw new Error(r.error);
   let e = r.valor;
-  const medida: Medida = { juego: id, motivos: [], comentarios: [], maxMs: 0 };
+  const medida: Medida = {
+    juego: id,
+    motivos: [],
+    comentarios: [],
+    lecturas: [],
+    lecturasMs: 0,
+    maxMs: 0,
+  };
   let decisiones = 0;
   let maxMs = 0;
+  let lecturasMs = 0;
   for (let paso = 0; paso < 3_000 && juego.resultado(e) === null; paso++) {
     let asiento = -1;
     let legales: readonly unknown[] = [];
@@ -94,9 +106,17 @@ function medir(id: IdJuego, def: Def, semilla: string, parar?: (m: Medida) => bo
       if (parar ? parar(medida) : medida.motivos.length >= MEDIDAS) break;
     }
     const d = def.ia!.normal.decidir(vista, legales, azar);
+    if (asiento !== 0 && medida.lecturas.length < MEDIDAS) {
+      const inicio = performance.now();
+      const motivo = leer(ctx, vista, legales, d.accion, azar);
+      lecturasMs = Math.max(lecturasMs, performance.now() - inicio);
+      expect(MOTIVOS, `${id}: lectura con un motivo desconocido`).toContain(motivo.codigo);
+      expect(motivo.codigo, `${id}: la lectura delata que era su única jugada`).not.toBe('unica');
+      medida.lecturas.push(fraseLectura(motivo.codigo, motivo.datos, 'Rival 1'));
+    }
     e = juego.transicion(e, asiento, d.accion);
   }
-  return { ...medida, maxMs };
+  return { ...medida, maxMs, lecturasMs };
 }
 
 describe('modo asistido en cada juego con IA', () => {
@@ -112,8 +132,14 @@ describe('modo asistido en cada juego con IA', () => {
       expect(m.motivos.length, `${id}: el jugador no llegó a decidir`).toBeGreaterThan(0);
       for (const c of m.motivos) expect(MOTIVOS).toContain(c);
       for (const c of m.comentarios) if (c !== null) expect(COMENTARIOS).toContain(c);
-      tiempos.push(`${id}: ${Math.round(m.maxMs)} ms`);
+      tiempos.push(`${id}: ${Math.round(m.maxMs)} ms (lectura ${Math.round(m.lecturasMs)} ms)`);
       expect(m.maxMs, `${id}: la sugerencia tarda demasiado`).toBeLessThan(MAX_MS);
+      expect(m.lecturas.length, `${id}: ningún rival llegó a jugar`).toBeGreaterThan(0);
+      for (const f of m.lecturas) {
+        expect(f, `${id}: lectura mal escrita`).toMatch(/^Rival 1 .+\.$/);
+        expect(f).not.toMatch(/undefined|NaN|\(\)/);
+      }
+      expect(m.lecturasMs, `${id}: la lectura tarda demasiado`).toBeLessThan(MAX_MS);
     },
     60_000,
   );

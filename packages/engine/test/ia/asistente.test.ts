@@ -5,6 +5,7 @@ import {
   cartasDeAccion,
   comentar,
   explicar,
+  leer,
   sugerir,
   type ContextoAsistente,
 } from '../../src/ia/asistente';
@@ -185,5 +186,21 @@ describe('acciones sin carta y cartas de una acción', () => {
     };
     expect(cartasDeAccion(accion)).toEqual(['oros-1', 'oros-2', 'triunfo-21']);
     expect(cartasDeAccion({ tipo: 'pasar' })).toEqual([]);
+  });
+});
+
+describe('lectura de las jugadas de los rivales', () => {
+  it('explica la jugada con la vista del rival, como la suya', () => {
+    const v = vista(['copas-1', 'oros-5', 'espadas-4'], 'copas-11');
+    expect(leer(CTX_BRISCA, v, legalesDe(v), jugar('copas-1'), AZAR)).toEqual(
+      explicar(CTX_BRISCA, v, legalesDe(v), jugar('copas-1'), AZAR),
+    );
+  });
+
+  it('con una sola jugada posible no lo dice (delataría sus cartas), pero mide la baza', () => {
+    const v = vista(['espadas-3'], 'copas-1');
+    const motivo = leer(CTX_BRISCA, v, legalesDe(v), jugar('espadas-3'), AZAR);
+    expect(motivo.codigo).not.toBe('unica');
+    expect(motivo).toEqual({ codigo: 'entrega-poco', datos: { carta: 'espadas-3', puntos: 21 } });
   });
 });

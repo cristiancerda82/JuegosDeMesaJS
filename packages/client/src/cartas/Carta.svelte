@@ -155,6 +155,9 @@
 
 <style>
   .carta {
+    /* Los toques los recibe quien contiene la carta: comprobar qué trazado hay bajo el puntero
+       en los diseños propios, con miles de trazados, frenaba cada movimiento de un arrastre. */
+    pointer-events: none;
     display: block;
     width: 100%;
     height: 100%;

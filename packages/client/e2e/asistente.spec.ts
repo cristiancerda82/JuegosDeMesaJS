@@ -60,6 +60,29 @@ test('Brisca: se puede jugar otra carta y, si cuesta algo, se comenta', async ({
   await expect(comentario).toBeHidden();
 });
 
+test('Brisca: explica por qué ha jugado el rival, sin frenar la mesa', async ({ page }) => {
+  await empezarAsistido(page, 'brisca', '&semilla=asistida');
+  await page.evaluate(() => {
+    const w = window as unknown as { largas: number[] };
+    w.largas = [];
+    new PerformanceObserver((l) => {
+      for (const e of l.getEntries()) w.largas.push(e.duration);
+    }).observe({ type: 'longtask' });
+  });
+  // Tras jugar el jugador, el rival juega y su lectura aparece con su nombre.
+  const lectura = page.getByTestId('lectura').last();
+  for (let i = 0; i < 4 && !(await lectura.isVisible()); i++) {
+    await expect(page.getByTestId('sugerencia')).toBeVisible({ timeout: 15_000 });
+    await resaltadas(page).first().click(ESQUINA);
+    await page.getByTestId('mesa').click(ESQUINA);
+    await page.waitForTimeout(800);
+  }
+  await expect(lectura).toContainText(/^Rival .+\./);
+  // El asistente calcula en un worker: nada bloquea la página más de un fotograma largo.
+  const largas = await page.evaluate(() => (window as unknown as { largas: number[] }).largas);
+  expect(Math.max(0, ...largas)).toBeLessThan(150);
+});
+
 test('Siete y media: cuando conviene plantarse se resalta el botón «Plantarse»', async ({
   page,
 }) => {

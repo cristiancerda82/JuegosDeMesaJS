@@ -16,20 +16,25 @@ afterEach(() => {
 });
 
 /** Juega la partida entera: el jugador elige siempre su primera acción legal. */
-function jugar(
+async function jugar(
   id: IdJuego,
   asistido: boolean,
-): { vistas: string[]; fin: string; asistencias: number } {
+): Promise<{ vistas: string[]; fin: string; asistencias: number; lecturas: number }> {
   const def = JUEGOS[id] as Def;
   const r = Sesion.nueva(def, def.configPorDefecto, `misma-${id}`, 'normal', asistido);
   if (!r.ok) throw new Error(r.error);
   const sesion = r.valor;
   const vistas: string[] = [];
   let asistencias = 0;
+  let lecturas = 0;
   for (let paso = 0; paso < 400 && sesion.fin === null; paso++) {
-    vi.runOnlyPendingTimers();
+    // Sin workers (en los tests), el asistente calcula tras un temporizador y responde con una
+    // promesa: se dejan correr los dos.
+    await vi.runOnlyPendingTimersAsync();
+    await vi.runOnlyPendingTimersAsync();
     if (sesion.retenida) sesion.seguir();
     if (sesion.asistencia !== null) asistencias++;
+    lecturas += sesion.lecturas.length;
     const accion = sesion.legales[0];
     if (accion !== undefined) {
       sesion.jugar(accion);
@@ -37,17 +42,21 @@ function jugar(
     }
   }
   sesion.cerrar();
-  return { vistas, fin: JSON.stringify(sesion.fin), asistencias };
+  return { vistas, fin: JSON.stringify(sesion.fin), asistencias, lecturas };
 }
 
 describe('el modo asistido no cambia la partida', () => {
   it.each(['brisca', 'escoba', 'chinchon', 'sieteYMedia'] as const)(
     '%s',
-    (id) => {
-      const sin = jugar(id, false);
-      const con = jugar(id, true);
+    async (id) => {
+      const sin = await jugar(id, false);
+      const con = await jugar(id, true);
       expect(con.asistencias, 'el asistente no llegó a sugerir nada').toBeGreaterThan(0);
+      expect(con.lecturas, 'el asistente no explicó ninguna jugada de los rivales').toBeGreaterThan(
+        0,
+      );
       expect(sin.asistencias).toBe(0);
+      expect(sin.lecturas).toBe(0);
       expect(con.vistas).toEqual(sin.vistas);
       expect(con.fin).toBe(sin.fin);
     },

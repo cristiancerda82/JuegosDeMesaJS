@@ -26,6 +26,10 @@ const PAREJAS: ReadonlySet<IdJuego> = new Set<IdJuego>([
   'fiveHundred',
 ]);
 
+/** Con 4 jugadores, el de enfrente es el compañero. */
+export const porParejas = (juego: IdJuego, jugadores: number) =>
+  PAREJAS.has(juego) && jugadores === 4;
+
 /** Contratos del Barbu y del Rentz en los que se quieren las bazas (o no hay bazas). */
 const CONTRATOS_POSITIVOS: ReadonlySet<string> = new Set(['triunfo', 'positivo', 'domino']);
 
@@ -51,6 +55,6 @@ export function contextoAsistente<C, E, A, V>(
           return typeof contrato === 'string' && !CONTRATOS_POSITIVOS.has(contrato);
         }
       : familia === 'bazasEvitar',
-    parejas: PAREJAS.has(def.id) && jugadores === 4,
+    parejas: porParejas(def.id, jugadores ?? 0),
   };
 }

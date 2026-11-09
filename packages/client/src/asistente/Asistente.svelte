@@ -1,9 +1,18 @@
 <script lang="ts">
   import { cartasDeAccion } from '@juegos/engine';
   import { tick } from 'svelte';
+  import { nombreAsiento, nombreNumerado } from '../mesas/bazas/asientos';
   import type { IdJuego } from '../sesion/juegos';
-  import type { SesionMesa } from '../sesion/sesion-mesa';
-  import { consejoDe, fraseComentario, fraseMotivo, TEXTOS_ASISTENTE as TA } from './textos';
+  import type { Lectura, SesionMesa } from '../sesion/sesion-mesa';
+  import { T } from '../textos';
+  import { porParejas } from './contexto';
+  import {
+    consejoDe,
+    fraseComentario,
+    fraseLectura,
+    fraseMotivo,
+    TEXTOS_ASISTENTE as TA,
+  } from './textos';
 
   /**
    * Modo asistido en la mesa (spec modo-asistido): interruptor, consejo de fase, sugerencia con
@@ -30,10 +39,20 @@
 
   const asistencia = $derived(sesion.asistido ? sesion.asistencia : null);
   const frase = $derived(
-    asistencia ? fraseMotivo(asistencia.motivo.codigo, asistencia.motivo.datos) : null,
+    asistencia ? fraseMotivo(asistencia.motivo.codigo, asistencia.motivo.datos, juego) : null,
   );
   const consejo = $derived(
     sesion.asistido && sesion.consejo ? consejoDe(juego, sesion.consejo) : null,
+  );
+  /** El rival como lo nombra la mesa: «Compañero» en los juegos por parejas, «Rival 2»… */
+  const nombre = ({ asiento, jugadores }: Lectura) =>
+    porParejas(juego, jugadores)
+      ? nombreAsiento(asiento, jugadores, sesion.asiento, sesion.red)
+      : nombreNumerado(asiento, jugadores, sesion.asiento, sesion.red, T.brisca.rivalN, T.brisca.rival);
+  const lecturas = $derived(
+    sesion.asistido
+      ? sesion.lecturas.map((l) => fraseLectura(l.motivo.codigo, l.motivo.datos, nombre(l), juego))
+      : [],
   );
   const comentario = $derived(
     sesion.asistido && sesion.comentario
@@ -117,6 +136,16 @@
           </button>
         {/if}
         </div>
+        {#if lecturas.length > 0}
+          <div class="aviso lecturas" data-testid="lecturas">
+            <b>{TA.lecturas}</b>
+            <ul>
+              {#each lecturas as l, i (i)}
+                <li data-testid="lectura">{l}</li>
+              {/each}
+            </ul>
+          </div>
+        {/if}
         {#if frase}
           <div class="aviso sugerencia" data-testid="sugerencia">
             <b>{TA.sugerencia}</b>
@@ -243,6 +272,28 @@
 
   .comentario b {
     color: #ff9f80;
+  }
+
+  .lecturas {
+    border-left-color: #c9a7ff;
+  }
+
+  .lecturas b {
+    color: #c9a7ff;
+  }
+
+  .lecturas ul {
+    flex-basis: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* En el móvil solo la última: la mesa necesita el sitio. */
+  @media (max-width: 420px) {
+    .lecturas li:not(:last-child) {
+      display: none;
+    }
   }
 
   .pensando {

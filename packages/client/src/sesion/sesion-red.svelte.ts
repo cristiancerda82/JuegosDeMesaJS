@@ -23,6 +23,7 @@ export class SesionRed<C, E, A, V> implements SesionMesa<C, E, A, V> {
   readonly pensandoSugerencia = false;
   readonly comentario = null;
   readonly consejo = null;
+  readonly lecturas = [];
 
   vista: V = $state.raw() as V;
   fin = $state.raw<Fin | null>(null);

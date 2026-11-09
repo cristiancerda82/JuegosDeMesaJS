@@ -3,6 +3,14 @@ import type { InfoAsiento } from '@juegos/server/protocolo';
 import type { Novedades } from '../estadisticas/estadisticas';
 import type { DefJuego } from './juegos';
 
+/** La jugada de un rival explicada por el asistente (con su vista, que no se enseña). */
+export interface Lectura {
+  readonly asiento: Asiento;
+  /** Jugadores de la partida, para nombrar al rival desde el jugador. */
+  readonly jugadores: number;
+  readonly motivo: Motivo;
+}
+
 /** Lo que una partida en red añade: la sala y quién ocupa cada asiento. */
 export interface InfoRed {
   readonly codigo: string;
@@ -46,6 +54,8 @@ export interface SesionMesa<C, E, A, V> {
   readonly comentario: Motivo<CodigoComentario> | null;
   /** Clave del consejo de fase que hay que enseñar, si hay uno. */
   readonly consejo: string | null;
+  /** Por qué jugaron los rivales lo que jugaron desde la última jugada del jugador. */
+  readonly lecturas: readonly Lectura[];
   alternarAsistido(): void;
   cerrarConsejo(): void;
   cerrarComentario(): void;

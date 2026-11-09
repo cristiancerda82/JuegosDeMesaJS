@@ -54,6 +54,7 @@ export class Interaccion {
         el.classList.remove('arrastrando');
         el.style.removeProperty('pointer-events');
         el.style.removeProperty('z-index');
+        el.style.removeProperty('will-change');
       }
       grupo = [];
       arrastrando = false;
@@ -77,6 +78,9 @@ export class Interaccion {
           el.classList.add('arrastrando');
           el.style.pointerEvents = 'none';
           el.style.zIndex = '1000';
+          // En su propia capa: moverla no obliga a volver a pintar su dibujo (los diseños
+          // propios son SVG muy detallados) ni lo que tiene debajo.
+          el.style.willChange = 'transform';
         }
       }
       ev.preventDefault();

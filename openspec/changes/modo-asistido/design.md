@@ -35,10 +35,12 @@ El azar sale de un generador propio del asistente, `crearAzar(`${semilla}/asiste
 
 *Alternativa descartada:* la IA normal. Es más rápida, pero en muchos juegos la difícil decide mejor, y eso es lo que se quiere enseñar.
 
-### 2. La sugerencia se calcula fuera del render y se puede cancelar
-La sesión calcula la sugerencia con un `setTimeout(0)` cuando el turno pasa al humano, y la descarta si la partida cambia antes de terminar. Hasta tenerla, la mesa muestra «Pensando una sugerencia…». El test de contrato mide en los 67 juegos la sugerencia, la explicación y el comentario juntos, y exige menos de 1 s. Como en los tests de la IA, el tiempo medido en el ordenador hace de referencia del móvil medio (tarea 3.8).
+### 2. El asistente calcula en un Web Worker
+La sesión pide la sugerencia cuando el turno pasa al humano, el comentario cuando juega y la lectura cuando juega un rival, a `asistente/motor.ts`, que los manda a un Web Worker (`asistente.worker.ts`). Las peticiones son datos: id del juego, configuración, vista, acciones y la semilla del azar del asistente. El worker reconstruye el juego, sus IAs y el contexto a partir del id (`asistente/calculo.ts`), así que no hay que serializar agentes. Cada respuesta se descarta si la partida ha cambiado desde la petición. Hasta tener la sugerencia, la mesa muestra «Pensando una sugerencia…». Sin workers (los tests unitarios), el mismo cálculo se hace en el hilo tras un `setTimeout(0)`.
 
-*Alternativa descartada:* un Web Worker. Habría que serializar agentes y vistas en los 67 juegos, y no compensa con ese margen. Si las medidas muestran que no cabe, el plan B es usar la IA normal para la sugerencia de ese juego.
+Al principio se calculaba en el hilo de la página tras un `setTimeout(0)`. El test de contrato daba menos de 1 s en todos los juegos (Gin Rummy, 218 ms en el ordenador), pero en un móvil eso son varias décimas con la página parada: el usuario vio que la carta que arrastraba se quedaba pegada justo cuando llegaba su turno o al soltarla, porque el comentario se calculaba antes de aplicar la jugada. Con el worker, la página no se para; el e2e lo comprueba con las tareas largas del navegador.
+
+El worker lleva el motor entero (unos 800 kB), solo se descarga al activar el modo asistido y la PWA lo guarda para jugar sin conexión.
 
 ### 3. Las explicaciones son motivos con código, calculados en el motor
 `explicar` y `comentar` devuelven `{ codigo, datos }`, por ejemplo `{ codigo: 'gana-baza-puntos', datos: { carta: 'copas-1', puntos: 14, sinTriunfo: 1 } }`. El cliente lo convierte en una frase (`client/src/asistente/textos.ts`). Así el motor sigue sin textos, y los tests comprueban el código y los datos, no frases.
@@ -105,3 +107,6 @@ Hay un e2e de legibilidad que, en el Julepe de 5 y de 6 (con la baza retenida en
 ## Migration Plan
 
 Sin migración de datos. Las partidas guardadas sin el campo `asistido` se retoman sin modo asistido. La preferencia de velocidad ausente vale Normal. Para volver atrás basta con revertir: las preferencias nuevas se ignoran.
+
+### 11. Lectura de las jugadas de los rivales
+`leer(ctx, vista, legales, accion, azar)` (motor) explica la jugada de un rival con `explicar` sobre la vista de ese rival, sin simulación de la IA difícil, y cambia «única» por la jugada a secas para no delatar sus cartas. La vista del rival solo se usa dentro del worker. El cliente la convierte en una frase en tercera persona (`fraseLectura`): para las bazas y las recogidas, el hecho medido; para las demás acciones, el verbo y, cuando se puede decir sin ver sus cartas, lo que suele querer decir esa acción («se planta: prefiere no arriesgarse a pasarse», «envida: tiene buen juego o va de farol»). Hay verbos que cambian de sentido según el juego (pedir en el Euchre o la Pesca, pasar una carta en los Corazones o el Burro), y esos llevan su texto propio. La sesión guarda las lecturas desde la última jugada del jugador, como mucho tres, y la mesa las enseña encima de la sugerencia; en el móvil, solo la última.

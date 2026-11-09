@@ -71,43 +71,98 @@ const ACCIONES: Readonly<Record<string, string>> = {
   llamar: 'llama',
   go: 'di «go»',
   gin: 'cierra con gin',
+  dejar: 'deja una carta en la mesa',
+  echar: 'echa a la caja',
+  marcar: 'marca',
+  vull: 'di «vull»',
+  noVull: 'di «no vull»',
+  reservar: 'reserva',
+  whist: 'di «whist»',
+};
+
+/** Acciones que significan otra cosa en un juego concreto. */
+const ACCIONES_JUEGO: Partial<Record<IdJuego, Readonly<Record<string, string>>>> = {
+  euchre: { pedir: 'pide que el repartidor recoja la carta de arriba' },
+  pesca: { pedir: 'pide cartas a otro jugador' },
 };
 
 /** Nombre de la jugada en imperativo; los tipos sin nombre se escriben tal cual («noQuiero» → «no quiero»). */
 const palabras = (tipo: string) => tipo.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
 
-export const nombreAccion = (tipo: string) => ACCIONES[tipo] ?? palabras(tipo);
+export const nombreAccion = (tipo: string, juego?: IdJuego) =>
+  (juego && ACCIONES_JUEGO[juego]?.[tipo]) ?? ACCIONES[tipo] ?? palabras(tipo);
 
+/** En los juegos de dos barajas las cartas llevan su copia («picas-10#1»): no se nombra. */
 const carta = (d: Datos) =>
-  typeof d['carta'] === 'string' ? nombreCarta(d['carta'] as IdCarta) : '';
+  typeof d['carta'] === 'string' ? nombreCarta(d['carta'].replace(/#\d+$/, '') as IdCarta) : '';
 const mayuscula = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const puntos = (n: unknown) => `${String(n)} ${Number(n) === 1 ? 'punto' : 'puntos'}`;
+const cartas = (n: unknown) => `${String(n)} ${Number(n) === 1 ? 'carta' : 'cartas'}`;
+
+/** «Robar» con el sitio de donde se roba en el detalle. */
+const ROBAR_DE: Readonly<Record<string, string>> = {
+  mazo: 'robarMazo',
+  descarte: 'robarDescarte',
+  monton: 'robarMonton',
+  pozo: 'tomarPozo',
+};
+/** Acciones en las que el detalle (la puja, el palo…) dice algo; en las demás suele ser un índice. */
+const CON_DETALLE: ReadonlySet<string> = new Set([
+  'pujar',
+  'apostar',
+  'subir',
+  'envidar',
+  'triunfo',
+  'elegir',
+  'contrato',
+  'cantar',
+  'declarar',
+  'anunciar',
+  'reservar',
+]);
+
+/** El tipo de la acción y el detalle que vale la pena nombrar. */
+function tipoYDetalle(d: Datos): { tipo: string; detalle: string } {
+  let tipo = typeof d['tipo'] === 'string' ? d['tipo'] : 'jugar';
+  let detalle = d['detalle'] !== undefined ? String(d['detalle']) : '';
+  const desde = ROBAR_DE[detalle];
+  if (tipo === 'robar' && desde) {
+    tipo = desde;
+    detalle = '';
+  }
+  if (!CON_DETALLE.has(tipo) && /^\d+$/.test(detalle)) detalle = '';
+  // Una carta con su copia, que la acción guarda como texto.
+  if (/^[a-z]+-\d+#\d+$/.test(detalle))
+    detalle = nombreCarta(detalle.replace(/#\d+$/, '') as IdCarta);
+  return { tipo, detalle };
+}
 
 /** La jugada sugerida, para empezar la frase: «Juega el As de copas», «Plántate»… */
-function jugada(d: Datos): string {
-  const tipo = typeof d['tipo'] === 'string' ? d['tipo'] : 'jugar';
+function jugada(d: Datos, juego?: IdJuego): string {
+  const { tipo, detalle } = tipoYDetalle(d);
   const c = carta(d);
-  if (tipo === 'jugar' || tipo === 'jugarCarta') return c ? `Juega ${c}` : 'Juega';
-  const accion = mayuscula(nombreAccion(tipo));
-  const detalle = d['detalle'] !== undefined ? String(d['detalle']) : '';
+  // «Jugar» sin carta es decidir jugar la mano (Julepe, Bourré, Écarté, Klaverjas).
+  if (tipo === 'jugar' || tipo === 'jugarCarta') return c ? `Juega ${c}` : 'Juega esta mano';
+  const accion = mayuscula(nombreAccion(tipo, juego));
   const entre = [c, detalle].filter(Boolean).join(', ');
   return entre ? `${accion} (${entre})` : accion;
 }
 
 /** Frase de la sugerencia: qué jugar y por qué. */
-export function fraseMotivo(codigo: CodigoMotivo, d: Datos): string {
+export function fraseMotivo(codigo: CodigoMotivo, d: Datos, juego?: IdJuego): string {
   const c = carta(d);
   switch (codigo) {
     case 'unica':
-      return `${jugada(d)}: es tu única jugada posible.`;
+      return `${jugada(d, juego)}: es tu única jugada posible.`;
     case 'gana-baza-puntos':
-      return `Juega ${c}: ganas la baza y te llevas ${d['puntos']} puntos${
+      return `Juega ${c}: ganas la baza y te llevas ${puntos(d['puntos'])}${
         d['sinTriunfo'] ? ' sin gastar triunfo' : ''
       }.`;
     case 'gana-baza':
       return `Juega ${c}: ganas la baza${d['sinTriunfo'] ? ' sin gastar triunfo' : ''}.`;
     case 'entrega-poco':
       return `Juega ${c}: esta baza no la puedes ganar, así que entregas la carta que menos da${
-        Number(d['puntos']) > 0 ? ` (la baza se lleva ${d['puntos']} puntos)` : ''
+        Number(d['puntos']) > 0 ? ` (la baza se lleva ${puntos(d['puntos'])})` : ''
       }.`;
     case 'guarda-carta':
       return `Juega ${c}: podrías ganar la baza, pero te conviene guardar tu carta buena para más adelante.`;
@@ -116,18 +171,18 @@ export function fraseMotivo(codigo: CodigoMotivo, d: Datos): string {
     case 'gana-sin-castigo':
       return `Juega ${c}: te llevas la baza, pero no trae ningún castigo.`;
     case 'escoba':
-      return `Juega ${c}: te llevas las ${d['n']} cartas de la mesa y haces escoba.`;
+      return `Juega ${c}: te llevas ${Number(d['n']) === 1 ? 'la carta' : `las ${cartas(d['n'])}`} de la mesa y haces escoba.`;
     case 'captura-siete-oros':
       return `Juega ${c}: te llevas el 7 de oros, que vale un punto por sí solo.`;
     case 'captura':
-      return `Juega ${c}: recoges ${d['n']} ${Number(d['n']) === 1 ? 'carta' : 'cartas'} de la mesa.`;
+      return `Juega ${c}: recoges ${cartas(d['n'])} de la mesa.`;
     case 'sin-captura':
       return `Juega ${c}: no puedes recoger nada que valga la pena, y es la carta que menos arriesgas en la mesa.`;
     case 'mejor-simulada':
-      return `${jugada(d)}: la he probado en ${d['total']} repartos posibles de las cartas que no ves, y sale mejor que las demás en ${d['ganadas']}.`;
+      return `${jugada(d, juego)}: la he probado en ${d['total']} repartos posibles de las cartas que no ves, y sale mejor que las demás en ${d['ganadas']}.`;
     case 'accion':
     case 'jugada':
-      return `Te conviene: ${jugada(d).charAt(0).toLowerCase()}${jugada(d).slice(1)}.`;
+      return `Te conviene: ${jugada(d, juego).charAt(0).toLowerCase()}${jugada(d, juego).slice(1)}.`;
   }
 }
 
@@ -136,21 +191,171 @@ export function fraseComentario(codigo: CodigoComentario, d: Datos): string {
   const c = carta(d);
   switch (codigo) {
     case 'puntos-regalados':
-      return `Has dado ${d['puntos']} puntos más al rival: con ${c} perdías menos.`;
+      return `Has dado ${puntos(d['puntos'])} más al rival: con ${c} perdías menos.`;
     case 'baza-perdida':
       return `Has perdido una baza que ganabas con ${c}${
-        Number(d['puntos']) > 0 ? ` (${d['puntos']} puntos)` : ''
+        Number(d['puntos']) > 0 ? ` (${puntos(d['puntos'])})` : ''
       }.`;
     case 'triunfo-gastado':
       return `Has gastado un triunfo: con ${c} ganabas la baza igual y lo guardabas.`;
     case 'castigo-evitable':
-      return `Te has llevado ${d['puntos']} puntos de castigo: con ${c} te librabas.`;
+      return `Te has llevado ${puntos(d['puntos'])} de castigo: con ${c} te librabas.`;
     case 'escoba-perdida':
       return `Con ${c} hacías escoba.`;
     case 'captura-menor':
-      return `Con ${c} recogías ${d['n']} cartas más.`;
+      return `Con ${c} recogías ${cartas(d['n'])} más.`;
     case 'peor-simulada':
       return `En ${d['peores']} de ${d['total']} repartos posibles de las cartas que no ves, tu jugada sale peor que la que te sugería.`;
+  }
+}
+
+// ── Lectura de las jugadas de los rivales ───────────────────────────────────
+
+/**
+ * La jugada de un rival en tercera persona y, cuando se puede decir sin ver sus cartas, lo que
+ * suele querer decir. Se escriben como las leería alguien que mira la mesa: nunca afirman qué
+ * cartas tiene.
+ */
+const ACCIONES_RIVAL: Readonly<Record<string, readonly [string, string?]>> = {
+  pasar: ['pasa', 'no puede o no le conviene ir más allá'],
+  paso: ['pasa', 'no puede o no le conviene ir más allá'],
+  robar: ['roba'],
+  robarMazo: ['roba del mazo', 'lo que hay en el descarte no le sirve'],
+  robarDescarte: ['roba del descarte', 'esa carta le sirve para una combinación'],
+  robarMonton: ['se lleva el montón', 'le sirven las cartas de arriba'],
+  tomarPozo: ['se lleva el pozo', 'le sirven las cartas de arriba'],
+  descartar: ['se descarta', 'es la carta que menos le sirve'],
+  descarte: ['se descarta', 'es la carta que menos le sirve'],
+  pujar: ['puja', 'confía en su mano'],
+  apostar: ['apuesta', 'confía en su mano o quiere que lo parezca'],
+  subir: ['sube', 'confía en su mano o quiere que lo parezca'],
+  igualar: ['iguala', 'cree que puede ganar, pero sin arriesgar más'],
+  retirarse: ['se retira', 'no le compensa seguir con su mano'],
+  pedir: ['pide carta', 'cree que todavía puede acercarse más sin pasarse'],
+  plantarse: ['se planta', 'prefiere no arriesgarse a pasarse'],
+  doblar: ['dobla', 've muy buena su jugada'],
+  separar: ['separa'],
+  bajar: ['baja sus combinaciones', 'así se quita puntos de la mano'],
+  anadir: ['añade a una combinación', 'así se quita cartas de la mano'],
+  cerrar: ['cierra', 'cree que ya tiene la mano ganada'],
+  cantar: ['canta', 'se suma los puntos del cante'],
+  cantarTute: ['canta el tute'],
+  cambiarSiete: ['cambia el siete de triunfo', 'se queda con la carta de la muestra, que vale más'],
+  cambiarMuestra: ['cambia la muestra', 'se queda con la carta de la muestra, que vale más'],
+  cambiar: ['cambia cartas', 'busca mejorar su mano'],
+  envidar: ['envida', 'tiene buen juego o va de farol'],
+  envido: ['canta envido', 'tiene buen tanto o va de farol'],
+  realEnvido: ['canta real envido', 'tiene buen tanto o va de farol'],
+  faltaEnvido: ['canta falta envido', 'tiene muy buen tanto o va de farol'],
+  truco: ['canta truco', 'tiene cartas altas o va de farol'],
+  trucar: ['truca', 'tiene cartas altas o va de farol'],
+  quiero: ['dice «quiero»', 'cree que puede ganar'],
+  noQuiero: ['dice «no quiero»', 'no lo ve claro y prefiere perder poco'],
+  ordago: ['echa un órdago', 'va a por todas: o tiene muy buen juego o es un farol'],
+  mus: ['pide mus', 'quiere cambiar cartas para mejorar'],
+  triunfo: ['elige el triunfo', 'será el palo del que tiene más cartas'],
+  elegir: ['elige'],
+  contrato: ['elige el contrato', 'es el que mejor le encaja con su mano'],
+  declarar: ['declara'],
+  anunciar: ['anuncia'],
+  aceptar: ['acepta', 'le encaja con su mano'],
+  rehusar: ['rehúsa', 'no le encaja con su mano'],
+  contro: ['dice contro', 'cree que el contrato no se va a cumplir'],
+  redoblar: ['redobla', 'está seguro de cumplir'],
+  recoger: ['recoge'],
+  construir: ['construye', 'se prepara para recoger en su próximo turno'],
+  atacar: ['ataca'],
+  defender: ['se defiende'],
+  tomar: ['se lleva las cartas', 'no puede o no le compensa defenderse'],
+  coger: ['coge'],
+  devolver: ['devuelve cartas'],
+  desconfiar: ['dice «¡mentiroso!»', 'no se cree la bajada'],
+  creer: ['se cree la bajada'],
+  meVoy: ['se va', 'no le compensa seguir'],
+  dar: ['da cartas'],
+  llamar: ['llama'],
+  go: ['dice «go»', 'no puede jugar sin pasarse de 31'],
+  gin: ['cierra con gin', 'no le queda ninguna carta suelta'],
+  dejar: ['deja una carta en la mesa', 'no puede recoger ni construir nada que le convenga'],
+  echar: ['echa a la caja', 'son las cartas que menos le sirven para su mano'],
+  marcar: ['marca'],
+  vull: ['dice «vull»', 'cree que puede ganar'],
+  noVull: ['dice «no vull»', 'no lo ve claro y prefiere perder poco'],
+  reservar: ['reserva'],
+  whist: ['dice «whist»', 'cree que el contrato no se va a cumplir'],
+};
+
+/** Acciones de los rivales que significan otra cosa en un juego concreto. */
+const ACCIONES_RIVAL_JUEGO: Partial<
+  Record<IdJuego, Readonly<Record<string, readonly [string, string?]>>>
+> = {
+  euchre: {
+    pedir: ['pide que el repartidor recoja la carta de arriba', 'le conviene ese triunfo'],
+  },
+  pesca: { pedir: ['pide cartas a otro jugador', 'busca completar un grupo'] },
+  corazones: { pasar: ['pasa', 'se quita una carta peligrosa o difícil de jugar'] },
+  burro: { pasar: ['pasa', 'no le sirve para juntar cuatro iguales'] },
+};
+
+/** «Rival 1 juega el As de copas», «Rival se planta (prefiere…)». */
+function jugadaRival(
+  nombre: string,
+  d: Datos,
+  juego?: IdJuego,
+): { frase: string; razon: string | null } {
+  const { tipo, detalle } = tipoYDetalle(d);
+  const c = carta(d);
+  if (tipo === 'jugar' || tipo === 'jugarCarta') {
+    return c
+      ? { frase: `${nombre} juega ${c}`, razon: null }
+      : { frase: `${nombre} decide jugar esta mano`, razon: 'confía en sus cartas' };
+  }
+  const [verbo, razon] = (juego && ACCIONES_RIVAL_JUEGO[juego]?.[tipo]) ??
+    ACCIONES_RIVAL[tipo] ?? [`hace «${palabras(tipo)}»`];
+  // Pasar una carta (Corazones, Burro) no es pasar el turno.
+  if ((tipo === 'pasar' || tipo === 'paso') && c) {
+    return { frase: `${nombre} pasa ${c}`, razon: razon ?? 'no quiere quedársela' };
+  }
+  const entre = [c, detalle].filter(Boolean).join(', ');
+  return { frase: `${nombre} ${verbo}${entre ? ` (${entre})` : ''}`, razon: razon ?? null };
+}
+
+/** Por qué un rival hizo su jugada, con su nombre visto desde el jugador. */
+export function fraseLectura(
+  codigo: CodigoMotivo,
+  d: Datos,
+  nombre: string,
+  juego?: IdJuego,
+): string {
+  const c = carta(d);
+  switch (codigo) {
+    case 'gana-baza-puntos':
+      return `${nombre} juega ${c} para llevarse la baza, que vale ${puntos(d['puntos'])}.`;
+    case 'gana-baza':
+      return `${nombre} juega ${c} para llevarse la baza.`;
+    case 'entrega-poco':
+      return `${nombre} juega ${c}, que da poco: no le compensa pelear esta baza.`;
+    case 'guarda-carta':
+      return `${nombre} juega ${c} sin pelear la baza: prefiere reservar sus cartas para más adelante.`;
+    case 'evita-baza':
+      return `${nombre} juega ${c} para no llevarse la baza.`;
+    case 'gana-sin-castigo':
+      return `${nombre} se lleva la baza con ${c}: no trae ningún castigo.`;
+    case 'escoba':
+      return `${nombre} hace escoba con ${c}: se lleva ${Number(d['n']) === 1 ? 'la carta' : `las ${cartas(d['n'])}`} de la mesa.`;
+    case 'captura-siete-oros':
+      return `${nombre} se lleva el 7 de oros con ${c}: vale un punto por sí solo.`;
+    case 'captura':
+      return `${nombre} recoge ${cartas(d['n'])} con ${c}.`;
+    case 'sin-captura':
+      return `${nombre} deja ${c} en la mesa: no recoge nada que valga la pena.`;
+    case 'unica':
+    case 'mejor-simulada':
+    case 'accion':
+    case 'jugada': {
+      const { frase, razon } = jugadaRival(nombre, d, juego);
+      return razon ? `${frase}: ${razon}.` : `${frase}.`;
+    }
   }
 }
 
@@ -339,6 +544,7 @@ export const TEXTOS_ASISTENTE = {
   pensando: 'Pensando una sugerencia…',
   sugerencia: 'Sugerencia',
   comentario: 'Tu jugada',
+  lecturas: 'Los rivales',
   consejo: 'Consejo',
   cerrar: 'Cerrar',
 } as const;
