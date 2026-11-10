@@ -55,6 +55,17 @@ La explicación MUST describir algo cierto de la jugada en esa situación (qué 
 - **WHEN** el jugador ve la sugerencia y juega otra carta legal
 - **THEN** la jugada se hace con normalidad
 
+### Requirement: Toda sugerencia dice por qué
+Cada sugerencia MUST decir qué jugar y por qué. Cuando no hay un hecho seguro (nadie tiene la baza asegurada, o la jugada no gana en la mayoría de los repartos simulados), la explicación MUST dar el mejor dato que haya: la carta con más opciones de ganar la baza o la que menos puntos arriesga, la que mejor sale de media en la simulación o, para las acciones que no son cartas, lo que esa acción consigue con la mano del jugador. MUST NOT quedarse en un «te conviene» sin razón.
+
+#### Scenario: Baza dudosa
+- **WHEN** ninguna carta del jugador gana la baza con seguridad y la sugerida es la que más opciones tiene
+- **THEN** la sugerencia dice que es la carta con más opciones de ganarla y en cuántos de cada 100 repartos posibles
+
+#### Scenario: Acción sin carta
+- **WHEN** la sugerencia es pasar en una subasta
+- **THEN** dice que con su mano no le conviene ir más allá
+
 ### Requirement: Comentario de la jugada
 Con el modo asistido activo, cuando el jugador hace una jugada distinta de la sugerida y esa jugada le cuesta algo concreto respecto a la sugerida, la mesa MUST mostrar un comentario breve que diga qué ha pasado y qué habría sido mejor. Por ejemplo, ha regalado puntos que podía evitar, ha perdido una baza que podía ganar, ha gastado un triunfo sin necesidad o ha descartado una carta que le formaba combinación. Si no hay un coste concreto que señalar, MUST NOT mostrar ningún comentario: el modo asistido no regaña por jugar distinto a la IA. El comentario MUST NOT deshacer ni bloquear la jugada, y MUST desaparecer solo en unos segundos o al tocarlo.
 

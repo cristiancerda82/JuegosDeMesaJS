@@ -10,7 +10,7 @@ import {
 import { describe, expect, it } from 'vitest';
 import { JUEGOS, type DefJuego, type IdJuego } from '../sesion/juegos';
 import { contextoAsistente } from './contexto';
-import { claveConsejo, consejoDe, CONSEJOS_JUEGO, fraseLectura } from './textos';
+import { claveConsejo, consejoDe, CONSEJOS_JUEGO, fraseLectura, fraseMotivo } from './textos';
 
 // Contrato del modo asistido en cada juego con IA (tarea 3.7) y lo que tarda (tarea 3.8).
 
@@ -20,7 +20,10 @@ const MOTIVOS: readonly CodigoMotivo[] = [
   'gana-baza',
   'entrega-poco',
   'guarda-carta',
+  'opciones-baza',
+  'arriesga-poco',
   'evita-baza',
+  'evita-baza-probable',
   'gana-sin-castigo',
   'escoba',
   'captura-siete-oros',
@@ -28,6 +31,7 @@ const MOTIVOS: readonly CodigoMotivo[] = [
   'sin-captura',
   'accion',
   'mejor-simulada',
+  'mejor-media',
   'jugada',
 ];
 const COMENTARIOS: readonly CodigoComentario[] = [
@@ -186,5 +190,17 @@ describe('consejos de fase', () => {
     expect(consejoDe('tuteSubastado', 'subasta')).toMatch(/pujar/);
     expect(claveConsejo('bazas')).toBe('juego');
     expect(consejoDe('brisca', 'juego')).toMatch(/Brisca/);
+  });
+});
+
+describe('frases de la sugerencia', () => {
+  const DATOS = { carta: 'copas-1', puntos: 3, n: 2, porcentaje: 60, ganadas: 7, total: 12 };
+  it.each(MOTIVOS)('%s lleva siempre el porqué', (codigo) => {
+    for (const tipo of ['jugar', 'pasar', 'descartar', 'tipoRaro']) {
+      const f = fraseMotivo(codigo, { ...DATOS, tipo });
+      // «Qué jugar: por qué.»
+      expect(f).toMatch(/^[^:]+: .{12,}\.$/);
+      expect(f).not.toMatch(/undefined|NaN|Te conviene/);
+    }
   });
 });

@@ -110,3 +110,12 @@ Sin migración de datos. Las partidas guardadas sin el campo `asistido` se retom
 
 ### 11. Lectura de las jugadas de los rivales
 `leer(ctx, vista, legales, accion, azar)` (motor) explica la jugada de un rival con `explicar` sobre la vista de ese rival, sin simulación de la IA difícil, y cambia «única» por la jugada a secas para no delatar sus cartas. La vista del rival solo se usa dentro del worker. El cliente la convierte en una frase en tercera persona (`fraseLectura`): para las bazas y las recogidas, el hecho medido; para las demás acciones, el verbo y, cuando se puede decir sin ver sus cartas, lo que suele querer decir esa acción («se planta: prefiere no arriesgarse a pasarse», «envida: tiene buen juego o va de farol»). Hay verbos que cambian de sentido según el juego (pedir en el Euchre o la Pesca, pasar una carta en los Corazones o el Burro), y esos llevan su texto propio. La sesión guarda las lecturas desde la última jugada del jugador, como mucho tres, y la mesa las enseña encima de la sugerencia; en el móvil, solo la última.
+
+### 12. Ninguna sugerencia sin porqué
+En la primera revisión, el 30 % de las sugerencias (240 de 804 en una muestra de los 67 juegos) se quedaba en «Te conviene: …». Había tres huecos, y se cubren así:
+- En las bazas dudosas, la medida de la baza ya sabía cuántas veces gana cada carta y cuántos puntos entrega. Se añaden `opciones-baza` (la carta con más opciones, con el porcentaje), `arriesga-poco` (la que menos puntos entrega) y, en los juegos de evitar bazas, `evita-baza-probable`. Solo se usan cuando había otras cartas que comparar.
+- Cuando la jugada simulada no llega al 60 %, `mejor-media` dice que es la que mejor sale de media en los repartos probados.
+- Para las acciones que no son cartas, el cliente da una razón por tipo de acción en segunda persona (`RAZONES`, con textos propios en los juegos en que la acción cambia de sentido). Esa razón también va delante de la de la simulación.
+
+Lo que queda (5 de 804 en la muestra) son cartas de baza sin ningún hecho que destacar, y su frase dice que ninguna carta gana con claridad y que esa es la que mejor deja el resto de la mano. Un test exige que la frase de cada código tenga la forma «qué jugar: por qué».
+

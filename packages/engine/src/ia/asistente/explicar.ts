@@ -23,8 +23,17 @@ export type CodigoMotivo =
   | 'entrega-poco'
   /** Podría ganar la baza, pero conviene guardar la carta buena. */
   | 'guarda-carta'
+  /**
+   * Nadie gana la baza seguro: es la carta con más opciones de ganarla (`porcentaje` de los
+   * repartos posibles).
+   */
+  | 'opciones-baza'
+  /** Es la carta que menos puntos arriesga entregar en esta baza (`puntos`, de media). */
+  | 'arriesga-poco'
   /** Juegos de bazas a evitar: se escapa de la baza. */
   | 'evita-baza'
+  /** Juegos de bazas a evitar: es la carta con menos opciones de llevarse la baza (`porcentaje`). */
+  | 'evita-baza-probable'
   /** Juegos de bazas a evitar: gana la baza, pero sin castigo. */
   | 'gana-sin-castigo'
   /** Captura: se lleva todo lo de la mesa (`n` cartas). */
@@ -42,6 +51,11 @@ export type CodigoMotivo =
    * mejor (o igual) que las demás en `ganadas`.
    */
   | 'mejor-simulada'
+  /**
+   * La IA difícil la probó en `total` repartos posibles y es la que mejor sale de media, aunque
+   * no gane en la mayoría (`ganadas`, en las que sale la mejor o igual).
+   */
+  | 'mejor-media'
   /** Sin un motivo concreto que contar: solo qué jugada conviene. */
   | 'jugada';
 
@@ -271,11 +285,18 @@ function explicarBaza<V, A>(
   const otras = medidas.slice(1).filter((m): m is EnBaza => m !== null);
   const v = vista as VistaGeneral;
 
+  const porcentaje = (x: number) => Math.round(x * 100);
   if (evita(ctx, vista)) {
     if (propia.gana <= PIERDE) return { codigo: 'evita-baza', datos: { carta } };
     // Sin castigo, solo si el juego cuenta los puntos de cada baza en la vista.
     if (propia.gana >= SEGURO && propia.ganados === 0 && puntosDe(v) !== null) {
       return { codigo: 'gana-sin-castigo', datos: { carta } };
+    }
+    if (otras.length > 0 && propia.gana <= Math.min(...otras.map((m) => m.gana)) + EPSILON) {
+      return {
+        codigo: 'evita-baza-probable',
+        datos: { carta, porcentaje: porcentaje(1 - propia.gana) },
+      };
     }
     return null;
   }
@@ -300,6 +321,13 @@ function explicarBaza<V, A>(
     return null;
   }
   if (mejorGana >= SEGURO) return { codigo: 'guarda-carta', datos: { carta } };
+  // Nadie la gana seguro: la que más opciones tiene o la que menos arriesga.
+  if (otras.length > 0 && propia.gana >= 0.5 && propia.gana >= mejorGana - EPSILON) {
+    return { codigo: 'opciones-baza', datos: { carta, porcentaje: porcentaje(propia.gana) } };
+  }
+  if (otras.length > 0 && propia.entregados <= Math.min(...otras.map((m) => m.entregados)) + 0.5) {
+    return { codigo: 'arriesga-poco', datos: { carta, puntos: Math.round(propia.entregados) } };
+  }
   return null;
 }
 
@@ -426,9 +454,12 @@ function mejorSimulada<A>(sim: Simulacion<A> | undefined, accion: A): Motivo | n
     fila.every((x, j) => j === i || fila[i]! >= x - EPSILON),
   ).length;
   const total = sim.valores.length;
-  return ganadas / total >= MAYORIA
-    ? { codigo: 'mejor-simulada', datos: { ganadas, total } }
-    : null;
+  if (ganadas / total >= MAYORIA) return { codigo: 'mejor-simulada', datos: { ganadas, total } };
+  // Sin mayoría, se dice si es la mejor de media (la que eligió la IA difícil suele serlo).
+  const media = (j: number) => sim.valores.reduce((t, fila) => t + fila[j]!, 0) / total;
+  const propia = media(i);
+  const mejor = sim.simuladas.every((_, j) => j === i || propia >= media(j) - EPSILON);
+  return mejor ? { codigo: 'mejor-media', datos: { ganadas, total } } : null;
 }
 
 /** En cuántos repartos `hecha` salió peor que `sugerida`, si es claramente peor de media. */

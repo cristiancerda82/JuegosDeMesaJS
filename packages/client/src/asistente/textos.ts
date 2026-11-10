@@ -69,6 +69,8 @@ const ACCIONES: Readonly<Record<string, string>> = {
   meVoy: 'vete',
   dar: 'da cartas',
   llamar: 'llama',
+  cortar: 'corta el mus',
+  desmarcar: 'desmarca',
   go: 'di «go»',
   gin: 'cierra con gin',
   dejar: 'deja una carta en la mesa',
@@ -85,6 +87,94 @@ const ACCIONES_JUEGO: Partial<Record<IdJuego, Readonly<Record<string, string>>>>
   euchre: { pedir: 'pide que el repartidor recoja la carta de arriba' },
   pesca: { pedir: 'pide cartas a otro jugador' },
 };
+
+/**
+ * Por qué suele convenir cada acción, dicho al jugador: es su mano, así que se puede hablar de
+ * ella. Se usan cuando no hay un hecho medido más concreto (o junto a la simulación).
+ */
+const RAZONES: Readonly<Record<string, string>> = {
+  pasar: 'con tu mano no te conviene ir más allá',
+  paso: 'con tu mano no te conviene ir más allá',
+  robarMazo: 'la carta del descarte no te sirve para ninguna combinación',
+  robarDescarte: 'esa carta te sirve para formar una combinación',
+  robarMonton: 'las cartas de arriba te sirven para tus combinaciones',
+  tomarPozo: 'las cartas de arriba te sirven para tus combinaciones',
+  descartar: 'es la carta que menos te sirve para formar combinaciones',
+  descarte: 'es la carta que menos te sirve para formar combinaciones',
+  pujar: 'tu mano da para cumplir esta puja',
+  apostar: 'es lo que tu mano puede cumplir sin arriesgar de más',
+  subir: 'tu mano es más fuerte que la de un rival medio',
+  igualar: 'tu mano merece ver la jugada, pero no tanto como para subir',
+  retirarse: 'tu mano tiene pocas opciones de ganar y así no pierdes más',
+  pedir: 'todavía estás lejos y es poco probable que te pases',
+  plantarse: 'con lo que tienes, otra carta te arriesga demasiado a pasarte',
+  doblar: 'tu jugada es tan buena que vale la pena doblar la apuesta',
+  separar: 'dos manos con esas cartas tienen más opciones que una',
+  bajar: 'te quitas puntos de la mano antes de que alguien cierre',
+  anadir: 'te quitas cartas de la mano sin esperar a formar otra combinación',
+  cerrar: 'con lo que te queda, cerrar ahora te da ventaja',
+  cantar: 'sumas los puntos del cante',
+  cantarTute: 'sumas el tute, que vale la partida',
+  cambiarSiete: 'te quedas con la carta de la muestra, que vale más',
+  cambiarMuestra: 'te quedas con la carta de la muestra, que vale más',
+  cambiar: 'con esas cartas fuera tienes más opciones de mejorar tu mano',
+  envidar: 'tu jugada es buena para apostar por ella',
+  envido: 'tienes buen tanto',
+  realEnvido: 'tienes muy buen tanto',
+  faltaEnvido: 'tu tanto es difícil de superar',
+  truco: 'tus cartas son altas para ganar las bazas',
+  trucar: 'tus cartas son altas para ganar las bazas',
+  quiero: 'tus cartas tienen buenas opciones de ganar',
+  noQuiero: 'tus cartas tienen pocas opciones y así pierdes poco',
+  vull: 'tus cartas tienen buenas opciones de ganar',
+  noVull: 'tus cartas tienen pocas opciones y así pierdes poco',
+  ordago: 'tu jugada es casi imposible de superar',
+  mus: 'cambiando cartas tu mano puede mejorar mucho',
+  triunfo: 'es el palo en el que más fuerte estás',
+  contrato: 'es el que mejor encaja con tu mano',
+  aceptar: 'encaja con tu mano',
+  rehusar: 'no encaja con tu mano',
+  contro: 'es probable que el contrato no se cumpla',
+  redoblar: 'es muy probable que cumplas',
+  construir: 'en tu próximo turno podrás recoger esas cartas juntas',
+  dejar: 'no puedes recoger ni construir nada que te convenga',
+  echar: 'son las cartas que menos te sirven para tu mano',
+  tomar: 'defenderte te costaría cartas mejores',
+  desconfiar: 'es poco probable que tenga las cartas que dice',
+  creer: 'es probable que diga la verdad',
+  meVoy: 'con tu mano no te compensa seguir',
+  go: 'no puedes jugar sin pasarte de 31',
+  gin: 'no te queda ninguna carta suelta',
+  whist: 'es probable que el contrato no se cumpla',
+  marcar: 'es una de las cartas que te conviene bajar ahora',
+  desmarcar: 'te conviene guardarla para más adelante',
+  cortar: 'tu mano ya es buena, y así los rivales no pueden mejorar la suya',
+  atacar: 'obliga al rival a gastar cartas para defenderse',
+  robar: 'cambiar cartas te da opciones de mejorar tu mano',
+  recoger: 'sumas cartas y puntos para el recuento',
+  reservar: 'tu mano no da para jugar en solitario',
+  anunciar: 'tu mano es fuerte y el anuncio suma puntos si ganas',
+  elegir: 'es la opción en la que más fuerte estás',
+  dar: 'es la carta que menos falta te hace',
+  fijar: 'es lo que tu mano puede cumplir',
+};
+
+/** Razones que cambian en un juego concreto. */
+const RAZONES_JUEGO: Partial<Record<IdJuego, Readonly<Record<string, string>>>> = {
+  euchre: { pedir: 'ese triunfo te deja con buenas bazas', pasar: 'ese triunfo no te conviene' },
+  pesca: { pedir: 'es probable que tenga cartas de ese número y completes un grupo' },
+  corazones: { pasar: 'te quitas una carta peligrosa o difícil de jugar' },
+  burro: { pasar: 'no te sirve para juntar cuatro iguales' },
+  cinquillo: { jugar: 'abre el paso a tus cartas de ese palo antes que a las de los rivales' },
+  sevens: { jugar: 'abre el paso a tus cartas de ese palo antes que a las de los rivales' },
+  spiteMalice: { jugar: 'te acerca a vaciar tu montón, que es lo que gana la partida' },
+};
+
+/** La razón de una acción por su tipo, si la hay. */
+function razonDe(d: Datos, juego?: IdJuego): string | null {
+  const { tipo } = tipoYDetalle(d);
+  return (juego && RAZONES_JUEGO[juego]?.[tipo]) ?? RAZONES[tipo] ?? null;
+}
 
 /** Nombre de la jugada en imperativo; los tipos sin nombre se escriben tal cual («noQuiero» → «no quiero»). */
 const palabras = (tipo: string) => tipo.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
@@ -166,8 +256,16 @@ export function fraseMotivo(codigo: CodigoMotivo, d: Datos, juego?: IdJuego): st
       }.`;
     case 'guarda-carta':
       return `Juega ${c}: podrías ganar la baza, pero te conviene guardar tu carta buena para más adelante.`;
+    case 'opciones-baza':
+      return `Juega ${c}: nadie tiene la baza asegurada, pero es tu carta con más opciones de ganarla (en ${d['porcentaje']} de cada 100 repartos posibles de las cartas que no ves).`;
+    case 'arriesga-poco':
+      return `Juega ${c}: es difícil ganar esta baza, y es la carta con la que menos puntos arriesgas${
+        Number(d['puntos']) > 0 ? ` (de media, la baza se lleva unos ${puntos(d['puntos'])})` : ''
+      }.`;
     case 'evita-baza':
       return `Juega ${c}: así no te llevas la baza.`;
+    case 'evita-baza-probable':
+      return `Juega ${c}: es tu carta con menos opciones de llevarte la baza (te libras en ${d['porcentaje']} de cada 100 repartos posibles).`;
     case 'gana-sin-castigo':
       return `Juega ${c}: te llevas la baza, pero no trae ningún castigo.`;
     case 'escoba':
@@ -178,11 +276,22 @@ export function fraseMotivo(codigo: CodigoMotivo, d: Datos, juego?: IdJuego): st
       return `Juega ${c}: recoges ${cartas(d['n'])} de la mesa.`;
     case 'sin-captura':
       return `Juega ${c}: no puedes recoger nada que valga la pena, y es la carta que menos arriesgas en la mesa.`;
-    case 'mejor-simulada':
-      return `${jugada(d, juego)}: la he probado en ${d['total']} repartos posibles de las cartas que no ves, y sale mejor que las demás en ${d['ganadas']}.`;
+    case 'mejor-media': {
+      const razon = razonDe(d, juego);
+      return `${jugada(d, juego)}: ${razon ? `${razon}. Además, ` : ''}la he probado en ${d['total']} repartos posibles de las cartas que no ves y es la que mejor sale de media.`;
+    }
+    case 'mejor-simulada': {
+      const razon = razonDe(d, juego);
+      return `${jugada(d, juego)}: ${razon ? `${razon}. Además, ` : ''}la he probado en ${d['total']} repartos posibles de las cartas que no ves, y sale mejor que las demás en ${d['ganadas']}.`;
+    }
     case 'accion':
-    case 'jugada':
-      return `Te conviene: ${jugada(d, juego).charAt(0).toLowerCase()}${jugada(d, juego).slice(1)}.`;
+    case 'jugada': {
+      const razon = razonDe(d, juego);
+      if (razon) return `${jugada(d, juego)}: ${razon}.`;
+      return c
+        ? `Juega ${c}: ninguna carta gana esta jugada con claridad, y esta es la que mejor te deja para el resto de la mano.`
+        : `${jugada(d, juego)}: es lo que mejor te deja para el resto de la mano.`;
+    }
   }
 }
 
@@ -337,7 +446,12 @@ export function fraseLectura(
       return `${nombre} juega ${c}, que da poco: no le compensa pelear esta baza.`;
     case 'guarda-carta':
       return `${nombre} juega ${c} sin pelear la baza: prefiere reservar sus cartas para más adelante.`;
+    case 'opciones-baza':
+      return `${nombre} juega ${c} para intentar llevarse la baza.`;
+    case 'arriesga-poco':
+      return `${nombre} juega ${c}, que arriesga pocos puntos: la baza está difícil.`;
     case 'evita-baza':
+    case 'evita-baza-probable':
       return `${nombre} juega ${c} para no llevarse la baza.`;
     case 'gana-sin-castigo':
       return `${nombre} se lleva la baza con ${c}: no trae ningún castigo.`;
@@ -351,6 +465,7 @@ export function fraseLectura(
       return `${nombre} deja ${c} en la mesa: no recoge nada que valga la pena.`;
     case 'unica':
     case 'mejor-simulada':
+    case 'mejor-media':
     case 'accion':
     case 'jugada': {
       const { frase, razon } = jugadaRival(nombre, d, juego);
