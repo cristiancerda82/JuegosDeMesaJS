@@ -66,5 +66,5 @@
   - Lectura de las jugadas de los rivales (spec, «Lectura de las jugadas de los rivales»; design, decisión 11), con los 67 juegos en el test de contrato y un e2e en la Brisca que comprueba también que la página no se bloquea.
   - De paso: la carta arrastrada va en su propia capa (`will-change`) y el dibujo de las cartas no recibe eventos (`pointer-events: none`), para no comprobar sus miles de trazados en cada movimiento. Las frases nombran las cartas con copia de los juegos de dos barajas, no enseñan índices internos y concuerdan en número («1 punto»).
 - [x] 5.7 Revisión del usuario, segunda ronda: las sugerencias «Te conviene» no decían por qué. Motivos nuevos para las bazas dudosas y la simulación sin mayoría, y razones por tipo de acción (design, decisión 12; spec, «Toda sugerencia dice por qué»). En la muestra de los 67 juegos, las sugerencias sin un hecho concreto bajan de 240 a 5 de 804, y esas 5 también dicen por qué.
-- [ ] 5.4 Revisión del usuario en la web publicada (sugerencias y frases en varios juegos, la velocidad Normal y la vuelta del Culo y del Big Two) antes de archivar.
-- [ ] 5.5 Al terminar, recordarle al usuario la prueba del servidor en Railway (change `red-publica-movil`, tarea 3.2).
+- [x] 5.4 Revisión del usuario en la web publicada (sugerencias y frases en varios juegos, la velocidad Normal y la vuelta del Culo y del Big Two) antes de archivar.
+- [x] 5.5 Al terminar, recordarle al usuario la prueba del servidor en Railway (change `red-publica-movil`, tarea 3.2).
