@@ -14,7 +14,7 @@ Cada juego de la suite MUST pertenecer a una sola familia, y el menú principal 
 | Bazas por puntos | Brisca, Tute, Guiñote, Tressette, Schnapsen, Sixty-Six, Belote, Klaverjas, Jass, Sueca, Bezique, Skat, Doppelkopf, Schafkopf, Sheepshead, Tysiacha, Piquet, Écarté, Butifarra |
 | Bazas con contrato o subasta | Bridge, Whist, Picas, Oh Hell, Pocha, 500, Tresillo, Preference, Tute subastado, Cuatrola, Julepe, Euchre, Bourré, Tarot, Twenty-Nine, Briscola Chiamata |
 | Bazas para evitar | Corazones, Barbu, Rentz |
-| Combinaciones | Chinchón, Remigio, Gin Rummy, Rummy 500, Canasta, Conquián, Pinacle, Cribbage |
+| Combinaciones | Chinchón, Remigio, Gin Rummy, Rummy 500, Canasta, Hand and Foot, Conquián, Pinacle, Cribbage |
 | Captura | Escoba, Scopa, Casino, Cuarenta, Pishti, Pesca |
 | Descarte | Ocho loco, Culo, Big Two, Durak, Cinquillo, Sevens, Mentiroso, Burro, Kings Corner, Spite & Malice |
 | Envite y apuestas | Mus, Truco, Truc, Texas Hold'em, Blackjack, Siete y media, Treinta y uno |
