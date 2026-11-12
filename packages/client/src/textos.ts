@@ -189,6 +189,9 @@ export const T = {
     twentyNine: 'Twenty-Nine',
     twentyNineDesc:
       'El gran juego de bazas de la India, por parejas: la jota y el nueve mandan, y el triunfo se elige en secreto y no cuenta hasta que alguien lo pide.',
+    briscolaChiamata: 'Briscola Chiamata',
+    briscolaChiamataDesc:
+      'La brisca italiana para 5: quien gana la subasta llama una carta, y quien la tiene es su compañero en secreto hasta que la juega.',
     treintaYUno: 'Treinta y uno',
     treintaYUnoDesc:
       'De 2 a 6 con solo 3 cartas: roba y descarta para sumar 31 en un palo, plántate a tiempo y no te quedes con la peor mano.',
@@ -1516,6 +1519,53 @@ export const T = {
     finMano: (n: number) => `Fin de la mano ${n}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos de juego',
+  },
+
+  briscolaChiamata: {
+    reparte: 'Reparte',
+    llama: 'Llama',
+    companero: 'Compañero',
+    /** El nombre de una puja: la carta (de 0 a 9) o «2 con N». */
+    nombrePuja: (n: number) =>
+      n < 10
+        ? ['As', '3', 'Rey', 'Caballo', 'Sota', '7', '6', '5', '4', '2'][n]!
+        : `2 con ${n + 52}`,
+    dicho: (p: number | 'paso') =>
+      p === 'paso'
+        ? 'Paso'
+        : `Puja ${p < 10 ? ['As', '3', 'Rey', 'Caballo', 'Sota', '7', '6', '5', '4', '2'][p] : `2 con ${p + 52}`}`,
+    subasta: 'Subasta',
+    sinPuja: 'Subasta',
+    /** `puntos` solo en las pujas de carta, que no los dicen en su nombre. */
+    puja: (puja: string, quien: string, puntos: number | null) =>
+      `${quien === 'Tú' ? 'Tu puja' : `Puja de ${quien}`}: ${puja}${puntos === null ? '' : ` (${puntos} puntos)`}`,
+    llamada: 'Llamada',
+    porLlamar: 'por llamar',
+    triunfo: (palo: string) => `triunfo ${palo}`,
+    companeroTu: 'Compañero: tú',
+    companeroDe: (quien: string) => `Compañero: ${quien}`,
+    companeroOculto: 'Compañero: sin descubrir',
+    solo: 'Juega solo',
+    puntosAsiento: (mano: number, partida: number) =>
+      `${mano} pts · ${partida > 0 ? '+' : ''}${partida}`,
+    pujando: (quien: string) => `${quien} puja`,
+    llamaTu: 'Elige la carta que llamas',
+    llamando: (quien: string) => `${quien} llama una carta`,
+    puntosMas: 'Más puntos',
+    puntosMenos: 'Menos puntos',
+    pujarPuntos: (n: number) => `Pujar 2 con ${n}`,
+    pasar: 'Paso',
+    ganada: 'Ganada',
+    perdida: 'Perdida',
+    jugadorCol: 'Jugador',
+    puntosCol: 'Puntos',
+    cambioCol: 'Mano',
+    marcadorCol: 'Total',
+    resumen: (puja: string, llamada: string, puntos: number, objetivo: number) =>
+      `${puja} · ${llamada} · ${puntos} de ${objetivo} puntos`,
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos de partida',
   },
 
   treinta: {
@@ -3328,6 +3378,7 @@ export const T = {
       conquian: 'Cómo se juega al Conquián',
       treintaYUno: 'Cómo se juega al Treinta y uno',
       twentyNine: 'Cómo se juega al Twenty-Nine',
+      briscolaChiamata: 'Cómo se juega a la Briscola Chiamata',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3957,6 +4008,54 @@ export const T = {
         titulo: 'Consejos',
         texto: [
           'Cuenta jotas y nueves antes de pujar: son la mitad de los puntos. Si tu compañero gana la baza, échale tus cartas con puntos.',
+        ],
+      },
+    ],
+
+    briscolaChiamata: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'La brisca italiana para cinco, con la baraja española de 40. En cada mano, quien gana la subasta juega con un compañero secreto contra los otros tres.',
+          'La partida dura 5 manos y gana quien más puntos de partida tiene al final.',
+        ],
+      },
+      {
+        titulo: 'Orden y puntos',
+        texto: [
+          'En cada palo, de mayor a menor: As, 3, Rey, Caballo, Sota, 7, 6, 5, 4 y 2. El As vale 11 puntos, el 3 10, el Rey 4, el Caballo 3 y la Sota 2; las demás, nada. En total hay 120.',
+        ],
+      },
+      {
+        titulo: 'La subasta',
+        texto: [
+          'Con tus 8 cartas, pujas una carta más baja que la última, del As al 2, o pasas (y ya no vuelves a pujar). Cuanto más baja es la carta, más flojo será tu compañero. Cada puja de carta obliga a hacer 61 puntos.',
+          'Después del 2 se puja por puntos: «2 con 62», «2 con 63»… hasta 120. Si los cuatro primeros pasan, el que reparte tiene que pujar el As.',
+        ],
+      },
+      {
+        titulo: 'La llamada',
+        texto: [
+          'Quien gana la subasta nombra un palo: la carta de su puja en ese palo es la carta llamada, y ese palo es el triunfo. Quien la tiene es su compañero, pero no lo dice: se sabe cuando la juega.',
+          'Si llamas una carta que tienes tú, juegas solo contra los otros cuatro.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'No hay que seguir el palo: puedes echar cualquier carta. Gana el triunfo más alto o, si no hay, la carta más alta del palo de salida.',
+        ],
+      },
+      {
+        titulo: 'Los puntos de partida',
+        texto: [
+          'Si el bando del llamador llega a lo que pujó, el llamador gana 2 puntos de partida, su compañero 1, y cada uno de los otros pierde 1. Si no llega, al revés. Jugando solo, el llamador gana o pierde 4.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Llama en tu palo más largo: tendrás muchos triunfos. Mientras no se sepa quién es el compañero, fíjate en quién carga puntos en las bazas del llamador.',
         ],
       },
     ],

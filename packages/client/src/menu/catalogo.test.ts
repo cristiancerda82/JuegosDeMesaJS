@@ -28,7 +28,7 @@ describe('catálogo del menú', () => {
   it('clasifica los juegos como la tabla del spec', () => {
     expect(juegosDeFamilia('solitarios')).toHaveLength(11);
     expect(juegosDeFamilia('bazasPuntos')).toHaveLength(19);
-    expect(juegosDeFamilia('bazasContrato')).toHaveLength(15);
+    expect(juegosDeFamilia('bazasContrato')).toHaveLength(16);
     expect(juegosDeFamilia('bazasEvitar')).toEqual(['corazones', 'barbu', 'rentz']);
     expect(juegosDeFamilia('combinaciones')).toHaveLength(8);
     expect(juegosDeFamilia('captura')).toHaveLength(6);

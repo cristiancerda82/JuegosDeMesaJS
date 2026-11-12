@@ -1607,3 +1607,21 @@ test('Twenty-Nine en red: el triunfo es secreto para el otro', async ({ browser 
   await expect(luis.getByTestId('triunfo-twenty')).toContainText('oculto');
   await expect(luis.getByTestId('puja-twenty')).toContainText('Puja 28 de Ana');
 });
+
+test('Briscola Chiamata en red: la subasta pasa de un navegador al otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'briscolaChiamata');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(8);
+
+  // Puja primero Ana (asiento 0) el As; a Luis ya no le sale el As, sí el 3.
+  await ana.getByTestId('puja-0').click();
+  await expect(luis.getByTestId('puja-1')).toBeVisible({ timeout: 30_000 });
+  await expect(luis.getByTestId('puja-0')).toHaveCount(0);
+  await luis.getByTestId('pasar').click();
+  await expect(ana.getByTestId('asiento-1')).toContainText('Paso');
+});

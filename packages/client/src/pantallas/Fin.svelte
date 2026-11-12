@@ -40,6 +40,7 @@
   import ResumenConquian from '../mesas/ResumenConquian.svelte';
   import ResumenTreintaYUno from '../mesas/ResumenTreintaYUno.svelte';
   import ResumenTwentyNine from '../mesas/ResumenTwentyNine.svelte';
+  import ResumenBriscolaChiamata from '../mesas/ResumenBriscolaChiamata.svelte';
   import ResumenTressette from '../mesas/ResumenTressette.svelte';
   import ResumenSchafkopf from '../mesas/ResumenSchafkopf.svelte';
   import ResumenTruco from '../mesas/ResumenTruco.svelte';
@@ -139,6 +140,7 @@
       partida.id !== 'tresillo' &&
       partida.id !== 'conquian' &&
       partida.id !== 'treintaYUno' &&
+      partida.id !== 'briscolaChiamata' &&
       partida.id !== 'barbu' &&
       partida.id !== 'schafkopf' &&
       partida.id !== 'preference' &&
@@ -880,6 +882,21 @@
         <tbody>
           <tr><th scope="row">{lados[0]}</th><td data-testid="puntos-fin-0">{vista.marcador[mio]}</td></tr>
           <tr><th scope="row">{lados[1]}</th><td data-testid="puntos-fin-1">{vista.marcador[1 - mio]}</td></tr>
+        </tbody>
+      </table>
+    {:else if partida.id === 'briscolaChiamata'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const nombre = (a: number) => nombreNumerado(a, 5, yo, partida.sesion.red, T.brisca.rivalN, T.brisca.rival)}
+      {#if ultima}
+        <ResumenBriscolaChiamata resultado={ultima} {yo} {nombre} />
+      {/if}
+      <table data-testid="puntos-chiamata">
+        <caption>{T.briscolaChiamata.clasificacion}</caption>
+        <tbody>
+          {#each vista.marcador.map((_, a) => a).sort((a, b) => vista.marcador[b]! - vista.marcador[a]!) as a, i (a)}
+            <tr><th scope="row">{nombre(a)}</th><td data-testid="puntos-fin-{i}">{vista.marcador[a]}</td></tr>
+          {/each}
         </tbody>
       </table>
     {:else if partida.id === 'sueca'}

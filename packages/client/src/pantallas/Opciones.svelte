@@ -59,6 +59,7 @@
     ConfigConquian,
     ConfigTreintaYUno,
     ConfigTwentyNine,
+    ConfigBriscolaChiamata,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -179,6 +180,9 @@
   let conquianConfig: Editable<ConfigConquian> = $state({ ...JUEGOS.conquian.configPorDefecto });
   let treintaConfig: Editable<ConfigTreintaYUno> = $state({ ...JUEGOS.treintaYUno.configPorDefecto });
   let twentyNineConfig: Editable<ConfigTwentyNine> = $state({ ...JUEGOS.twentyNine.configPorDefecto });
+  let briscolaChiamataConfig: Editable<ConfigBriscolaChiamata> = $state({
+    ...JUEGOS.briscolaChiamata.configPorDefecto,
+  });
   let preferenceConfig: Editable<ConfigPreference> = $state({
     ...JUEGOS.preference.configPorDefecto,
   });
@@ -291,6 +295,7 @@
       conquian: conquianConfig,
       treintaYUno: treintaConfig,
       twentyNine: twentyNineConfig,
+      briscolaChiamata: briscolaChiamataConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.

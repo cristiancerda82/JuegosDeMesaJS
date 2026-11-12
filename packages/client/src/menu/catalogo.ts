@@ -181,6 +181,11 @@ export const CATALOGO: Readonly<Record<IdJuego, EntradaCatalogo>> = {
     'corazones-9',
     'corazones-1',
   ]),
+  briscolaChiamata: entrada('bazasContrato', E, T.menu.briscolaChiamataDesc, [
+    'oros-1',
+    'oros-3',
+    'oros-12',
+  ]),
   preference: entrada('bazasContrato', F, T.menu.preferenceDesc, [
     'corazones-1',
     'corazones-13',

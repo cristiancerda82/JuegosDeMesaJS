@@ -118,6 +118,10 @@ import {
   type ConfigTwentyNine,
   type EstadoTwentyNine,
   type VistaTwentyNine,
+  type AccionBriscolaChiamata,
+  type ConfigBriscolaChiamata,
+  type EstadoBriscolaChiamata,
+  type VistaBriscolaChiamata,
   type AccionRentz,
   type ConfigRentz,
   type EstadoRentz,
@@ -382,6 +386,7 @@ import {
   DEF_CONQUIAN,
   DEF_TREINTA_Y_UNO,
   DEF_TWENTY_NINE,
+  DEF_BRISCOLA_CHIAMATA,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -511,6 +516,12 @@ export type SesionTwentyNine = SesionMesa<
   EstadoTwentyNine,
   AccionTwentyNine,
   VistaTwentyNine
+>;
+export type SesionBriscolaChiamata = SesionMesa<
+  ConfigBriscolaChiamata,
+  EstadoBriscolaChiamata,
+  AccionBriscolaChiamata,
+  VistaBriscolaChiamata
 >;
 export type SesionTreintaYUno = SesionMesa<
   ConfigTreintaYUno,
@@ -750,7 +761,8 @@ export type Partida =
   | { readonly id: 'tresillo'; readonly sesion: SesionTresillo }
   | { readonly id: 'conquian'; readonly sesion: SesionConquian }
   | { readonly id: 'treintaYUno'; readonly sesion: SesionTreintaYUno }
-  | { readonly id: 'twentyNine'; readonly sesion: SesionTwentyNine };
+  | { readonly id: 'twentyNine'; readonly sesion: SesionTwentyNine }
+  | { readonly id: 'briscolaChiamata'; readonly sesion: SesionBriscolaChiamata };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -830,7 +842,8 @@ export type ConfigJuego =
   | ConfigTresillo
   | ConfigConquian
   | ConfigTreintaYUno
-  | ConfigTwentyNine;
+  | ConfigTwentyNine
+  | ConfigBriscolaChiamata;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -993,6 +1006,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_TREINTA_Y_UNO);
     case 'twentyNine':
       return hacer(DEF_TWENTY_NINE);
+    case 'briscolaChiamata':
+      return hacer(DEF_BRISCOLA_CHIAMATA);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':

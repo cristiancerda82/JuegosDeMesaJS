@@ -70,6 +70,7 @@ import { CONFIG_TRESILLO_POR_DEFECTO, tresillo } from './juegos/tresillo';
 import { CONFIG_CONQUIAN_POR_DEFECTO, conquian } from './juegos/conquian';
 import { CONFIG_TREINTA_Y_UNO_POR_DEFECTO, treintaYUno } from './juegos/treinta-y-uno';
 import { CONFIG_TWENTY_NINE_POR_DEFECTO, twentyNine } from './juegos/twenty-nine';
+import { briscolaChiamata, CONFIG_BRISCOLA_CHIAMATA_POR_DEFECTO } from './juegos/briscola-chiamata';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -145,6 +146,7 @@ export const IDS_JUEGOS_EN_RED = [
   'conquian',
   'treintaYUno',
   'twentyNine',
+  'briscolaChiamata',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -245,6 +247,11 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   conquian: entrada(conquian, IAS.conquian, CONFIG_CONQUIAN_POR_DEFECTO),
   treintaYUno: entrada(treintaYUno, IAS.treintaYUno, CONFIG_TREINTA_Y_UNO_POR_DEFECTO),
   twentyNine: entrada(twentyNine, IAS.twentyNine, CONFIG_TWENTY_NINE_POR_DEFECTO),
+  briscolaChiamata: entrada(
+    briscolaChiamata,
+    IAS.briscolaChiamata,
+    CONFIG_BRISCOLA_CHIAMATA_POR_DEFECTO,
+  ),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

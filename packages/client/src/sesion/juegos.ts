@@ -127,6 +127,12 @@ import {
   CONFIG_TREINTA_Y_UNO_POR_DEFECTO,
   twentyNine,
   CONFIG_TWENTY_NINE_POR_DEFECTO,
+  briscolaChiamata,
+  CONFIG_BRISCOLA_CHIAMATA_POR_DEFECTO,
+  type AccionBriscolaChiamata,
+  type ConfigBriscolaChiamata,
+  type EstadoBriscolaChiamata,
+  type VistaBriscolaChiamata,
   type AccionTwentyNine,
   type ConfigTwentyNine,
   type EstadoTwentyNine,
@@ -599,7 +605,8 @@ export type IdJuego =
   | 'tresillo'
   | 'conquian'
   | 'treintaYUno'
-  | 'twentyNine';
+  | 'twentyNine'
+  | 'briscolaChiamata';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -681,6 +688,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'conquian',
   'treintaYUno',
   'twentyNine',
+  'briscolaChiamata',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2210,6 +2218,33 @@ export const DEF_TWENTY_NINE: DefTwentyNine = {
   },
 };
 
+export type DefBriscolaChiamata = DefJuego<
+  ConfigBriscolaChiamata,
+  EstadoBriscolaChiamata,
+  AccionBriscolaChiamata,
+  VistaBriscolaChiamata
+>;
+
+export const DEF_BRISCOLA_CHIAMATA: DefBriscolaChiamata = {
+  id: 'briscolaChiamata',
+  nombre: T.menu.briscolaChiamata,
+  juego: briscolaChiamata,
+  configPorDefecto: CONFIG_BRISCOLA_CHIAMATA_POR_DEFECTO,
+  ia: IAS.briscolaChiamata,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada puja, la llamada,
+  // el compañero que se descubre y cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (JSON.stringify(antes.ultimaBaza) !== JSON.stringify(despues.ultimaBaza))
+      return PAUSA_BAZA_MS;
+    const dicho =
+      JSON.stringify(antes.pujas) !== JSON.stringify(despues.pujas) ||
+      antes.fase !== despues.fase ||
+      antes.descubierto !== despues.descubierto;
+    return dicho ? PAUSA_CANTE_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2290,6 +2325,7 @@ export const JUEGOS = {
   conquian: DEF_CONQUIAN,
   treintaYUno: DEF_TREINTA_Y_UNO,
   twentyNine: DEF_TWENTY_NINE,
+  briscolaChiamata: DEF_BRISCOLA_CHIAMATA,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

@@ -142,6 +142,12 @@ import { reconstruirTreintaYUno } from '../../src/ia/reconstruir/treinta-y-uno';
 import { reconstruirTwentyNine } from '../../src/ia/reconstruir/twenty-nine';
 import { iaTwentyNineBasica } from '../../src/ia/twenty-nine-basica';
 import { CONFIG_TWENTY_NINE_POR_DEFECTO, twentyNine } from '../../src/juegos/twenty-nine';
+import { reconstruirBriscolaChiamata } from '../../src/ia/reconstruir/briscola-chiamata';
+import { iaBriscolaChiamataBasica } from '../../src/ia/briscola-chiamata-basica';
+import {
+  briscolaChiamata,
+  CONFIG_BRISCOLA_CHIAMATA_POR_DEFECTO,
+} from '../../src/juegos/briscola-chiamata';
 import { iaTreintaYUnoBasica } from '../../src/ia/treinta-y-uno-basica';
 import { CONFIG_TREINTA_Y_UNO_POR_DEFECTO, treintaYUno } from '../../src/juegos/treinta-y-uno';
 import { iaConquianBasica } from '../../src/ia/conquian-basica';
@@ -1769,5 +1775,34 @@ describe('Reconstrucción del Twenty-Nine', () => {
       expect(twentyNine.vistaDe(rec, 1)).toEqual(vista);
     }
     expect(vistos.size).toBeGreaterThan(1);
+  });
+});
+
+describirReconstruccion(briscolaChiamata, reconstruirBriscolaChiamata, {
+  configs: [CONFIG_BRISCOLA_CHIAMATA_POR_DEFECTO, { manos: 1 }],
+  base: iaBriscolaChiamataBasica,
+});
+
+describe('Reconstrucción de la Briscola Chiamata', () => {
+  it('la carta llamada queda en la mano de otro y la vista no cambia', () => {
+    const r = briscolaChiamata.crear(CONFIG_BRISCOLA_CHIAMATA_POR_DEFECTO, 'chiamata');
+    if (!r.ok) throw new Error(r.error);
+    let e = briscolaChiamata.transicion(r.valor, 0, { tipo: 'pujar', nivel: 0 });
+    for (let i = 0; i < 4; i++) e = briscolaChiamata.transicion(e, e.turno, { tipo: 'pasar' });
+    // Llama el As de un palo que no tiene.
+    const palo = (['oros', 'copas', 'espadas', 'bastos'] as const).find(
+      (p) => !e.manos[0]!.includes(`${p}-1`),
+    )!;
+    e = briscolaChiamata.transicion(e, 0, { tipo: 'llamar', palo });
+    const vista = briscolaChiamata.vistaDe(e, 0);
+    const companeros = new Set<number>();
+    for (let i = 0; i < 20; i++) {
+      const rec = reconstruirBriscolaChiamata(vista, crearAzar(`b${i}`));
+      expect(rec.companero).not.toBe(0);
+      expect(rec.manos[rec.companero!]).toContain(e.llamada);
+      companeros.add(rec.companero!);
+      expect(briscolaChiamata.vistaDe(rec, 0)).toEqual(vista);
+    }
+    expect(companeros.size).toBeGreaterThan(1);
   });
 });
