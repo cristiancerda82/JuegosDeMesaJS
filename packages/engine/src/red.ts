@@ -69,6 +69,7 @@ import { bourre, CONFIG_BOURRE_POR_DEFECTO } from './juegos/bourre';
 import { CONFIG_TRESILLO_POR_DEFECTO, tresillo } from './juegos/tresillo';
 import { CONFIG_CONQUIAN_POR_DEFECTO, conquian } from './juegos/conquian';
 import { CONFIG_TREINTA_Y_UNO_POR_DEFECTO, treintaYUno } from './juegos/treinta-y-uno';
+import { CONFIG_TWENTY_NINE_POR_DEFECTO, twentyNine } from './juegos/twenty-nine';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -143,6 +144,7 @@ export const IDS_JUEGOS_EN_RED = [
   'tresillo',
   'conquian',
   'treintaYUno',
+  'twentyNine',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -242,6 +244,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   tresillo: entrada(tresillo, IAS.tresillo, CONFIG_TRESILLO_POR_DEFECTO),
   conquian: entrada(conquian, IAS.conquian, CONFIG_CONQUIAN_POR_DEFECTO),
   treintaYUno: entrada(treintaYUno, IAS.treintaYUno, CONFIG_TREINTA_Y_UNO_POR_DEFECTO),
+  twentyNine: entrada(twentyNine, IAS.twentyNine, CONFIG_TWENTY_NINE_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

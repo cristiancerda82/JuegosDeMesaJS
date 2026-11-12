@@ -637,6 +637,8 @@ export const CONSEJOS_JUEGO: Readonly<Partial<Record<IdJuego, string>>> = {
     'Tresillo: el que gana la subasta juega solo contra dos. Las tres cartas más altas (espadilla, malilla y basto) deciden muchas bazas.',
   conquian:
     'Conquián: forma combinaciones con las cartas de la mesa. Coge una carta solo si la puedes bajar y no le regales nada al siguiente.',
+  twentyNine:
+    'Twenty-Nine: la jota y el nueve son las cartas más altas y las que más puntan. Puja con tu compañero en mente y pide el triunfo cuando la baza tenga puntos.',
   treintaYUno:
     'Treinta y uno: acércate a 31 con cartas del mismo palo. Llama cuando tu mano sea buena y no esperes demasiado.',
 };

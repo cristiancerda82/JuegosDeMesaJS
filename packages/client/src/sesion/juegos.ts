@@ -125,6 +125,12 @@ import {
   CONFIG_CONQUIAN_POR_DEFECTO,
   treintaYUno,
   CONFIG_TREINTA_Y_UNO_POR_DEFECTO,
+  twentyNine,
+  CONFIG_TWENTY_NINE_POR_DEFECTO,
+  type AccionTwentyNine,
+  type ConfigTwentyNine,
+  type EstadoTwentyNine,
+  type VistaTwentyNine,
   type AccionTreintaYUno,
   type ConfigTreintaYUno,
   type EstadoTreintaYUno,
@@ -592,7 +598,8 @@ export type IdJuego =
   | 'bourre'
   | 'tresillo'
   | 'conquian'
-  | 'treintaYUno';
+  | 'treintaYUno'
+  | 'twentyNine';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -673,6 +680,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'tresillo',
   'conquian',
   'treintaYUno',
+  'twentyNine',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2173,6 +2181,35 @@ export const DEF_TREINTA_Y_UNO: DefTreintaYUno = {
   },
 };
 
+export type DefTwentyNine = DefJuego<
+  ConfigTwentyNine,
+  EstadoTwentyNine,
+  AccionTwentyNine,
+  VistaTwentyNine
+>;
+
+export const DEF_TWENTY_NINE: DefTwentyNine = {
+  id: 'twentyNine',
+  nombre: T.menu.twentyNine,
+  juego: twentyNine,
+  configPorDefecto: CONFIG_TWENTY_NINE_POR_DEFECTO,
+  ia: IAS.twentyNine,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada puja, el triunfo,
+  // doblar, pedir el triunfo, la pareja y cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (JSON.stringify(antes.ultimaBaza) !== JSON.stringify(despues.ultimaBaza))
+      return PAUSA_BAZA_MS;
+    const dicho =
+      JSON.stringify(antes.pujas) !== JSON.stringify(despues.pujas) ||
+      antes.fase !== despues.fase ||
+      antes.multiplicador !== despues.multiplicador ||
+      antes.descubierto !== despues.descubierto ||
+      antes.pareja !== despues.pareja;
+    return dicho ? PAUSA_CANTE_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2252,6 +2289,7 @@ export const JUEGOS = {
   tresillo: DEF_TRESILLO,
   conquian: DEF_CONQUIAN,
   treintaYUno: DEF_TREINTA_Y_UNO,
+  twentyNine: DEF_TWENTY_NINE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

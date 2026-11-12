@@ -39,6 +39,7 @@
   import ResumenTresillo from '../mesas/ResumenTresillo.svelte';
   import ResumenConquian from '../mesas/ResumenConquian.svelte';
   import ResumenTreintaYUno from '../mesas/ResumenTreintaYUno.svelte';
+  import ResumenTwentyNine from '../mesas/ResumenTwentyNine.svelte';
   import ResumenTressette from '../mesas/ResumenTressette.svelte';
   import ResumenSchafkopf from '../mesas/ResumenSchafkopf.svelte';
   import ResumenTruco from '../mesas/ResumenTruco.svelte';
@@ -103,6 +104,7 @@
   // En el Chinchón y la Siete y media cada uno juega por su cuenta: no hay parejas.
   const parejas = $derived(
     partida.id === 'bridge' ||
+    partida.id === 'twentyNine' ||
     (partida.id !== 'klondike' &&
       partida.id !== 'freecell' &&
       partida.id !== 'spider' &&
@@ -864,6 +866,20 @@
         <tbody>
           <tr><th scope="row">{lados[0]}</th><td data-testid="puntos-fin-0">{vista.puntos[mio]}</td></tr>
           <tr><th scope="row">{lados[1]}</th><td data-testid="puntos-fin-1">{vista.puntos[1 - mio]}</td></tr>
+        </tbody>
+      </table>
+    {:else if partida.id === 'twentyNine'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const nombre = (a: number) => nombreNumerado(a, 4, yo, partida.sesion.red, T.brisca.rivalN)}
+      {#if ultima}
+        <ResumenTwentyNine resultado={ultima} {yo} {nombre} />
+      {/if}
+      <table data-testid="puntos-twenty">
+        <caption>{T.twentyNine.clasificacion}</caption>
+        <tbody>
+          <tr><th scope="row">{lados[0]}</th><td data-testid="puntos-fin-0">{vista.marcador[mio]}</td></tr>
+          <tr><th scope="row">{lados[1]}</th><td data-testid="puntos-fin-1">{vista.marcador[1 - mio]}</td></tr>
         </tbody>
       </table>
     {:else if partida.id === 'sueca'}

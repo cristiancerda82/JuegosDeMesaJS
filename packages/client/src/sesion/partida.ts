@@ -114,6 +114,10 @@ import {
   type ConfigTreintaYUno,
   type EstadoTreintaYUno,
   type VistaTreintaYUno,
+  type AccionTwentyNine,
+  type ConfigTwentyNine,
+  type EstadoTwentyNine,
+  type VistaTwentyNine,
   type AccionRentz,
   type ConfigRentz,
   type EstadoRentz,
@@ -377,6 +381,7 @@ import {
   DEF_TRESILLO,
   DEF_CONQUIAN,
   DEF_TREINTA_Y_UNO,
+  DEF_TWENTY_NINE,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -501,6 +506,12 @@ export type SesionKingsCorner = SesionMesa<
 export type SesionEcarte = SesionMesa<ConfigEcarte, EstadoEcarte, AccionEcarte, VistaEcarte>;
 export type SesionRentz = SesionMesa<ConfigRentz, EstadoRentz, AccionRentz, VistaRentz>;
 export type SesionBourre = SesionMesa<ConfigBourre, EstadoBourre, AccionBourre, VistaBourre>;
+export type SesionTwentyNine = SesionMesa<
+  ConfigTwentyNine,
+  EstadoTwentyNine,
+  AccionTwentyNine,
+  VistaTwentyNine
+>;
 export type SesionTreintaYUno = SesionMesa<
   ConfigTreintaYUno,
   EstadoTreintaYUno,
@@ -738,7 +749,8 @@ export type Partida =
   | { readonly id: 'bourre'; readonly sesion: SesionBourre }
   | { readonly id: 'tresillo'; readonly sesion: SesionTresillo }
   | { readonly id: 'conquian'; readonly sesion: SesionConquian }
-  | { readonly id: 'treintaYUno'; readonly sesion: SesionTreintaYUno };
+  | { readonly id: 'treintaYUno'; readonly sesion: SesionTreintaYUno }
+  | { readonly id: 'twentyNine'; readonly sesion: SesionTwentyNine };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -817,7 +829,8 @@ export type ConfigJuego =
   | ConfigBourre
   | ConfigTresillo
   | ConfigConquian
-  | ConfigTreintaYUno;
+  | ConfigTreintaYUno
+  | ConfigTwentyNine;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -978,6 +991,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_CONQUIAN);
     case 'treintaYUno':
       return hacer(DEF_TREINTA_Y_UNO);
+    case 'twentyNine':
+      return hacer(DEF_TWENTY_NINE);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':

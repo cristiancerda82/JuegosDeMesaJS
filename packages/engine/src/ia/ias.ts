@@ -74,6 +74,7 @@ import { SIMULABLE_BOURRE } from './reconstruir/bourre';
 import { SIMULABLE_TRESILLO } from './reconstruir/tresillo';
 import { SIMULABLE_CONQUIAN } from './reconstruir/conquian';
 import { SIMULABLE_TREINTA } from './reconstruir/treinta-y-uno';
+import { SIMULABLE_TWENTY_NINE } from './reconstruir/twenty-nine';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -128,6 +129,7 @@ import { iaBourreBasica } from './bourre-basica';
 import { iaTresilloBasica } from './tresillo-basica';
 import { iaConquianBasica } from './conquian-basica';
 import { iaTreintaYUnoBasica } from './treinta-y-uno-basica';
+import { iaTwentyNineBasica } from './twenty-nine-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -271,4 +273,5 @@ export const IAS = {
   tresillo: niveles(iaTresilloBasica, SIMULABLE_TRESILLO),
   conquian: niveles(iaConquianBasica, SIMULABLE_CONQUIAN),
   treintaYUno: niveles(iaTreintaYUnoBasica, SIMULABLE_TREINTA),
+  twentyNine: niveles(iaTwentyNineBasica, SIMULABLE_TWENTY_NINE),
 } as const;

@@ -139,6 +139,9 @@ import { bourre, CONFIG_BOURRE_POR_DEFECTO } from '../../src/juegos/bourre';
 import { reconstruirTresillo } from '../../src/ia/reconstruir/tresillo';
 import { reconstruirConquian } from '../../src/ia/reconstruir/conquian';
 import { reconstruirTreintaYUno } from '../../src/ia/reconstruir/treinta-y-uno';
+import { reconstruirTwentyNine } from '../../src/ia/reconstruir/twenty-nine';
+import { iaTwentyNineBasica } from '../../src/ia/twenty-nine-basica';
+import { CONFIG_TWENTY_NINE_POR_DEFECTO, twentyNine } from '../../src/juegos/twenty-nine';
 import { iaTreintaYUnoBasica } from '../../src/ia/treinta-y-uno-basica';
 import { CONFIG_TREINTA_Y_UNO_POR_DEFECTO, treintaYUno } from '../../src/juegos/treinta-y-uno';
 import { iaConquianBasica } from '../../src/ia/conquian-basica';
@@ -1742,5 +1745,29 @@ describe('Reconstrucción del Treinta y uno', () => {
       expect(rec.manos[0]).toContain(arriba);
       expect(treintaYUno.vistaDe(rec, 1)).toEqual(vista);
     }
+  });
+});
+
+describirReconstruccion(twentyNine, reconstruirTwentyNine, {
+  configs: [CONFIG_TWENTY_NINE_POR_DEFECTO, { objetivo: 1 }],
+  base: iaTwentyNineBasica,
+});
+
+describe('Reconstrucción del Twenty-Nine', () => {
+  it('con el triunfo oculto, elige uno al azar y la vista no cambia', () => {
+    const r = twentyNine.crear(CONFIG_TWENTY_NINE_POR_DEFECTO, 'twenty');
+    if (!r.ok) throw new Error(r.error);
+    let e = twentyNine.transicion(r.valor, 0, { tipo: 'pujar', valor: 20 });
+    for (let i = 0; i < 3; i++) e = twentyNine.transicion(e, e.turno, { tipo: 'pasar' });
+    e = twentyNine.transicion(e, 0, { tipo: 'elegirTriunfo', palo: 'corazones' });
+    const vista = twentyNine.vistaDe(e, 1);
+    const vistos = new Set<string>();
+    for (let i = 0; i < 20; i++) {
+      const rec = reconstruirTwentyNine(vista, crearAzar(`t${i}`));
+      expect(rec.triunfo).not.toBeNull();
+      vistos.add(rec.triunfo!);
+      expect(twentyNine.vistaDe(rec, 1)).toEqual(vista);
+    }
+    expect(vistos.size).toBeGreaterThan(1);
   });
 });

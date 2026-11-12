@@ -186,6 +186,9 @@ export const T = {
     truco: 'Truco',
     trucoDesc:
       'El clásico argentino de engaño, mano a mano o por parejas: canta el envido, el truco y el vale cuatro, y gana a 30 en malas y buenas.',
+    twentyNine: 'Twenty-Nine',
+    twentyNineDesc:
+      'El gran juego de bazas de la India, por parejas: la jota y el nueve mandan, y el triunfo se elige en secreto y no cuenta hasta que alguien lo pide.',
     treintaYUno: 'Treinta y uno',
     treintaYUnoDesc:
       'De 2 a 6 con solo 3 cartas: roba y descarta para sumar 31 en un palo, plántate a tiempo y no te quedes con la peor mano.',
@@ -1459,6 +1462,60 @@ export const T = {
     porQuien: (texto: string, quien: string) => `${texto} · ${quien}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos',
+  },
+
+  twentyNine: {
+    reparte: 'Reparte',
+    pujo: 'Pujó',
+    pareja: 'Pareja',
+    dicho: (p: number | 'paso') => (p === 'paso' ? 'Paso' : `Puja ${p}`),
+    palo: (p: string) =>
+      (
+        ({
+          picas: '♠ Picas',
+          corazones: '♥ Corazones',
+          diamantes: '♦ Diamantes',
+          treboles: '♣ Tréboles',
+        }) as Record<string, string>
+      )[p] ?? p,
+    sinTriunfo: 'Sin triunfo',
+    oculto: 'oculto',
+    secreto: 'secreto',
+    porElegir: 'por elegir',
+    triunfo: 'Triunfo',
+    sinPuja: 'Subasta',
+    puja: (n: number, quien: string, x: number) =>
+      `${quien === 'Tú' ? `Tu puja: ${n}` : `Puja ${n} de ${quien}`}${x === 4 ? ' · redoblada' : x === 2 ? ' · doblada' : ''}`,
+    puntosMano: (nos: number, ellos: number) => `Mano: ${nos} – ${ellos}`,
+    marcador: (nos: number, ellos: number) => `Juego: ${nos} – ${ellos}`,
+    subasta: 'Subasta',
+    pujando: (quien: string) => `${quien} puja`,
+    eligeTriunfo: 'Elige el triunfo en secreto',
+    eligiendo: (quien: string) => `${quien} elige el triunfo`,
+    doblarTu: '¿Doblas la puja?',
+    redoblarTu: 'Te han doblado: ¿redoblas?',
+    doblando: (quien: string) => `${quien} decide si dobla`,
+    acciones: {
+      pasar: 'Paso',
+      doblar: 'Doblar',
+      noDoblar: 'No',
+      redoblar: 'Redoblar',
+      noRedoblar: 'No',
+      pedirTriunfo: 'Pedir el triunfo',
+      cantarPareja: 'Cantar la pareja',
+    } as Record<string, string>,
+    pasada: 'Pasan todos: se reparte de nuevo',
+    cumplida: 'Cumplida',
+    fallada: 'Fallada',
+    nosotros: 'Vosotros',
+    ellos: 'Ellos',
+    parejaCol: 'Pareja',
+    puntosCol: 'Puntos',
+    cambioCol: 'Juego',
+    marcadorCol: 'Total',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos de juego',
   },
 
   treinta: {
@@ -3270,6 +3327,7 @@ export const T = {
       tresillo: 'Cómo se juega al Tresillo',
       conquian: 'Cómo se juega al Conquián',
       treintaYUno: 'Cómo se juega al Treinta y uno',
+      twentyNine: 'Cómo se juega al Twenty-Nine',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -3857,6 +3915,48 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+    ],
+
+    twentyNine: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El gran juego de bazas de la India, para cuatro por parejas (tú y tu compañero, enfrente). Se juega con 32 cartas, del 7 al As.',
+          'Gana la pareja que llega a 6 puntos de juego; si una pareja baja a −6, gana la otra.',
+        ],
+      },
+      {
+        titulo: 'Orden y puntos',
+        texto: [
+          'En cada palo, de mayor a menor: J, 9, As, 10, K, Q, 8 y 7. La J vale 3 puntos, el 9 2, el As y el 10 1 cada uno; las demás, nada. En total hay 28 puntos.',
+        ],
+      },
+      {
+        titulo: 'La subasta y el triunfo',
+        texto: [
+          'Con 4 cartas en la mano, cada uno puja de 16 a 28 (los puntos que su pareja promete hacer) o pasa. Quien gana elige el triunfo en secreto, o juega sin triunfo.',
+          'Los rivales pueden doblar la puja y quien pujó redoblar: la mano vale 2 o 4 puntos de juego. Después se reparten 4 cartas más.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Hay que seguir el palo. Si no tienes, puedes echar cualquier carta o pedir el triunfo: entonces se descubre para todos y tienes que echar triunfo si tienes.',
+          'Mientras el triunfo está oculto, sus cartas no ganan bazas. Con el triunfo descubierto, quien tiene el K y la Q del triunfo puede cantar la pareja: baja la puja 4 si es del lado que pujó y la sube 4 si es del otro.',
+        ],
+      },
+      {
+        titulo: 'Los puntos de juego',
+        texto: [
+          'Si la pareja que pujó hace al menos su puja, gana 1 punto de juego (2 si se dobló, 4 si se redobló); si no, los pierde.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Cuenta jotas y nueves antes de pujar: son la mitad de los puntos. Si tu compañero gana la baza, échale tus cartas con puntos.',
         ],
       },
     ],

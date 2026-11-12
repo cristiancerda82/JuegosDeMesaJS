@@ -1587,3 +1587,23 @@ test('al volver del segundo plano reconecta al momento, sin esperar al siguiente
   await expect(luis.getByText(T.red.reconectando)).toBeHidden({ timeout: 3000 });
   await expect(luis.getByTestId('jugador-1')).toContainText('Luis');
 });
+
+test('Twenty-Nine en red: el triunfo es secreto para el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'twentyNine');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(4);
+
+  // Puja primero Ana (asiento 0): 28, y elige corazones; Luis ve que hay un triunfo oculto.
+  await ana.getByTestId('puja-28').click();
+  // Luis (asiento 1) no puede pujar más: pasa, y los asientos de la IA también.
+  await luis.getByTestId('pasar').click();
+  await ana.getByTestId('triunfo-corazones').click({ timeout: 30_000 });
+  await expect(ana.getByTestId('triunfo-twenty')).toContainText('Corazones');
+  await expect(luis.getByTestId('triunfo-twenty')).toContainText('oculto');
+  await expect(luis.getByTestId('puja-twenty')).toContainText('Puja 28 de Ana');
+});

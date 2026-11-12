@@ -58,6 +58,7 @@
     ConfigTresillo,
     ConfigConquian,
     ConfigTreintaYUno,
+    ConfigTwentyNine,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -177,6 +178,7 @@
   let tresilloConfig: Editable<ConfigTresillo> = $state({ ...JUEGOS.tresillo.configPorDefecto });
   let conquianConfig: Editable<ConfigConquian> = $state({ ...JUEGOS.conquian.configPorDefecto });
   let treintaConfig: Editable<ConfigTreintaYUno> = $state({ ...JUEGOS.treintaYUno.configPorDefecto });
+  let twentyNineConfig: Editable<ConfigTwentyNine> = $state({ ...JUEGOS.twentyNine.configPorDefecto });
   let preferenceConfig: Editable<ConfigPreference> = $state({
     ...JUEGOS.preference.configPorDefecto,
   });
@@ -288,6 +290,7 @@
       tresillo: tresilloConfig,
       conquian: conquianConfig,
       treintaYUno: treintaConfig,
+      twentyNine: twentyNineConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.
