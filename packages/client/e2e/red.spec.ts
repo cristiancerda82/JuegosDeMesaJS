@@ -1518,18 +1518,25 @@ test('Treinta y uno en red: lo que roba uno lo ve el otro', async ({ browser }) 
  * (como una red que deja de transmitir sin cerrar el socket) y las conexiones nuevas fallan.
  */
 async function redControlada(page: Page) {
-  const red = { cortada: false, abiertos: [] as { close: () => Promise<void> }[] };
+  const red = {
+    cortada: false,
+    abiertos: [] as { close: () => Promise<void> }[],
+    /** Deja muertas las conexiones abiertas sin cerrarlas (socket zombi); las nuevas funcionan. */
+    zombis: () => muertas.push(...red.abiertos.splice(0)),
+  };
+  const muertas: unknown[] = [];
   await page.routeWebSocket(/:8787/, (ws) => {
     if (red.cortada) {
       void ws.close();
       return;
     }
     const servidor = ws.connectToServer();
+    const pasa = () => !red.cortada && !muertas.includes(ws);
     ws.onMessage((m) => {
-      if (!red.cortada) servidor.send(m);
+      if (pasa()) servidor.send(m);
     });
     servidor.onMessage((m) => {
-      if (!red.cortada) ws.send(m);
+      if (pasa()) ws.send(m);
     });
     red.abiertos.push(ws);
   });
@@ -1585,6 +1592,32 @@ test('al volver del segundo plano reconecta al momento, sin esperar al siguiente
   red.cortada = false;
   await visibilidad('visible');
   await expect(luis.getByText(T.red.reconectando)).toBeHidden({ timeout: 3000 });
+  await expect(luis.getByTestId('jugador-1')).toContainText('Luis');
+});
+
+test('al volver con el socket zombi, el ping lo descubre y se ve la partida en el punto actual', async ({
+  browser,
+}) => {
+  test.setTimeout(120_000);
+  const { ana, luis, red } = await briscaEmpezada(browser);
+  const visibilidad = (estado: 'hidden' | 'visible') =>
+    luis.evaluate((e) => {
+      Object.defineProperty(document, 'visibilityState', { value: e, configurable: true });
+      document.dispatchEvent(new Event('visibilitychange'));
+    }, estado);
+
+  // Luis cambia de app y su socket queda abierto pero muerto; mientras, Ana juega su carta.
+  await expect(ana.locator('.carta-mano.jugable').first()).toBeVisible();
+  await visibilidad('hidden');
+  red.zombis();
+  await ana.locator('.carta-mano.jugable').first().click();
+  await ana.getByTestId('mesa').click();
+  await expect(ana.locator('.carta-mano')).toHaveCount(2);
+
+  // Al volver, el ping no tiene respuesta: suelta el socket, reconecta y le toca jugar.
+  await visibilidad('visible');
+  await expect(luis.locator('.carta-mano.jugable').first()).toBeVisible({ timeout: 15_000 });
+  await expect(luis.getByText(T.red.reconectando)).toBeHidden();
   await expect(luis.getByTestId('jugador-1')).toContainText('Luis');
 });
 

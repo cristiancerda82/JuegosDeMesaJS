@@ -37,5 +37,5 @@
 
 ## 6. Verificación
 
-- [ ] 6.1 E2E en el navegador: volver del segundo plano (visibilidad simulada) recupera el asiento, y la red cortada se detecta en menos de 30 s (ampliando `red.spec.ts`)
+- [x] 6.1 E2E en el navegador: volver del segundo plano (visibilidad simulada) recupera el asiento, y la red cortada se detecta en menos de 30 s (ampliando `red.spec.ts`)
 - [ ] 6.2 Ejecutar todos los tests (motor, servidor, cliente y E2E), la comprobación de tipos, el lint, el formato y `openspec validate --strict`
