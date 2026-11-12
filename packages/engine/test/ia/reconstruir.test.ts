@@ -143,6 +143,9 @@ import { reconstruirTwentyNine } from '../../src/ia/reconstruir/twenty-nine';
 import { iaTwentyNineBasica } from '../../src/ia/twenty-nine-basica';
 import { CONFIG_TWENTY_NINE_POR_DEFECTO, twentyNine } from '../../src/juegos/twenty-nine';
 import { reconstruirBriscolaChiamata } from '../../src/ia/reconstruir/briscola-chiamata';
+import { reconstruirHandAndFoot } from '../../src/ia/reconstruir/hand-and-foot';
+import { iaHandAndFootBasica } from '../../src/ia/hand-and-foot-basica';
+import { handAndFoot } from '../../src/juegos/hand-and-foot';
 import { iaBriscolaChiamataBasica } from '../../src/ia/briscola-chiamata-basica';
 import {
   briscolaChiamata,
@@ -1804,5 +1807,28 @@ describe('Reconstrucción de la Briscola Chiamata', () => {
       expect(briscolaChiamata.vistaDe(rec, 0)).toEqual(vista);
     }
     expect(companeros.size).toBeGreaterThan(1);
+  });
+});
+
+describirReconstruccion(handAndFoot, reconstruirHandAndFoot, {
+  configs: [{ rondas: 1 }],
+  base: iaHandAndFootBasica,
+  partidas: 4,
+});
+
+describe('Reconstrucción del Hand and Foot', () => {
+  it('los pies sin coger salen al azar, sin treses rojos en las manos, y la vista no cambia', () => {
+    const r = handAndFoot.crear({ rondas: 1 }, 'hf');
+    if (!r.ok) throw new Error(r.error);
+    const vista = handAndFoot.vistaDe(r.valor, 0);
+    const pies = new Set<string>();
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirHandAndFoot(vista, crearAzar(`h${i}`));
+      expect(rec.pies.map((p) => p.length)).toEqual([11, 11, 11, 11]);
+      expect(rec.manos.flat().some((c) => /^(corazones|diamantes)-3#/.test(c))).toBe(false);
+      pies.add(rec.pies[0]!.join());
+      expect(handAndFoot.vistaDe(rec, 0)).toEqual(vista);
+    }
+    expect(pies.size).toBeGreaterThan(1);
   });
 });

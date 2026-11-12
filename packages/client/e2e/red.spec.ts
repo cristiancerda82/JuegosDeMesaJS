@@ -1625,3 +1625,28 @@ test('Briscola Chiamata en red: la subasta pasa de un navegador al otro', async 
   await luis.getByTestId('pasar').click();
   await expect(ana.getByTestId('asiento-1')).toContainText('Paso');
 });
+
+test('Hand and Foot en red: dos humanos roban 2 y descartan', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'handAndFoot');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(11);
+
+  // Empieza Ana (asiento 0) y después Luis (asiento 1): cada uno roba 2 y descarta su primera carta.
+  for (const p of [ana, luis]) {
+    await p.getByTestId('robar').click({ timeout: 30_000 });
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(13);
+    await p
+      .locator('[data-testid="mano"] .carta-mano')
+      .first()
+      .click({ position: { x: 6, y: 6 } });
+    await p.getByTestId('descartar').click();
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(12);
+  }
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+  await expect(ana.getByTestId('asiento-1')).toContainText('pie de 11');
+});

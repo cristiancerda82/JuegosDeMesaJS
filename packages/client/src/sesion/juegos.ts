@@ -129,6 +129,12 @@ import {
   CONFIG_TWENTY_NINE_POR_DEFECTO,
   briscolaChiamata,
   CONFIG_BRISCOLA_CHIAMATA_POR_DEFECTO,
+  handAndFoot,
+  CONFIG_HAND_AND_FOOT_POR_DEFECTO,
+  type AccionHandAndFoot,
+  type ConfigHandAndFoot,
+  type EstadoHandAndFoot,
+  type VistaHandAndFoot,
   type AccionBriscolaChiamata,
   type ConfigBriscolaChiamata,
   type EstadoBriscolaChiamata,
@@ -606,7 +612,8 @@ export type IdJuego =
   | 'conquian'
   | 'treintaYUno'
   | 'twentyNine'
-  | 'briscolaChiamata';
+  | 'briscolaChiamata'
+  | 'handAndFoot';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -689,6 +696,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'treintaYUno',
   'twentyNine',
   'briscolaChiamata',
+  'handAndFoot',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2245,6 +2253,28 @@ export const DEF_BRISCOLA_CHIAMATA: DefBriscolaChiamata = {
   },
 };
 
+export type DefHandAndFoot = DefJuego<
+  ConfigHandAndFoot,
+  EstadoHandAndFoot,
+  AccionHandAndFoot,
+  VistaHandAndFoot
+>;
+
+export const DEF_HAND_AND_FOOT: DefHandAndFoot = {
+  id: 'handAndFoot',
+  nombre: T.menu.handAndFoot,
+  juego: handAndFoot,
+  configPorDefecto: CONFIG_HAND_AND_FOOT_POR_DEFECTO,
+  ia: IAS.handAndFoot,
+  // El cierre de la ronda lo detiene la propia mesa con el resumen; como en la Canasta.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    if (despues.resultadosRondas.length > antes.resultadosRondas.length) return 0;
+    return accion.asiento !== despues.asiento ? PAUSA_CANASTA_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2326,6 +2356,7 @@ export const JUEGOS = {
   treintaYUno: DEF_TREINTA_Y_UNO,
   twentyNine: DEF_TWENTY_NINE,
   briscolaChiamata: DEF_BRISCOLA_CHIAMATA,
+  handAndFoot: DEF_HAND_AND_FOOT,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

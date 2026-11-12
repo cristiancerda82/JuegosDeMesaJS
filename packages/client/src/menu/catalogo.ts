@@ -229,6 +229,11 @@ export const CATALOGO: Readonly<Record<IdJuego, EntradaCatalogo>> = {
     'diamantes-6',
   ]),
   canasta: entrada('combinaciones', F, T.menu.canastaDesc, ['comodin-1', 'corazones-3', 'picas-1']),
+  handAndFoot: entrada('combinaciones', F, T.menu.handAndFootDesc, [
+    'picas-13',
+    'corazones-13',
+    'comodin-2',
+  ]),
   conquian: entrada('combinaciones', E, T.menu.conquianDesc, ['copas-6', 'copas-7', 'copas-10']),
   pinacle: entrada('combinaciones', F, T.menu.pinacleDesc, [
     'corazones-13',

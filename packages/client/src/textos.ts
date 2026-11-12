@@ -190,6 +190,9 @@ export const T = {
     twentyNineDesc:
       'El gran juego de bazas de la India, por parejas: la jota y el nueve mandan, y el triunfo se elige en secreto y no cuenta hasta que alguien lo pide.',
     briscolaChiamata: 'Briscola Chiamata',
+    handAndFoot: 'Hand and Foot',
+    handAndFootDesc:
+      'La canasta americana por parejas: juega primero tu mano y luego tu pie, roba dos cartas y forma libros de 7 para cerrar.',
     briscolaChiamataDesc:
       'La brisca italiana para 5: quien gana la subasta llama una carta, y quien la tiene es su compañero en secreto hasta que la juega.',
     treintaYUno: 'Treinta y uno',
@@ -1519,6 +1522,53 @@ export const T = {
     finMano: (n: number) => `Fin de la mano ${n}`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Puntos de juego',
+  },
+
+  handAndFoot: {
+    ronda: (n: number, de: number) => `Ronda ${n} de ${de}`,
+    robar: 'Robar 2',
+    cogerDescarte: 'Coger el descarte',
+    acabar: 'Acabar la ronda',
+    faseRobar: 'Tu turno: roba 2 del mazo',
+    faseRobarDescarte: 'Tu turno: roba 2 o coge el descarte',
+    bloqueado: 'Descarte bloqueado',
+    sinBajar: 'Para coger el descarte, tu pareja tiene que haber bajado',
+    roba: (quien: string) => `${quien} roba 2 del mazo`,
+    coge: (quien: string) => `${quien} coge el descarte`,
+    comodines: 'comodines',
+    libro: {
+      limpio: 'libro limpio',
+      sucio: 'libro sucio',
+      comodines: 'libro de comodines',
+    } as Record<string, string>,
+    pie: (n: number) => `pie de ${n}`,
+    enPie: 'juega el pie',
+    juegasMano: (n: number) => `Juegas la mano · pie de ${n}`,
+    juegasPie: 'Juegas el pie',
+    puedesCerrar: 'Ya podéis cerrar',
+    faltan: (limpios: number, sucios: number) =>
+      `Para cerrar faltan ${[
+        limpios > 0
+          ? `${limpios} libro${limpios > 1 ? 's' : ''} limpio${limpios > 1 ? 's' : ''}`
+          : '',
+        sucios > 0 ? `${sucios} libro${sucios > 1 ? 's' : ''} sucio${sucios > 1 ? 's' : ''}` : '',
+      ]
+        .filter(Boolean)
+        .join(' y ')}`,
+    libros: 'Libros',
+    enManoYPie: 'En la mano y el pie',
+    totalRonda: 'Total de la ronda',
+    detalleLibros: (limpios: number, sucios: number, deComodines: number) =>
+      [
+        limpios > 0 ? `${limpios} limpio${limpios > 1 ? 's' : ''}` : '',
+        sucios > 0 ? `${sucios} sucio${sucios > 1 ? 's' : ''}` : '',
+        deComodines > 0 ? `${deComodines} de comodines` : '',
+      ]
+        .filter(Boolean)
+        .join(', '),
+    finRonda: (n: number) => `Fin de la ronda ${n}`,
+    siguienteRonda: 'Siguiente ronda',
+    clasificacion: 'Marcador final',
   },
 
   briscolaChiamata: {
@@ -3379,6 +3429,7 @@ export const T = {
       treintaYUno: 'Cómo se juega al Treinta y uno',
       twentyNine: 'Cómo se juega al Twenty-Nine',
       briscolaChiamata: 'Cómo se juega a la Briscola Chiamata',
+      handAndFoot: 'Cómo se juega al Hand and Foot',
       remigio: 'Cómo se juega al Remigio',
       red: 'Cómo se juega en red',
     },
@@ -4008,6 +4059,49 @@ export const T = {
         titulo: 'Consejos',
         texto: [
           'Cuenta jotas y nueves antes de pujar: son la mitad de los puntos. Si tu compañero gana la baza, échale tus cartas con puntos.',
+        ],
+      },
+    ],
+
+    handAndFoot: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'La canasta americana para cuatro por parejas (tú y tu compañero, enfrente), con 5 barajas y sus comodines. Cada uno recibe dos montones de 11 cartas: la mano, que juega primero, y el pie, que coge cuando se queda sin mano.',
+          'La partida tiene 4 rondas y gana la pareja que más puntos suma.',
+        ],
+      },
+      {
+        titulo: 'El turno',
+        texto: [
+          'Roba 2 cartas del mazo, baja lo que quieras y descarta una. Si tu pareja ya ha bajado y tienes dos cartas del valor de la de arriba del descarte, puedes cogerlo: las tres forman una combinación y te llevas las 6 cartas siguientes.',
+          'Los treses rojos se ponen en la mesa en cuanto los tienes (valen 100) y robas otra. Un 3 negro o un comodín arriba del descarte lo bloquean.',
+        ],
+      },
+      {
+        titulo: 'Combinaciones y libros',
+        texto: [
+          'Una combinación tiene de 3 a 7 cartas del mismo valor (del 4 al As), con al menos 2 naturales y como mucho 3 comodines (doses y comodines); también puede ser solo de comodines. Con 7 cartas es un libro: limpio sin comodines (500), sucio con ellos (300) o de comodines (1500).',
+          'La primera bajada de cada ronda tiene que sumar al menos 50, 90, 120 o 150 puntos. Mientras no llegues, puedes deshacerla.',
+        ],
+      },
+      {
+        titulo: 'El pie y cerrar',
+        texto: [
+          'Cuando te quedas sin mano coges el pie: si fue bajando, sigues jugando; si fue al descartar, lo juegas en tu siguiente turno.',
+          'Con el pie, solo puedes quedarte sin cartas si tu pareja tiene 2 libros limpios y 2 sucios: es cerrar, vale 100 y acaba la ronda. Si no, guárdate al menos 2 cartas antes de descartar.',
+        ],
+      },
+      {
+        titulo: 'Los puntos',
+        texto: [
+          'Al final de la ronda sumas tus cartas bajadas, los libros, los treses rojos y el cierre, y restas lo que te queda en la mano y en el pie si no lo cogiste. Comodín 50, 2 y As 20, del 8 al K 10, del 4 al 7 y el 3 negro 5.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Llegar pronto al pie te da 11 cartas nuevas. Guarda los comodines para terminar libros, y mira cuántos libros os faltan antes de quedarte sin cartas.',
         ],
       },
     ],

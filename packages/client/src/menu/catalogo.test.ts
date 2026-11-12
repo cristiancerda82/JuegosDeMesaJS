@@ -30,7 +30,7 @@ describe('catálogo del menú', () => {
     expect(juegosDeFamilia('bazasPuntos')).toHaveLength(19);
     expect(juegosDeFamilia('bazasContrato')).toHaveLength(16);
     expect(juegosDeFamilia('bazasEvitar')).toEqual(['corazones', 'barbu', 'rentz']);
-    expect(juegosDeFamilia('combinaciones')).toHaveLength(8);
+    expect(juegosDeFamilia('combinaciones')).toHaveLength(9);
     expect(juegosDeFamilia('captura')).toHaveLength(6);
     expect(juegosDeFamilia('descarte')).toHaveLength(10);
     expect(juegosDeFamilia('envite')).toHaveLength(7);

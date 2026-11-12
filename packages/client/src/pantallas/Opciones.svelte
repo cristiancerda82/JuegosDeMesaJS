@@ -60,6 +60,7 @@
     ConfigTreintaYUno,
     ConfigTwentyNine,
     ConfigBriscolaChiamata,
+    ConfigHandAndFoot,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -183,6 +184,9 @@
   let briscolaChiamataConfig: Editable<ConfigBriscolaChiamata> = $state({
     ...JUEGOS.briscolaChiamata.configPorDefecto,
   });
+  let handAndFootConfig: Editable<ConfigHandAndFoot> = $state({
+    ...JUEGOS.handAndFoot.configPorDefecto,
+  });
   let preferenceConfig: Editable<ConfigPreference> = $state({
     ...JUEGOS.preference.configPorDefecto,
   });
@@ -296,6 +300,7 @@
       treintaYUno: treintaConfig,
       twentyNine: twentyNineConfig,
       briscolaChiamata: briscolaChiamataConfig,
+      handAndFoot: handAndFootConfig,
       ohHell: ohHellConfig,
       spiteMalice: spiteMaliceConfig,
       // Las parejas, solo con 4 jugadores.

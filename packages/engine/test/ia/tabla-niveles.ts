@@ -70,6 +70,7 @@ import { conquian } from '../../src/juegos/conquian';
 import { treintaYUno } from '../../src/juegos/treinta-y-uno';
 import { twentyNine } from '../../src/juegos/twenty-nine';
 import { briscolaChiamata } from '../../src/juegos/briscola-chiamata';
+import { handAndFoot } from '../../src/juegos/hand-and-foot';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -202,4 +203,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   // A 2 puntos de juego, para que las partidas de las pruebas no sean tan largas.
   entrada('Twenty-Nine', twentyNine, { objetivo: 2 }, IAS.twentyNine, 'bandos'),
   entrada('Briscola Chiamata', briscolaChiamata, { manos: 2 }, IAS.briscolaChiamata, 5),
+  entrada('Hand and Foot', handAndFoot, { rondas: 1 }, IAS.handAndFoot, 'bandos'),
 ];

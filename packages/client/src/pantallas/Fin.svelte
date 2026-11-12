@@ -41,6 +41,7 @@
   import ResumenTreintaYUno from '../mesas/ResumenTreintaYUno.svelte';
   import ResumenTwentyNine from '../mesas/ResumenTwentyNine.svelte';
   import ResumenBriscolaChiamata from '../mesas/ResumenBriscolaChiamata.svelte';
+  import ResumenHandAndFoot from '../mesas/ResumenHandAndFoot.svelte';
   import ResumenTressette from '../mesas/ResumenTressette.svelte';
   import ResumenSchafkopf from '../mesas/ResumenSchafkopf.svelte';
   import ResumenTruco from '../mesas/ResumenTruco.svelte';
@@ -106,6 +107,7 @@
   const parejas = $derived(
     partida.id === 'bridge' ||
     partida.id === 'twentyNine' ||
+    partida.id === 'handAndFoot' ||
     (partida.id !== 'klondike' &&
       partida.id !== 'freecell' &&
       partida.id !== 'spider' &&
@@ -920,6 +922,20 @@
       {/if}
       <table>
         <caption>{T.canasta.clasificacion}</caption>
+        <tbody>
+          {#each lados as lado, i (lado)}
+            <tr><th scope="row">{lado}</th><td data-testid="puntos-{i}">{porBando(vista.puntos, yo)[i]}</td></tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'handAndFoot'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosRondas.at(-1)}
+      {#if ultima}
+        <ResumenHandAndFoot resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} />
+      {/if}
+      <table data-testid="puntos-hand-and-foot">
+        <caption>{T.handAndFoot.clasificacion}</caption>
         <tbody>
           {#each lados as lado, i (lado)}
             <tr><th scope="row">{lado}</th><td data-testid="puntos-{i}">{porBando(vista.puntos, yo)[i]}</td></tr>

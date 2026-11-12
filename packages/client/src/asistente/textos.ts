@@ -639,6 +639,8 @@ export const CONSEJOS_JUEGO: Readonly<Partial<Record<IdJuego, string>>> = {
     'Conquián: forma combinaciones con las cartas de la mesa. Coge una carta solo si la puedes bajar y no le regales nada al siguiente.',
   twentyNine:
     'Twenty-Nine: la jota y el nueve son las cartas más altas y las que más puntan. Puja con tu compañero en mente y pide el triunfo cuando la baza tenga puntos.',
+  handAndFoot:
+    'Hand and Foot: juega tu mano para llegar cuanto antes al pie, y termina libros de 7. Para cerrar, tu pareja necesita 2 libros limpios y 2 sucios.',
   briscolaChiamata:
     'Briscola Chiamata: puja con un palo largo y llama una carta que no tengas. Hasta que salga la carta llamada nadie sabe quién va con quién: carga puntos solo cuando sepas que la baza es de tu bando.',
   treintaYUno:
