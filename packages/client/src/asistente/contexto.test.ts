@@ -124,8 +124,8 @@ function medir(id: IdJuego, def: Def, semilla: string, parar?: (m: Medida) => bo
 }
 
 describe('modo asistido en cada juego con IA', () => {
-  it('hay 70 juegos con IA', () => {
-    expect(CON_IA).toHaveLength(70);
+  it('hay 71 juegos con IA', () => {
+    expect(CON_IA).toHaveLength(71);
   });
 
   const tiempos: string[] = [];

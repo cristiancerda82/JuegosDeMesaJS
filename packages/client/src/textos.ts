@@ -208,6 +208,9 @@ export const T = {
     bourreDesc:
       'El clásico de Luisiana para cinco: juega o pasa, cambia cartas, gana más bazas que nadie y llévate el bote, o paga el bourré.',
     rentz: 'Rentz',
+    polignac: 'Polignac',
+    polignacDesc:
+      'El clásico francés para 3 a 6, sin triunfo: no te lleves las sotas, sobre todo la de picas, o atrévete con el general y gánalas todas.',
     rentzDesc:
       'El clásico alemán de compromisos para cuatro: cada uno elige sus siete contratos, de evitar bazas, corazones o damas al dominó.',
     sheepshead: 'Sheepshead',
@@ -455,6 +458,11 @@ export const T = {
     comodinesDesc: 'Jugar con 2 comodines, que sustituyen a cualquier carta.',
     limite: 'Eliminación',
     limiteN: (n: number) => `Al pasar de ${n} puntos`,
+    limitePolignac: 'Fin de la partida',
+    limitePolignacN: (n: number) => `Al llegar a −${n}`,
+    generalPolignac: 'General',
+    generalPolignacDesc: 'Se puede anunciar que te llevarás todas las bazas.',
+    sietesPolignac: 'Con 3, 5 o 6 jugadores se quitan el 7 de picas y el de tréboles.',
     duracionPocha: 'Duración',
     duracionCorta: 'Corta: de 1 a 5 cartas y vuelta (9 manos)',
     duracionCompleta: 'Completa: hasta repartir toda la baraja y vuelta',
@@ -1786,6 +1794,32 @@ export const T = {
     sinJugada: 'No tienes ninguna carta que encaje',
     tuTurnoDomino: 'Tu turno: juega una carta que encaje',
     paso: 'Paso',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    jugadorCol: 'Jugador',
+    manoCol: 'Mano',
+    totalCol: 'Total',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Puntos',
+  },
+
+  polignac: {
+    reparte: 'Reparte',
+    pasa: 'Pasa',
+    general: 'General',
+    enMano: (n: number) => `${n}`,
+    anunciar: 'Anunciar general',
+    pasar: 'Pasar',
+    decide: '¿Anuncias el general?',
+    decidiendo: (quien: string) => `${quien} decide si anuncia el general…`,
+    juegaGeneral: (quien: string) =>
+      quien === 'Tú' ? 'Juegas el general' : `${quien} juega el general`,
+    manoN: (n: number) => `Mano ${n}`,
+    tusPuntos: (mano: number, total: number, limite: number) =>
+      `Tú: ${mano} en la mano · ${total} (a −${limite})`,
+    generalCumplido: (quien: string) =>
+      quien === 'Tú' ? '¡Cumples el general!' : `${quien} cumple el general`,
+    generalFallido: (quien: string) =>
+      quien === 'Tú' ? 'Fallas el general' : `${quien} falla el general`,
     finMano: (n: number) => `Fin de la mano ${n}`,
     jugadorCol: 'Jugador',
     manoCol: 'Mano',
@@ -3428,6 +3462,7 @@ export const T = {
       tysiacha: 'Cómo se juega al Tysiącha',
       sheepshead: 'Cómo se juega al Sheepshead',
       rentz: 'Cómo se juega al Rentz',
+      polignac: 'Cómo se juega al Polignac',
       bourre: 'Cómo se juega al Bourré',
       tresillo: 'Cómo se juega al Tresillo',
       conquian: 'Cómo se juega al Conquián',
@@ -4358,6 +4393,44 @@ export const T = {
         texto: [
           'Guarda el contrato de bazas para una mano con muchos Ases y K, y el dominó para una con J y cartas seguidas.',
           'En los contratos de evitar, deshazte pronto de tus cartas altas cuando no tengas el palo.',
+        ],
+      },
+    ],
+
+    polignac: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'El clásico francés de bazas para evitar, de 3 a 6 jugadores. Se juega con 32 cartas, del 7 al As, con el orden As, K, Q, J, 10, 9, 8 y 7 y sin triunfo. Con 3, 5 o 6 jugadores se quitan el 7 de picas y el de tréboles, y quedan 30.',
+          'Se reparten todas las cartas. Cada J que te llevas resta, y la partida acaba cuando alguien llega al límite (−10 si no se elige otro). Gana quien tiene más puntos.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Sale el jugador siguiente al que reparte. Hay que seguir el palo de salida; si no tienes, puedes echar cualquier carta. Gana la carta más alta del palo de salida, y quien gana sale en la siguiente.',
+        ],
+        ejemplo: 'baza',
+      },
+      {
+        titulo: 'Las sotas',
+        texto: [
+          'Cada J que ganas resta 1 punto, y la J de picas, el «Polignac», resta 2. La mano se acaba en cuanto se han ganado las cuatro J.',
+        ],
+        ejemplo: 'sotas',
+      },
+      {
+        titulo: 'El general',
+        texto: [
+          'Antes de la primera baza, empezando por el que sale, cada jugador puede anunciar que ganará todas las bazas. El primero que lo anuncia sale él.',
+          'Si las gana todas, cada uno de los demás resta 5. En cuanto pierde una, la mano se acaba y resta 5 él. En esa mano, las J no cuentan.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Cuando no tengas el palo, deshazte primero de la J de picas y luego de las otras J.',
+          'Sal con cartas bajas de tus palos cortos y no ganes una baza con una J si puedes evitarlo. Anuncia el general solo si tus cartas son las más altas de cada palo.',
         ],
       },
     ],

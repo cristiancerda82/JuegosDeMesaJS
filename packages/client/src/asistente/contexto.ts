@@ -36,7 +36,7 @@ const CONTRATOS_POSITIVOS: ReadonlySet<string> = new Set(['triunfo', 'positivo',
 /**
  * Lo que el asistente necesita de un juego para explicar sus jugadas (design, decisión 3): la IA
  * normal y el simulable de sus IAs, si evita bazas (familia «bazas a evitar», según el contrato
- * en el Barbu y el Rentz) y si juega por parejas. `null` en los solitarios.
+ * en el Barbu y el Rentz, y salvo en la mano del general en el Polignac) y si juega por parejas. `null` en los solitarios.
  */
 export function contextoAsistente<C, E, A, V>(
   def: DefJuego<C, E, A, V>,
@@ -54,7 +54,10 @@ export function contextoAsistente<C, E, A, V>(
           const contrato = (vista as { readonly contrato?: string | null }).contrato;
           return typeof contrato === 'string' && !CONTRATOS_POSITIVOS.has(contrato);
         }
-      : familia === 'bazasEvitar',
+      : def.id === 'polignac'
+        ? // Con el general en juego, todos quieren bazas: él, todas; los demás, una.
+          (vista: V) => (vista as { readonly general?: number | null }).general == null
+        : familia === 'bazasEvitar',
     parejas: porParejas(def.id, jugadores ?? 0),
   };
 }

@@ -38,7 +38,7 @@ test.describe('familias', () => {
 
   test('el número de juegos de cada familia aparece en su tarjeta', async ({ page }) => {
     await expect(page.getByTestId('familia-solitarios')).toContainText(T.menu.juegosN(11));
-    await expect(page.getByTestId('familia-bazasEvitar')).toContainText(T.menu.juegosN(3));
+    await expect(page.getByTestId('familia-bazasEvitar')).toContainText(T.menu.juegosN(4));
   });
 });
 

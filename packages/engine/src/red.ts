@@ -72,6 +72,7 @@ import { CONFIG_TREINTA_Y_UNO_POR_DEFECTO, treintaYUno } from './juegos/treinta-
 import { CONFIG_TWENTY_NINE_POR_DEFECTO, twentyNine } from './juegos/twenty-nine';
 import { briscolaChiamata, CONFIG_BRISCOLA_CHIAMATA_POR_DEFECTO } from './juegos/briscola-chiamata';
 import { CONFIG_HAND_AND_FOOT_POR_DEFECTO, handAndFoot } from './juegos/hand-and-foot';
+import { CONFIG_POLIGNAC_POR_DEFECTO, polignac } from './juegos/polignac';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -149,6 +150,7 @@ export const IDS_JUEGOS_EN_RED = [
   'twentyNine',
   'briscolaChiamata',
   'handAndFoot',
+  'polignac',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -255,6 +257,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
     CONFIG_BRISCOLA_CHIAMATA_POR_DEFECTO,
   ),
   handAndFoot: entrada(handAndFoot, IAS.handAndFoot, CONFIG_HAND_AND_FOOT_POR_DEFECTO),
+  polignac: entrada(polignac, IAS.polignac, CONFIG_POLIGNAC_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

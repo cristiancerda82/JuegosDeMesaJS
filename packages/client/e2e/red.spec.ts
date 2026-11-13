@@ -1158,6 +1158,24 @@ test('Rentz en red: el contrato que elige uno lo ve el otro', async ({ browser }
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Polignac en red: el general que pasa uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'polignac');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(8);
+
+  // Reparte Ana (asiento 0): decide primero Luis. Pasa, pasan las IA y le toca a Ana.
+  await luis.getByTestId('pasar-general').click();
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+  await ana.getByTestId('pasar-general').click();
+  // Todos han pasado: sale Luis, el siguiente al que reparte.
+  await expect(luis.locator('[data-testid="mano"] .carta-mano.jugable')).toHaveCount(8);
+});
+
 test('Sheepshead en red: lo que decide uno lo ve el otro', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

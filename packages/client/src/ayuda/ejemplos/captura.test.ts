@@ -9,6 +9,8 @@ import {
   ganadoraBarbu,
   ganadoraCorazones,
   ganadoraRentz,
+  ganadoraPolignac,
+  penalizaPolignac,
   puntosCorazones,
   rangoBarbu,
   rangoRentz,
@@ -48,6 +50,17 @@ test('Barbu y Rentz: las bazas sin triunfo', () => {
   const rentz = evitar.ejemplo('rentz', 'baza', 'baza');
   expect(ganadoraRentz(mesaDe(rentz)).asiento).toBe(rentz.gana);
   expect(rentz.jugadas.map((j) => j.id)).toContain('corazones-13');
+});
+
+test('Polignac: la baza y lo que resta cada J', () => {
+  const b = evitar.ejemplo('polignac', 'baza', 'baza');
+  expect(ganadoraPolignac(mesaDe(b)).asiento).toBe(b.gana);
+  expect(b.jugadas.reduce((s, j) => s + penalizaPolignac(j.id), 0)).toBe(3);
+  const sotas = evitar.ejemplo('polignac', 'sotas', 'cartas');
+  for (const { id, etiqueta } of sotas.cartas)
+    expect(etiqueta, id).toBe(`−${penalizaPolignac(id)}`);
+  const total = sotas.cartas.reduce((s, c) => s + penalizaPolignac(c.id), 0);
+  expect(sotas.resultado).toBe(`= −${total}`);
 });
 
 test.each([

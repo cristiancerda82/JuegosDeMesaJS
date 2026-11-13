@@ -77,4 +77,27 @@ export const BAZAS_EVITAR: Partial<Record<IdJuego, EjemplosJuego>> = {
       explicacion: 'Cada palo empieza por su J y crece de uno en uno hacia arriba y hacia abajo.',
     },
   },
+
+  polignac: {
+    baza: baza(
+      'Sale el 10 de diamantes, sigue la J de diamantes, el tercero echa el As de diamantes y el último, sin diamantes, suelta la J de picas: el As se lleva las dos J.',
+      CUATRO,
+      ['diamantes-10', 'diamantes-11', 'diamantes-1', 'picas-11'],
+      undefined,
+      2,
+      'No hay triunfo: gana el As, la más alta del palo de salida, y quien la gana resta 1 por la J de diamantes y 2 por la de picas: −3.',
+    ),
+    sotas: {
+      tipo: 'cartas',
+      descripcion: 'Lo que resta cada J: la de picas, el «Polignac», 2 puntos, y las otras 1.',
+      cartas: [
+        { id: 'picas-11', etiqueta: '−2' },
+        { id: 'corazones-11', etiqueta: '−1' },
+        { id: 'diamantes-11', etiqueta: '−1' },
+        { id: 'treboles-11', etiqueta: '−1' },
+      ],
+      resultado: '= −5',
+      nota: 'Las demás cartas no restan nada.',
+    },
+  },
 };

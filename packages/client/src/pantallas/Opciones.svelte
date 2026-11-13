@@ -61,6 +61,7 @@
     ConfigTwentyNine,
     ConfigBriscolaChiamata,
     ConfigHandAndFoot,
+    ConfigPolignac,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -176,6 +177,7 @@
   let tysiachaConfig: Editable<ConfigTysiacha> = $state({ ...JUEGOS.tysiacha.configPorDefecto });
   let sheepsheadConfig: Editable<ConfigSheepshead> = $state({ ...JUEGOS.sheepshead.configPorDefecto });
   let rentzConfig: Editable<ConfigRentz> = $state({ ...JUEGOS.rentz.configPorDefecto });
+  let polignacConfig: Editable<ConfigPolignac> = $state({ ...JUEGOS.polignac.configPorDefecto });
   let bourreConfig: Editable<ConfigBourre> = $state({ ...JUEGOS.bourre.configPorDefecto });
   let tresilloConfig: Editable<ConfigTresillo> = $state({ ...JUEGOS.tresillo.configPorDefecto });
   let conquianConfig: Editable<ConfigConquian> = $state({ ...JUEGOS.conquian.configPorDefecto });
@@ -294,6 +296,7 @@
       tysiacha: tysiachaConfig,
       sheepshead: sheepsheadConfig,
       rentz: rentzConfig,
+      polignac: polignacConfig,
       bourre: bourreConfig,
       tresillo: tresilloConfig,
       conquian: conquianConfig,
@@ -468,6 +471,40 @@
             {T.opciones.jugadoresN(n)}</label
           >
         {/each}
+      </fieldset>
+    {:else if juego === 'polignac'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [3, 4, 5, 6] as const as n (n)}
+          <label
+            ><input
+              type="radio"
+              bind:group={polignacConfig.jugadores}
+              value={n}
+              data-testid="polignac-jugadores-{n}"
+            />
+            {T.opciones.jugadoresN(n)}</label
+          >
+        {/each}
+      </fieldset>
+      {#if polignacConfig.jugadores !== 4}
+        <p class="nota">{T.opciones.sietesPolignac}</p>
+      {/if}
+      <fieldset>
+        <legend>{T.opciones.limitePolignac}</legend>
+        {#each [10, 20, 30] as const as l (l)}
+          <label
+            ><input type="radio" bind:group={polignacConfig.limite} value={l} data-testid="polignac-limite-{l}" />
+            {T.opciones.limitePolignacN(l)}</label
+          >
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.generalPolignac}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={polignacConfig.general} data-testid="polignac-general" />
+          {T.opciones.generalPolignacDesc}
+        </label>
       </fieldset>
     {:else if juego === 'corazones'}
       <fieldset>

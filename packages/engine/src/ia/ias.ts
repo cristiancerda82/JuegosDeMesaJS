@@ -77,6 +77,7 @@ import { SIMULABLE_TREINTA } from './reconstruir/treinta-y-uno';
 import { SIMULABLE_TWENTY_NINE } from './reconstruir/twenty-nine';
 import { SIMULABLE_BRISCOLA_CHIAMATA } from './reconstruir/briscola-chiamata';
 import { SIMULABLE_HAND_AND_FOOT } from './reconstruir/hand-and-foot';
+import { SIMULABLE_POLIGNAC } from './reconstruir/polignac';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -134,6 +135,7 @@ import { iaTreintaYUnoBasica } from './treinta-y-uno-basica';
 import { iaTwentyNineBasica } from './twenty-nine-basica';
 import { iaBriscolaChiamataBasica } from './briscola-chiamata-basica';
 import { iaHandAndFootBasica } from './hand-and-foot-basica';
+import { iaPolignacBasica } from './polignac-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -280,4 +282,5 @@ export const IAS = {
   twentyNine: niveles(iaTwentyNineBasica, SIMULABLE_TWENTY_NINE),
   briscolaChiamata: niveles(iaBriscolaChiamataBasica, SIMULABLE_BRISCOLA_CHIAMATA),
   handAndFoot: niveles(iaHandAndFootBasica, SIMULABLE_HAND_AND_FOOT),
+  polignac: niveles(iaPolignacBasica, SIMULABLE_POLIGNAC),
 } as const;

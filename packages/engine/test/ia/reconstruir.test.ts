@@ -146,6 +146,9 @@ import { reconstruirBriscolaChiamata } from '../../src/ia/reconstruir/briscola-c
 import { reconstruirHandAndFoot } from '../../src/ia/reconstruir/hand-and-foot';
 import { iaHandAndFootBasica } from '../../src/ia/hand-and-foot-basica';
 import { handAndFoot } from '../../src/juegos/hand-and-foot';
+import { reconstruirPolignac } from '../../src/ia/reconstruir/polignac';
+import { iaPolignacBasica } from '../../src/ia/polignac-basica';
+import { CONFIG_POLIGNAC_POR_DEFECTO, polignac } from '../../src/juegos/polignac';
 import { iaBriscolaChiamataBasica } from '../../src/ia/briscola-chiamata-basica';
 import {
   briscolaChiamata,
@@ -1830,5 +1833,25 @@ describe('Reconstrucción del Hand and Foot', () => {
       expect(handAndFoot.vistaDe(rec, 0)).toEqual(vista);
     }
     expect(pies.size).toBeGreaterThan(1);
+  });
+});
+
+describirReconstruccion(polignac, reconstruirPolignac, {
+  configs: [CONFIG_POLIGNAC_POR_DEFECTO, { jugadores: 5, limite: 10, general: true }],
+  base: iaPolignacBasica,
+});
+
+describe('Reconstrucción del Polignac', () => {
+  it('con 5 jugadores, ninguna mano tiene los sietes quitados y la vista no cambia', () => {
+    const r = polignac.crear({ jugadores: 5, limite: 10, general: true }, 'pg');
+    if (!r.ok) throw new Error(r.error);
+    const vista = polignac.vistaDe(r.valor, 0);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirPolignac(vista, crearAzar(`p${i}`));
+      expect(rec.manos.map((m) => m.length)).toEqual([6, 6, 6, 6, 6]);
+      expect(rec.manos.flat()).not.toContain('picas-7');
+      expect(rec.manos.flat()).not.toContain('treboles-7');
+      expect(polignac.vistaDe(rec, 0)).toEqual(vista);
+    }
   });
 });

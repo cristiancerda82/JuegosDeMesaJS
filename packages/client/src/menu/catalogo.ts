@@ -218,6 +218,11 @@ export const CATALOGO: Readonly<Record<IdJuego, EntradaCatalogo>> = {
   ]),
   barbu: entrada('bazasEvitar', F, T.menu.barbuDesc, ['corazones-13', 'picas-12', 'treboles-11']),
   rentz: entrada('bazasEvitar', F, T.menu.rentzDesc, ['corazones-13', 'picas-12', 'treboles-11']),
+  polignac: entrada('bazasEvitar', F, T.menu.polignacDesc, [
+    'picas-11',
+    'corazones-11',
+    'diamantes-1',
+  ]),
 
   // ── Combinaciones ──
   chinchon: entrada('combinaciones', E, T.menu.chinchonDesc, ['copas-5', 'copas-6', 'comodin-1']),

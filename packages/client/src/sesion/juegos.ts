@@ -131,6 +131,12 @@ import {
   CONFIG_BRISCOLA_CHIAMATA_POR_DEFECTO,
   handAndFoot,
   CONFIG_HAND_AND_FOOT_POR_DEFECTO,
+  polignac,
+  CONFIG_POLIGNAC_POR_DEFECTO,
+  type AccionPolignac,
+  type ConfigPolignac,
+  type EstadoPolignac,
+  type VistaPolignac,
   type AccionHandAndFoot,
   type ConfigHandAndFoot,
   type EstadoHandAndFoot,
@@ -613,7 +619,8 @@ export type IdJuego =
   | 'treintaYUno'
   | 'twentyNine'
   | 'briscolaChiamata'
-  | 'handAndFoot';
+  | 'handAndFoot'
+  | 'polignac';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -697,6 +704,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'twentyNine',
   'briscolaChiamata',
   'handAndFoot',
+  'polignac',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2275,6 +2283,22 @@ export const DEF_HAND_AND_FOOT: DefHandAndFoot = {
   },
 };
 
+export type DefPolignac = DefJuego<ConfigPolignac, EstadoPolignac, AccionPolignac, VistaPolignac>;
+
+export const DEF_POLIGNAC: DefPolignac = {
+  id: 'polignac',
+  nombre: T.menu.polignac,
+  juego: polignac,
+  configPorDefecto: CONFIG_POLIGNAC_POR_DEFECTO,
+  ia: IAS.polignac,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, el general y cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (antes.general === null && despues.general !== null) return PAUSA_CANTE_MS;
+    return despues.bazasJugadas > antes.bazasJugadas ? PAUSA_BAZA_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2357,6 +2381,7 @@ export const JUEGOS = {
   twentyNine: DEF_TWENTY_NINE,
   briscolaChiamata: DEF_BRISCOLA_CHIAMATA,
   handAndFoot: DEF_HAND_AND_FOOT,
+  polignac: DEF_POLIGNAC,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */
