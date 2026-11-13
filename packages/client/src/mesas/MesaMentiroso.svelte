@@ -29,7 +29,7 @@
     nombreNumerado(asiento, n, yo, sesion.red, T.mentiroso.rivalN);
 
   const puede = (tipo: AccionMentiroso['tipo']) => legales.some((a) => a.tipo === tipo);
-  const miTurno = $derived(vista.turno === yo && sesion.fin === null);
+  const miTurno = $derived(vista.turno === yo && sesion.fin === null && !sesion.bloqueada);
   const marcable = (c: IdCarta) =>
     legales.some(
       (a) => (a.tipo === 'marcar' || a.tipo === 'desmarcar') && a.carta === c,
