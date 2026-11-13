@@ -3349,6 +3349,11 @@ export const T = {
     boton: '¿Cómo se juega?',
     botonCorto: 'Cómo se juega',
     cerrar: 'Entendido',
+    antes: 'Antes',
+    despues: 'Después',
+    triunfo: (palo: string) => `Triunfo: ${palo}`,
+    sinTriunfo: 'Sin triunfo',
+    gana: 'Gana',
     titulo: {
       klondike: 'Cómo se juega al Klondike',
       brisca: 'Cómo se juega a la Brisca',
@@ -3435,7 +3440,6 @@ export const T = {
     },
     puntos: (n: number) => (n === 1 ? '1 punto' : `${n} puntos`),
     matadores: ['Espadilla', 'Malilla', 'Basto', 'Punto'],
-    envitEjemplo: '7 y 6 de copas: 20 + 7 + 6 = 33 de envit (el Rey no cuenta).',
 
     klondike: [
       {
@@ -3511,6 +3515,7 @@ export const T = {
           'Gana la baza el triunfo más alto. Si nadie ha echado triunfo, gana la carta más fuerte del palo que salió primero; las cartas de otros palos no ganan.',
           'Quien gana se lleva las cartas de la baza con sus puntos, roba primero del mazo y sale en la siguiente baza. Cuando el mazo se acaba, se juegan las cartas que quedan en la mano.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Cambiar la muestra',
@@ -3569,6 +3574,7 @@ export const T = {
           'Por turnos, cada jugador pone una carta en la mesa. Gana el triunfo más alto o, si nadie echó triunfo, la carta más fuerte del palo que salió primero. Quien gana se lleva la baza y sale en la siguiente.',
           'Con 2 jugadores, después de cada baza se roba del mazo (primero el que ganó) hasta que se acaba.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Las obligaciones',
@@ -3644,6 +3650,7 @@ export const T = {
           'Si al recoger dejas la mesa vacía, haces escoba: vale 1 punto.',
           'Al final de la mano, las cartas que queden en la mesa se las lleva el último que recogió (eso no es escoba).',
         ],
+        ejemplo: 'escoba',
       },
       {
         titulo: 'Los puntos de cada mano',
@@ -3681,12 +3688,7 @@ export const T = {
           'Escalera: 3 o más cartas seguidas del mismo palo (en la baraja de 40, después del 7 va la Sota). Trío o cuarteto: 3 o 4 cartas del mismo número.',
           'El comodín sustituye a cualquier carta, pero cada combinación puede llevar uno como mucho.',
         ],
-        ejemplo: 'escaleraEspanola',
-      },
-      {
-        titulo: '',
-        texto: [],
-        ejemplo: 'trioComodin',
+        ejemplo: 'combinaciones',
       },
       {
         titulo: 'Cómo se juega un turno',
@@ -3701,12 +3703,14 @@ export const T = {
           'En vez de solo descartar, puedes cerrar si, tras el descarte, todas tus cartas quedan ligadas o te queda solo una suelta pequeña (de 3 o menos, por defecto). Al cerrar termina la mano.',
           'Si cierras con todo ligado, te restas 10 puntos. Si cierras con las 7 cartas en escalera del mismo palo y sin comodín, haces chinchón y ganas la partida.',
         ],
+        ejemplo: 'cerrar',
       },
       {
         titulo: 'Los puntos',
         texto: [
           'Al cerrar alguien, el resto suma lo que valen sus cartas sin ligar: el As 1, del 2 al 9 su número, las figuras 10 y el comodín 25. La mesa agrupa tus cartas de la mejor forma posible: no tienes que declarar nada.',
         ],
+        ejemplo: 'puntos',
       },
       {
         titulo: 'En la mesa',
@@ -3752,6 +3756,7 @@ export const T = {
           'Por turnos, cada jugador pone una carta en la mesa. Gana el triunfo más alto o, si nadie echó triunfo, la carta más fuerte del palo que salió primero. Quien gana se lleva la baza y sale en la siguiente.',
           'Después de cada baza se roba del mazo, primero el que ganó. Mientras queda mazo puedes echar la carta que quieras.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'El arrastre',
@@ -3802,16 +3807,10 @@ export const T = {
         titulo: 'Las combinaciones',
         texto: [
           'Escalera: 3 o más cartas seguidas del mismo palo. El orden es As, 2, 3, 4, 5, 6, 7, Sota, Caballo y Rey: el 7 y la Sota van seguidos, y el As solo puede ir abajo.',
-        ],
-        ejemplo: 'escaleraRemigio',
-      },
-      {
-        titulo: '',
-        texto: [
           'Grupo: 3 o 4 cartas del mismo número, todas de palos distintos.',
           'El comodín sustituye a cualquier carta, pero cada combinación necesita al menos 2 cartas de verdad.',
         ],
-        ejemplo: 'grupoRemigio',
+        ejemplo: 'combinaciones',
       },
       {
         titulo: 'Tu turno',
@@ -3868,6 +3867,7 @@ export const T = {
           'Se juegan 5 bazas entre los que juegan. El orden es el de la Brisca: As, 3, Rey, Caballo, Sota, 7, 6, 5, 4 y 2. Gana el triunfo más alto o, si no hay, la carta más alta del palo que salió.',
           'Hay que seguir el palo y superar la carta que va ganando si puedes. Si no tienes de ese palo, tienes que echar triunfo, y superar el triunfo de la mesa si puedes.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'El cobro y el julepe',
@@ -3913,6 +3913,7 @@ export const T = {
           'El pujador mira su mano, elige el palo de triunfo y sale en la primera baza.',
           'Hay que seguir el palo y superar la carta que va ganando si puedes, aunque sea de un compañero. Si no tienes de ese palo, tienes que echar triunfo, y superar el triunfo de la mesa si puedes.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Los cantes',
@@ -3951,6 +3952,7 @@ export const T = {
           'En el centro hay hasta 4 escaleras comunes. Se empiezan con un As y suben de una en una: 2, 3, 4… hasta la Q. Cuando una llega a la Q, sale de la mesa.',
           'Los K son comodines: valen la carta que haga falta, también para empezar una escalera.',
         ],
+        ejemplo: 'escaleras',
       },
       {
         titulo: 'Tu turno',
@@ -4004,6 +4006,7 @@ export const T = {
           'Sale el de la izquierda del repartidor. Hay que seguir el palo de salida si se puede; si no, se juega cualquier carta, sin obligación de fallar.',
           'La baza la gana el triunfo más alto o, si no hay, la carta más alta del palo de salida. El As es la carta más alta de cada palo.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Los puntos',
@@ -4034,6 +4037,7 @@ export const T = {
         texto: [
           'En cada palo, de mayor a menor: J, 9, As, 10, K, Q, 8 y 7. La J vale 3 puntos, el 9 2, el As y el 10 1 cada uno; las demás, nada. En total hay 28 puntos.',
         ],
+        ejemplo: 'orden',
       },
       {
         titulo: 'La subasta y el triunfo',
@@ -4048,6 +4052,7 @@ export const T = {
           'Hay que seguir el palo. Si no tienes, puedes echar cualquier carta o pedir el triunfo: entonces se descubre para todos y tienes que echar triunfo si tienes.',
           'Mientras el triunfo está oculto, sus cartas no ganan bazas. Con el triunfo descubierto, quien tiene el K y la Q del triunfo puede cantar la pareja: baja la puja 4 si es del lado que pujó y la sube 4 si es del otro.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Los puntos de juego',
@@ -4077,6 +4082,7 @@ export const T = {
           'Roba 2 cartas del mazo, baja lo que quieras y descarta una. Si tu pareja ya ha bajado y tienes dos cartas del valor de la de arriba del descarte, puedes cogerlo: las tres forman una combinación y te llevas las 6 cartas siguientes.',
           'Los treses rojos se ponen en la mesa en cuanto los tienes (valen 100) y robas otra. Un 3 negro o un comodín arriba del descarte lo bloquean.',
         ],
+        ejemplo: 'descarte',
       },
       {
         titulo: 'Combinaciones y libros',
@@ -4084,6 +4090,7 @@ export const T = {
           'Una combinación tiene de 3 a 7 cartas del mismo valor (del 4 al As), con al menos 2 naturales y como mucho 3 comodines (doses y comodines); también puede ser solo de comodines. Con 7 cartas es un libro: limpio sin comodines (500), sucio con ellos (300) o de comodines (1500).',
           'La primera bajada de cada ronda tiene que sumar al menos 50, 90, 120 o 150 puntos. Mientras no llegues, puedes deshacerla.',
         ],
+        ejemplo: 'libros',
       },
       {
         titulo: 'El pie y cerrar',
@@ -4119,6 +4126,7 @@ export const T = {
         texto: [
           'En cada palo, de mayor a menor: As, 3, Rey, Caballo, Sota, 7, 6, 5, 4 y 2. El As vale 11 puntos, el 3 10, el Rey 4, el Caballo 3 y la Sota 2; las demás, nada. En total hay 120.',
         ],
+        ejemplo: 'valores',
       },
       {
         titulo: 'La subasta',
@@ -4139,6 +4147,7 @@ export const T = {
         texto: [
           'No hay que seguir el palo: puedes echar cualquier carta. Gana el triunfo más alto o, si no hay, la carta más alta del palo de salida.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Los puntos de partida',
@@ -4167,6 +4176,7 @@ export const T = {
           'Cuenta la mayor suma de cartas de un mismo palo: el As vale 11, las figuras 10 y las demás su número. Lo máximo es 31 (el As y dos cartas de 10 del mismo palo).',
           'Tres cartas del mismo número valen 30,5.',
         ],
+        ejemplo: 'manos',
       },
       {
         titulo: 'El turno',
@@ -4202,6 +4212,7 @@ export const T = {
         texto: [
           'Grupo: 3 o 4 cartas del mismo número. Escalera: 3 o más cartas seguidas del mismo palo, en el orden As, 2… 7, sota, caballo y rey (el 7 y la sota van seguidos, y no se da la vuelta del rey al As).',
         ],
+        ejemplo: 'combinaciones',
       },
       {
         titulo: 'La carta descubierta',
@@ -4210,6 +4221,7 @@ export const T = {
           'Usarla es bajarla: elige cartas de tu mano y pulsa «Bajar» para formar una combinación nueva con ella, o toca una de tus combinaciones para añadírsela (con las cartas elegidas, si hacen falta).',
           'Tras usarla, descarta una carta. Tu descarte solo se le ofrece a tu rival.',
         ],
+        ejemplo: 'descubierta',
       },
       {
         titulo: 'Ganar la mano',
@@ -4240,6 +4252,7 @@ export const T = {
           'Con triunfo de espadas o bastos siguen el rey, el caballo, la sota y del 7 al 3. Con oros o copas, tras los matadores va el punto (el As del triunfo), luego el rey, el caballo, la sota y del 2 al 6.',
           'En los palos que no son triunfo: los negros van rey, caballo, sota y del 7 al 2; los rojos, rey, caballo, sota, As y del 2 al 7.',
         ],
+        ejemplo: 'matadores',
       },
       {
         titulo: 'La subasta',
@@ -4255,6 +4268,7 @@ export const T = {
           'Se juegan 9 bazas y sale el mano. Hay que seguir el palo; si no tienes, puedes echar cualquier carta, sin obligación de fallar.',
           'Si sale triunfo y solo tienes matadores, no estás obligado a echarlos, salvo que la carta de salida sea un matador más alto que el tuyo.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Sacada, puesta y codillo',
@@ -4292,6 +4306,7 @@ export const T = {
           'Si sales y tienes el As de triunfo, tienes que salir con él. Hay que seguir el palo y ganar la baza si se puede.',
           'Sin el palo hay que echar triunfo, y superar el triunfo más alto de la baza si se puede.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'El bote y el bourré',
@@ -4328,6 +4343,7 @@ export const T = {
           'Sin bazas: −5 por baza. Sin corazones: −5 por corazón. Sin damas: −10 por dama. Sin el K de corazones: −40 a quien se lo lleve. Sin la última baza: −40 a quien la gane.',
           'Bazas: +5 por cada baza que ganes. En sin corazones, sin damas y sin el K, la mano se acaba en cuanto se han ganado todas las cartas que restan.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'El dominó',
@@ -4335,6 +4351,7 @@ export const T = {
           'Abre el que eligió. Cada palo empieza por su J y crece de uno en uno hacia arriba y hacia abajo. Si no tienes ninguna carta que encaje, pasas.',
           'Por orden de acabar se anotan +40, +20, +10 y 0.',
         ],
+        ejemplo: 'domino',
       },
       {
         titulo: 'Consejos',
@@ -4359,6 +4376,7 @@ export const T = {
           'Hay 14 triunfos: las cuatro Q (tréboles, picas, corazones y diamantes), las cuatro J en el mismo orden y los diamantes (As, 10, K, 9, 8 y 7).',
           'En los otros palos el orden es As, 10, K, 9, 8 y 7.',
         ],
+        ejemplo: 'triunfos',
       },
       {
         titulo: 'Coger el blind',
@@ -4372,6 +4390,7 @@ export const T = {
         texto: [
           'Hay que seguir el palo de salida; todos los triunfos cuentan como un palo. Si no tienes, puedes echar cualquier carta. No hay que ganar ni fallar.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Los puntos',
@@ -4395,6 +4414,7 @@ export const T = {
           'El gran juego de bazas para tres de Rusia, Polonia y Ucrania. Se juega con 24 cartas: As, 10, K, Q, J y 9 de cada palo, que valen 11, 10, 4, 3, 2 y 0 (120 en total).',
           'Gana quien, siendo el declarante, cumple su contrato y llega a 1000 puntos.',
         ],
+        ejemplo: 'valores',
       },
       {
         titulo: 'La subasta',
@@ -4415,6 +4435,7 @@ export const T = {
           'Sale el declarante. Hay que seguir el palo; sin él, hay que echar triunfo si lo hay. No hay que ganar la baza.',
           'Al empezar no hay triunfo. Si ya ganaste una baza y sales con el K o la Q de un matrimonio, lo cantas: corazones 100, diamantes 80, tréboles 60 y picas 40, y su palo pasa a ser el triunfo.',
         ],
+        ejemplos: ['matrimonios', 'baza'],
       },
       {
         titulo: 'Los puntos',
@@ -4439,6 +4460,7 @@ export const T = {
           'El clásico francés de bazas para dos, con 32 cartas (del 7 al As). Cada mano son solo 5 bazas: gana la mano quien hace 3. Gana la partida el primero que llega a 5 puntos.',
           'En cada palo, el orden es K, Q, J, As, 10, 9, 8 y 7: el As va entre la J y el 10.',
         ],
+        ejemplo: 'orden',
       },
       {
         titulo: 'El reparto',
@@ -4466,6 +4488,7 @@ export const T = {
           'Sale el mano. Hay que seguir el palo y, si puedes, ganar la baza. Si no tienes el palo, hay que fallar con un triunfo si tienes.',
           'Quien tiene el rey de triunfo lo anuncia al jugar su primera carta y anota 1 punto.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Los puntos',
@@ -4509,6 +4532,7 @@ export const T = {
           'Si el montón tiene una sola carta y te la llevas con otra del mismo número, haces pishti: 10 puntos. Si las dos son J, 20.',
           'Llevarte con una J una carta sola que no es J no es pishti.',
         ],
+        ejemplo: 'pishti',
       },
       {
         titulo: 'Los puntos',
@@ -4546,6 +4570,7 @@ export const T = {
           'Juegas una carta y puedes llevarte una de la mesa de su mismo número, o, con una carta del As al 7, varias del As al 7 que sumen su valor. La J, la Q y la K no suman.',
           'Después te llevas en escalera la carta siguiente, si está en la mesa, y la siguiente, mientras haya: As, 2… 7, J, Q, K. Capturar no es obligatorio: puedes dejar tu carta en la mesa.',
         ],
+        ejemplo: 'captura',
       },
       {
         titulo: 'Caída y limpia',
@@ -4598,6 +4623,7 @@ export const T = {
           'Hay que seguir el palo; si no tienes, tienes que echar triunfo; y si tampoco, cualquier carta. Gana el triunfo más alto o la carta más alta del palo de salida.',
           'En la raspasy no hay triunfo y cada uno juega para sí: cada baza que ganas suma 1 a tu montaña.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'La cuenta',
@@ -4605,6 +4631,7 @@ export const T = {
           'Los contratos valen 2, 4, 6, 8 y 10 (de 6 a 10 bazas) y la miseria 10. Si cumples, sumas el valor a tu pulka; si fallas, sumas a tu montaña el valor por cada baza que te falta.',
           'Quien hace whist se apunta whists contra el que juega: el valor por cada baza que gana. Si entre los que hacen whist no llegan a sus bazas, suman montaña.',
         ],
+        ejemplo: 'contratos',
       },
       {
         titulo: 'El cierre',
@@ -4628,6 +4655,7 @@ export const T = {
           'De mayor a menor: As de espadas, As de bastos, 7 de espadas, 7 de oros, treses, doses, Ases de copas y de oros, reyes, caballos, sotas, 7 de copas y de bastos, seises, cincos y cuatros. No hace falta seguir el palo.',
           'Gana la mano quien gana dos de las tres bazas. Si una baza empata, es parda: si la primera es parda, decide la segunda; si la segunda es parda, gana quien ganó la primera; si todo es pardo, gana el que es mano.',
         ],
+        ejemplo: 'jerarquia',
       },
       {
         titulo: 'El envido',
@@ -4635,6 +4663,7 @@ export const T = {
           'Con dos cartas del mismo palo, tus puntos son 20 más sus valores (las figuras valen 0); si no, la carta más alta. Solo se canta en la primera baza, antes de jugar tu carta y antes de que se acepte un truco.',
           'Puedes cantar envido (2), real envido (3) o falta envido (lo que le falta al que va ganando para llegar a 30). El rival quiere, no quiere o sube: hasta dos envidos, luego el real y al final la falta. Querido, se comparan los puntos y gana el más alto; no querido, cobra el que cantó lo último lo querido antes, o 1.',
         ],
+        ejemplo: 'envido',
       },
       {
         titulo: 'El truco',
@@ -4679,6 +4708,7 @@ export const T = {
           'En el Rufspiel, los triunfos son, de mayor a menor, las damas (tréboles, picas, corazones y diamantes), las jotas en el mismo orden y los corazones. En el Solo, igual, con el palo que eliges en lugar de los corazones.',
           'En el Wenz solo son triunfo las cuatro jotas, y las damas van en su palo, entre el rey y el 9. En los demás palos el orden es As, 10, rey, 9, 8 y 7.',
         ],
+        ejemplo: 'triunfos',
       },
       {
         titulo: 'Las bazas',
@@ -4686,6 +4716,7 @@ export const T = {
           'Hay que seguir el palo de salida, y todos los triunfos cuentan como un palo: si sale una dama, hay que echar triunfo. Si no puedes, echas cualquier carta. Gana el triunfo más alto o la carta más alta del palo de salida.',
           'Quien tiene el As llamado tiene que echarlo cuando sale su palo, no puede descartarlo en otro palo hasta la última baza y, si sale con ese palo, tiene que salir con el As.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Las fichas',
@@ -4717,6 +4748,7 @@ export const T = {
           'No hay triunfo. Hay que seguir el palo de la carta de salida si se puede; si no, se puede echar cualquier carta, pero no gana.',
           'Gana la carta más alta del palo de salida. El orden, de mayor a menor, es 3, 2, As, rey, caballo, sota, 7, 6, 5 y 4. Quien gana la baza sale en la siguiente.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Los puntos',
@@ -4724,6 +4756,7 @@ export const T = {
           'El As vale 1 punto; el 3, el 2, el rey, el caballo y la sota, un tercio de punto cada uno; las demás, nada. La última baza vale 1 punto más.',
           'Al acabar la mano, cada pareja anota solo los puntos enteros, sin los tercios que sobran: entre las dos siempre suman 11.',
         ],
+        ejemplo: 'orden',
       },
       {
         titulo: 'La partida',
@@ -4761,6 +4794,7 @@ export const T = {
           'Las cartas valen su número; la sota 8, el caballo 9 y el rey 10. Juegas una carta: si en la mesa hay una de su mismo valor, te la llevas; si no, te llevas varias que sumen su valor.',
           'Capturar es obligatorio, y si hay una carta igual hay que llevarse esa antes que una suma. Si no puedes capturar, tu carta se queda en la mesa.',
         ],
+        ejemplo: 'captura',
       },
       {
         titulo: 'La scopa',
@@ -4800,6 +4834,7 @@ export const T = {
           'Los valores van de 40 (6 picas) a 520 (10 sin triunfo): picas, tréboles, diamantes, corazones y sin triunfo, cada uno 20 más, y cada baza más, 100.',
           'El misère (250) y el misère abierto (500, con tus cartas boca arriba) son contratos de no ganar ninguna baza, jugando solo: tu compañero no juega.',
         ],
+        ejemplo: 'pujas',
       },
       {
         titulo: 'La viuda',
@@ -4813,6 +4848,7 @@ export const T = {
           'El comodín es el triunfo más alto; luego la Jota del triunfo y la otra Jota del mismo color, que cuenta como triunfo (no de su palo); luego As, Rey, Dama, 10…',
           'Sin triunfo, el comodín gana cualquier baza, pero solo se puede echar si no tienes del palo; si sales con él, nombras el palo que hay que seguir.',
         ],
+        ejemplo: 'triunfos',
       },
       {
         titulo: 'Los puntos',
@@ -4845,6 +4881,7 @@ export const T = {
           'Sin bazas: −2 por baza. Sin corazones: −2 por corazón y −6 por el As de corazones. Sin damas: −6 por dama. Sin el Rey de corazones: −20 a quien se lo lleve. Sin las dos últimas: −10 la penúltima baza y −20 la última.',
           'En sin corazones y sin el Rey de corazones no se puede salir de corazones si tienes otros palos, y en el del Rey, si no puedes seguir el palo y lo tienes, tienes que echarlo. La mano acaba en cuanto no quedan cartas que penalicen.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'El triunfo',
@@ -4858,6 +4895,7 @@ export const T = {
           'Se juega desde las Jotas. Una Jota abre la fila de su palo; luego encajan la carta siguiente y la anterior de cada fila (del 2 al As).',
           'Si no tienes ninguna carta que encaje, pasas. El primero que se queda sin cartas anota +45, el segundo +20, el tercero +5 y el último −5.',
         ],
+        ejemplo: 'domino',
       },
       {
         titulo: 'Consejos',
@@ -4896,6 +4934,7 @@ export const T = {
           'Hay que seguir el palo. Si no tienes, hay que fallar con un triunfo, aunque la baza sea de tu compañero.',
           'Si ya hay triunfo en la baza, hay que echar uno más alto si puedes; si no puedes, no se echa uno más bajo salvo que solo te queden triunfos. Si sale triunfo, también hay que subir.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Roem',
@@ -4903,6 +4942,7 @@ export const T = {
           'Quien gana una baza anota el roem de sus cartas: escalera de 3 del mismo palo 20, de 4 50; cuatro iguales 100 (cuatro Jotas 200); el Rey y la Dama del triunfo juntos (stuk) 20.',
           'Ganar las 8 bazas (pit) vale 100 de roem más.',
         ],
+        ejemplo: 'roem',
       },
       {
         titulo: 'Nat',
@@ -4942,6 +4982,7 @@ export const T = {
           'En los otros palos el orden es el normal: As 11, Rey 4, Dama 3, Jota 2 y 10 10. En Obenabe y Undenufe el 8 vale 8, y en Undenufe el 6 vale 11 y el As nada.',
           'Cada mano reparte 157 puntos con los 5 de la última baza. Quien se lleva las 9 bazas (Match) suma 257.',
         ],
+        ejemplo: 'triunfo',
       },
       {
         titulo: 'Las bazas',
@@ -4950,6 +4991,7 @@ export const T = {
           'Si sale triunfo, hay que echar triunfo, salvo que el único que tengas sea la Jota: el Buur nunca es obligatorio.',
           'No se puede echar un triunfo más bajo que el que ya hay en la baza, salvo que solo te queden triunfos.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Weis y Stöck',
@@ -4957,6 +4999,7 @@ export const T = {
           'Las declaraciones se comparan solas al acabar la primera baza: escaleras del mismo palo (3 cartas 20, 4 cartas 50, 5 cartas 100…) y cuatro iguales (Jotas 200, nueves 150, Ases, Reyes, Damas o dieces 100).',
           'Solo anota la pareja con la mejor declaración, y anota todas las suyas. El Rey y la Dama del triunfo en la misma mano (Stöck) valen 20 al jugar la segunda.',
         ],
+        ejemplo: 'weis',
       },
       {
         titulo: 'Consejos',
@@ -4989,6 +5032,7 @@ export const T = {
           'La secuencia: gana la escalera más larga del mismo palo, de 3 o más. Vale 3, 4, o 10 más que su largo con 5 o más; quien gana anota también sus otras escaleras.',
           'El conjunto: tres o cuatro cartas iguales del 10 al As. Gana el de cuatro (vale 14) y, si no, el más alto (vale 3); quien gana anota también sus otros conjuntos.',
         ],
+        ejemplo: 'declaraciones',
       },
       {
         titulo: 'Las bazas',
@@ -4996,6 +5040,7 @@ export const T = {
           'Sale el mayor. Hay que seguir el palo; no hay triunfo. Salir en una baza vale 1, ganar una baza en que salió el otro vale 1 y la última baza vale 1 más.',
           'Quien gana más bazas anota 10; quien las gana todas (capote), 40.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Repique y pique',
@@ -5027,6 +5072,7 @@ export const T = {
           'El orden, de mayor a menor, es A, 7, K, J, Q, 6, 5, 4, 3 y 2: el 7 gana al Rey.',
           'Valen puntos el As (11), el 7 (10), el Rey (4), la Jota (3) y la Reina (2). En total hay 120.',
         ],
+        ejemplo: 'valores',
       },
       {
         titulo: 'El triunfo',
@@ -5040,6 +5086,7 @@ export const T = {
           'Sale el siguiente al repartidor. Hay que seguir el palo de salida; si no tienes, puedes jugar cualquier carta, también un triunfo.',
           'Gana la baza el triunfo más alto o, si no hay, la carta más alta del palo de salida. Quien la gana sale en la siguiente.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Los juegos',
@@ -5085,6 +5132,7 @@ export const T = {
           'La Excusa se puede jugar siempre: no gana nunca y vuelve a tu bando, que da medio punto a cambio.',
           'Con muchos triunfos puedes enseñar una poignée en tu primer turno: vale 20, 30 o 40 para el bando que gane la mano.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Los puntos',
@@ -5093,6 +5141,7 @@ export const T = {
           'El preneur necesita 56 sin oudlers, 51 con uno, 41 con dos y 36 con tres. La mano vale (25 + la diferencia) por el multiplicador del contrato; cobra o paga a cada defensor.',
           'Petit au bout: quien gana la última baza con el 1 de triunfo suma 10 por el multiplicador.',
         ],
+        ejemplo: 'puntos',
       },
       {
         titulo: 'Consejos',
@@ -5117,6 +5166,7 @@ export const T = {
           'Son triunfo, de mayor a menor: el 10 de corazones, las Damas (♣, ♠, ♥, ♦), las Jotas (en el mismo orden) y el A, 10, K y 9 de diamantes.',
           'Los demás palos son tréboles y picas (A, 10, K y 9) y corazones (A, K y 9). Hay que seguir el palo de salida (los triunfos son un palo); si no puedes, juegas lo que quieras. Con dos cartas iguales, gana la primera.',
         ],
+        ejemplos: ['triunfos', 'baza'],
       },
       {
         titulo: 'Las parejas secretas',
@@ -5175,6 +5225,7 @@ export const T = {
           'Mientras quede mazo puedes jugar cualquier carta: no hace falta seguir el palo. Gana el triunfo más alto o la carta más alta del palo de salida; si son iguales, gana la primera.',
           'Tras cada baza roba primero el que la ganó y después el otro. La última carta del mazo es para el ganador y la vuelta para el otro.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Los cantes',
@@ -5183,6 +5234,7 @@ export const T = {
           'Las cartas cantadas quedan boca arriba, pero siguen en tu mano. Cada cante necesita al menos una carta nueva, y una carta no vale dos veces para el mismo tipo de combinación.',
           'En vez de cantar, puedes declarar el 7 de triunfo (10) o cambiarlo por la carta vuelta (10).',
         ],
+        ejemplo: 'cantes',
       },
       {
         titulo: 'Las últimas bazas',
@@ -5219,6 +5271,7 @@ export const T = {
           'Sobre una carta se pone otra un punto más baja y del color contrario: un 7 rojo sobre un 8 negro, un 6 negro sobre ese 7… El As es la más baja y el K la más alta.',
           'Las esquinas solo se empiezan con un K. Un hueco de la cruz admite cualquier carta.',
         ],
+        ejemplo: 'pilas',
       },
       {
         titulo: 'El turno',
@@ -5262,6 +5315,7 @@ export const T = {
           'En tu turno pides a un rival todas las cartas de un valor del que tengas al menos una: toca el valor en tu mano y después al rival.',
           'Si tiene, te las da todas y vuelves a pedir. Si no, te dice «¡A pescar!» y robas una carta del mar: si es del valor que pediste, la enseñas y sigues; si no, le toca al de tu izquierda.',
         ],
+        ejemplo: 'pedir',
       },
       {
         titulo: 'Cuartetos y cartas',
@@ -5308,6 +5362,7 @@ export const T = {
           'Hay que seguir el palo de salida si se puede; si no, se juega cualquier carta. Gana el triunfo más alto o, si no hay, la carta más alta del palo de salida (el As es la más alta).',
           'En sin triunfo no hay triunfos: siempre gana la carta más alta del palo de salida.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Los puntos',
@@ -5316,6 +5371,7 @@ export const T = {
           'Los slams dan más: 500 o 750 el pequeño (nivel 6) y 1000 o 1500 el grande (nivel 7). Las bazas de más suman lo que vale una baza.',
           'Si no cumples, el rival suma 50 por cada baza que falte, o 100 si eres vulnerable. Doblar y redoblar multiplican los puntos y las multas.',
         ],
+        ejemplo: 'puntos',
       },
       {
         titulo: 'Chicago y vulnerabilidad',
@@ -5363,6 +5419,7 @@ export const T = {
           'Hay que seguir el palo de salida si se puede, pero no hay obligación de fallar. Las cartas valen As 11, 10 10, K 4, Q 3 y J 2: 120 en total.',
           'En Nulo no hay triunfo y el orden es A, K, Q, J, 10, 9, 8 y 7.',
         ],
+        ejemplos: ['jotas', 'baza'],
       },
       {
         titulo: 'Ganar y el valor del juego',
@@ -5388,6 +5445,7 @@ export const T = {
           'El clásico alemán para dos del que nació el Schnapsen. Se juega con 24 cartas: As, 10, K, Q, J y 9 de cada palo, que valen 11, 10, 4, 3, 2 y 0.',
           'Gana la mano quien llega a 66 puntos con sus bazas y sus cantes, y la partida quien suma 7 puntos de partida.',
         ],
+        ejemplo: 'valores',
       },
       {
         titulo: 'El reparto y las bazas',
@@ -5395,6 +5453,7 @@ export const T = {
           'Cada uno recibe 6 cartas y la siguiente se pone boca arriba: su palo es el triunfo. Mientras haya mazo puedes jugar cualquier carta, y tras cada baza roba primero el que la ganó.',
           'Si tienes el 9 del triunfo, al salir puedes cambiarlo por la carta vuelta.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Cantes y cerrar',
@@ -5438,6 +5497,7 @@ export const T = {
           'El orden es As (11 puntos), 10 (10), K (4), Q (3) y J (2). La carta vuelta, boca arriba bajo el mazo, marca el triunfo.',
           'La baza la gana el triunfo más alto o, si no hay, la más alta del palo de salida. Tras cada baza roba primero quien la ganó.',
         ],
+        ejemplos: ['valores', 'baza'],
       },
       {
         titulo: 'Con el mazo abierto',
@@ -5446,6 +5506,7 @@ export const T = {
           'Al salir, si tienes la J del triunfo puedes cambiarla por la carta vuelta.',
           'Al salir, si tienes el K y la Q de un palo puedes cantarlos: 20 puntos, o 40 en el triunfo. Después sales con uno de los dos. Los puntos del cante cuentan cuando hayas ganado alguna baza.',
         ],
+        ejemplo: 'cante',
       },
       {
         titulo: 'Cerrar el mazo',
@@ -5492,6 +5553,7 @@ export const T = {
           'En el triunfo mandan la J (20 puntos) y el 9 (14), y después el As (11), el 10 (10), el K (4), la Q (3), el 8 y el 7.',
           'En los demás palos el orden es As (11), 10 (10), K (4), Q (3), J (2), 9, 8 y 7. Las cartas suman 152 puntos, y la última baza vale 10 más.',
         ],
+        ejemplo: 'triunfo',
       },
       {
         titulo: 'Jugar las bazas',
@@ -5500,6 +5562,7 @@ export const T = {
           'Si no tienes el palo, tienes que fallar con un triunfo (montando si ya hay otro), salvo que la baza la vaya ganando tu compañero.',
           'Si tienes el K y la Q del triunfo, al jugarlos dices «Belote» y «Rebelote» y tu pareja suma 20.',
         ],
+        ejemplos: ['baza', 'belote'],
       },
       {
         titulo: 'Los puntos',
@@ -5531,12 +5594,14 @@ export const T = {
           'Por turnos, cada uno juega una carta y se suma su valor (el As 1, las figuras 10) sin pasar de 31. Sumas 2 si llegas a 15 o a 31, 2 por pareja con la carta anterior (6 por trío, 12 por póker) y 1 por carta si las últimas forman una escalera de 3 o más, aunque estén desordenadas.',
           'Si no te cabe ninguna carta, dices «go» y el otro sigue mientras pueda; el último en jugar suma 1. La cuenta vuelve a 0, y la última carta de la mano también suma 1.',
         ],
+        ejemplo: 'jugar',
       },
       {
         titulo: 'El recuento',
         texto: [
           'Al acabar se cuentan, con el starter: primero la mano del que no reparte, después la del que reparte y al final su crib. Cada combinación que suma 15 vale 2; cada pareja, 2; cada escalera, 1 por carta; el color, 4 (5 con el starter; en el crib, solo 5), y la J del palo del starter, 1.',
         ],
+        ejemplo: 'recuento',
       },
       {
         titulo: 'Consejos',
@@ -5560,6 +5625,7 @@ export const T = {
         texto: [
           'De menor a mayor: 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, A y 2. A igual número desempata el palo: ♦, ♣, ♥ y ♠, de menor a mayor.',
         ],
+        ejemplo: 'orden',
       },
       {
         titulo: 'Las jugadas',
@@ -5567,6 +5633,7 @@ export const T = {
           'Puedes soltar una carta, una pareja, un trío o una jugada de 5. Las de 5, de menor a mayor: escalera (5 números seguidos, sin dar la vuelta), color (5 del mismo palo), full (trío y pareja), póker (cuatro iguales y otra) y escalera de color.',
           'Una jugada solo se supera con otra del mismo número de cartas y más alta.',
         ],
+        ejemplo: 'jugadas',
       },
       {
         titulo: 'Las rondas',
@@ -5605,6 +5672,7 @@ export const T = {
           'La J del triunfo es la carta más alta. La segunda es la J del otro palo del mismo color, que pasa a ser del triunfo: con corazones de triunfo, la J de diamantes es un corazón. Después van el As, el K, la Q, el 10 y el 9.',
           'Hay que seguir el palo de salida si se puede, y la baza la gana el triunfo más alto o la carta más alta del palo de salida.',
         ],
+        ejemplos: ['jotas', 'baza'],
       },
       {
         titulo: 'Los puntos',
@@ -5636,6 +5704,7 @@ export const T = {
           'Empieza quien tiene el triunfo más bajo, atacando al de su izquierda con una carta cualquiera. El defensor tiene que ganarla con una más alta del mismo palo o con un triunfo, o llevarse las cartas de la mesa.',
           'Cuando ha ganado todo lo que hay, los demás pueden echar más cartas de un número que ya esté en la mesa, empezando por el atacante. Como mucho hay 6 ataques por ronda.',
         ],
+        ejemplos: ['defensa', 'triunfo'],
       },
       {
         titulo: 'Fin de la ronda',
@@ -5667,6 +5736,7 @@ export const T = {
           'En tu turno juegas una carta. El As vale 1 y del 2 al 10, su número. Con ella recoges las cartas iguales de la mesa, las combinaciones que suman su valor (un 8 recoge un 5 con un 3) y las construcciones de ese valor.',
           'Las figuras (J, Q y K) solo recogen otra igual. Si al recoger dejas la mesa vacía, haces barrida.',
         ],
+        ejemplo: 'captura',
       },
       {
         titulo: 'Construir',
@@ -5704,6 +5774,7 @@ export const T = {
           'Abre la mano quien tiene el 7 de diamantes. Cada palo forma en la mesa una escalera que empieza por su 7.',
           'Puedes poner el 7 de un palo que aún no está, o alargar una escalera con la carta siguiente: hacia arriba hasta la K y hacia abajo hasta el As.',
         ],
+        ejemplo: 'escalera',
       },
       {
         titulo: 'Jugar o pasar',
@@ -5740,6 +5811,7 @@ export const T = {
           'Sale el jugador a la izquierda del repartidor. Hay que seguir el palo de salida si se puede; si no, se juega cualquier carta.',
           'Gana la baza el triunfo más alto o, si no hay triunfos, la carta más alta del palo de salida (el As es la más alta). Quien la gana sale en la siguiente.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Los puntos',
@@ -5771,6 +5843,7 @@ export const T = {
           'Roba una carta del mazo o llévate el pozo entero. Después baja combinaciones o añade cartas a las de tu pareja, y termina descartando una carta.',
           'Una combinación tiene 3 o más cartas del mismo valor, al menos dos naturales y como mucho tres comodines (jokers y doses). Una canasta de siete sin comodines es limpia (500) y con comodines, sucia (300).',
         ],
+        ejemplo: 'combinaciones',
       },
       {
         titulo: 'La primera bajada',
@@ -5785,6 +5858,7 @@ export const T = {
           'Para llevarte el pozo tienes que bajar en el momento la carta de arriba con cartas de tu mano. Si está congelado (tiene un comodín, o tu pareja aún no ha bajado), necesitas dos naturales de ese valor.',
           'Con un 3 negro o un comodín arriba no se puede coger: descartar un 3 negro tapa el pozo para el siguiente.',
         ],
+        ejemplo: 'pozo',
       },
       {
         titulo: 'Los treses rojos y cerrar',
@@ -5815,6 +5889,7 @@ export const T = {
         texto: [
           'De menor a mayor: 3, 4, 5, 6, 7, sota, caballo, rey, As y 2. Los palos no cuentan.',
         ],
+        ejemplo: 'orden',
       },
       {
         titulo: 'Las rondas',
@@ -5824,6 +5899,7 @@ export const T = {
           'Los doses cortan: limpian la ronda al instante y vuelve a abrir quien los jugó.',
           'En la primera mano abre quien tiene el 3 de oros; en las siguientes, el culo.',
         ],
+        ejemplo: 'ronda',
       },
       {
         titulo: 'Los cargos y el intercambio',
@@ -5867,8 +5943,9 @@ export const T = {
       {
         titulo: 'Las manos',
         texto: [
-          'De mayor a menor: escalera de color, póker, full, color, escalera, trío, doble pareja, pareja y carta alta. El As puede ir alto o bajo en una escalera (A-2-3-4-5).',
+          'Gana la mano más alta de las nueve del ejemplo. El As puede ir alto o bajo en una escalera (A-2-3-4-5). Con la misma mano, gana la de cartas más altas.',
         ],
+        ejemplo: 'manos',
       },
       {
         titulo: 'Consejos',
@@ -5893,6 +5970,7 @@ export const T = {
           'Grupos de 3 o 4 cartas del mismo número, o escaleras de 3 o más cartas seguidas del mismo palo. El As va abajo (A-2-3) o arriba (Q-K-A), pero no da la vuelta (K-A-2 no vale).',
           'Puedes añadir cartas a cualquier combinación de la mesa, también a las de los demás: la cuarta de un grupo o la que alarga una escalera. Cada carta cuenta para quien la pone.',
         ],
+        ejemplo: 'combinaciones',
       },
       {
         titulo: 'El turno',
@@ -5900,6 +5978,7 @@ export const T = {
           'Roba la carta de arriba del mazo, o coge cualquier carta del descarte (que está abierto) con todas las que tiene encima. Si te llevas más de una, tienes que bajar o añadir enseguida la de más abajo.',
           'Después baja y añade lo que quieras y termina descartando una carta. La que coges sola de arriba del descarte no la puedes soltar en el mismo turno.',
         ],
+        ejemplo: 'descarte',
       },
       {
         titulo: 'Fin de la mano',
@@ -5932,6 +6011,7 @@ export const T = {
           'Grupos de 3 o 4 cartas del mismo número, o escaleras de 3 o más cartas seguidas del mismo palo. El As va siempre abajo: A-2-3 vale, Q-K-A no.',
           'Las cartas sueltas suman puntos: el As 1, del 2 al 10 su número, y la J, la Q y la K 10.',
         ],
+        ejemplo: 'combinaciones',
       },
       {
         titulo: 'El turno',
@@ -5946,6 +6026,7 @@ export const T = {
           'Si al descartar te quedan 10 puntos sueltos o menos, puedes cerrar. Con 0 es Gin.',
           'Al cerrar se destapan las dos manos. Si no es Gin, el rival coloca sus cartas sueltas en tus combinaciones (lo hace la máquina, lo mejor posible para él).',
         ],
+        ejemplo: 'cerrar',
       },
       {
         titulo: 'Puntos',
@@ -5978,6 +6059,7 @@ export const T = {
           'Del 2 al 10, su número; la J, la Q y la K valen 10; el As vale 11 o 1, lo que más te convenga.',
           'Un As y una carta de 10 de entrada son un blackjack, la mejor mano: cobra 3 por cada 2 apostadas.',
         ],
+        ejemplos: ['valores', 'blanda', 'blackjack'],
       },
       {
         titulo: 'La mano',
@@ -6023,6 +6105,7 @@ export const T = {
           'Hay que seguir el palo de salida si se tiene; si no, puedes echar cualquier carta. Las picas son siempre triunfo: la pica más alta gana la baza, y si no hay picas, la más alta del palo de salida. El As es la carta más alta.',
           'No se puede salir de picas hasta que alguien haya echado una pica sobre otro palo («picas rotas»), salvo que solo te queden picas.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Puntos',
@@ -6030,6 +6113,7 @@ export const T = {
           'Si la pareja llega a su contrato, suma 10 por cada baza apostada y 1 por cada baza de más. Si no llega, resta 10 por cada baza apostada.',
           'Cada baza de más es un saco. Al juntar 10 sacos, la pareja pierde 100 puntos: no conviene pasarse.',
         ],
+        ejemplo: 'puntos',
       },
       {
         titulo: 'Consejos',
@@ -6054,6 +6138,7 @@ export const T = {
           'En tu turno juegas una carta del palo que toca o del mismo número que la de arriba del descarte. Por ejemplo, sobre el 9 de corazones vale cualquier corazón o cualquier 9.',
           'El 8 se juega siempre, encima de cualquier carta, y eliges el palo que sigue.',
         ],
+        ejemplo: 'jugar',
       },
       {
         titulo: 'Robar',
@@ -6068,6 +6153,7 @@ export const T = {
           'Quien se queda sin cartas se apunta lo que les queda a los demás: el 8 vale 50, las figuras 10, el As 1 y el resto su número.',
           'Si nadie puede jugar ni robar, la mano se bloquea y la gana quien tenga menos puntos en la mano.',
         ],
+        ejemplo: 'puntos',
       },
       {
         titulo: 'Consejos',
@@ -6091,6 +6177,7 @@ export const T = {
           'En cada turno toca un valor, en orden: Ases, doses, treses… hasta reyes, y vuelta a empezar. Bajas boca abajo de 1 a 4 cartas diciendo que son de ese valor.',
           'Puedes decir la verdad o mentir: nadie ve las cartas. Toca las cartas para marcarlas y pulsa «Bajar».',
         ],
+        ejemplo: 'bajar',
       },
       {
         titulo: '¡Mentiroso!',
@@ -6149,6 +6236,7 @@ export const T = {
           'Sale el siguiente al que reparte. Hay que seguir el palo si puedes; si no, echas lo que quieras: no hay obligación de fallar ni de superar. Gana el triunfo más alto o, si no hay, la carta más alta del palo que salió.',
           'Los matadores tienen privilegio: si se sale de triunfo con una carta más baja que tu matador, no estás obligado a echarlo.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'El cobro',
@@ -6185,6 +6273,7 @@ export const T = {
           'La carta de arriba de un abanico puede subir a su fundación si es la siguiente, o ir sobre la de arriba de otro abanico si es la siguiente más baja del mismo palo: el 6 de picas sobre el 7 de picas.',
           'Toca la carta y después el destino; tocándola dos veces sube a su fundación. Los abanicos vacíos no se rellenan.',
         ],
+        ejemplo: 'mover',
       },
       {
         titulo: 'Rebarajes y merci',
@@ -6221,6 +6310,7 @@ export const T = {
           'Puedes mover cualquier carta descubierta, con todas las que tenga encima aunque estén desordenadas, sobre la siguiente de su palo: el 6 de picas sobre el 7 de picas.',
           'En una columna vacía solo puede ir una K, con lo que lleve encima. Cuando una carta tapada queda arriba, se descubre sola.',
         ],
+        ejemplo: 'mover',
       },
       {
         titulo: 'La reserva',
@@ -6250,6 +6340,7 @@ export const T = {
           'Al empezar hay 10 columnas de 4 cartas, todas a la vista. Sobre cada carta va la de un número menos y del mismo palo: el 7 de picas sobre el 8 de picas.',
           'En una columna vacía puede ir cualquier carta.',
         ],
+        ejemplo: 'mover',
       },
       {
         titulo: 'Mover',
@@ -6281,6 +6372,7 @@ export const T = {
           'Subir las 52 cartas a las cuatro fundaciones, una por palo.',
           'Las fundaciones no empiezan por el As: la primera carta que sale va a una fundación y su número es la base de las cuatro. Después de la K va el As, hasta completar 13 cartas.',
         ],
+        ejemplo: 'fundacion',
       },
       {
         titulo: 'La mesa',
@@ -6295,6 +6387,7 @@ export const T = {
           'En las columnas se construye bajando y alternando colores, también con vuelta: una K puede ir sobre un As. Puedes mover una carta o un tramo ordenado.',
           'La carta de arriba de la reserva y la del descarte se pueden jugar a las columnas y a las fundaciones. Haz doble toque en una carta para subirla directamente.',
         ],
+        ejemplo: 'vuelta',
       },
       {
         titulo: 'El mazo',
@@ -6327,6 +6420,7 @@ export const T = {
           'La carta que mueves tiene que ir sobre una de un valor más y de color contrario (un 9 negro sobre un 10 rojo). En el Solitario ruso, del mismo palo.',
           'Solo un Rey, con lo que tenga encima, puede ocupar una columna vacía.',
         ],
+        ejemplo: 'mover',
       },
       {
         titulo: 'Fundaciones',
@@ -6377,6 +6471,7 @@ export const T = {
           'Cada carta de una racha suma su número en la racha: la primera 1, la segunda 2, la tercera 3… Robar corta la racha.',
           'Despejar un pico suma 15, y despejar los tres, 30 más. La mejor puntuación queda como récord, aunque no ganes.',
         ],
+        ejemplo: 'racha',
       },
       {
         titulo: 'Consejos',
@@ -6400,6 +6495,7 @@ export const T = {
           'Toca la última carta de una columna para pasarla al descarte. Solo se puede si vale exactamente una más o una menos que la de arriba del descarte, sea del palo que sea: sobre un 7 va un 6 o un 8.',
           'El As vale 1, la J 11, la Q 12 y la K 13. Sobre una K no va nada y sobre un As solo un 2, salvo que en las opciones elijas que la K y el As se toquen.',
         ],
+        ejemplo: 'mover',
       },
       {
         titulo: 'El mazo',
@@ -6430,6 +6526,7 @@ export const T = {
           'Se quitan parejas de cartas que sumen 13. El As vale 1, los números lo que marcan, la J 11 y la Q 12. La K vale 13 y se quita sola.',
           'Solo se pueden quitar cartas libres: las de la pirámide que no tienen ninguna carta encima, y la de arriba del descarte. Toca una carta y luego la otra; la K se quita con un toque.',
         ],
+        ejemplo: 'parejas',
       },
       {
         titulo: 'El mazo',
@@ -6461,7 +6558,7 @@ export const T = {
           'El orden no es el de otros juegos. De la más fuerte a la más débil: el As de espadas, el As de bastos, el 7 de espadas, el 7 de oros, los treses, los doses, los Ases de copas y oros, los Reyes, los Caballos, las Sotas, los 7 de copas y bastos, los seises, los cincos y los cuatros.',
           'No hay triunfo y puedes jugar la carta que quieras: no hay que seguir el palo.',
         ],
-        ejemplo: 'jerarquiaTruc',
+        ejemplo: 'jerarquia',
       },
       {
         titulo: 'Las bazas',
@@ -6476,7 +6573,7 @@ export const T = {
           'En la primera baza, antes de jugar tu carta, puedes «envidar»: apostar a que tienes más puntos de envit. Dos cartas del mismo palo valen 20 más sus números (las figuras valen 0); si no tienes dos del mismo palo, vale tu carta más alta.',
           'El rival puede decir «vull» (vale 2), «no vull» (cobras 1), «torne» (sube a 4) o «falta» (lo que le falta al que va ganando para acabar la came). Con empate gana el más cercano a la mano. El envit se cobra al terminar la mano.',
         ],
-        ejemplo: 'envitTruc',
+        ejemplo: 'envit',
       },
       {
         titulo: 'El truc',
@@ -6533,6 +6630,7 @@ export const T = {
           'Hay que seguir el palo que salió y, si puedes, superar la carta que va ganando. Si no tienes de ese palo, tienes que fallar con triunfo (y superar el triunfo más alto si puedes).',
           'Si la baza la va ganando tu compañero, solo tienes que seguir el palo: no hace falta superarle ni fallar. La mesa solo te deja jugar las cartas permitidas.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'La puntuación',
@@ -6570,7 +6668,7 @@ export const T = {
         texto: [
           'Del As al 7, cada carta vale su número. La Sota, el Caballo y el Rey valen medio punto.',
         ],
-        ejemplo: 'valoresSyM',
+        ejemplo: 'valores',
       },
       {
         titulo: 'Cómo se juega una mano',
@@ -6586,7 +6684,7 @@ export const T = {
           'Al final se destapan las cartas. Si tienes más que la banca, o la banca se pasa, la banca te paga tu apuesta. Si tienes lo mismo o menos, la cobra la banca: los empates son para la banca.',
           'Si consigues siete y media con tus dos primeras cartas (un 7 y una figura), cobras el doble.',
         ],
-        ejemplo: 'sieteYMedia',
+        ejemplo: 'natural',
       },
       {
         titulo: 'La banca y el final',
@@ -6674,7 +6772,7 @@ export const T = {
           'En la mesa se forma una escalera por palo, que empieza siempre por el 5. En tu turno puedes poner el 5 de un palo que aún no esté en la mesa, o alargar una escalera por uno de sus extremos.',
           'Por arriba va el 6, el 7, la Sota, el Caballo y el Rey; por abajo, el 4, el 3, el 2 y el As. Siempre la carta justo siguiente: sin saltarse ninguna.',
         ],
-        ejemplo: 'escaleraCinquillo',
+        ejemplo: 'escalera',
       },
       {
         titulo: 'Jugar o pasar',
@@ -6718,6 +6816,7 @@ export const T = {
           'Empieza quien tiene el 2 de tréboles, que tiene que jugarlo. Por turnos, cada uno echa una carta y hay que seguir el palo de salida si se tiene. Gana la carta más alta de ese palo (el As es la más alta) y no hay triunfo. Quien gana sale en la siguiente.',
           'Si no tienes el palo, puedes echar cualquier carta: es el momento de soltar la Q de picas o tus corazones.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Restricciones',
@@ -6768,6 +6867,7 @@ export const T = {
         texto: [
           'Todos a la vez eligen una carta de su mano y, cuando todos han elegido, cada uno se la pasa al siguiente jugador y recibe la del anterior. Se repite una y otra vez, sin turnos: elige rápido.',
         ],
+        ejemplo: 'pasar',
       },
       {
         titulo: 'Plantarse',
@@ -6864,6 +6964,7 @@ export const T = {
         texto: [
           'Normalmente se juega con ocho reyes: los treses cuentan como reyes y los doses como ases. De más alta a más baja: Rey, Caballo, Sota, 7, 6, 5, 4 y As.',
         ],
+        ejemplo: 'ochoReyes',
       },
       {
         titulo: 'Los cuatro lances',
@@ -6872,7 +6973,7 @@ export const T = {
           'Pares: una pareja (dos iguales), unas medias (tres iguales) o unos duples (dos parejas o cuatro iguales). Los duples ganan a las medias y las medias a la pareja.',
           'Juego: se suman las cartas (figuras 10, As 1, el resto su número). Hay juego con 31 o más, y el mejor es la 31, luego la 32, la 40, la 37, 36, 35, 34 y 33. Si nadie tiene juego se juega al Punto: gana la suma más alta.',
         ],
-        ejemplo: 'jugadasMus',
+        ejemplo: 'jugadas',
       },
       {
         titulo: 'Las apuestas',
@@ -6939,6 +7040,7 @@ export const T = {
           'Sale el siguiente al que reparte. Hay que seguir el palo que salió y, si puedes, ganar la baza. Si no tienes ese palo, tienes que echar triunfo y superar el triunfo de la mesa si puedes. Si no tienes ni palo ni triunfo, echas cualquier carta.',
           'Gana el triunfo más alto o, si no hay, la carta más fuerte del palo que salió. De más fuerte a menos: As, 3, Rey, Caballo, Sota, 7, 6, 5, 4 y 2. Quien gana sale en la siguiente.',
         ],
+        ejemplo: 'baza',
       },
       {
         titulo: 'Los puntos',
@@ -6977,6 +7079,7 @@ export const T = {
           'Los 4 comodines y los 8 doses son comodines: sustituyen a cualquier carta en una combinación. Un dos nunca cuenta como carta normal.',
           'Valores: comodín 30, dos 20, As 15, del 8 al K 10, y del 3 al 7 5.',
         ],
+        ejemplo: 'valores',
       },
       {
         titulo: 'El turno',
@@ -6994,6 +7097,7 @@ export const T = {
           'Cada combinación lleva al menos 2 cartas normales. En una escalera, cada comodín ocupa un puesto concreto.',
           'Si tienes la carta que sustituye un comodín de tus combinaciones, puedes cambiarla: en una escalera la carta ocupa su sitio y el comodín pasa a un extremo; en un grupo la carta se añade. Cada cambio da premio.',
         ],
+        ejemplo: 'combinaciones',
       },
       {
         titulo: 'Fin de la mano y puntos',

@@ -97,7 +97,7 @@ export function cartasSpider(palos: ConfigSpider['palos']): CartaSpider[] {
 }
 
 /** `carta` puede ir encima de `tope` (o en una columna vacía). */
-const encaja = (carta: CartaSpider, tope: CartaSpider | undefined) =>
+export const encajaSpider = (carta: CartaSpider, tope: CartaSpider | undefined) =>
   tope === undefined || valor(carta) === valor(tope) - 1;
 
 /** Largo de la escalera del mismo palo al final de las cartas visibles. */
@@ -189,7 +189,7 @@ export const spider: Juego<ConfigSpider, EstadoSpider, AccionSpider, VistaSpider
         e.columnas.forEach((d, hasta) => {
           if (hasta === desde) return;
           const vacia = d.ocultas.length + d.visibles.length === 0;
-          if (vacia ? !columnaEntera : encaja(primera, d.visibles.at(-1))) {
+          if (vacia ? !columnaEntera : encajaSpider(primera, d.visibles.at(-1))) {
             acciones.push({ tipo: 'mover', desde, hasta, cantidad });
           }
         });

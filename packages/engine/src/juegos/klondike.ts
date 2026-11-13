@@ -89,7 +89,7 @@ const color = (id: IdCarta) => colorDe(palo(id));
 const columna = (i: number): PilaKlondike => `c${i}`;
 const fundacion = (i: number): PilaKlondike => `f${i}`;
 
-function puedeIrAColumna(carta: IdCarta, destino: ColumnaKlondike): boolean {
+export function puedeIrAColumnaKlondike(carta: IdCarta, destino: ColumnaKlondike): boolean {
   const tope = destino.visibles.at(-1);
   if (tope === undefined) return destino.ocultas.length === 0 && valor(carta) === 13;
   return valor(carta) === valor(tope) - 1 && color(carta) !== color(tope);
@@ -104,7 +104,8 @@ function puedeIrAFundacion(carta: IdCarta, destino: readonly IdCarta[]): boolean
 /** Las cartas desde `inicio` hasta el final bajan de a uno y alternan color. */
 function esSecuencia(cartas: readonly IdCarta[], inicio: number): boolean {
   for (let i = inicio + 1; i < cartas.length; i++) {
-    if (!puedeIrAColumna(cartas[i]!, { ocultas: [], visibles: [cartas[i - 1]!] })) return false;
+    if (!puedeIrAColumnaKlondike(cartas[i]!, { ocultas: [], visibles: [cartas[i - 1]!] }))
+      return false;
   }
   return true;
 }
@@ -260,7 +261,7 @@ export const klondike: Juego<ConfigKlondike, EstadoKlondike, AccionKlondike, Vis
     const topeDescarte = e.descarte.at(-1);
     if (topeDescarte !== undefined) {
       e.columnas.forEach(
-        (c, j) => puedeIrAColumna(topeDescarte, c) && mover('descarte', columna(j), 1),
+        (c, j) => puedeIrAColumnaKlondike(topeDescarte, c) && mover('descarte', columna(j), 1),
       );
       e.fundaciones.forEach(
         (f, j) => puedeIrAFundacion(topeDescarte, f) && mover('descarte', fundacion(j), 1),
@@ -272,7 +273,8 @@ export const klondike: Juego<ConfigKlondike, EstadoKlondike, AccionKlondike, Vis
         if (!esSecuencia(c.visibles, k)) return;
         const cantidad = c.visibles.length - k;
         e.columnas.forEach(
-          (d, j) => j !== i && puedeIrAColumna(base, d) && mover(columna(i), columna(j), cantidad),
+          (d, j) =>
+            j !== i && puedeIrAColumnaKlondike(base, d) && mover(columna(i), columna(j), cantidad),
         );
         if (cantidad === 1) {
           e.fundaciones.forEach(
@@ -285,7 +287,9 @@ export const klondike: Juego<ConfigKlondike, EstadoKlondike, AccionKlondike, Vis
     e.fundaciones.forEach((f, i) => {
       const tope = f.at(-1);
       if (tope === undefined) return;
-      e.columnas.forEach((c, j) => puedeIrAColumna(tope, c) && mover(fundacion(i), columna(j), 1));
+      e.columnas.forEach(
+        (c, j) => puedeIrAColumnaKlondike(tope, c) && mover(fundacion(i), columna(j), 1),
+      );
     });
 
     if (e.historial.length > 0) acciones.push({ tipo: 'deshacer' });

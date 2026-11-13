@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import type { AccionKlondike } from '@juegos/engine';
 import { jugarKlondike, solucionarKlondike } from './klondike-solucion';
 import { abrirJuego as abrirEnMenu } from './menu';
-import type { IdJuego } from '../src/sesion/juegos';
+import { ID_JUEGOS, type IdJuego } from '../src/sesion/juegos';
 
 // ── Utilidades ───────────────────────────────────────────────────────────────
 
@@ -224,89 +224,7 @@ test.describe('pantalla de 360 × 640', () => {
 
 // ── Cómo se juega ────────────────────────────────────────────────────────────
 
-for (const juego of [
-  'klondike',
-  'brisca',
-  'tute',
-  'escoba',
-  'chinchon',
-  'guinote',
-  'sieteYMedia',
-  'freecell',
-  'cinquillo',
-  'pocha',
-  'mus',
-  'spider',
-  'piramide',
-  'golf',
-  'tripeaks',
-  'yukon',
-  'canfield',
-  'cuarentaLadrones',
-  'scorpion',
-  'belleLucie',
-  'corazones',
-  'burro',
-  'pinacle',
-  'butifarra',
-  'truc',
-  'julepe',
-  'remigio',
-  'tuteSubastado',
-  'cuatrola',
-  'mentiroso',
-  'ochoLoco',
-  'picas',
-  'blackjack',
-  'ginRummy',
-  'rummy500',
-  'holdem',
-  'culo',
-  'canasta',
-  'whist',
-  'sevens',
-  'casino',
-  'durak',
-  'euchre',
-  'bigTwo',
-  'cribbage',
-  'belote',
-  'schnapsen',
-  'skat',
-  'ohHell',
-  'spiteMalice',
-  'bridge',
-  'pesca',
-  'kingsCorner',
-  'bezique',
-  'doppelkopf',
-  'tarot',
-  'sueca',
-  'piquet',
-  'jass',
-  'klaverjas',
-  'barbu',
-  'fiveHundred',
-  'scopa',
-  'tressette',
-  'schafkopf',
-  'truco',
-  'preference',
-  'cuarenta',
-  'pishti',
-  'ecarte',
-  'sixtySix',
-  'tysiacha',
-  'sheepshead',
-  'rentz',
-  'bourre',
-  'tresillo',
-  'conquian',
-  'treintaYUno',
-  'twentyNine',
-  'briscolaChiamata',
-  'handAndFoot',
-] as const) {
+for (const juego of ID_JUEGOS) {
   test(`la guía de ${juego} se abre desde las opciones y desde la partida`, async ({ page }) => {
     // Semilla fija: con alguna al azar, la primera mano de la Siete y media termina sola y su
     // resumen tapa el botón de la guía.
@@ -318,6 +236,22 @@ for (const juego of [
     await page.screenshot({
       path: `test-results/ayuda-${juego}-${page.viewportSize()!.width}.png`,
     });
+    // Los ejemplos con cartas (spec mesa-cliente, «Guía de cada juego»): al menos uno, cada uno
+    // con su descripción, y sin desplazamiento horizontal ni en el móvil.
+    const ejemplos = guia.locator('[data-testid^="ejemplo-"]');
+    expect(await ejemplos.count()).toBeGreaterThan(0);
+    for (const ejemplo of await ejemplos.all()) {
+      await ejemplo.scrollIntoViewIfNeeded();
+      await expect(ejemplo).toBeVisible();
+      await expect(ejemplo).toHaveAttribute('aria-label', /.{10}/);
+      const clave = (await ejemplo.getAttribute('data-testid'))!.slice('ejemplo-'.length);
+      await ejemplo.screenshot({
+        path: `test-results/ejemplos/${juego}-${clave}-${page.viewportSize()!.width}.png`,
+      });
+    }
+    const contenido = guia.locator('.contenido');
+    const desborde = await contenido.evaluate((c) => c.scrollWidth - c.clientWidth);
+    expect(desborde).toBeLessThanOrEqual(0);
     await page.getByTestId('cerrar-ayuda').click();
     await expect(guia).toBeHidden();
 

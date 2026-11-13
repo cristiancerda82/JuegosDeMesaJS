@@ -25,6 +25,7 @@ export {
   paloDe,
   puntosDe,
   valorDe,
+  VALORES_BRISCA,
   type CartaJugada,
 } from '../motor/bazas';
 

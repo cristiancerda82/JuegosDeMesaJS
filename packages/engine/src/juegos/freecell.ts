@@ -94,7 +94,7 @@ const celda = (i: number): PilaFreeCell => `l${i}`;
 const fundacion = (i: number): PilaFreeCell => `f${i}`;
 const columna = (i: number): PilaFreeCell => `c${i}`;
 
-function encaja(carta: IdCarta, tope: IdCarta | undefined): boolean {
+export function encajaFreeCell(carta: IdCarta, tope: IdCarta | undefined): boolean {
   if (tope === undefined) return true;
   return valor(carta) === valor(tope) - 1 && color(carta) !== color(tope);
 }
@@ -108,7 +108,7 @@ function puedeIrAFundacion(carta: IdCarta, destino: readonly IdCarta[]): boolean
 /** Longitud de la secuencia ordenada y alterna al final de una columna. */
 function secuenciaFinal(cartas: readonly IdCarta[]): number {
   let n = cartas.length === 0 ? 0 : 1;
-  while (n < cartas.length && encaja(cartas.at(-n)!, cartas.at(-n - 1))) n++;
+  while (n < cartas.length && encajaFreeCell(cartas.at(-n)!, cartas.at(-n - 1))) n++;
   return n;
 }
 
@@ -257,7 +257,7 @@ export const freecell: Juego<ConfigFreeCell, EstadoFreeCell, AccionFreeCell, Vis
     e.celdas.forEach((carta, i) => {
       if (carta === null) return;
       e.columnas.forEach(
-        (c, j) => c.length > 0 && encaja(carta, c.at(-1)) && mover(celda(i), columna(j), 1),
+        (c, j) => c.length > 0 && encajaFreeCell(carta, c.at(-1)) && mover(celda(i), columna(j), 1),
       );
       if (columnaVacia >= 0) mover(celda(i), columna(columnaVacia), 1);
     });
@@ -270,7 +270,7 @@ export const freecell: Juego<ConfigFreeCell, EstadoFreeCell, AccionFreeCell, Vis
         if (j === i || d.length === 0) return;
         const limite = Math.min(secuencia, maxMovible(e, false));
         for (let k = 1; k <= limite; k++) {
-          if (encaja(c.at(-k)!, d.at(-1))) mover(columna(i), columna(j), k);
+          if (encajaFreeCell(c.at(-k)!, d.at(-1))) mover(columna(i), columna(j), k);
         }
       });
       // A una columna vacía, cualquier tramo de la secuencia (si no es ya la columna entera).
