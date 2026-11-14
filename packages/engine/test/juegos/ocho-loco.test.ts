@@ -255,8 +255,142 @@ describe('vista del Ocho loco', () => {
   });
 });
 
+describe('cartas especiales', () => {
+  /** Como con(), pero con las cartas especiales activas. */
+  const esp = (manos: IdCarta[][], descarte: IdCarta[], parcial: Partial<EstadoOchoLoco> = {}) =>
+    con(manos, descarte, {
+      config: { jugadores: manos.length as 2 | 3 | 4 | 5, cartasEspeciales: true },
+      sentido: 1,
+      castigo: null,
+      trasNueve: false,
+      ...parcial,
+    });
+  const resto: IdCarta[] = ['diamantes-2', 'diamantes-3'];
+
+  it('el As obliga a robar 2 y después se sigue jugando', () => {
+    let e = esp(
+      [['picas-1', 'corazones-3'], ['corazones-9', 'treboles-4'], resto, ['diamantes-4']],
+      ['picas-5'],
+    );
+    e = hacer(e, { tipo: 'jugar', carta: 'picas-1' });
+    expect(e.turno).toBe(1);
+    expect(e.castigo).toEqual({ numero: 1, robar: 2 });
+    expect(legales(e)).toEqual([{ tipo: 'robar' }]);
+    e = hacer(e, { tipo: 'robar' });
+    expect(e.manos[1]).toHaveLength(4);
+    expect(e.turno).toBe(1);
+    expect(e.castigo).toBeNull();
+    expect(e.robada).toBeNull();
+    expect(e.ultimas[1]).toEqual({ tipo: 'robar', cartas: 2 });
+    expect(ochoLoco.vistaDe(e, 1).castigo).toBeNull();
+  });
+
+  it('echar otro As pasa la obligación al siguiente', () => {
+    let e = esp(
+      [['picas-1', 'corazones-3'], ['corazones-1', 'treboles-4'], resto, ['diamantes-4']],
+      ['picas-5'],
+    );
+    e = hacer(e, { tipo: 'jugar', carta: 'picas-1' });
+    expect(legales(e)).toEqual([{ tipo: 'jugar', carta: 'corazones-1' }, { tipo: 'robar' }]);
+    e = hacer(e, { tipo: 'jugar', carta: 'corazones-1' });
+    expect(e.turno).toBe(2);
+    expect(e.castigo).toEqual({ numero: 1, robar: 2 });
+    expect(ochoLoco.vistaDe(e, 2).castigo).toEqual({ numero: 1, robar: 2 });
+  });
+
+  it('el 6 obliga a echar otro 6 o robar 1', () => {
+    let e = esp([['picas-6', 'corazones-3'], ['picas-2'], resto, ['diamantes-4']], ['picas-5']);
+    e = hacer(e, { tipo: 'jugar', carta: 'picas-6' });
+    expect(legales(e)).toEqual([{ tipo: 'robar' }]);
+    e = hacer(e, { tipo: 'robar' });
+    expect(e.manos[1]).toHaveLength(2);
+    // Sigue su turno y puede echar el 2 de picas.
+    expect(legales(e)).toContainEqual({ tipo: 'jugar', carta: 'picas-2' });
+  });
+
+  it('robar por castigo con el mazo casi vacío roba las que haya', () => {
+    const e = esp([['corazones-3'], ['corazones-9']], ['picas-1'], {
+      castigo: { numero: 1, robar: 2 },
+      mazo: ['corazones-12'],
+    });
+    const d = hacer(e, { tipo: 'robar' });
+    expect(d.manos[0]).toEqual(['corazones-3', 'corazones-12']);
+    expect(d.ultimas[0]).toEqual({ tipo: 'robar', cartas: 1 });
+  });
+
+  it('el 7 salta un turno', () => {
+    const e = esp([['picas-7', 'corazones-3'], ['picas-2'], resto, ['diamantes-4']], ['picas-5']);
+    expect(hacer(e, { tipo: 'jugar', carta: 'picas-7' }).turno).toBe(2);
+  });
+
+  it('el 10 cambia el sentido', () => {
+    let e = esp(
+      [['picas-2', 'corazones-3'], ['picas-10', 'treboles-4'], resto, ['diamantes-4']],
+      ['picas-5'],
+      { turno: 1 },
+    );
+    e = hacer(e, { tipo: 'jugar', carta: 'picas-10' });
+    expect(e.turno).toBe(0);
+    expect(e.sentido).toBe(-1);
+    expect(ochoLoco.vistaDe(e, 0).sentido).toBe(-1);
+    e = hacer(e, { tipo: 'jugar', carta: 'picas-2' });
+    expect(e.turno).toBe(3);
+  });
+
+  it('con 2 jugadores el 10 no cambia nada', () => {
+    const e = esp([['picas-10', 'corazones-3'], ['picas-2']], ['picas-5']);
+    const d = hacer(e, { tipo: 'jugar', carta: 'picas-10' });
+    expect(d.turno).toBe(1);
+    expect(d.sentido).toBe(1);
+  });
+
+  it('tras un 9, quien no puede echar carta roba una y pierde el turno', () => {
+    let e = esp(
+      [['picas-9', 'corazones-3'], ['corazones-2', 'corazones-4'], resto, ['diamantes-4']],
+      ['picas-5'],
+    );
+    e = hacer(e, { tipo: 'jugar', carta: 'picas-9' });
+    expect(legales(e)).toEqual([{ tipo: 'robar' }]);
+    e = hacer(e, { tipo: 'robar' });
+    expect(e.manos[1]).toHaveLength(3);
+    expect(e.turno).toBe(2);
+    expect(e.robada).toBeNull();
+    expect(e.trasNueve).toBe(false);
+  });
+
+  it('sin la opción, el As no obliga a nada', () => {
+    let e = con(
+      [['picas-1', 'corazones-3'], ['corazones-9', 'treboles-4'], resto, ['diamantes-4']],
+      ['picas-5'],
+    );
+    e = hacer(e, { tipo: 'jugar', carta: 'picas-1' });
+    expect(e.castigo ?? null).toBeNull();
+    expect(legales(e)).toEqual([{ tipo: 'robar' }]);
+    e = hacer(e, { tipo: 'robar' });
+    // Robo normal: una carta, y solo puede jugar la robada o pasar.
+    expect(e.manos[1]).toHaveLength(3);
+    expect(e.robada).not.toBeNull();
+  });
+
+  it('la carta que abre el descarte no tiene efecto', () => {
+    for (let i = 0; i < 30; i++) {
+      const r = ochoLoco.crear({ jugadores: 4, cartasEspeciales: true }, `abre-${i}`);
+      if (!r.ok) throw new Error(r.error);
+      expect(r.valor.castigo).toBeNull();
+      expect(r.valor.sentido).toBe(1);
+      expect(r.valor.trasNueve).toBe(false);
+    }
+  });
+});
+
 describirContrato(ochoLoco, {
-  configs: [CONFIG_OCHO_LOCO_POR_DEFECTO, { jugadores: 2 }, { jugadores: 5 }],
+  configs: [
+    CONFIG_OCHO_LOCO_POR_DEFECTO,
+    { jugadores: 2 },
+    { jugadores: 5 },
+    { jugadores: 2, cartasEspeciales: true },
+    { jugadores: 4, cartasEspeciales: true },
+  ],
   // Ocultas: las manos ajenas y el mazo. Las cartas jugadas que se ven en la última acción de
   // cada uno pueden haber vuelto a una mano al rehacer el mazo: ya las vio todo el mundo.
   cartasOcultas: (e, asiento) => {

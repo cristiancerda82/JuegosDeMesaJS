@@ -237,3 +237,39 @@ describe('valores de la Butifarra y sin triunfo', () => {
     ).toEqual(['copas-10', 'copas-9']);
   });
 });
+
+describe('cartasObligadas con sobrefallo libre', () => {
+  const libre = (asiento: number) => ({
+    asiento,
+    montarSobreCompanero: false,
+    sobrefalloLibre: true,
+  });
+  const mano: IdCarta[] = ['oros-4', 'bastos-1', 'espadas-12'];
+
+  it('sin poder superar el fallo de un rival, cualquier carta', () => {
+    const mesa = jugadas([0, 'copas-1'], [1, 'oros-11']);
+    expect(cartasObligadas(mano, mesa, 'oros', libre(2))).toEqual(mano);
+  });
+
+  it('sin la opción, hay que echar el triunfo menor', () => {
+    const mesa = jugadas([0, 'copas-1'], [1, 'oros-11']);
+    expect(
+      cartasObligadas(mano, mesa, 'oros', { asiento: 2, montarSobreCompanero: false }),
+    ).toEqual(['oros-4']);
+  });
+
+  it('si puede superar el fallo, sigue obligado a superarlo', () => {
+    const mesa = jugadas([0, 'copas-1'], [1, 'oros-2']);
+    expect(cartasObligadas(mano, mesa, 'oros', libre(2))).toEqual(['oros-4']);
+  });
+
+  it('si nadie ha fallado, sigue obligado a fallar', () => {
+    const mesa = jugadas([0, 'copas-1']);
+    expect(cartasObligadas(mano, mesa, 'oros', libre(1))).toEqual(['oros-4']);
+  });
+
+  it('con el palo de salida, nada cambia', () => {
+    const mesa = jugadas([0, 'bastos-3'], [1, 'oros-11']);
+    expect(cartasObligadas(mano, mesa, 'oros', libre(2))).toEqual(['bastos-1']);
+  });
+});

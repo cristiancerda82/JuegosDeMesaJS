@@ -208,3 +208,23 @@ test('la mesa del Chinchón entra en 360 × 640 con 8 cartas en la mano', async 
     await page.screenshot({ path: `test-results/chinchon${jugadores}-360.png` });
   }
 });
+
+// ── Variantes de los libros ──────────────────────────────────────────────────
+
+test('las opciones de colocar las sueltas y reenganche, y su línea en la guía', async ({
+  page,
+}) => {
+  await page.goto('./?rapido&semilla=variantes');
+  await abrirJuego(page, 'chinchon');
+  await expect(page.getByTestId('opcion-colocar')).not.toBeChecked();
+  await expect(page.getByTestId('opcion-reenganche')).not.toBeChecked();
+  await page.getByTestId('ver-ayuda').click();
+  const guia = page.getByTestId('como-se-juega');
+  await expect(guia).toContainText('Variante (opción «Colocar las sueltas»)');
+  await expect(guia).toContainText('Variante (opción «Reenganche»)');
+  await page.getByTestId('cerrar-ayuda').click();
+  await page.getByTestId('opcion-colocar').check();
+  await page.getByTestId('opcion-reenganche').check();
+  await page.getByTestId('empezar').click();
+  await expect(page.getByTestId('turno')).toBeVisible();
+});

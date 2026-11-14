@@ -127,7 +127,10 @@ export function reconstruirButifarra(vista: VistaButifarra, azar: EstadoAzar): E
   const repartidas = repartirConFallos(cartas, huecos, fallos, new Generador(azarReparto));
   const manos = repartidas.map((m, a) => (a === yo && vista.miMano ? [...vista.miMano] : m));
   return {
-    config: { objetivo: vista.config.objetivo },
+    config: {
+      objetivo: vista.config.objetivo,
+      sobrefalloLibre: vista.config.sobrefalloLibre === true,
+    },
     azar,
     repartidor: vista.repartidor,
     manos,

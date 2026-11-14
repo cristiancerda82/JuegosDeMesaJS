@@ -16,6 +16,18 @@ import { error, ok } from '../resultado';
 export interface ConfigOchoLoco {
   /** De 2 a 5 jugadores, cada uno por su cuenta. */
   readonly jugadores: 2 | 3 | 4 | 5;
+  /**
+   * Cartas especiales del Ocho americano (opcional, por defecto no): el 10 cambia el sentido, el
+   * As obliga a echar un As o robar 2, el 6 a echar un 6 o robar 1, el 7 salta al siguiente y,
+   * tras un 9, quien no puede echar carta roba una y pierde el turno.
+   */
+  readonly cartasEspeciales?: boolean;
+}
+
+/** Lo que obliga un As o un 6 al siguiente: echar otra carta de ese número o robar. */
+export interface CastigoOchoLoco {
+  readonly numero: 1 | 6;
+  readonly robar: 1 | 2;
 }
 
 export const CONFIG_OCHO_LOCO_POR_DEFECTO: ConfigOchoLoco = { jugadores: 4 };
@@ -33,7 +45,11 @@ export type UltimaOchoLoco =
       /** Jugó la carta que acababa de robar. */
       readonly robo: boolean;
     }
-  | { readonly tipo: 'robar' }
+  | {
+      readonly tipo: 'robar';
+      /** Cartas robadas por un As o un 6 (con las cartas especiales). */
+      readonly cartas?: number;
+    }
   | { readonly tipo: 'pasar'; readonly robo: boolean };
 
 /** Lo que se sabe de quien robó: en ese momento no tenía ni ese palo, ni ese número, ni ochos. */
@@ -74,6 +90,12 @@ export interface EstadoOchoLoco {
   readonly faltas: readonly (FaltaOchoLoco | null)[];
   readonly resultadosManos: readonly ResultadoManoOchoLoco[];
   readonly totales: readonly number[];
+  /** Con las cartas especiales: sentido del juego (1, el de siempre; −1, el contrario). */
+  readonly sentido?: 1 | -1;
+  /** Con las cartas especiales: la obligación pendiente de quien está en turno. */
+  readonly castigo?: CastigoOchoLoco | null;
+  /** Con las cartas especiales: la última carta fue un 9. */
+  readonly trasNueve?: boolean;
 }
 
 export type AccionOchoLoco =
@@ -103,6 +125,12 @@ export interface VistaOchoLoco {
   readonly faltas: readonly (FaltaOchoLoco | null)[];
   readonly resultadosManos: readonly ResultadoManoOchoLoco[];
   readonly totales: readonly number[];
+  /** Sentido del juego: 1, el de siempre; −1, el contrario (solo cambia con las especiales). */
+  readonly sentido: 1 | -1;
+  /** La obligación pendiente de quien está en turno (con las cartas especiales). */
+  readonly castigo: CastigoOchoLoco | null;
+  /** La última carta fue un 9 (con las cartas especiales). */
+  readonly trasNueve: boolean;
 }
 
 // ── Reglas ───────────────────────────────────────────────────────────────────
@@ -132,7 +160,32 @@ export function casaOchoLoco(carta: IdCarta, palo: PaloFrances, arriba: IdCarta)
   );
 }
 
-const siguiente = (a: Asiento, n: number) => (a + 1) % n;
+const siguiente = (a: Asiento, n: number, sentido: 1 | -1 = 1, pasos = 1) =>
+  (((a + sentido * pasos) % n) + n) % n;
+
+const sentidoDe = (e: EstadoOchoLoco) => e.sentido ?? 1;
+
+/**
+ * Roba hasta `cuantas` cartas, rehaciendo el mazo con el descarte (menos la de arriba) si se
+ * acaba; si no quedan, roba las que haya.
+ */
+function robarCartas(e: EstadoOchoLoco, asiento: Asiento, cuantas: number) {
+  let { mazo, descarte, azar } = e;
+  const robadas: IdCarta[] = [];
+  while (robadas.length < cuantas) {
+    if (mazo.length === 0) {
+      if (descarte.length <= 1) break;
+      const barajado = barajar(descarte.slice(0, -1), azar);
+      mazo = barajado.cartas;
+      azar = barajado.azar;
+      descarte = descarte.slice(-1);
+    }
+    robadas.push(mazo.at(-1)!);
+    mazo = mazo.slice(0, -1);
+  }
+  const manos = e.manos.map((m, a) => (a === asiento ? [...m, ...robadas] : m));
+  return { mazo, descarte, azar, manos, robadas };
+}
 
 const cartasPorMano = (n: number) => (n === 2 ? 7 : 5);
 
@@ -186,6 +239,7 @@ function nuevaMano(
     faltas: new Array<FaltaOchoLoco | null>(n).fill(null),
     resultadosManos,
     totales,
+    ...(config.cartasEspeciales ? { sentido: 1 as const, castigo: null, trasNueve: false } : {}),
   };
 }
 
@@ -224,7 +278,13 @@ export const ochoLoco: Juego<ConfigOchoLoco, EstadoOchoLoco, AccionOchoLoco, Vis
     if (![2, 3, 4, 5].includes(config.jugadores)) {
       return error('El Ocho loco se juega de 2 a 5 jugadores');
     }
-    const limpia: ConfigOchoLoco = { jugadores: config.jugadores };
+    if (config.cartasEspeciales !== undefined && typeof config.cartasEspeciales !== 'boolean') {
+      return error('Opción de cartas especiales inválida');
+    }
+    const limpia: ConfigOchoLoco = {
+      jugadores: config.jugadores,
+      cartasEspeciales: config.cartasEspeciales === true,
+    };
     const n = limpia.jugadores;
     return ok(nuevaMano(limpia, crearAzar(semilla), n - 1, [], new Array<number>(n).fill(0)));
   },
@@ -238,9 +298,14 @@ export const ochoLoco: Juego<ConfigOchoLoco, EstadoOchoLoco, AccionOchoLoco, Vis
       const jugadas = casaOchoLoco(e.robada, e.palo, arriba) ? jugadasCon(e.robada) : [];
       return [...jugadas, { tipo: 'pasar' }];
     }
-    const jugadas = e.manos[asiento]!.filter((c) => casaOchoLoco(c, e.palo, arriba)).flatMap(
-      jugadasCon,
-    );
+    const mano = e.manos[asiento]!;
+    const castigo = e.castigo ?? null;
+    if (castigo !== null) {
+      // Echar otra carta de ese número (que siempre casa) o robar.
+      const jugadas = mano.filter((c) => numeroOchoLoco(c) === castigo.numero).flatMap(jugadasCon);
+      return [...jugadas, { tipo: 'robar' }];
+    }
+    const jugadas = mano.filter((c) => casaOchoLoco(c, e.palo, arriba)).flatMap(jugadasCon);
     if (jugadas.length > 0) return jugadas;
     return [puedeRobar(e) ? { tipo: 'robar' } : { tipo: 'pasar' }];
   },
@@ -253,12 +318,25 @@ export const ochoLoco: Juego<ConfigOchoLoco, EstadoOchoLoco, AccionOchoLoco, Vis
         const manos = e.manos.map((m, a) =>
           a === asiento ? m.filter((c) => c !== accion.carta) : m,
         );
+        let sentido = sentidoDe(e);
+        let pasos = 1;
+        let castigo: CastigoOchoLoco | null = null;
+        let trasNueve = false;
+        if (e.config.cartasEspeciales) {
+          const numero = numeroOchoLoco(accion.carta);
+          if (numero === 10 && n > 2) sentido = sentido === 1 ? -1 : 1;
+          if (numero === 7) pasos = 2;
+          if (numero === 1) castigo = { numero: 1, robar: 2 };
+          if (numero === 6) castigo = { numero: 6, robar: 1 };
+          if (numero === 9) trasNueve = true;
+        }
         const jugado: EstadoOchoLoco = {
           ...e,
+          ...(e.config.cartasEspeciales ? { sentido, castigo, trasNueve } : {}),
           manos,
           descarte: [...e.descarte, accion.carta],
           palo: accion.palo ?? paloOchoLoco(accion.carta),
-          turno: siguiente(asiento, n),
+          turno: siguiente(asiento, n, sentido, pasos),
           robada: null,
           pasesSeguidos: 0,
           ultimas: ultima({
@@ -271,6 +349,40 @@ export const ochoLoco: Juego<ConfigOchoLoco, EstadoOchoLoco, AccionOchoLoco, Vis
         return manos[asiento]!.length === 0 ? cerrarMano(jugado, asiento) : jugado;
       }
       case 'robar': {
+        const castigo = e.castigo ?? null;
+        if (castigo !== null) {
+          // Roba por un As o un 6 y sigue con su turno normal.
+          const r = robarCartas(e, asiento, castigo.robar);
+          return {
+            ...e,
+            azar: r.azar,
+            mazo: r.mazo,
+            descarte: r.descarte,
+            manos: r.manos,
+            castigo: null,
+            robada: null,
+            ultimas: ultima({ tipo: 'robar', cartas: r.robadas.length }),
+          };
+        }
+        if (e.trasNueve) {
+          // Tras un 9, sin carta que echar: roba una y pierde el turno.
+          const r = robarCartas(e, asiento, 1);
+          return {
+            ...e,
+            azar: r.azar,
+            mazo: r.mazo,
+            descarte: r.descarte,
+            manos: r.manos,
+            trasNueve: false,
+            robada: null,
+            pasesSeguidos: 0,
+            turno: siguiente(asiento, n, sentidoDe(e)),
+            ultimas: ultima({ tipo: 'pasar', robo: true }),
+            faltas: e.faltas.map((f, a) =>
+              a === asiento ? { palo: e.palo, numero: numeroOchoLoco(e.descarte.at(-1)!) } : f,
+            ),
+          };
+        }
         let { mazo, descarte, azar } = e;
         if (mazo.length === 0) {
           // Se rehace el mazo con el descarte, menos la de arriba.
@@ -297,7 +409,8 @@ export const ochoLoco: Juego<ConfigOchoLoco, EstadoOchoLoco, AccionOchoLoco, Vis
         const robo = e.robada !== null;
         const pasado: EstadoOchoLoco = {
           ...e,
-          turno: siguiente(asiento, n),
+          ...(e.trasNueve ? { trasNueve: false } : {}),
+          turno: siguiente(asiento, n, sentidoDe(e)),
           robada: null,
           pasesSeguidos: robo ? 0 : e.pasesSeguidos + 1,
           ultimas: ultima({ tipo: 'pasar', robo }),
@@ -326,6 +439,9 @@ export const ochoLoco: Juego<ConfigOchoLoco, EstadoOchoLoco, AccionOchoLoco, Vis
       faltas: [...e.faltas],
       resultadosManos: [...e.resultadosManos],
       totales: [...e.totales],
+      sentido: sentidoDe(e),
+      castigo: e.castigo ?? null,
+      trasNueve: e.trasNueve ?? false,
     };
   },
 

@@ -22,6 +22,8 @@ export const OBJETIVOS_BUTIFARRA = [51, 101, 151] as const;
 
 export interface ConfigButifarra {
   /** Puntos con los que un bando gana la partida. */
+  /** Sobrefallo libre: sin poder superar el fallo, se puede echar cualquier carta (opcional, por defecto no). */
+  readonly sobrefalloLibre?: boolean;
   readonly objetivo: (typeof OBJETIVOS_BUTIFARRA)[number];
 }
 
@@ -260,6 +262,7 @@ function cartasJugables(e: EstadoButifarra, asiento: Asiento): readonly IdCarta[
     asiento,
     montarSobreCompanero: false,
     valores: VALORES_BUTIFARRA,
+    sobrefalloLibre: e.config.sobrefalloLibre === true,
   });
 }
 
@@ -272,7 +275,13 @@ export const butifarra: Juego<ConfigButifarra, EstadoButifarra, AccionButifarra,
     if (!(OBJETIVOS_BUTIFARRA as readonly number[]).includes(config.objetivo)) {
       return error('La partida de Butifarra se juega a 51, 101 o 151 puntos');
     }
-    const limpia: ConfigButifarra = { objetivo: config.objetivo };
+    if (config.sobrefalloLibre !== undefined && typeof config.sobrefalloLibre !== 'boolean') {
+      return error('Opción de sobrefallo libre inválida');
+    }
+    const limpia: ConfigButifarra = {
+      objetivo: config.objetivo,
+      sobrefalloLibre: config.sobrefalloLibre === true,
+    };
     // Empieza repartiendo el último asiento, así sale el asiento 0.
     return ok(nuevaMano(limpia, crearAzar(semilla), JUGADORES - 1, [], [0, 0]));
   },

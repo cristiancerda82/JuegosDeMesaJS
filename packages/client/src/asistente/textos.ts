@@ -649,9 +649,32 @@ export const CONSEJOS_JUEGO: Readonly<Partial<Record<IdJuego, string>>> = {
     'Treinta y uno: acércate a 31 con cartas del mismo palo. Llama cuando tu mano sea buena y no esperes demasiado.',
 };
 
-/** Consejo de una fase de un juego, o `null` si no hay ninguno. */
-export function consejoDe(juego: IdJuego, clave: string): string | null {
-  return clave === 'juego' ? (CONSEJOS_JUEGO[juego] ?? null) : (CONSEJOS_FASE[clave] ?? null);
+/** Lo que se añade al consejo de un juego cuando una variante de reglas está activa. */
+const CONSEJOS_VARIANTE: readonly {
+  readonly juego: IdJuego;
+  readonly activa: (config: Record<string, unknown>) => boolean;
+  readonly frase: string;
+}[] = [
+  {
+    juego: 'ochoLoco',
+    activa: (c) => c.cartasEspeciales === true,
+    frase:
+      'Con las cartas especiales, guarda un As o un 6 para devolver la obligación, y usa el 7 o el As cuando al siguiente le queden pocas cartas.',
+  },
+];
+
+/**
+ * Consejo de una fase de un juego, o `null` si no hay ninguno. Con la configuración, el de la
+ * jugada principal añade lo que cambia una variante activa.
+ */
+export function consejoDe(juego: IdJuego, clave: string, config?: unknown): string | null {
+  if (clave !== 'juego') return CONSEJOS_FASE[clave] ?? null;
+  const base = CONSEJOS_JUEGO[juego] ?? null;
+  if (base === null || typeof config !== 'object' || config === null) return base;
+  const extras = CONSEJOS_VARIANTE.filter(
+    (v) => v.juego === juego && v.activa(config as Record<string, unknown>),
+  ).map((v) => v.frase);
+  return [base, ...extras].join(' ');
 }
 
 /** La clave de consejo de una fase: la de las fases comunes, o la jugada principal. */

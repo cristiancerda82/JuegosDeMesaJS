@@ -226,6 +226,44 @@ describe('bazas', () => {
   });
 });
 
+describe('sobrefallo libre', () => {
+  const fallada = (sobrefalloLibre = false) =>
+    mesa({
+      config: { jugadores: 4, sobrefalloLibre },
+      manos: [[], [], ['oros-4', 'bastos-1', 'espadas-12'], []],
+      mesa: [
+        { asiento: 0, carta: 'copas-1' },
+        { asiento: 1, carta: 'oros-11' },
+      ],
+      turno: 2,
+    });
+
+  it('sin poder superar el fallo del rival, cualquier carta', () => {
+    expect(cartasLegales(fallada(true), 2)).toEqual(['bastos-1', 'espadas-12', 'oros-4']);
+  });
+
+  it('con la opción por defecto, solo el triunfo menor', () => {
+    expect(cartasLegales(fallada(), 2)).toEqual(['oros-4']);
+  });
+
+  it('si nadie ha fallado, sigue siendo obligatorio fallar', () => {
+    const e = mesa({
+      config: { jugadores: 4, sobrefalloLibre: true },
+      manos: [[], ['oros-4', 'bastos-1'], [], []],
+      mesa: [{ asiento: 0, carta: 'copas-1' }],
+      turno: 1,
+    });
+    expect(cartasLegales(e, 1)).toEqual(['oros-4']);
+  });
+
+  it('crear valida la opción y la guarda como booleano', () => {
+    expect(nueva().config.sobrefalloLibre).toBe(false);
+    expect(nueva({ sobrefalloLibre: true }).config.sobrefalloLibre).toBe(true);
+    const r = tute.crear({ ...CONFIG_TUTE_POR_DEFECTO, sobrefalloLibre: 'si' as never }, 't');
+    expect(r.ok).toBe(false);
+  });
+});
+
 // ── Cantes y tute ────────────────────────────────────────────────────────────
 
 describe('cantes', () => {
@@ -453,6 +491,13 @@ describirContrato(tute, {
     { jugadores: 2, cambioSiete: 'libre', montarSobreCompanero: false, manos: 3 },
     { jugadores: 4, cambioSiete: 'no', montarSobreCompanero: false, manos: 1 },
     { jugadores: 4, cambioSiete: 'libre', montarSobreCompanero: true, manos: 3 },
+    {
+      jugadores: 4,
+      cambioSiete: 'no',
+      montarSobreCompanero: false,
+      manos: 1,
+      sobrefalloLibre: true,
+    },
   ],
   cartasOcultas: (e, asiento) => [
     ...e.mazo,

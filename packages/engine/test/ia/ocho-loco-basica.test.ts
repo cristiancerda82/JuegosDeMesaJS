@@ -63,6 +63,9 @@ function vistaCon(
     faltas: [null, null, null, null],
     resultadosManos: [],
     totales: [0, 0, 0, 0],
+    sentido: 1,
+    castigo: null,
+    trasNueve: false,
     ...parcial,
   };
 }
@@ -166,6 +169,48 @@ describe('garantías de la IA del Ocho loco', () => {
     const a = iaOchoLocoBasica.decidir(v, acciones, crearAzar('s'));
     const b = iaOchoLocoBasica.decidir(v, acciones, crearAzar('s'));
     expect(a).toEqual(b);
+  });
+});
+
+describe('IA del Ocho loco con cartas especiales', () => {
+  it('partidas completas con cada nivel, siempre con acciones legales', () => {
+    const niveles = [IAS.ochoLoco.facil, IAS.ochoLoco.normal, IAS.ochoLoco.dificil];
+    for (let i = 0; i < 60; i++) {
+      const config: ConfigOchoLoco = {
+        jugadores: ((i % 4) + 2) as 2 | 3 | 4 | 5,
+        cartasEspeciales: true,
+      };
+      // La difícil simula y es lenta: solo en unas pocas partidas.
+      const nivel = i < 6 ? niveles[i % 3]! : niveles[i % 2]!;
+      const agentes = Array.from({ length: config.jugadores }, (_, a) =>
+        a === 0 ? nivel : (i + a) % 2 === 0 ? azarDe : iaOchoLocoBasica,
+      );
+      const { final } = jugarPartida(config, `especiales-${i}`, agentes);
+      expect(ochoLoco.resultado(final)).not.toBeNull();
+    }
+  }, 60_000);
+
+  it('con un As pendiente, la IA echa su As antes que robar', () => {
+    const v = vistaCon(['corazones-1', 'picas-3'], 'picas-1', {
+      config: { jugadores: 4, cartasEspeciales: true },
+      castigo: { numero: 1, robar: 2 },
+    });
+    expect(decide(v, [{ tipo: 'jugar', carta: 'corazones-1' }, { tipo: 'robar' }])).toEqual({
+      tipo: 'jugar',
+      carta: 'corazones-1',
+    });
+  });
+
+  it('la reconstrucción conserva el sentido, la obligación y el nueve', () => {
+    const v = vistaCon(['corazones-2', 'picas-3'], 'picas-1', {
+      config: { jugadores: 4, cartasEspeciales: true },
+      sentido: -1,
+      castigo: { numero: 1, robar: 2 },
+    });
+    const e = reconstruirOchoLoco(v, crearAzar('r'));
+    expect(e.sentido).toBe(-1);
+    expect(e.castigo).toEqual({ numero: 1, robar: 2 });
+    expect(e.trasNueve).toBe(false);
   });
 });
 

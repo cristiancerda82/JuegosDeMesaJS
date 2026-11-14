@@ -190,6 +190,21 @@ describe('arrastre', () => {
     expect(cartasLegales(e, 2)).toEqual(['espadas-3', 'espadas-4']);
   });
 
+  it('sobrefallo libre: sin poder superar el fallo, cualquier carta', () => {
+    const fallada = (sobrefalloLibre = false) =>
+      arrastre({
+        config: { jugadores: 4, sobrefalloLibre },
+        turno: 2,
+        mesa: [
+          { asiento: 0, carta: 'espadas-1' },
+          { asiento: 1, carta: 'oros-12' },
+        ],
+        manos: [[], [], ['oros-2', 'copas-1', 'bastos-7'], []],
+      });
+    expect(cartasLegales(fallada(true), 2)).toEqual(['bastos-7', 'copas-1', 'oros-2']);
+    expect(cartasLegales(fallada(), 2)).toEqual(['oros-2']);
+  });
+
   it('la vista indica el arrastre', () => {
     expect(guinote.vistaDe(arrastre({}), 0).arrastre).toBe(true);
     expect(guinote.vistaDe(mesa(), 0).arrastre).toBe(false);
@@ -402,6 +417,13 @@ describirContrato(guinote, {
     { jugadores: 2, cambioSiete: 'libre', montarSobreCompanero: false, meta: 51 },
     { jugadores: 4, cambioSiete: 'no', montarSobreCompanero: false, meta: 101 },
     { jugadores: 4, cambioSiete: 'trasGanarBaza', montarSobreCompanero: true, meta: 151 },
+    {
+      jugadores: 4,
+      cambioSiete: 'libre',
+      montarSobreCompanero: false,
+      meta: 101,
+      sobrefalloLibre: true,
+    },
   ],
   cartasOcultas: (e, asiento) => [
     ...e.mazo,

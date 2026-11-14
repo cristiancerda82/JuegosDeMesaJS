@@ -257,6 +257,36 @@ describe('puntuación', () => {
     expect(r.puntos[1].oros).toBe(0);
     expect(r.puntos[1].cartas).toBe(1);
   });
+
+  describe('premios', () => {
+    const todosOros = crearBaraja('espanola40').filter((c) => c.startsWith('oros'));
+    const sietes: IdCarta[] = ['copas-7', 'espadas-7', 'bastos-7'];
+    const a = [...todosOros, ...sietes];
+
+    it('los 10 oros valen 2 y los 4 sietes 3', () => {
+      const r = puntuarMano([a, ['copas-1']], [0, 0], true);
+      expect(r.puntos[0]).toMatchObject({ oros: 2, sietes: 3, sieteOros: 1, cartas: 1 });
+      expect(r.puntos[0].total).toBe(7);
+    });
+
+    it('sin la opción, 1 y 1', () => {
+      const r = puntuarMano([a, ['copas-1']], [0, 0]);
+      expect(r.puntos[0]).toMatchObject({ oros: 1, sietes: 1 });
+      expect(r.puntos[0].total).toBe(4);
+    });
+
+    it('con 9 oros y 3 sietes no hay premio', () => {
+      const r = puntuarMano([a.slice(1, -1), ['oros-1', 'bastos-7']], [0, 0], true);
+      expect(r.puntos[0]).toMatchObject({ oros: 1, sietes: 1 });
+    });
+
+    it('crear guarda la opción y la mano la aplica', () => {
+      const r = escoba.crear({ ...CONFIG_ESCOBA_POR_DEFECTO, premios: true }, 'p');
+      expect(r.ok && r.valor.config.premios).toBe(true);
+      const sin = escoba.crear(CONFIG_ESCOBA_POR_DEFECTO, 'p');
+      expect(sin.ok && sin.valor.config.premios).toBe(false);
+    });
+  });
 });
 
 describe('partida', () => {
@@ -326,6 +356,13 @@ describirContrato(escoba, {
     CONFIG_ESCOBA_POR_DEFECTO,
     { jugadores: 4, puntosPartida: 15, capturaObligatoria: true, escobaInicial: false },
     { jugadores: 2, puntosPartida: 15, capturaObligatoria: true, escobaInicial: true },
+    {
+      jugadores: 4,
+      puntosPartida: 15,
+      capturaObligatoria: false,
+      escobaInicial: true,
+      premios: true,
+    },
   ],
   cartasOcultas: (e, asiento) => [
     ...e.mazo,

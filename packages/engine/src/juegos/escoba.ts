@@ -17,6 +17,8 @@ export interface ConfigEscoba {
   readonly capturaObligatoria: boolean;
   /** Si las 4 cartas iniciales de la mesa suman 15 (o 30), son escoba del repartidor. */
   readonly escobaInicial: boolean;
+  /** Premios: los 10 oros valen 2 y los 4 sietes 3, en lugar de 1 (opcional, por defecto no). */
+  readonly premios?: boolean;
 }
 
 export const CONFIG_ESCOBA_POR_DEFECTO: ConfigEscoba = {
@@ -38,9 +40,11 @@ export interface JugadaEscoba {
 export interface PuntosBando {
   readonly escobas: number;
   readonly cartas: 0 | 1;
-  readonly oros: 0 | 1;
+  /** 1 por tener más oros; 2 con los 10 oros si hay premios. */
+  readonly oros: number;
   readonly sieteOros: 0 | 1;
-  readonly sietes: 0 | 1;
+  /** 1 por tener más sietes; 3 con los 4 sietes si hay premios. */
+  readonly sietes: number;
   readonly total: number;
 }
 
@@ -143,10 +147,17 @@ export function combinaciones(mesa: readonly IdCarta[], objetivo: number): IdCar
   return resultado;
 }
 
-/** Puntos de una mano a partir de lo que recogió cada bando y sus escobas. */
+const TODOS_LOS_OROS = 10;
+const TODOS_LOS_SIETES = 4;
+
+/**
+ * Puntos de una mano a partir de lo que recogió cada bando y sus escobas. Con `premios`, los 10
+ * oros valen 2 y los 4 sietes 3.
+ */
 export function puntuarMano(
   recogidas: readonly [readonly IdCarta[], readonly IdCarta[]],
   escobas: readonly [number, number],
+  premios = false,
 ): ResultadoManoEscoba {
   const recuento = ([0, 1] as const).map((b) => ({
     cartas: recogidas[b].length,
@@ -162,9 +173,9 @@ export function puntuarMano(
     const p = {
       escobas: escobas[b],
       cartas: mas(b, 'cartas'),
-      oros: mas(b, 'oros'),
+      oros: premios && recuento[b].oros === TODOS_LOS_OROS ? 2 : mas(b, 'oros'),
       sieteOros: recuento[b].sieteOros ? 1 : 0,
-      sietes: mas(b, 'sietes'),
+      sietes: premios && recuento[b].sietes === TODOS_LOS_SIETES ? 3 : mas(b, 'sietes'),
     } as const;
     return { ...p, total: p.escobas + p.cartas + p.oros + p.sieteOros + p.sietes };
   }) as [PuntosBando, PuntosBando];
@@ -247,7 +258,10 @@ function nuevaMano(
 function cerrarMano(e: EstadoEscoba): EstadoEscoba {
   const recogidas: [IdCarta[], IdCarta[]] = [[...e.recogidas[0]], [...e.recogidas[1]]];
   if (e.ultimoEnRecoger !== null) recogidas[bandoDe(e.ultimoEnRecoger)].push(...e.mesa);
-  const resultadosManos = [...e.resultadosManos, puntuarMano(recogidas, e.escobas)];
+  const resultadosManos = [
+    ...e.resultadosManos,
+    puntuarMano(recogidas, e.escobas, e.config.premios === true),
+  ];
   const cerrado: EstadoEscoba = {
     ...e,
     mesa: e.ultimoEnRecoger === null ? e.mesa : [],
@@ -276,11 +290,15 @@ export const escoba: Juego<ConfigEscoba, EstadoEscoba, AccionEscoba, VistaEscoba
     if (typeof config.escobaInicial !== 'boolean') {
       return error('Opción de escoba de la mesa inicial inválida');
     }
+    if (config.premios !== undefined && typeof config.premios !== 'boolean') {
+      return error('Opción de premios inválida');
+    }
     const limpia: ConfigEscoba = {
       jugadores: config.jugadores,
       puntosPartida: config.puntosPartida,
       capturaObligatoria: config.capturaObligatoria,
       escobaInicial: config.escobaInicial,
+      premios: config.premios === true,
     };
     // Empieza repartiendo el último asiento, así sale el asiento 0.
     return ok(nuevaMano(limpia, crearAzar(semilla), limpia.jugadores - 1, []));

@@ -77,6 +77,9 @@ export function reconstruirOchoLoco(vista: VistaOchoLoco, azar: EstadoAzar): Est
     faltas: [...vista.faltas],
     resultadosManos: [...vista.resultadosManos],
     totales: [...vista.totales],
+    ...(vista.config.cartasEspeciales
+      ? { sentido: vista.sentido, castigo: vista.castigo, trasNueve: vista.trasNueve }
+      : {}),
   };
 }
 

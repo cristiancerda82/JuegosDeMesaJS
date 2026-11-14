@@ -38,6 +38,14 @@
             {/each}
           </span>
         {/each}
+        {#if mano.colocadas && mano.colocadas.length > 0}
+          <span class="grupo colocadas" data-testid="colocadas-{mano.asiento}" aria-label={T.chinchon.colocadas}>
+            <span class="etiqueta">{T.chinchon.colocadas}</span>
+            {#each mano.colocadas as id (id)}
+              <span class="mini"><Carta {id} /></span>
+            {/each}
+          </span>
+        {/if}
         {#if mano.sueltas.length > 0}
           <span class="grupo sueltas">
             {#each mano.sueltas as id (id)}
@@ -48,6 +56,10 @@
       </div>
       {#if cae}
         <p class="eliminado">{T.chinchon.quedaEliminado}</p>
+      {:else if resultado.reenganchesTras?.includes(mano.asiento)}
+        <p class="reengancha" data-testid="reenganche-{mano.asiento}">
+          {T.chinchon.seReengancha(resultado.puntosTras[mano.asiento] ?? 0)}
+        </p>
       {/if}
     </li>
   {/each}
@@ -99,6 +111,23 @@
     gap: 2px;
     padding-bottom: 4px;
     border-bottom: 3px solid var(--color-grupo);
+  }
+
+  .grupo.colocadas {
+    align-items: center;
+    border-bottom: 3px dashed var(--texto-suave);
+  }
+
+  .reengancha {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: var(--acento);
+  }
+
+  .etiqueta {
+    font-size: 0.75rem;
+    color: var(--texto-suave);
+    margin-right: 4px;
   }
 
   .grupo.sueltas {

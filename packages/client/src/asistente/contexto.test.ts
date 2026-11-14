@@ -190,6 +190,10 @@ describe('consejos de fase', () => {
     expect(consejoDe('tuteSubastado', 'subasta')).toMatch(/pujar/);
     expect(claveConsejo('bazas')).toBe('juego');
     expect(consejoDe('brisca', 'juego')).toMatch(/Brisca/);
+    expect(consejoDe('ochoLoco', 'juego', { jugadores: 4 })).not.toMatch(/especiales/);
+    expect(consejoDe('ochoLoco', 'juego', { jugadores: 4, cartasEspeciales: true })).toMatch(
+      /cartas especiales/,
+    );
   });
 });
 

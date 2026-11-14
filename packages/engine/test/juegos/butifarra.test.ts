@@ -210,6 +210,21 @@ describe('bazas y obligaciones', () => {
     expect(cartasJugables(e, 2)).toEqual(['copas-1', 'oros-4']);
   });
 
+  it('sobrefallo libre: sin superar el fallo del rival, cualquier carta', () => {
+    const fallada = (sobrefalloLibre: boolean) =>
+      mesa({
+        config: { ...CONFIG_BUTIFARRA_POR_DEFECTO, sobrefalloLibre },
+        turno: 2,
+        mesa: [
+          { asiento: 0, carta: 'espadas-2' },
+          { asiento: 1, carta: 'oros-9' },
+        ],
+        manos: [[], [], ['oros-1', 'copas-3', 'bastos-12'], []],
+      });
+    expect(cartasJugables(fallada(true), 2)).toEqual(['bastos-12', 'copas-3', 'oros-1']);
+    expect(cartasJugables(fallada(false), 2)).toEqual(['oros-1']);
+  });
+
   it('sin triunfo, un 9 de otro palo no gana', () => {
     let e = mesa({
       eleccion: { triunfo: null, quien: 3, delegada: false },
@@ -307,7 +322,11 @@ describe('vista', () => {
 // ── Contrato ─────────────────────────────────────────────────────────────────
 
 describirContrato(butifarra, {
-  configs: [CONFIG_BUTIFARRA_POR_DEFECTO, { objetivo: 51 }, { objetivo: 151 }],
+  configs: [
+    CONFIG_BUTIFARRA_POR_DEFECTO,
+    { objetivo: 51 },
+    { objetivo: 151, sobrefalloLibre: true },
+  ],
   // Las cartas de la última baza ya se vieron, aunque tras repartir estén en otra mano.
   cartasOcultas: (e, asiento) => {
     const vistas = new Set(e.ultimaBaza?.cartas.map((j) => j.carta) ?? []);

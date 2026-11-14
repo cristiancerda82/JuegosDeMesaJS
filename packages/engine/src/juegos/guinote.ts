@@ -36,6 +36,8 @@ export interface ConfigGuinote {
   readonly montarSobreCompanero: boolean;
   /** Puntos acumulados con los que se gana la partida. */
   readonly meta: number;
+  /** Sobrefallo libre: sin poder superar el fallo, se puede echar cualquier carta (opcional, por defecto no). */
+  readonly sobrefalloLibre?: boolean;
 }
 
 export const CONFIG_GUINOTE_POR_DEFECTO: ConfigGuinote = {
@@ -145,6 +147,7 @@ function cartasJugables(e: EstadoGuinote, asiento: Asiento): readonly IdCarta[] 
     asiento,
     montarSobreCompanero: e.config.montarSobreCompanero,
     valores: VALORES_GUINOTE,
+    sobrefalloLibre: e.config.sobrefalloLibre === true,
   });
 }
 
@@ -267,6 +270,9 @@ export const guinote: Juego<ConfigGuinote, EstadoGuinote, AccionGuinote, VistaGu
     if (typeof config.montarSobreCompanero !== 'boolean') {
       return error('Opción de montar sobre el compañero inválida');
     }
+    if (config.sobrefalloLibre !== undefined && typeof config.sobrefalloLibre !== 'boolean') {
+      return error('Opción de sobrefallo libre inválida');
+    }
     if (!Number.isInteger(config.meta) || config.meta < 1) {
       return error('Los puntos de la partida deben ser un entero positivo');
     }
@@ -275,6 +281,7 @@ export const guinote: Juego<ConfigGuinote, EstadoGuinote, AccionGuinote, VistaGu
       cambioSiete: config.cambioSiete,
       montarSobreCompanero: config.montarSobreCompanero,
       meta: config.meta,
+      sobrefalloLibre: config.sobrefalloLibre === true,
     };
     // Empieza repartiendo el último asiento, así sale el asiento 0.
     return ok(nuevaMano(limpia, crearAzar(semilla), limpia.jugadores - 1, [], [0, 0]));

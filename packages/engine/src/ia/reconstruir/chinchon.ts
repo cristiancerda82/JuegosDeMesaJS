@@ -55,6 +55,7 @@ export function reconstruirChinchon(vista: VistaChinchon, azar: EstadoAzar): Est
     robadaDelDescarte: vista.robadaDelDescarte,
     puntos: [...vista.puntos],
     eliminados: [...vista.eliminados],
+    ...(vista.reenganchados ? { reenganchados: [...vista.reenganchados] } : {}),
     ultimaAccion: vista.ultimaAccion,
     resultadosManos: [...vista.resultadosManos],
   };

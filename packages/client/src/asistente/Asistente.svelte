@@ -42,7 +42,7 @@
     asistencia ? fraseMotivo(asistencia.motivo.codigo, asistencia.motivo.datos, juego) : null,
   );
   const consejo = $derived(
-    sesion.asistido && sesion.consejo ? consejoDe(juego, sesion.consejo) : null,
+    sesion.asistido && sesion.consejo ? consejoDe(juego, sesion.consejo, sesion.config) : null,
   );
   /** El rival como lo nombra la mesa: «Compañero» en los juegos por parejas, «Rival 2»… */
   const nombre = ({ asiento, jugadores }: Lectura) =>

@@ -92,7 +92,7 @@
 
   function textoUltima(u: UltimaOchoLoco | null): string {
     if (u === null) return '';
-    if (u.tipo === 'robar') return T.ochoLoco.robo;
+    if (u.tipo === 'robar') return u.cartas === undefined ? T.ochoLoco.robo : T.ochoLoco.roboN(u.cartas);
     if (u.tipo === 'pasar') return T.ochoLoco.paso;
     return T.ochoLoco.jugo(nombreCarta(u.carta), u.palo === null ? null : palo(u.palo));
   }
@@ -101,7 +101,9 @@
     if (sesion.fin !== null || vista.turno === null) return '';
     if (vista.turno !== yo) return T.ochoLoco.leToca(nombre(vista.turno));
     if (vista.robe) return puede('jugar') ? T.ochoLoco.tuRobada : T.ochoLoco.robadaNoCasa;
+    if (vista.castigo) return T.ochoLoco.castigo(vista.castigo.numero, vista.castigo.robar);
     if (puede('jugar')) return T.ochoLoco.tuTurno;
+    if (vista.trasNueve && puede('robar')) return T.ochoLoco.trasNueve;
     return puede('robar') ? T.ochoLoco.tuTurnoRobar : T.ochoLoco.nadaQueRobar;
   });
 
@@ -159,6 +161,11 @@
     <p class="toca" class:elegido data-testid="palo" data-palo={vista.palo}>
       {T.ochoLoco.toca(palo(vista.palo))}
     </p>
+    {#if vista.config.cartasEspeciales}
+      <p class="marcador" data-testid="sentido" data-sentido={vista.sentido}>
+        {T.ochoLoco.sentido(vista.sentido)}
+      </p>
+    {/if}
     <p class="marcador" data-testid="puntos">
       {T.ochoLoco.puntos(vista.totales[yo] ?? 0)} / {OBJETIVO_OCHO_LOCO}
     </p>

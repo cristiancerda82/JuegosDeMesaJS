@@ -30,7 +30,10 @@
     },
     {
       concepto: T.escoba.oros,
-      detalle: (b: 0 | 1) => String(resultado.recuento[b].oros),
+      detalle: (b: 0 | 1) =>
+        resultado.puntos[b].oros === 2
+          ? T.escoba.premio(resultado.recuento[b].oros)
+          : String(resultado.recuento[b].oros),
       puntos: (b: 0 | 1) => resultado.puntos[b].oros,
     },
     {
@@ -40,7 +43,10 @@
     },
     {
       concepto: T.escoba.sietes,
-      detalle: (b: 0 | 1) => String(resultado.recuento[b].sietes),
+      detalle: (b: 0 | 1) =>
+        resultado.puntos[b].sietes === 3
+          ? T.escoba.premio(resultado.recuento[b].sietes)
+          : String(resultado.recuento[b].sietes),
       puntos: (b: 0 | 1) => resultado.puntos[b].sietes,
     },
   ]);

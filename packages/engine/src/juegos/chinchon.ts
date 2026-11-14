@@ -6,6 +6,7 @@ import { siguiente } from '../motor/bazas';
 import type { Asiento, Fin, Juego } from '../motor/contrato';
 import { error, ok } from '../resultado';
 import {
+  combinacionChinchon,
   esChinchon,
   mejorReparto,
   puntosCarta,
@@ -14,6 +15,7 @@ import {
 } from './chinchon-combinaciones';
 
 export {
+  combinacionChinchon,
   esChinchon,
   mejorReparto,
   puntosCarta,
@@ -32,6 +34,10 @@ export interface ConfigChinchon {
   readonly limite: 50 | 100;
   /** Valor máximo de la única carta suelta permitida al cerrar (0: cerrar con todo ligado). */
   readonly cierreMaximo: 0 | 3 | 5;
+  /** Al cerrar, los demás colocan sus sueltas en las combinaciones a la vista (opcional). */
+  readonly colocarSueltas?: boolean;
+  /** Quien pasa del límite vuelve una vez con los puntos del más alto (opcional). */
+  readonly reenganche?: boolean;
 }
 
 export const CONFIG_CHINCHON_POR_DEFECTO: ConfigChinchon = {
@@ -59,6 +65,8 @@ export interface ManoDestapada {
   readonly sueltas: readonly IdCarta[];
   /** Puntos de la mano para este jugador (−10 si cerró con todo ligado). */
   readonly puntos: number;
+  /** Cartas sin ligar que colocó en las combinaciones de los demás (con colocar las sueltas). */
+  readonly colocadas?: readonly IdCarta[];
 }
 
 export interface ResultadoManoChinchon {
@@ -68,6 +76,8 @@ export interface ResultadoManoChinchon {
   /** Puntos acumulados y eliminados después de esta mano. */
   readonly puntosTras: readonly number[];
   readonly eliminadosTras: readonly boolean[];
+  /** Quienes pasaron del límite en esta mano y se reengancharon (con reenganche). */
+  readonly reenganchesTras?: readonly Asiento[];
 }
 
 export interface EstadoChinchon {
@@ -85,6 +95,8 @@ export interface EstadoChinchon {
   readonly robadaDelDescarte: IdCarta | null;
   readonly puntos: readonly number[];
   readonly eliminados: readonly boolean[];
+  /** Quién se ha reenganchado ya en la partida (con reenganche). */
+  readonly reenganchados?: readonly boolean[];
   readonly ultimaAccion: AccionVisibleChinchon | null;
   readonly resultadosManos: readonly ResultadoManoChinchon[];
 }
@@ -108,6 +120,7 @@ export interface VistaChinchon {
   readonly robadaDelDescarte: IdCarta | null;
   readonly puntos: readonly number[];
   readonly eliminados: readonly boolean[];
+  readonly reenganchados?: readonly boolean[];
   readonly ultimaAccion: AccionVisibleChinchon | null;
   readonly resultadosManos: readonly ResultadoManoChinchon[];
 }
@@ -183,37 +196,123 @@ function nuevaMano(
   };
 }
 
+/**
+ * Coloca las sueltas que encajen en las combinaciones de la mesa (que se amplían): primero la de
+ * más puntos, y se repite hasta que no encaja ninguna. Devuelve las colocadas y las que quedan.
+ */
+export function colocarEnMesa(
+  mesa: IdCarta[][],
+  sueltas: readonly IdCarta[],
+  baraja: BarajaChinchon,
+): { colocadas: IdCarta[]; quedan: IdCarta[] } {
+  const colocadas: IdCarta[] = [];
+  let quedan = [...sueltas].sort((a, b) => puntosCarta(b) - puntosCarta(a));
+  let cambio = true;
+  while (cambio) {
+    cambio = false;
+    for (const carta of quedan) {
+      const k = mesa.findIndex((c) => combinacionChinchon([...c, carta], baraja) !== null);
+      if (k < 0) continue;
+      mesa[k] = [...combinacionChinchon([...mesa[k]!, carta], baraja)!];
+      colocadas.push(carta);
+      quedan = quedan.filter((c) => c !== carta);
+      cambio = true;
+      break;
+    }
+  }
+  return { colocadas, quedan };
+}
+
 /** Cierra la mano: puntúa, elimina y reparte otra mano o termina la partida. */
 function cerrarMano(e: EstadoChinchon, cierra: Asiento): EstadoChinchon {
-  const chinchon = esChinchon(e.manos[cierra]!, e.config.baraja);
+  const { baraja, limite } = e.config;
+  const chinchon = esChinchon(e.manos[cierra]!, baraja);
+  const repartos = new Map<Asiento, Reparto>(
+    activos(e).map((a) => [a, mejorReparto(e.manos[a]!, baraja)]),
+  );
+  const todoLigadoCierra = repartos.get(cierra)!.sueltas.length === 0;
+
+  // Con colocar las sueltas, cada uno en orden de turno coloca en lo que ya está a la vista.
+  const colocadas = new Map<Asiento, IdCarta[]>();
+  const quedan = new Map<Asiento, readonly IdCarta[]>();
+  if (e.config.colocarSueltas === true && !chinchon && !todoLigadoCierra) {
+    const mesa = repartos.get(cierra)!.combinaciones.map((c) => [...c]);
+    for (
+      let a = siguienteActivo(e.eliminados, cierra);
+      a !== cierra;
+      a = siguienteActivo(e.eliminados, a)
+    ) {
+      const reparto = repartos.get(a)!;
+      const r = colocarEnMesa(mesa, reparto.sueltas, baraja);
+      colocadas.set(a, r.colocadas);
+      quedan.set(a, r.quedan);
+      mesa.push(...reparto.combinaciones.map((c) => [...c]));
+    }
+  }
+
   const manos: ManoDestapada[] = activos(e).map((asiento) => {
-    const cartas = e.manos[asiento]!;
-    const reparto: Reparto = mejorReparto(cartas, e.config.baraja);
-    const todoLigado = reparto.sueltas.length === 0;
+    const reparto = repartos.get(asiento)!;
+    const sueltas = quedan.get(asiento) ?? reparto.sueltas;
+    const puestas = colocadas.get(asiento) ?? [];
     return {
       asiento,
-      cartas,
+      cartas: e.manos[asiento]!,
       combinaciones: reparto.combinaciones,
-      sueltas: reparto.sueltas,
-      puntos: asiento === cierra && todoLigado ? BONO_TODO_LIGADO : reparto.puntos,
+      sueltas,
+      puntos:
+        asiento === cierra && todoLigadoCierra
+          ? BONO_TODO_LIGADO
+          : sueltas.reduce((s, c) => s + puntosCarta(c), 0),
+      ...(puestas.length > 0 ? { colocadas: puestas } : {}),
     };
   });
   const puntos = e.puntos.map((p, a) => p + (manos.find((m) => m.asiento === a)?.puntos ?? 0));
-  const eliminados = e.eliminados.map((elim, a) => elim || puntos[a]! > e.config.limite);
+
+  // Con reenganche, quien pasa del límite por primera vez vuelve con los puntos del más alto.
+  let reenganchados = e.reenganchados;
+  const reenganchesTras: Asiento[] = [];
+  if (e.config.reenganche === true) {
+    const ya = [...(e.reenganchados ?? e.eliminados.map(() => false))];
+    const siguen = activos(e).filter((a) => puntos[a]! <= limite);
+    if (siguen.length > 0 && !chinchon) {
+      const maximo = Math.max(...siguen.map((a) => puntos[a]!));
+      for (const a of activos(e)) {
+        if (puntos[a]! > limite && !ya[a]) {
+          puntos[a] = maximo;
+          ya[a] = true;
+          reenganchesTras.push(a);
+        }
+      }
+    }
+    reenganchados = ya;
+  }
+
+  const eliminados = e.eliminados.map((elim, a) => elim || puntos[a]! > limite);
   const resultadosManos = [
     ...e.resultadosManos,
-    { cierra, chinchon, manos, puntosTras: puntos, eliminadosTras: eliminados },
+    {
+      cierra,
+      chinchon,
+      manos,
+      puntosTras: puntos,
+      eliminadosTras: eliminados,
+      ...(reenganchesTras.length > 0 ? { reenganchesTras } : {}),
+    },
   ];
-  const cerrado: EstadoChinchon = { ...e, puntos, eliminados, resultadosManos };
+  const conReenganches = reenganchados === undefined ? {} : { reenganchados };
+  const cerrado: EstadoChinchon = { ...e, puntos, eliminados, resultadosManos, ...conReenganches };
   if (partidaTerminada(cerrado)) return cerrado;
-  return nuevaMano(
-    e.config,
-    e.azar,
-    siguienteActivo(eliminados, e.repartidor),
-    puntos,
-    eliminados,
-    resultadosManos,
-  );
+  return {
+    ...nuevaMano(
+      e.config,
+      e.azar,
+      siguienteActivo(eliminados, e.repartidor),
+      puntos,
+      eliminados,
+      resultadosManos,
+    ),
+    ...conReenganches,
+  };
 }
 
 // ── Juego ────────────────────────────────────────────────────────────────────
@@ -233,24 +332,32 @@ export const chinchon: Juego<ConfigChinchon, EstadoChinchon, AccionChinchon, Vis
     if (![0, 3, 5].includes(config.cierreMaximo)) {
       return error('El máximo para cerrar es 0, 3 o 5');
     }
+    for (const opcion of ['colocarSueltas', 'reenganche'] as const) {
+      if (config[opcion] !== undefined && typeof config[opcion] !== 'boolean') {
+        return error('Opción de colocar las sueltas o de reenganche inválida');
+      }
+    }
     const limpia: ConfigChinchon = {
       jugadores: config.jugadores,
       baraja: config.baraja,
       comodines: config.comodines,
       limite: config.limite,
       cierreMaximo: config.cierreMaximo,
+      colocarSueltas: config.colocarSueltas === true,
+      reenganche: config.reenganche === true,
     };
     const n = limpia.jugadores;
     // Empieza repartiendo el último asiento, así sale el asiento 0.
+    const estado = nuevaMano(
+      limpia,
+      crearAzar(semilla),
+      n - 1,
+      new Array<number>(n).fill(0),
+      new Array<boolean>(n).fill(false),
+      [],
+    );
     return ok(
-      nuevaMano(
-        limpia,
-        crearAzar(semilla),
-        n - 1,
-        new Array<number>(n).fill(0),
-        new Array<boolean>(n).fill(false),
-        [],
-      ),
+      limpia.reenganche ? { ...estado, reenganchados: new Array<boolean>(n).fill(false) } : estado,
     );
   },
 
@@ -343,6 +450,7 @@ export const chinchon: Juego<ConfigChinchon, EstadoChinchon, AccionChinchon, Vis
       robadaDelDescarte: e.robadaDelDescarte,
       puntos: [...e.puntos],
       eliminados: [...e.eliminados],
+      ...(e.reenganchados ? { reenganchados: [...e.reenganchados] } : {}),
       ultimaAccion: e.ultimaAccion,
       resultadosManos: [...e.resultadosManos],
     };

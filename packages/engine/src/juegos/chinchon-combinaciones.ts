@@ -160,6 +160,20 @@ function recordar(clave: string, reparto: Reparto): void {
   recordados.set(clave, reparto);
 }
 
+/**
+ * Si las cartas forman una sola combinación válida (un grupo de 3 o 4 del mismo valor o una
+ * escalera del mismo palo, con como mucho un comodín). Devuelve las cartas en su orden (las
+ * escaleras con el comodín en su hueco) o `null` si no forman combinación.
+ */
+export function combinacionChinchon(
+  cartas: readonly IdCarta[],
+  baraja: BarajaCombinable,
+): readonly IdCarta[] | null {
+  if (cartas.length < 3 || cartas.length > 31) return null;
+  const todas = (1 << cartas.length) - 1;
+  return candidatas(cartas, baraja).find((c) => c.mascara === todas)?.cartas ?? null;
+}
+
 /** Posición de un valor en el orden de las escaleras de la baraja. */
 export function posicionEscalera(valor: number, baraja: BarajaCombinable): number {
   return ORDEN[baraja].indexOf(valor);

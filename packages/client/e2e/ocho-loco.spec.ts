@@ -141,3 +141,49 @@ test('el Ocho loco de 5 entra en 360 × 640 sin scroll horizontal', async ({ pag
   for (let a = 1; a <= 4; a++) await expect(page.getByTestId(`asiento-${a}`)).toBeVisible();
   await page.screenshot({ path: 'test-results/ocho-loco5-360.png' });
 });
+
+// ── Cartas especiales (opción) ───────────────────────────────────────────────
+
+test('con las cartas especiales, la mesa enseña el sentido y la obligación de un As o un 6', async ({
+  page,
+}) => {
+  await page.goto('./?rapido&semilla=especiales-1');
+  await abrirJuego(page, 'ochoLoco');
+  await page.getByLabel('2 jugadores', { exact: true }).check();
+  await page.getByTestId('opcion-especiales').check();
+  await page.getByTestId('empezar').click();
+  await expect(page.getByTestId('sentido')).toContainText('Sentido');
+
+  // Juega acción a acción hasta que el rival deje una obligación pendiente.
+  let vista = false;
+  for (let i = 0; i < 300 && !vista; i++) {
+    const accion = page.locator(
+      '[data-testid="mano"] .carta-mano.jugable, [data-testid="robar"], [data-testid="pasar"], [data-testid="siguiente-mano"]',
+    );
+    await accion.first().waitFor({ timeout: 30_000 });
+    if (/o roba \d/.test((await page.getByTestId('turno').textContent()) ?? '')) {
+      vista = true;
+      break;
+    }
+    const siguiente = page.getByTestId('siguiente-mano');
+    if (await siguiente.isVisible()) {
+      await siguiente.click();
+      continue;
+    }
+    const ids = await jugables(page).evaluateAll((els) =>
+      els.map((e) => e.getAttribute('data-carta')),
+    );
+    if (ids.length > 0) await jugar(page, ids.find((c) => !esOcho(c)) ?? ids[0]!);
+    else if (await page.getByTestId('robar').isVisible()) await page.getByTestId('robar').click();
+    else await page.getByTestId('pasar').click();
+  }
+  expect(vista).toBe(true);
+  await expect(page.getByTestId('turno')).toHaveText(/Echa un (As|6) o roba [12]/);
+  await expect(page.getByTestId('robar')).toBeVisible();
+});
+
+test('sin las cartas especiales no hay indicador de sentido', async ({ page }) => {
+  await empezarOchoLoco(page, 'rapido&semilla=especiales-2');
+  await expect(page.getByTestId('turno')).toContainText('Tu turno');
+  await expect(page.getByTestId('sentido')).toHaveCount(0);
+});

@@ -451,6 +451,20 @@ export const T = {
     jugadoresN: (n: number) => `${n} jugadores`,
     blackLady:
       'Con 3, 5 o 6 jugadores (Black Lady) se quitan algunos doses para repartir igual y no hay pase.',
+    premiosEscoba: 'Premios de los oros y los sietes',
+    premiosEscobaDesc: 'Los 10 oros valen 2 puntos y los 4 sietes 3, en lugar de 1.',
+    sobrefallo: 'Sobrefallo libre',
+    sobrefalloDesc:
+      'Sin el palo de salida, si no puedes superar el triunfo que gana la baza, puedes echar cualquier carta en vez de un triunfo menor.',
+    colocarSueltas: 'Colocar las sueltas',
+    colocarSueltasDesc:
+      'Al cerrar, los demás colocan sus cartas sin ligar en las combinaciones a la vista y no les suman.',
+    reenganche: 'Reenganche',
+    reengancheDesc:
+      'Quien pasa del límite vuelve a entrar una vez, con los puntos del que más tiene.',
+    cartasEspeciales: 'Cartas especiales',
+    cartasEspecialesDesc:
+      'El 10 cambia el sentido, el As hace robar 2, el 6 robar 1, el 7 salta un turno y tras un 9 quien no puede echar roba y pasa.',
     baraja: 'Baraja',
     baraja40: 'Española de 40 cartas',
     baraja48: 'Española de 48 cartas (con 8 y 9)',
@@ -577,6 +591,7 @@ export const T = {
     totalMano: 'Total de la mano',
     totalPartida: 'Total de la partida',
   },
+    premio: (n: number) => `${n} (premio)`,
 
   chinchon: {
     mazo: 'Mazo',
@@ -606,6 +621,8 @@ export const T = {
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Clasificación',
   },
+    colocadas: 'Colocadas',
+    seReengancha: (n: number) => `Se reengancha con ${n} puntos`,
 
   guinote: {
     marcador: (nuestros: number, suyos: number, meta: number) =>
@@ -2793,7 +2810,12 @@ export const T = {
     conRey: 'Con rey',
     solo: 'Solo',
     paso: 'Paso',
+    roboN: (n: number) => (n === 1 ? 'Roba 1' : `Roba ${n}`),
     sinPuja: 'Sin pujas',
+    castigo: (numero: number, robar: number) =>
+      `Echa ${numero === 1 ? 'un As' : `un ${numero}`} o roba ${robar}`,
+    trasNueve: 'Tras el 9 no tienes carta que echar: roba una y pierdes el turno',
+    sentido: (s: 1 | -1) => (s === 1 ? 'Sentido: ↻ el de siempre' : 'Sentido: ↺ al revés'),
     juega: (quien: string, m: 'rey' | 'solo') =>
       quien === 'Tú'
         ? `Juegas ${m === 'rey' ? 'con rey' : 'solo'}`
@@ -3644,6 +3666,7 @@ export const T = {
         texto: [
           'Arrastra la carta a la mesa, o tócala y toca la mesa. Con un doble toque también se juega.',
         ],
+          'Variante (opción «Sobrefallo libre»): si no tienes el palo que salió y no puedes superar el triunfo que gana la baza, puedes echar cualquier carta en vez de un triunfo menor. Así lo cuentan los libros clásicos del Tute.',
       },
       {
         titulo: 'Consejos',
@@ -3718,6 +3741,7 @@ export const T = {
         ],
       },
       {
+          'Variante (opción «Premios de los oros y los sietes»): quien se lleva los 10 oros se apunta 2 puntos por los oros, y quien se lleva los 4 sietes, 3 por los sietes, en lugar de 1.',
         titulo: 'Las combinaciones',
         texto: [
           'Escalera: 3 o más cartas seguidas del mismo palo (en la baraja de 40, después del 7 va la Sota). Trío o cuarteto: 3 o 4 cartas del mismo número.',
@@ -3771,6 +3795,8 @@ export const T = {
           'Gana la partida el primero que llega a 101 puntos. Si al acabar una mano nadie llega, se juega otra «de vueltas» y los puntos se siguen sumando.',
         ],
       },
+          'Variante (opción «Colocar las sueltas»): al cerrar, cada uno coloca sus cartas sin ligar en las combinaciones que ya están a la vista (las de quien cierra y las de los que enseñaron antes), y esas no le suman. Se colocan solas; no vale si quien cierra lo hace con todo ligado.',
+          'Variante (opción «Reenganche»): quien pasa del límite vuelve a entrar una sola vez, con los puntos del jugador que más tenga entre los que siguen.',
       {
         titulo: 'Lo que vale cada carta',
         texto: [
@@ -3825,6 +3851,7 @@ export const T = {
         texto: [
           'No gastes un triunfo en una baza que no tiene puntos.',
           'Guarda el Rey y la Sota de un palo hasta que puedas cantarlos.',
+          'Variante (opción «Sobrefallo libre»): en el arrastre, si no tienes el palo que salió y no puedes superar el triunfo que gana la baza, puedes echar cualquier carta en vez de un triunfo menor.',
           'En el arrastre cuenta los triunfos que han salido: el que tenga el último manda.',
         ],
       },
@@ -6287,6 +6314,13 @@ export const T = {
         texto: [
           'Empieza a hablar el siguiente al que reparte. En tu turno pasas, pujas «con rey» o pujas «solo», que vale más. Se puede subir de «con rey» a «solo», y quien pasa ya no vuelve a hablar.',
           'Gana quien hizo la última puja: es el jugador. Si pasan los cuatro, se reparte otra vez.',
+      {
+        titulo: 'Cartas especiales (opción)',
+        texto: [
+          'Variante del Ocho americano (opción «Cartas especiales»): el 10 cambia el sentido del juego; el As obliga al siguiente a echar otro As o a robar 2; el 6, a echar otro 6 o a robar 1; el 7 hace que el siguiente pierda el turno.',
+          'Tras un 9, quien no puede echar ninguna carta roba una y pierde el turno. Quien roba por un As o un 6 sigue jugando con normalidad, y la mesa te avisa de lo que tienes que hacer.',
+        ],
+      },
         ],
       },
       {
@@ -6769,6 +6803,7 @@ export const T = {
       {
         titulo: 'En la mesa',
         texto: [
+          'Variante (opción «Sobrefallo libre»): si un rival ha fallado y ninguno de tus triunfos lo supera, puedes echar cualquier carta en vez de un triunfo menor.',
           'Elige tu apuesta con los botones − y + y pulsa «Apostar». En tu turno, pulsa «Pedir carta» o «Plantarse». Junto a tus cartas verás cuánto sumas.',
         ],
       },

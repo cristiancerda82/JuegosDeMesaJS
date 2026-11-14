@@ -67,7 +67,7 @@ export const SIMULABLE_ESCOBA: Simulable<ConfigEscoba, EstadoEscoba, AccionEscob
   valorar(inicio, final, asiento) {
     const r =
       final.resultadosManos[inicio.resultadosManos.length] ??
-      puntuarMano(final.recogidas, final.escobas);
+      puntuarMano(final.recogidas, final.escobas, final.config.premios === true);
     return diferencia(r, bandoDe(asiento)) + bonoPartida(escoba.resultado(final), asiento);
   },
   reconstrucciones: 20,

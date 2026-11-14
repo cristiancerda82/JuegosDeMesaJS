@@ -127,6 +127,11 @@ export interface OpcionesObligadas {
   readonly montarSobreCompanero: boolean;
   /** Orden de las cartas; por defecto, el de la Brisca y el Tute. */
   readonly valores?: ValoresBazas;
+  /**
+   * Sobrefallo libre: sin el palo de salida, si la baza la gana un triunfo y ninguno de los
+   * triunfos de la mano lo supera, se puede jugar cualquier carta (no hay que echar uno menor).
+   */
+  readonly sobrefalloLibre?: boolean;
 }
 
 /**
@@ -163,6 +168,10 @@ export function cartasObligadas(
   if (delPalo.length > 0) return superanA(delPalo);
   if (delCompanero) return mano;
   const triunfos = mano.filter((c) => paloDe(c) === triunfo);
-  if (triunfos.length > 0) return superanA(triunfos);
-  return mano;
+  if (triunfos.length === 0) return mano;
+  if (opciones.sobrefalloLibre && paloDe(ganadora.carta) === triunfo) {
+    const superan = triunfos.filter((c) => fuerza(c, valores) > fuerza(ganadora.carta, valores));
+    if (superan.length === 0) return mano;
+  }
+  return superanA(triunfos);
 }

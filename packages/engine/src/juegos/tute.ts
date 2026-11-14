@@ -31,6 +31,8 @@ export interface ConfigTute {
   readonly cambioSiete: 'no' | 'libre' | 'trasGanarBaza';
   /** Con 4 jugadores, si hay que superar la baza cuando ya la gana el compañero. */
   readonly montarSobreCompanero: boolean;
+  /** Sobrefallo libre: sin poder superar el fallo, se puede echar cualquier carta (opcional, por defecto no). */
+  readonly sobrefalloLibre?: boolean;
   /** Partida a una mano o al mejor de N (N impar). */
   readonly manos: number;
 }
@@ -144,6 +146,7 @@ function cartasJugables(e: EstadoTute, asiento: Asiento): readonly IdCarta[] {
   return cartasObligadas(mano, e.mesa, e.triunfo, {
     asiento,
     montarSobreCompanero: e.config.montarSobreCompanero,
+    sobrefalloLibre: e.config.sobrefalloLibre === true,
   });
 }
 
@@ -283,6 +286,9 @@ export const tute: Juego<ConfigTute, EstadoTute, AccionTute, VistaTute> = {
     if (typeof config.montarSobreCompanero !== 'boolean') {
       return error('Opción de montar sobre el compañero inválida');
     }
+    if (config.sobrefalloLibre !== undefined && typeof config.sobrefalloLibre !== 'boolean') {
+      return error('Opción de sobrefallo libre inválida');
+    }
     if (!Number.isInteger(config.manos) || config.manos < 1 || config.manos % 2 === 0) {
       return error('El número de manos debe ser un entero impar positivo');
     }
@@ -291,6 +297,7 @@ export const tute: Juego<ConfigTute, EstadoTute, AccionTute, VistaTute> = {
       cambioSiete: config.cambioSiete,
       montarSobreCompanero: config.montarSobreCompanero,
       manos: config.manos,
+      sobrefalloLibre: config.sobrefalloLibre === true,
     };
     // Empieza repartiendo el último asiento, así sale el asiento 0.
     return ok(nuevaMano(limpia, crearAzar(semilla), limpia.jugadores - 1, []));

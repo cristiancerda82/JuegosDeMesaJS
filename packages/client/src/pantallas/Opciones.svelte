@@ -407,6 +407,20 @@
     {:else if juego === 'escoba'}
       <fieldset>
         <legend>{T.opciones.jugadores}</legend>
+      <fieldset>
+        <legend>{T.opciones.colocarSueltas}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={chinchon.colocarSueltas} data-testid="opcion-colocar" />
+          {T.opciones.colocarSueltasDesc}
+        </label>
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.reenganche}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={chinchon.reenganche} data-testid="opcion-reenganche" />
+          {T.opciones.reengancheDesc}
+        </label>
+      </fieldset>
         <label><input type="radio" bind:group={escoba.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
         <label><input type="radio" bind:group={escoba.jugadores} value={4} /> {T.opciones.cuatroJugadores}</label>
       </fieldset>
@@ -433,6 +447,13 @@
     {:else if juego === 'scopa'}
       <fieldset>
         <legend>{T.opciones.jugadores}</legend>
+      <fieldset>
+        <legend>{T.opciones.premiosEscoba}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={escoba.premios} data-testid="opcion-premios" />
+          {T.opciones.premiosEscobaDesc}
+        </label>
+      </fieldset>
         <label><input type="radio" bind:group={scopaConfig.jugadores} value={2} /> {T.opciones.dosJugadores}</label>
         <label
           ><input type="radio" bind:group={scopaConfig.jugadores} value={4} data-testid="scopa-cuatro" />
@@ -636,6 +657,13 @@
         <legend>{T.opciones.manosJulepe}</legend>
         {#each [8, 4, 12] as const as m (m)}
           <label><input type="radio" bind:group={cuatrolaConfig.manos} value={m} /> {T.opciones.manosJulepeN(m)}</label>
+      <fieldset>
+        <legend>{T.opciones.cartasEspeciales}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={ochoLocoConfig.cartasEspeciales} data-testid="opcion-especiales" />
+          {T.opciones.cartasEspecialesDesc}
+        </label>
+      </fieldset>
         {/each}
       </fieldset>
     {:else if juego === 'tuteSubastado'}
@@ -699,6 +727,13 @@
         <legend>{T.opciones.pasadas}</legend>
         {#each [3, 1, null] as const as p (p)}
           <label><input type="radio" bind:group={piramideConfig.pasadas} value={p} /> {T.opciones.pasadasN(p)}</label>
+      <fieldset>
+        <legend>{T.opciones.sobrefallo}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={butifarra.sobrefalloLibre} data-testid="opcion-sobrefallo" />
+          {T.opciones.sobrefalloDesc}
+        </label>
+      </fieldset>
         {/each}
       </fieldset>
     {:else if juego === 'spider'}
@@ -915,6 +950,13 @@
         <label><input type="radio" bind:group={tute.cambioSiete} value="no" /> {T.opciones.cambioNo}</label>
       </fieldset>
       <fieldset>
+      <fieldset>
+        <legend>{T.opciones.sobrefallo}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={guinote.sobrefalloLibre} data-testid="opcion-sobrefallo" />
+          {T.opciones.sobrefalloDesc}
+        </label>
+      </fieldset>
         <legend>{T.opciones.manos}</legend>
         {#each [1, 3, 5] as m (m)}
           <label><input type="radio" bind:group={tute.manos} value={m} /> {T.opciones.manosJulepeN(m)}</label>
@@ -940,6 +982,13 @@
         <label><input type="radio" bind:group={brisca.cambioMuestra} value="no" /> {T.opciones.cambioNo}</label>
       </fieldset>
       <fieldset>
+      <fieldset>
+        <legend>{T.opciones.sobrefallo}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={tute.sobrefalloLibre} data-testid="opcion-sobrefallo" />
+          {T.opciones.sobrefalloDesc}
+        </label>
+      </fieldset>
         <legend>{T.opciones.manos}</legend>
         {#each [1, 3, 5] as m (m)}
           <label><input type="radio" bind:group={brisca.manos} value={m} /> {T.opciones.manosJulepeN(m)}</label>

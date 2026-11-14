@@ -3,6 +3,7 @@ import { crearAzar } from '../../src/baraja/azar';
 import type { IdCarta } from '../../src/baraja/cartas';
 import {
   chinchon,
+  combinacionChinchon,
   CONFIG_CHINCHON_POR_DEFECTO,
   esChinchon,
   mejorReparto,
@@ -344,6 +345,137 @@ describe('eliminación y fin de la partida', () => {
   });
 });
 
+describe('colocar las sueltas', () => {
+  const ligada: IdCarta[] = ['oros-1', 'oros-2', 'oros-3', 'copas-5', 'espadas-5', 'bastos-5'];
+  const rival: IdCarta[] = [
+    'oros-4',
+    'copas-12',
+    'bastos-10',
+    'bastos-11',
+    'bastos-12',
+    'espadas-6',
+    'copas-7',
+  ];
+  const cerrar = (config: Partial<ConfigChinchon>, cierre: IdCarta[] = [...ligada, 'copas-2']) =>
+    jugar(mesa({ config, fase: 'descartar', manos: [[...cierre, 'espadas-12'], rival] }), 0, {
+      tipo: 'cerrar',
+      carta: 'espadas-12',
+    }).resultadosManos[0]!;
+
+  it('coloca en la escalera de quien cierra y no le suma', () => {
+    const r = cerrar({ colocarSueltas: true });
+    const m = r.manos.find((x) => x.asiento === 1)!;
+    expect(m.colocadas).toEqual(['oros-4']);
+    expect(m.puntos).toBe(10 + 6 + 7);
+  });
+
+  it('con la opción por defecto, la carta le suma', () => {
+    const m = cerrar({}).manos.find((x) => x.asiento === 1)!;
+    expect(m.colocadas).toBeUndefined();
+    expect(m.puntos).toBe(4 + 10 + 6 + 7);
+  });
+
+  it('coloca en la combinación de otro que enseñó antes', () => {
+    const e = mesa({
+      config: { jugadores: 3, colocarSueltas: true },
+      fase: 'descartar',
+      manos: [
+        [...ligada, 'copas-2', 'espadas-12'],
+        ['oros-10', 'copas-10', 'espadas-10', 'copas-1', 'espadas-3', 'bastos-6', 'copas-4'],
+        ['bastos-10', 'copas-6', 'bastos-7', 'espadas-1', 'oros-12', 'espadas-11', 'copas-11'],
+      ],
+    });
+    const r = jugar(e, 0, { tipo: 'cerrar', carta: 'espadas-12' }).resultadosManos[0]!;
+    const tercero = r.manos.find((x) => x.asiento === 2)!;
+    expect(tercero.colocadas).toEqual(['bastos-10']);
+    expect(tercero.sueltas).not.toContain('bastos-10');
+  });
+
+  it('nadie coloca tras un cierre con todo ligado', () => {
+    const e = mesa({
+      config: { colocarSueltas: true },
+      fase: 'descartar',
+      manos: [
+        [...ligada, 'oros-4', 'espadas-12'],
+        ['oros-5', ...rival.slice(1)],
+      ],
+    });
+    const r = jugar(e, 0, { tipo: 'cerrar', carta: 'espadas-12' }).resultadosManos[0]!;
+    const m = r.manos.find((x) => x.asiento === 1)!;
+    expect(m.colocadas).toBeUndefined();
+    expect(m.sueltas).toContain('oros-5');
+  });
+});
+
+describe('reenganche', () => {
+  const ligada: IdCarta[] = [
+    'oros-1',
+    'oros-2',
+    'oros-3',
+    'copas-5',
+    'espadas-5',
+    'bastos-5',
+    'oros-4',
+  ];
+  const manos: IdCarta[][] = [
+    [...ligada, 'espadas-12'],
+    ['bastos-12', 'copas-12', 'oros-10', 'copas-7', 'espadas-1', 'bastos-1', 'copas-1'],
+    ['copas-3', 'copas-4', 'copas-6', 'espadas-7', 'bastos-7', 'oros-7', 'espadas-2'],
+  ];
+  const cerrar = (parcial: Parcial) =>
+    jugar(mesa({ fase: 'descartar', manos, puntos: [10, 70, 20], ...parcial }), 0, {
+      tipo: 'cerrar',
+      carta: 'espadas-12',
+    });
+
+  it('vuelve con los puntos del más alto de los que siguen', () => {
+    const d = cerrar({ config: { jugadores: 3, reenganche: true } });
+    const r = d.resultadosManos[0]!;
+    // Sin reenganche llegaría a 107; el más alto de los que siguen tiene 20 + 15 = 35.
+    expect(r.puntosTras).toEqual([0, 35, 35]);
+    expect(r.eliminadosTras).toEqual([false, false, false]);
+    expect(r.reenganchesTras).toEqual([1]);
+    expect(d.reenganchados).toEqual([false, true, false]);
+    expect(d.manos.map((m) => m.length)).toEqual([7, 7, 7]);
+  });
+
+  it('la segunda vez queda eliminado', () => {
+    const d = cerrar({
+      config: { jugadores: 3, reenganche: true },
+      reenganchados: [false, true, false],
+    });
+    expect(d.resultadosManos[0]!.eliminadosTras).toEqual([false, true, false]);
+    expect(d.resultadosManos[0]!.reenganchesTras).toBeUndefined();
+  });
+
+  it('si todos pasan del límite, nadie se reengancha', () => {
+    const e = mesa({
+      config: { reenganche: true },
+      fase: 'descartar',
+      manos: [
+        ['oros-1', 'oros-2', 'oros-3', 'copas-5', 'espadas-5', 'bastos-5', 'copas-2', 'espadas-12'],
+        manos[1]!,
+      ],
+      puntos: [99, 80],
+      reenganchados: [false, false],
+    });
+    const fin = jugar(e, 0, { tipo: 'cerrar', carta: 'espadas-12' });
+    expect(fin.resultadosManos[0]!.eliminadosTras).toEqual([true, true]);
+    expect(chinchon.resultado(fin)).not.toBeNull();
+  });
+
+  it('con la opción por defecto queda eliminado', () => {
+    const d = cerrar({ config: { jugadores: 3 } });
+    expect(d.resultadosManos[0]!.eliminadosTras).toEqual([false, true, false]);
+    expect(d.reenganchados).toBeUndefined();
+  });
+
+  it('crear prepara los reenganches solo con la opción', () => {
+    expect(nueva({ reenganche: true, jugadores: 3 }).reenganchados).toEqual([false, false, false]);
+    expect(nueva().reenganchados).toBeUndefined();
+  });
+});
+
 // ── Vista y contrato ─────────────────────────────────────────────────────────
 
 describe('vista', () => {
@@ -367,6 +499,15 @@ describirContrato(chinchon, {
     CONFIG_CHINCHON_POR_DEFECTO,
     { jugadores: 3, baraja: 'espanola48', comodines: false, limite: 50, cierreMaximo: 5 },
     { jugadores: 4, baraja: 'espanola40', comodines: true, limite: 50, cierreMaximo: 0 },
+    {
+      jugadores: 3,
+      baraja: 'espanola40',
+      comodines: true,
+      limite: 50,
+      cierreMaximo: 3,
+      colocarSueltas: true,
+      reenganche: true,
+    },
   ],
   // Las manos destapadas de manos anteriores repiten identificadores de las cartas actuales,
   // así que solo se comprueba la primera mano, antes de que haya resultados.
@@ -381,4 +522,33 @@ describirContrato(chinchon, {
         ].filter((c) => c !== e.robadaDelDescarte && c !== e.ultimaAccion?.carta),
   pasosMaximos: 200,
   ejecuciones: 30,
+});
+
+describe('combinacionChinchon', () => {
+  it('grupos de 3 o 4, con como mucho un comodín', () => {
+    expect(combinacionChinchon(['oros-5', 'copas-5', 'bastos-5'], 'espanola40')).not.toBeNull();
+    expect(
+      combinacionChinchon(['oros-5', 'copas-5', 'bastos-5', 'espadas-5'], 'espanola40'),
+    ).not.toBeNull();
+    expect(combinacionChinchon(['oros-5', 'copas-5', 'comodin-1'], 'espanola40')).not.toBeNull();
+    expect(
+      combinacionChinchon(
+        ['oros-5', 'copas-5', 'bastos-5', 'espadas-5', 'comodin-1'],
+        'espanola40',
+      ),
+    ).toBeNull();
+    expect(combinacionChinchon(['oros-5', 'comodin-1', 'comodin-2'], 'espanola40')).toBeNull();
+  });
+
+  it('escaleras del mismo palo, con el comodín en su hueco', () => {
+    expect(combinacionChinchon(['oros-7', 'oros-10', 'oros-11'], 'espanola40')).not.toBeNull();
+    expect(combinacionChinchon(['oros-7', 'oros-10', 'oros-11'], 'espanola48')).toBeNull();
+    expect(combinacionChinchon(['oros-4', 'comodin-1', 'oros-2'], 'espanola40')).toEqual([
+      'oros-2',
+      'comodin-1',
+      'oros-4',
+    ]);
+    expect(combinacionChinchon(['oros-4', 'copas-5', 'oros-6'], 'espanola40')).toBeNull();
+    expect(combinacionChinchon(['oros-4', 'oros-5'], 'espanola40')).toBeNull();
+  });
 });
