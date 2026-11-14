@@ -6,7 +6,7 @@ TBD - created by archiving change niveles-ia. Update Purpose after archive.
 ## Requirements
 
 ### Requirement: Tres niveles en cada juego contra la máquina
-Cada juego con IA (Brisca, Tute, Guiñote, Escoba, Chinchón, Siete y media, Cinquillo, Pocha, Mus, Corazones, Burro, Pinacle, Butifarra, Truc, Julepe, Remigio, Tute subastado, Cuatrola, Mentiroso, Ocho loco, Picas, Blackjack, Gin Rummy, Rummy 500, Texas Hold'em, Culo, Canasta, Whist, Sevens, Casino, Durak, Euchre, Big Two, Cribbage, Belote, Schnapsen, Skat, Oh Hell, Spite and Malice, Bridge, Pesca, Kings in the Corner, Bezique, Doppelkopf, Tarot, Sueca, Piquet, Jass, Klaverjas, Barbu, Five Hundred, Scopa, Tressette, Schafkopf, Truco, Préférence, Cuarenta, Pishti, Écarté, Sixty-six, Tysiącha, Sheepshead, Rentz, Bourré, Tresillo, Conquián, Treinta y uno, Twenty-Nine, Briscola Chiamata, Hand and Foot y Polignac) MUST ofrecer una IA para cada nivel (el Sixty-six, como variante del Schnapsen, usa las del Schnapsen): `facil`, `normal` y `dificil`. La IA `normal` MUST ser la IA básica del juego. Todos los niveles MUST cumplir las garantías generales de la IA:
+Cada juego con IA (Brisca, Tute, Guiñote, Escoba, Chinchón, Siete y media, Cinquillo, Pocha, Mus, Corazones, Burro, Pinacle, Butifarra, Truc, Julepe, Remigio, Tute subastado, Cuatrola, Mentiroso, Ocho loco, Picas, Blackjack, Gin Rummy, Rummy 500, Texas Hold'em, Culo, Canasta, Whist, Sevens, Casino, Durak, Euchre, Big Two, Cribbage, Belote, Schnapsen, Skat, Oh Hell, Spite and Malice, Bridge, Pesca, Kings in the Corner, Bezique, Doppelkopf, Tarot, Sueca, Piquet, Jass, Klaverjas, Barbu, Five Hundred, Scopa, Tressette, Schafkopf, Truco, Préférence, Cuarenta, Pishti, Écarté, Sixty-six, Tysiącha, Sheepshead, Rentz, Bourré, Tresillo, Conquián, Treinta y uno, Twenty-Nine, Briscola Chiamata, Hand and Foot, Polignac y Póker de cinco cartas) MUST ofrecer una IA para cada nivel (el Sixty-six, como variante del Schnapsen, usa las del Schnapsen): `facil`, `normal` y `dificil`. La IA `normal` MUST ser la IA básica del juego. Todos los niveles MUST cumplir las garantías generales de la IA:
 - deciden solo con la vista de su asiento;
 - eligen siempre una acción legal;
 - son reproducibles con su semilla;
@@ -34,7 +34,7 @@ En cada juego, la IA normal MUST ganar claramente más partidas que la fácil cu
 - **THEN** gana más partidas de las que le corresponderían si las dos fueran iguales
 
 ### Requirement: Reconstrucción de las cartas ocultas
-Cada juego con IA difícil (todos menos el Burro, el Mentiroso y el Texas Hold'em) MUST tener una función que, a partir de la vista de un asiento y de un azar, construya un estado completo del juego coherente con esa vista. Las cartas que el asiento no ve (las manos ajenas, el mazo y cualquier otra carta oculta) MUST repartirse al azar entre los sitios ocultos, respetando cuántas cartas hay en cada uno. Todo lo visible MUST quedar igual. La vista de ese asiento en el estado reconstruido MUST ser idéntica a la vista de partida.
+Cada juego con IA difícil (todos menos el Burro, el Mentiroso, el Texas Hold'em y el Póker de cinco cartas) MUST tener una función que, a partir de la vista de un asiento y de un azar, construya un estado completo del juego coherente con esa vista. Las cartas que el asiento no ve (las manos ajenas, el mazo y cualquier otra carta oculta) MUST repartirse al azar entre los sitios ocultos, respetando cuántas cartas hay en cada uno. Todo lo visible MUST quedar igual. La vista de ese asiento en el estado reconstruido MUST ser idéntica a la vista de partida.
 
 Si una vista no tiene datos públicos suficientes para reconstruir el estado, se MUST añadir a la vista lo que falte, siempre que no sea información oculta y que la spec del juego no lo prohíba. Se añaden:
 - las cartas ya jugadas en bazas de la mano (Brisca, Tute, Guiñote, Pocha, Corazones, Butifarra, Truc, Julepe, Tute subastado, Cuatrola, Picas y Whist);
@@ -277,6 +277,12 @@ En el Texas Hold'em no hay simulación de partidas ni reconstrucción: jugar el 
 
 El azar de esas simulaciones y del farol sale de la semilla de la IA, así que la decisión es reproducible. Como en el resto de juegos, MUST ganar más partidas que la normal cuando se enfrentan.
 
+En el Póker de cinco cartas, como en el Texas Hold'em, no hay simulación de partidas ni reconstrucción. La IA difícil MUST estimar su equity repartiendo al azar, un número fijo de veces, las cinco cartas de cada rival que sigue en la mano, entre las que no ve:
+- antes del descarte, simula también los cambios: los de los rivales, con la regla de la IA normal, y el suyo, con el que hará; a quien ha subido le da, entre unos intentos, una mano de pareja o mejor;
+- después del descarte, a quien no cambió ninguna carta le da, entre unos intentos, una mano de escalera o mejor, y a quien enseñó un As, una mano con ese As.
+
+Con esa equity apuesta, iguala, se retira o va de farol como la difícil del Texas Hold'em. Las cartas que cambia las MUST decidir como la normal.
+
 En el Culo, la IA difícil MUST simular solo las cartas que juega o si pasa, valorando el puesto en que acaba la mano. Como los palos no cuentan, MUST probar una sola jugada por cada valor y número de cartas. Las cartas que devuelve en el intercambio las MUST decidir como la normal.
 
 En la Canasta, como en el Pinacle, la IA difícil MUST simular solo si roba del mazo o se lleva el pozo, y qué carta descarta cuando la normal descartaría. Lo que baja, añade o deshace lo MUST decidir como la normal. Como las manos son largas, MAY limitar cuántas jugadas se simulan y valorar lo que queda en ese punto.
@@ -420,6 +426,10 @@ En cada juego con simulación, la IA difícil MUST ganar más partidas que la no
 #### Scenario: Qué simula el difícil del Rummy 500
 - **WHEN** la IA difícil del Rummy 500 puede bajar una combinación
 - **THEN** la baja como la normal, sin simular
+
+#### Scenario: Cambios del difícil en el Póker de cinco cartas
+- **WHEN** a la IA difícil del Póker de cinco cartas le toca cambiar cartas
+- **THEN** cambia las mismas que la normal
 
 #### Scenario: Probabilidades del bote en el Texas Hold'em
 - **WHEN** la IA difícil del Texas Hold'em tiene que igualar 50 a un bote de 50 y estima que gana el 20 % de las veces
