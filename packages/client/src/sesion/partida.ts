@@ -130,6 +130,10 @@ import {
   type ConfigPolignac,
   type EstadoPolignac,
   type VistaPolignac,
+  type AccionPokerCinco,
+  type ConfigPokerCinco,
+  type EstadoPokerCinco,
+  type VistaPokerCinco,
   type AccionRentz,
   type ConfigRentz,
   type EstadoRentz,
@@ -397,6 +401,7 @@ import {
   DEF_BRISCOLA_CHIAMATA,
   DEF_HAND_AND_FOOT,
   DEF_POLIGNAC,
+  DEF_POKER_CINCO,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -544,6 +549,12 @@ export type SesionPolignac = SesionMesa<
   EstadoPolignac,
   AccionPolignac,
   VistaPolignac
+>;
+export type SesionPokerCinco = SesionMesa<
+  ConfigPokerCinco,
+  EstadoPokerCinco,
+  AccionPokerCinco,
+  VistaPokerCinco
 >;
 export type SesionTreintaYUno = SesionMesa<
   ConfigTreintaYUno,
@@ -786,7 +797,8 @@ export type Partida =
   | { readonly id: 'twentyNine'; readonly sesion: SesionTwentyNine }
   | { readonly id: 'briscolaChiamata'; readonly sesion: SesionBriscolaChiamata }
   | { readonly id: 'handAndFoot'; readonly sesion: SesionHandAndFoot }
-  | { readonly id: 'polignac'; readonly sesion: SesionPolignac };
+  | { readonly id: 'polignac'; readonly sesion: SesionPolignac }
+  | { readonly id: 'pokerCinco'; readonly sesion: SesionPokerCinco };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -869,7 +881,8 @@ export type ConfigJuego =
   | ConfigTwentyNine
   | ConfigBriscolaChiamata
   | ConfigHandAndFoot
-  | ConfigPolignac;
+  | ConfigPolignac
+  | ConfigPokerCinco;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -1038,6 +1051,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_HAND_AND_FOOT);
     case 'polignac':
       return hacer(DEF_POLIGNAC);
+    case 'pokerCinco':
+      return hacer(DEF_POKER_CINCO);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':

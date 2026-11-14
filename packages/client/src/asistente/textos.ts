@@ -631,6 +631,8 @@ export const CONSEJOS_JUEGO: Readonly<Partial<Record<IdJuego, string>>> = {
     'Sheepshead: las damas y las jotas son triunfo. Si tomas el blind, juegas contra los demás con tu compañero secreto.',
   rentz:
     'Rentz: cada jugador elige contratos por turnos. En los negativos evita lo que castiga; en el positivo y el dominó, sé el primero.',
+  pokerCinco:
+    'Póker de cinco cartas: cambia las cartas que no forman tu jugada y fíjate en cuántas cambia cada rival; quien va servido suele llevar algo bueno.',
   polignac:
     'Polignac: no te lleves las J, sobre todo la de picas. Sin el palo, suéltalas; anuncia el general solo con las cartas más altas de cada palo.',
   bourre:

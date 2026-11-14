@@ -46,6 +46,7 @@
   import MesaSheepshead from '../mesas/MesaSheepshead.svelte';
   import MesaRentz from '../mesas/MesaRentz.svelte';
   import MesaPolignac from '../mesas/MesaPolignac.svelte';
+  import MesaPokerCinco from '../mesas/MesaPokerCinco.svelte';
   import MesaBourre from '../mesas/MesaBourre.svelte';
   import MesaTresillo from '../mesas/MesaTresillo.svelte';
   import MesaConquian from '../mesas/MesaConquian.svelte';
@@ -237,6 +238,8 @@
     <MesaRentz sesion={partida.sesion} />
   {:else if partida.id === 'polignac'}
     <MesaPolignac sesion={partida.sesion} />
+  {:else if partida.id === 'pokerCinco'}
+    <MesaPokerCinco sesion={partida.sesion} />
   {:else if partida.id === 'bourre'}
     <MesaBourre sesion={partida.sesion} />
   {:else if partida.id === 'tresillo'}

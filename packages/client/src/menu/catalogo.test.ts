@@ -33,7 +33,7 @@ describe('catálogo del menú', () => {
     expect(juegosDeFamilia('combinaciones')).toHaveLength(9);
     expect(juegosDeFamilia('captura')).toHaveLength(6);
     expect(juegosDeFamilia('descarte')).toHaveLength(10);
-    expect(juegosDeFamilia('envite')).toHaveLength(7);
+    expect(juegosDeFamilia('envite')).toHaveLength(8);
   });
 
   it('cada juego tiene al menos una baraja, descripción y tres cartas', () => {

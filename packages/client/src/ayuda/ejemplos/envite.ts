@@ -1,7 +1,7 @@
 import { NOMBRES_MANO_POKER, valorCarta, type IdCarta } from '@juegos/engine';
 import type { IdJuego } from '../../sesion/juegos';
 import { T } from '../../textos';
-import type { EjemploCartas, EjemplosJuego } from '../tipos';
+import type { EjemploCartas, EjemploJugadas, EjemplosJuego } from '../tipos';
 
 /** Las cartas de mayor a menor, con su puesto debajo. */
 const jerarquia = (
@@ -14,6 +14,51 @@ const jerarquia = (
   cartas: cartas.map((id, i) => ({ id, etiqueta: `${i + 1}.ª` })),
   ...(nota ? { nota } : {}),
 });
+
+/** Las nueve manos del póker, de la mejor a la peor: las enseñan el Hold'em y el de cinco cartas. */
+const MANOS_POKER: EjemploJugadas = {
+  tipo: 'jugadas',
+  descripcion: 'Las nueve manos del póker, de la mejor a la peor, con un ejemplo de cada una.',
+  filas: [
+    {
+      nombre: NOMBRES_MANO_POKER.escaleraColor,
+      cartas: ['picas-9', 'picas-10', 'picas-11', 'picas-12', 'picas-13'],
+    },
+    {
+      nombre: NOMBRES_MANO_POKER.poker,
+      cartas: ['picas-8', 'corazones-8', 'diamantes-8', 'treboles-8', 'corazones-3'],
+    },
+    {
+      nombre: NOMBRES_MANO_POKER.full,
+      cartas: ['picas-12', 'corazones-12', 'treboles-12', 'diamantes-5', 'treboles-5'],
+    },
+    {
+      nombre: NOMBRES_MANO_POKER.color,
+      cartas: ['corazones-2', 'corazones-6', 'corazones-9', 'corazones-11', 'corazones-1'],
+    },
+    {
+      nombre: NOMBRES_MANO_POKER.escalera,
+      cartas: ['diamantes-1', 'picas-2', 'treboles-3', 'corazones-4', 'diamantes-5'],
+    },
+    {
+      nombre: NOMBRES_MANO_POKER.trio,
+      cartas: ['picas-7', 'diamantes-7', 'treboles-7', 'corazones-13', 'picas-4'],
+    },
+    {
+      nombre: NOMBRES_MANO_POKER.doblePareja,
+      cartas: ['corazones-10', 'treboles-10', 'picas-6', 'diamantes-6', 'treboles-1'],
+    },
+    {
+      nombre: NOMBRES_MANO_POKER.pareja,
+      cartas: ['diamantes-1', 'treboles-1', 'picas-9', 'corazones-7', 'diamantes-3'],
+    },
+    {
+      nombre: NOMBRES_MANO_POKER.cartaAlta,
+      cartas: ['treboles-13', 'diamantes-10', 'picas-8', 'corazones-5', 'treboles-2'],
+    },
+  ],
+  nota: 'La escalera del As al 5 es la más baja: aquí el As va bajo.',
+};
 
 /** Ejemplos de las guías de los juegos de envite. */
 export const ENVITE: Partial<Record<IdJuego, EjemplosJuego>> = {
@@ -70,49 +115,28 @@ export const ENVITE: Partial<Record<IdJuego, EjemplosJuego>> = {
     },
   },
 
-  holdem: {
-    manos: {
-      tipo: 'jugadas',
-      descripcion: 'Las nueve manos del póker, de la mejor a la peor, con un ejemplo de cada una.',
-      filas: [
+  holdem: { manos: MANOS_POKER },
+
+  pokerCinco: {
+    manos: MANOS_POKER,
+    descarte: {
+      tipo: 'antesDespues',
+      descripcion:
+        'Con una pareja de ochos, se cambian las otras tres cartas y llega un tercer 8: de pareja a trío.',
+      antes: [
         {
-          nombre: NOMBRES_MANO_POKER.escaleraColor,
-          cartas: ['picas-9', 'picas-10', 'picas-11', 'picas-12', 'picas-13'],
-        },
-        {
-          nombre: NOMBRES_MANO_POKER.poker,
-          cartas: ['picas-8', 'corazones-8', 'diamantes-8', 'treboles-8', 'corazones-3'],
-        },
-        {
-          nombre: NOMBRES_MANO_POKER.full,
-          cartas: ['picas-12', 'corazones-12', 'treboles-12', 'diamantes-5', 'treboles-5'],
-        },
-        {
-          nombre: NOMBRES_MANO_POKER.color,
-          cartas: ['corazones-2', 'corazones-6', 'corazones-9', 'corazones-11', 'corazones-1'],
-        },
-        {
-          nombre: NOMBRES_MANO_POKER.escalera,
-          cartas: ['diamantes-1', 'picas-2', 'treboles-3', 'corazones-4', 'diamantes-5'],
-        },
-        {
-          nombre: NOMBRES_MANO_POKER.trio,
-          cartas: ['picas-7', 'diamantes-7', 'treboles-7', 'corazones-13', 'picas-4'],
-        },
-        {
-          nombre: NOMBRES_MANO_POKER.doblePareja,
-          cartas: ['corazones-10', 'treboles-10', 'picas-6', 'diamantes-6', 'treboles-1'],
-        },
-        {
-          nombre: NOMBRES_MANO_POKER.pareja,
-          cartas: ['diamantes-1', 'treboles-1', 'picas-9', 'corazones-7', 'diamantes-3'],
-        },
-        {
-          nombre: NOMBRES_MANO_POKER.cartaAlta,
-          cartas: ['treboles-13', 'diamantes-10', 'picas-8', 'corazones-5', 'treboles-2'],
+          nombre: 'Tu mano',
+          cartas: ['picas-8', 'corazones-8', 'diamantes-13', 'treboles-4', 'picas-2'],
         },
       ],
-      nota: 'La escalera del As al 5 es la más baja: aquí el As va bajo.',
+      despues: [
+        {
+          nombre: 'Tu mano',
+          cartas: ['picas-8', 'corazones-8', 'diamantes-8', 'treboles-12', 'corazones-5'],
+        },
+      ],
+      resaltadas: ['diamantes-8', 'treboles-12', 'corazones-5'],
+      explicacion: 'Cambias hasta 3 cartas, o 4 si te quedas con un As. Las nuevas salen del mazo.',
     },
   },
 

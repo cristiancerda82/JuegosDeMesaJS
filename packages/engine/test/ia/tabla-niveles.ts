@@ -72,6 +72,7 @@ import { twentyNine } from '../../src/juegos/twenty-nine';
 import { briscolaChiamata } from '../../src/juegos/briscola-chiamata';
 import { handAndFoot } from '../../src/juegos/hand-and-foot';
 import { polignac } from '../../src/juegos/polignac';
+import { CONFIG_POKER_CINCO_POR_DEFECTO, pokerCinco } from '../../src/juegos/poker-cinco';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -206,4 +207,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Briscola Chiamata', briscolaChiamata, { manos: 2 }, IAS.briscolaChiamata, 5),
   entrada('Hand and Foot', handAndFoot, { rondas: 1 }, IAS.handAndFoot, 'bandos'),
   entrada('Polignac', polignac, { jugadores: 4, limite: 10, general: true }, IAS.polignac, 4),
+  entrada('Póker de cinco cartas', pokerCinco, CONFIG_POKER_CINCO_POR_DEFECTO, IAS.pokerCinco, 4),
 ];

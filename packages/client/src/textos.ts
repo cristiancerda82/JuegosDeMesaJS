@@ -165,6 +165,7 @@ export const T = {
     ginRummy: 'Gin Rummy',
     rummy500: 'Rummy 500',
     holdem: 'Texas Hold’em',
+    pokerCinco: 'Póker de cinco cartas',
     culo: 'Culo',
     canasta: 'Canasta',
     whist: 'Whist',
@@ -305,6 +306,8 @@ export const T = {
       'De 3 a 6: quítate las cartas jugando más alto que el anterior y sé el presidente, no el culo.',
     holdemDesc:
       'Póker sin límite de 2 a 6: apuesta, sube o retírate, y quédate con todas las fichas.',
+    pokerCincoDesc:
+      'El póker de siempre, de 2 a 6: cinco cartas tapadas, apuesta, cambia las que no te sirven y vuelve a apostar.',
     rummy500Desc:
       'De 2 a 4: baja combinaciones, añade a las de todos y llévate el descarte abierto. A 500.',
     ginRummyDesc:
@@ -2621,6 +2624,29 @@ export const T = {
     clasificacion: 'Clasificación',
   },
 
+  pokerCinco: {
+    cambia: (n: number) => (n === 0 ? 'Servido' : n === 1 ? 'Cambia 1' : `Cambia ${n}`),
+    cambiar: (n: number) =>
+      n === 0 ? 'Servido' : n === 1 ? 'Cambiar 1 carta' : `Cambiar ${n} cartas`,
+    marca: 'Toca las cartas que quieres cambiar: hasta 3, o 4 si te quedas con un As',
+    ensena: 'Enseña su As',
+    accion: (quien: string, tipo: string, cantidad: number) => {
+      if (tipo === 'cambiar') {
+        return cantidad === 0 ? `${quien} va servido` : `${quien} cambia ${cantidad}`;
+      }
+      if (tipo === 'retirarse') return `${quien} se retira`;
+      if (tipo === 'pasar') return `${quien} pasa`;
+      if (tipo === 'igualar') return `${quien} iguala`;
+      return `${quien} sube a ${cantidad}`;
+    },
+    fase: (fase: string) =>
+      fase === 'antes'
+        ? 'Antes del descarte'
+        : fase === 'descarte'
+          ? 'Descarte'
+          : 'Después del descarte',
+  },
+
   rummy500: {
     puntos: (n: number) => (n === 1 || n === -1 ? `${n} punto` : `${n} puntos`),
     objetivo: 'A 500',
@@ -3446,6 +3472,7 @@ export const T = {
       ginRummy: 'Cómo se juega al Gin Rummy',
       rummy500: 'Cómo se juega al Rummy 500',
       holdem: 'Cómo se juega al Texas Hold’em',
+      pokerCinco: 'Cómo se juega al Póker de cinco cartas',
       culo: 'Cómo se juega al Culo',
       canasta: 'Cómo se juega a la Canasta',
       whist: 'Cómo se juega al Whist',
@@ -6458,6 +6485,53 @@ export const T = {
         plegada: true,
         texto: [
           'Se cree que nació en Robstown, Texas, a principios del siglo XX, y llegó a Las Vegas en los años 60. Desde que se televisaron los torneos y llegó el póquer en línea, a principios de este siglo, es la forma de póquer más jugada del mundo.',
+        ],
+      },
+    ],
+
+    pokerCinco: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Un torneo de póker de 2 a 6 jugadores. Cada uno empieza con 100 fichas; quien se queda sin ellas queda eliminado, y gana el último que queda.',
+          'Las ciegas empiezan en 1/2 y suben cada 10 manos, como en el Texas Hold’em.',
+        ],
+      },
+      {
+        titulo: 'La mano',
+        texto: [
+          'Cada jugador recibe cinco cartas tapadas y hay una ronda de apuestas: habla primero el siguiente a la ciega grande.',
+          'En tu turno puedes retirarte, pasar si no hay nada que igualar, igualar o subir. Sin límite: puedes subir lo que quieras, hasta todas tus fichas (all-in).',
+        ],
+      },
+      {
+        titulo: 'El descarte',
+        texto: [
+          'Después, empezando por el siguiente al botón, cada uno cambia de 0 a 3 cartas, o 4 si se queda con un As y lo enseña. Todos ven cuántas cambia cada uno: quien no cambia ninguna va «servido».',
+          'Luego hay otra ronda de apuestas, en la que habla primero el siguiente al botón.',
+        ],
+        ejemplo: 'descarte',
+      },
+      {
+        titulo: 'El showdown y las manos',
+        texto: [
+          'Si todos se retiran menos uno, ese se lleva el bote. Si no, se enseñan las cartas y gana la mejor mano de las nueve del ejemplo.',
+          'Si alguien va all-in, lo que los demás apuestan por encima va a un bote aparte que solo pueden ganar ellos.',
+        ],
+        ejemplo: 'manos',
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Con una pareja, cambia tres; con doble pareja, una; con un trío, dos. Con cuatro cartas de color, cambia la otra.',
+          'Fíjate en lo que cambian los demás: quien cambia tres suele tener una pareja, y quien va servido, una jugada hecha o un farol.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'El póquer nació en Nueva Orleans a principios del siglo XIX, a partir de juegos de apuestas europeos, y se extendió río arriba por el Misisipi en los barcos de vapor. El póquer cerrado de cinco cartas es la forma clásica, la de las películas del Oeste.',
         ],
       },
     ],

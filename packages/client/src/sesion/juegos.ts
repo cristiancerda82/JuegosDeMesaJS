@@ -133,6 +133,12 @@ import {
   CONFIG_HAND_AND_FOOT_POR_DEFECTO,
   polignac,
   CONFIG_POLIGNAC_POR_DEFECTO,
+  pokerCinco,
+  CONFIG_POKER_CINCO_POR_DEFECTO,
+  type AccionPokerCinco,
+  type ConfigPokerCinco,
+  type EstadoPokerCinco,
+  type VistaPokerCinco,
   type AccionPolignac,
   type ConfigPolignac,
   type EstadoPolignac,
@@ -620,7 +626,8 @@ export type IdJuego =
   | 'twentyNine'
   | 'briscolaChiamata'
   | 'handAndFoot'
-  | 'polignac';
+  | 'polignac'
+  | 'pokerCinco';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -705,6 +712,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'briscolaChiamata',
   'handAndFoot',
   'polignac',
+  'pokerCinco',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2299,6 +2307,28 @@ export const DEF_POLIGNAC: DefPolignac = {
   },
 };
 
+export type DefPokerCinco = DefJuego<
+  ConfigPokerCinco,
+  EstadoPokerCinco,
+  AccionPokerCinco,
+  VistaPokerCinco
+>;
+
+export const DEF_POKER_CINCO: DefPokerCinco = {
+  id: 'pokerCinco',
+  nombre: T.menu.pokerCinco,
+  juego: pokerCinco,
+  configPorDefecto: CONFIG_POKER_CINCO_POR_DEFECTO,
+  ia: IAS.pokerCinco,
+  // Como en el Hold'em: el cierre de la mano lo detiene la propia mesa con el resumen.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return 0;
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    return accion.asiento !== despues.asiento ? PAUSA_HOLDEM_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2382,6 +2412,7 @@ export const JUEGOS = {
   briscolaChiamata: DEF_BRISCOLA_CHIAMATA,
   handAndFoot: DEF_HAND_AND_FOOT,
   polignac: DEF_POLIGNAC,
+  pokerCinco: DEF_POKER_CINCO,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

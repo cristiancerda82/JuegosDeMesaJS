@@ -136,6 +136,7 @@ import { iaTwentyNineBasica } from './twenty-nine-basica';
 import { iaBriscolaChiamataBasica } from './briscola-chiamata-basica';
 import { iaHandAndFootBasica } from './hand-and-foot-basica';
 import { iaPolignacBasica } from './polignac-basica';
+import { iaPokerCincoBasica, iaPokerCincoExperta } from './poker-cinco-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
 import { iaTuteBasica } from './tute-basica';
@@ -283,4 +284,10 @@ export const IAS = {
   briscolaChiamata: niveles(iaBriscolaChiamataBasica, SIMULABLE_BRISCOLA_CHIAMATA),
   handAndFoot: niveles(iaHandAndFootBasica, SIMULABLE_HAND_AND_FOOT),
   polignac: niveles(iaPolignacBasica, SIMULABLE_POLIGNAC),
+  // Como en el Hold'em: el difícil estima su probabilidad de ganar.
+  pokerCinco: {
+    facil: conErrores(iaPokerCincoBasica, ERRORES_FACIL),
+    normal: iaPokerCincoBasica,
+    dificil: iaPokerCincoExperta,
+  },
 } as const;

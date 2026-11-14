@@ -1,5 +1,6 @@
 import {
   casaOchoLoco,
+  descartePokerCinco,
   encajaEnMesa,
   encajaKings,
   encajaSevens,
@@ -194,6 +195,20 @@ test("Texas Hold'em: las nueve manos, cada una la que dice y de mayor a menor", 
   filas.forEach((f, i) => expect(NOMBRES_MANO_POKER[manos[i]!.categoria]).toBe(f.nombre));
   expect(creciente(manos.map((m) => m.valor).reverse())).toBe(true);
   expect(filas).toHaveLength(9);
+});
+
+test('Póker de cinco cartas: las manos del póker y un descarte que la IA haría', () => {
+  expect(envite.ejemplo('pokerCinco', 'manos', 'jugadas')).toBe(
+    envite.ejemplo('holdem', 'manos', 'jugadas'),
+  );
+  const e = envite.ejemplo('pokerCinco', 'descarte', 'antesDespues');
+  const antes = e.antes[0]!.cartas.filter((c): c is IdCarta => c !== null);
+  const despues = e.despues[0]!.cartas.filter((c): c is IdCarta => c !== null);
+  const cambiadas = antes.filter((c) => !despues.includes(c));
+  expect(cambiadas.sort()).toEqual(descartePokerCinco(antes));
+  expect(e.resaltadas).toEqual(despues.filter((c) => !antes.includes(c)));
+  expect(mejorManoPoker(antes).categoria).toBe('pareja');
+  expect(mejorManoPoker(despues).categoria).toBe('trio');
 });
 
 test('Blackjack: los valores, el blackjack y el As que vale 1', () => {

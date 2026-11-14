@@ -288,6 +288,11 @@ export const CATALOGO: Readonly<Record<IdJuego, EntradaCatalogo>> = {
   truco: entrada('envite', E, T.menu.trucoDesc, ['espadas-1', 'espadas-7', 'oros-7']),
   truc: entrada('envite', E, T.menu.trucDesc, ['espadas-1', 'bastos-1', 'oros-7']),
   holdem: entrada('envite', F, T.menu.holdemDesc, ['picas-1', 'corazones-1', 'diamantes-13']),
+  pokerCinco: entrada('envite', F, T.menu.pokerCincoDesc, [
+    'corazones-12',
+    'picas-12',
+    'treboles-12',
+  ]),
   blackjack: entrada('envite', F, T.menu.blackjackDesc, ['picas-1', 'corazones-13', 'treboles-10']),
   sieteYMedia: entrada('envite', E, T.menu.sieteYMediaDesc, ['oros-7', 'bastos-12', 'copas-1']),
   treintaYUno: entrada('envite', F, T.menu.treintaYUnoDesc, [

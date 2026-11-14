@@ -62,6 +62,7 @@
     ConfigBriscolaChiamata,
     ConfigHandAndFoot,
     ConfigPolignac,
+    ConfigPokerCinco,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -178,6 +179,7 @@
   let sheepsheadConfig: Editable<ConfigSheepshead> = $state({ ...JUEGOS.sheepshead.configPorDefecto });
   let rentzConfig: Editable<ConfigRentz> = $state({ ...JUEGOS.rentz.configPorDefecto });
   let polignacConfig: Editable<ConfigPolignac> = $state({ ...JUEGOS.polignac.configPorDefecto });
+  let pokerCincoConfig: Editable<ConfigPokerCinco> = $state({ ...JUEGOS.pokerCinco.configPorDefecto });
   let bourreConfig: Editable<ConfigBourre> = $state({ ...JUEGOS.bourre.configPorDefecto });
   let tresilloConfig: Editable<ConfigTresillo> = $state({ ...JUEGOS.tresillo.configPorDefecto });
   let conquianConfig: Editable<ConfigConquian> = $state({ ...JUEGOS.conquian.configPorDefecto });
@@ -297,6 +299,7 @@
       sheepshead: sheepsheadConfig,
       rentz: rentzConfig,
       polignac: polignacConfig,
+      pokerCinco: pokerCincoConfig,
       bourre: bourreConfig,
       tresillo: tresilloConfig,
       conquian: conquianConfig,
@@ -615,6 +618,16 @@
         <legend>{T.opciones.jugadores}</legend>
         {#each [2, 3, 4, 5, 6] as const as n (n)}
           <label><input type="radio" bind:group={holdemConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
+        {/each}
+      </fieldset>
+    {:else if juego === 'pokerCinco'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [2, 3, 4, 5, 6] as const as n (n)}
+          <label
+            ><input type="radio" bind:group={pokerCincoConfig.jugadores} value={n} data-testid="poker-cinco-jugadores-{n}" />
+            {T.opciones.jugadoresN(n)}</label
+          >
         {/each}
       </fieldset>
     {:else if juego === 'rummy500'}

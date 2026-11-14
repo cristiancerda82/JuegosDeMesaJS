@@ -162,6 +162,7 @@
       partida.id !== 'ginRummy' &&
       partida.id !== 'rummy500' &&
       partida.id !== 'holdem' &&
+      partida.id !== 'pokerCinco' &&
       partida.id !== 'culo' &&
       partida.sesion.vista.config.jugadores === 4),
   );
@@ -979,6 +980,25 @@
           </tbody>
         </table>
       {/if}
+    {:else if partida.id === 'pokerCinco'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const ganador = vista.eliminados.findIndex((x) => !x)}
+      {#if ultima}
+        <ResumenHoldem resultado={{ ...ultima, comunes: [] }} nombre={(a) => nombreChinchon(a, n)} />
+      {/if}
+      <table data-testid="clasificacion-poker-cinco">
+        <caption>{T.holdem.clasificacion}</caption>
+        <tbody>
+          {#each [ganador, ...[...vista.eliminacion].reverse()] as a, i (a)}
+            <tr>
+              <th scope="row">{i + 1}.º</th>
+              <td data-testid="posicion-{a}">{nombreChinchon(a, n)}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
     {:else if partida.id === 'holdem'}
       {@const vista = partida.sesion.vista}
       {@const n = vista.config.jugadores}

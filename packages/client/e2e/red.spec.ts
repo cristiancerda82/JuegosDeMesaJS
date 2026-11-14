@@ -1439,6 +1439,33 @@ test('Texas Hold’em en red: dos humanos igualan y ven el flop', async ({ brows
   await expect(ana.getByTestId('puesto-1')).toContainText('Luis');
 });
 
+test('Póker de cinco cartas en red: lo que cambia uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'pokerCinco', (p) =>
+    p.getByTestId('poker-cinco-jugadores-2').check(),
+  );
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] [data-carta]')).toHaveCount(5);
+
+  // Con 2 jugadores, Ana tiene el botón y habla primero: iguala, y Luis pasa.
+  await ana.getByTestId('igualar').click();
+  await luis.getByTestId('pasar').click();
+  // Cambia primero Luis, el siguiente al botón: dos cartas, y Ana lo ve.
+  const cartas = await luis
+    .locator('[data-testid="mano"] [data-carta]')
+    .evaluateAll((els) => els.map((e) => e.getAttribute('data-carta')!));
+  await luis.getByTestId(`carta-${cartas[0]}`).click();
+  await luis.getByTestId(`carta-${cartas[1]}`).click();
+  await luis.getByTestId('cambiar').click();
+  await expect(ana.getByTestId('cambio-1')).toHaveText('Cambia 2');
+  await expect(ana.getByTestId('cambiar')).toBeVisible();
+  await expect(ana.getByTestId('puesto-1')).toContainText('Luis');
+});
+
 test('Remigio en red: dos humanos roban y descartan', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);
