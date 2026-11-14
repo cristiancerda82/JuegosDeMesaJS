@@ -17,6 +17,8 @@
     readonly texto: readonly string[];
     readonly ejemplo?: string;
     readonly ejemplos?: readonly string[];
+    /** Se enseña plegada (como «Un poco de historia»), y se abre al tocar el título. */
+    readonly plegada?: true;
   }
 
   const secciones = $derived(T.ayuda[juego] as readonly Seccion[]);
@@ -42,17 +44,26 @@
     <h2 id="ayuda-titulo">{T.ayuda.titulo[juego]}</h2>
 
     {#each secciones as seccion, i (i)}
-      <section>
-        {#if seccion.titulo}<h3>{seccion.titulo}</h3>{/if}
-        {#each seccion.texto as parrafo, j (j)}
-          <p>{parrafo}</p>
-        {/each}
+      {#if seccion.plegada}
+        <details class="plegada" data-testid="historia">
+          <summary>{seccion.titulo}</summary>
+          {#each seccion.texto as parrafo, j (j)}
+            <p>{parrafo}</p>
+          {/each}
+        </details>
+      {:else}
+        <section>
+          {#if seccion.titulo}<h3>{seccion.titulo}</h3>{/if}
+          {#each seccion.texto as parrafo, j (j)}
+            <p>{parrafo}</p>
+          {/each}
 
-        {#each claves(seccion) as clave (clave)}
-          {@const ejemplo = ejemplos[clave]}
-          {#if ejemplo}<Ejemplo {clave} {ejemplo} />{/if}
-        {/each}
-      </section>
+          {#each claves(seccion) as clave (clave)}
+            {@const ejemplo = ejemplos[clave]}
+            {#if ejemplo}<Ejemplo {clave} {ejemplo} />{/if}
+          {/each}
+        </section>
+      {/if}
     {/each}
   </div>
 
@@ -97,6 +108,25 @@
     margin: 16px 0 4px;
     font-size: 1.02rem;
     color: var(--acento);
+  }
+
+  .plegada {
+    margin-top: 16px;
+    padding-top: 8px;
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+  }
+
+  .plegada summary {
+    cursor: pointer;
+    font-size: 1.02rem;
+    font-weight: bold;
+    color: var(--acento);
+    padding: 4px 0;
+  }
+
+  .plegada summary:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 2px;
   }
 
   p {

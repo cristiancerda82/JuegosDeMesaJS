@@ -11,6 +11,8 @@ import {
   ganadoraRentz,
   ganadoraPolignac,
   penalizaPolignac,
+  PALOS_ESPANOLES,
+  puntuarMano,
   puntosCorazones,
   rangoBarbu,
   rangoRentz,
@@ -87,6 +89,22 @@ test('Escoba: los valores y las capturas que suman 15', () => {
     expect(zona(e.despues, 'Tus cartas')).toEqual(e.resaltadas);
   }
   expect(zona(captura.ejemplo('escoba', 'escoba', 'antesDespues').despues, 'Mesa')).toEqual([]);
+});
+
+test('Escoba: el premio de los 10 oros y los 4 sietes', () => {
+  const filas = new Map(captura.ejemplo('escoba', 'premios', 'tabla').filas);
+  const oros = [1, 2, 3, 4, 5, 6, 7, 10, 11, 12].map((n) => `oros-${n}` as IdCarta);
+  const sietes = PALOS_ESPANOLES.filter((p) => p !== 'oros').map((p) => `${p}-7` as IdCarta);
+  const resto = PALOS_ESPANOLES.filter((p) => p !== 'oros').flatMap((p) =>
+    [1, 2, 3].map((n) => `${p}-${n}` as IdCarta),
+  );
+  const recogidas = [[...oros, ...sietes], resto] as const;
+  const sin = puntuarMano(recogidas, [0, 0]).puntos[0];
+  const con = puntuarMano(recogidas, [0, 0], true).puntos[0];
+  expect(filas.get('Oros, sin premios')).toBe(String(sin.oros));
+  expect(filas.get('Oros, con premios')).toBe(String(con.oros));
+  expect(filas.get('Sietes, sin premios')).toBe(String(sin.sietes));
+  expect(filas.get('Sietes, con premios')).toBe(String(con.sietes));
 });
 
 test('Scopa: con una carta igual en la mesa, solo vale llevarse esa', () => {

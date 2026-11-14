@@ -448,9 +448,6 @@ export const T = {
     vueltaGolf: 'La K y el As',
     vueltaGolfDesc: 'Con vuelta: sobre una K va un As, y sobre un As una K.',
     escobaInicialDesc: 'Si las 4 cartas iniciales de la mesa suman 15, son escoba del que reparte.',
-    jugadoresN: (n: number) => `${n} jugadores`,
-    blackLady:
-      'Con 3, 5 o 6 jugadores (Black Lady) se quitan algunos doses para repartir igual y no hay pase.',
     premiosEscoba: 'Premios de los oros y los sietes',
     premiosEscobaDesc: 'Los 10 oros valen 2 puntos y los 4 sietes 3, en lugar de 1.',
     sobrefallo: 'Sobrefallo libre',
@@ -465,6 +462,9 @@ export const T = {
     cartasEspeciales: 'Cartas especiales',
     cartasEspecialesDesc:
       'El 10 cambia el sentido, el As hace robar 2, el 6 robar 1, el 7 salta un turno y tras un 9 quien no puede echar roba y pasa.',
+    jugadoresN: (n: number) => `${n} jugadores`,
+    blackLady:
+      'Con 3, 5 o 6 jugadores (Black Lady) se quitan algunos doses para repartir igual y no hay pase.',
     baraja: 'Baraja',
     baraja40: 'Española de 40 cartas',
     baraja48: 'Española de 48 cartas (con 8 y 9)',
@@ -588,10 +588,10 @@ export const T = {
     oros: 'Más oros',
     sieteOros: '7 de oros',
     sietes: 'Más sietes',
+    premio: (n: number) => `${n} (premio)`,
     totalMano: 'Total de la mano',
     totalPartida: 'Total de la partida',
   },
-    premio: (n: number) => `${n} (premio)`,
 
   chinchon: {
     mazo: 'Mazo',
@@ -618,11 +618,11 @@ export const T = {
     puntosMano: 'Mano',
     total: 'Total',
     quedaEliminado: 'Queda eliminado',
+    colocadas: 'Colocadas',
+    seReengancha: (n: number) => `Se reengancha con ${n} puntos`,
     siguienteMano: 'Siguiente mano',
     clasificacion: 'Clasificación',
   },
-    colocadas: 'Colocadas',
-    seReengancha: (n: number) => `Se reengancha con ${n} puntos`,
 
   guinote: {
     marcador: (nuestros: number, suyos: number, meta: number) =>
@@ -2784,7 +2784,12 @@ export const T = {
     nadaQueRobar: 'No queda nada que robar: pasa',
     jugo: (carta: string, palo: string | null) => (palo === null ? carta : `${carta} → ${palo}`),
     robo: 'Roba',
+    roboN: (n: number) => (n === 1 ? 'Roba 1' : `Roba ${n}`),
     paso: 'Pasa',
+    castigo: (numero: number, robar: number) =>
+      `Echa ${numero === 1 ? 'un As' : `un ${numero}`} o roba ${robar}`,
+    trasNueve: 'Tras el 9 no tienes carta que echar: roba una y pierdes el turno',
+    sentido: (s: 1 | -1) => (s === 1 ? 'Sentido: ↻ el de siempre' : 'Sentido: ↺ al revés'),
     finMano: (n: number) => `Fin de la mano ${n}`,
     siguienteMano: 'Siguiente mano',
     ganaMano: (quien: string, puntos: number) =>
@@ -2810,12 +2815,7 @@ export const T = {
     conRey: 'Con rey',
     solo: 'Solo',
     paso: 'Paso',
-    roboN: (n: number) => (n === 1 ? 'Roba 1' : `Roba ${n}`),
     sinPuja: 'Sin pujas',
-    castigo: (numero: number, robar: number) =>
-      `Echa ${numero === 1 ? 'un As' : `un ${numero}`} o roba ${robar}`,
-    trasNueve: 'Tras el 9 no tienes carta que echar: roba una y pierdes el turno',
-    sentido: (s: 1 | -1) => (s === 1 ? 'Sentido: ↻ el de siempre' : 'Sentido: ↺ al revés'),
     juega: (quien: string, m: 'rey' | 'solo') =>
       quien === 'Tú'
         ? `Juegas ${m === 'rey' ? 'con rey' : 'solo'}`
@@ -3542,6 +3542,13 @@ export const T = {
           'Intenta primero descubrir las cartas boca abajo de las columnas más largas: ahí suelen estar las que necesitas.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Debe su nombre a la fiebre del oro del Klondike, en el Yukón canadiense, a finales del siglo XIX: se cuenta que los buscadores de oro lo jugaban para pasar las noches. Se hizo famoso en todo el mundo cuando Windows lo incluyó, con el nombre de «Solitario», en 1990.',
+        ],
+      },
     ],
 
     brisca: [
@@ -3590,6 +3597,7 @@ export const T = {
         titulo: 'Con 4 jugadores',
         texto: [
           'Se juega en parejas: tu compañero es el que está sentado enfrente, y vuestros puntos se suman.',
+          'En otros sitios los compañeros se hacen señas, gestos acordados para avisarse de sus cartas buenas sin decir nada.',
         ],
       },
       {
@@ -3598,6 +3606,14 @@ export const T = {
           'No gastes un triunfo en una baza que no tiene puntos.',
           'Si no puedes ganar una baza, echa una carta que no valga nada.',
           'Guarda los Ases y los Treses: son los que dan casi todos los puntos.',
+          'Lleva la cuenta de los puntos que han salido más que de las cartas: hay 120 en juego, y saber cuántos te faltan te dice cuándo merece la pena gastar un triunfo.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es uno de los juegos de naipes más antiguos que se siguen jugando en España y en Italia, donde se llama «briscola». Se cree que viene de un juego francés, la «brusquembille», y que llegó hacia el siglo XVII. Su sencillez la hizo popular en casas, tabernas y cuarteles.',
         ],
       },
     ],
@@ -3639,6 +3655,7 @@ export const T = {
           'Con 4 jugadores desde el principio, y con 2 en cuanto se acaba el mazo, hay que seguir el palo que salió y ganar la baza si se puede. Si no tienes ese palo, tienes que echar triunfo, y superar el triunfo que haya en la mesa si puedes.',
           'Con 4 jugadores, si la baza ya es de tu compañero no hace falta superarla (salvo que actives esa opción).',
           'No te preocupes: la mesa solo te deja jugar las cartas permitidas.',
+          'Variante (opción «Sobrefallo libre»): si no tienes el palo que salió y no puedes superar el triunfo que gana la baza, puedes echar cualquier carta en vez de un triunfo menor. Así lo cuentan los libros clásicos del Tute.',
         ],
       },
       {
@@ -3666,7 +3683,6 @@ export const T = {
         texto: [
           'Arrastra la carta a la mesa, o tócala y toca la mesa. Con un doble toque también se juega.',
         ],
-          'Variante (opción «Sobrefallo libre»): si no tienes el palo que salió y no puedes superar el triunfo que gana la baza, puedes echar cualquier carta en vez de un triunfo menor. Así lo cuentan los libros clásicos del Tute.',
       },
       {
         titulo: 'Consejos',
@@ -3674,6 +3690,16 @@ export const T = {
           'No juegues el Rey ni el Caballo de una pareja que todavía puedes cantar.',
           'Ganar bazas no solo da puntos: también te da la oportunidad de cantar.',
           'Si no puedes ganar una baza, echa una carta que no valga nada.',
+          'Contra el As de triunfo no arrastres: lo único que consigues es que el rival lo guarde y gane con él una baza buena.',
+          'Si te falta una carta para cantar, busca antes ese cante con el As de su palo, y arrastra después.',
+          'Si tu compañero ha enseñado el As de triunfo, arrastra en cuanto ganes una baza: le ayudas a sacar los triunfos de los rivales.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'El nombre viene del italiano «tutti», «todos», por la jugada de reunir los cuatro reyes o los cuatro caballos. Se cree que llegó desde Italia en el siglo XIX, y es pariente de la Brisca, con la que comparte el valor de las cartas. Hoy es uno de los juegos más populares de España, con muchas variantes regionales.',
         ],
       },
     ],
@@ -3714,7 +3740,10 @@ export const T = {
         titulo: 'Los puntos de cada mano',
         texto: [
           '1 punto por cada escoba, 1 para quien tenga más cartas, 1 para quien tenga más oros, 1 para quien tenga el 7 de oros y 1 para quien tenga más sietes. Si hay empate en cartas, oros o sietes, ese punto no es para nadie.',
+          'Variante (opción «Premios de los oros y los sietes»): quien se lleva los 10 oros se apunta 2 puntos por los oros, y quien se lleva los 4 sietes, 3 por los sietes, en lugar de 1.',
+          'En otros sitios la partida se juega a 31 puntos en lugar de a 21.',
         ],
+        ejemplo: 'premios',
       },
       {
         titulo: 'Cómo jugar una carta',
@@ -3730,6 +3759,13 @@ export const T = {
           'Si no recoges, intenta no dejar en la mesa una suma entre 5 y 14: al rival le bastaría una carta para hacer escoba.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es pariente de la Scopa italiana («scopa» también significa escoba), y su nombre viene de la jugada de «barrer» todas las cartas de la mesa. Se juega desde hace siglos en España y en varios países de América, y la versión de sumar 15 es la más extendida.',
+        ],
+      },
     ],
 
     chinchon: [
@@ -3741,7 +3777,6 @@ export const T = {
         ],
       },
       {
-          'Variante (opción «Premios de los oros y los sietes»): quien se lleva los 10 oros se apunta 2 puntos por los oros, y quien se lleva los 4 sietes, 3 por los sietes, en lugar de 1.',
         titulo: 'Las combinaciones',
         texto: [
           'Escalera: 3 o más cartas seguidas del mismo palo (en la baraja de 40, después del 7 va la Sota). Trío o cuarteto: 3 o 4 cartas del mismo número.',
@@ -3768,8 +3803,10 @@ export const T = {
         titulo: 'Los puntos',
         texto: [
           'Al cerrar alguien, el resto suma lo que valen sus cartas sin ligar: el As 1, del 2 al 9 su número, las figuras 10 y el comodín 25. La mesa agrupa tus cartas de la mejor forma posible: no tienes que declarar nada.',
+          'Variante (opción «Colocar las sueltas»): al cerrar, cada uno coloca sus cartas sin ligar en las combinaciones que ya están a la vista (las de quien cierra y las de los que enseñaron antes), y esas no le suman. Se colocan solas; no vale si quien cierra lo hace con todo ligado.',
+          'Variante (opción «Reenganche»): quien pasa del límite vuelve a entrar una sola vez, con los puntos del jugador que más tenga entre los que siguen.',
         ],
-        ejemplo: 'puntos',
+        ejemplos: ['puntos', 'colocar'],
       },
       {
         titulo: 'En la mesa',
@@ -3785,6 +3822,13 @@ export const T = {
           'Fíjate en lo que descartan los rivales: te dice qué cartas no necesitan.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego español de la familia del Rummy, nacido en el siglo XX a partir de juegos de combinar cartas. Su nombre recuerda al pueblo madrileño de Chinchón; se cuenta que se popularizó allí, aunque no hay pruebas firmes. Es uno de los juegos más jugados en España, Argentina y Uruguay.',
+        ],
+      },
     ],
 
     guinote: [
@@ -3795,8 +3839,6 @@ export const T = {
           'Gana la partida el primero que llega a 101 puntos. Si al acabar una mano nadie llega, se juega otra «de vueltas» y los puntos se siguen sumando.',
         ],
       },
-          'Variante (opción «Colocar las sueltas»): al cerrar, cada uno coloca sus cartas sin ligar en las combinaciones que ya están a la vista (las de quien cierra y las de los que enseñaron antes), y esas no le suman. Se colocan solas; no vale si quien cierra lo hace con todo ligado.',
-          'Variante (opción «Reenganche»): quien pasa del límite vuelve a entrar una sola vez, con los puntos del jugador que más tenga entre los que siguen.',
       {
         titulo: 'Lo que vale cada carta',
         texto: [
@@ -3824,6 +3866,7 @@ export const T = {
         texto: [
           'Cuando se acaba el mazo empieza el arrastre: hay que seguir el palo que salió y ganar la baza si se puede. Si no tienes ese palo, tienes que echar triunfo, y superar el triunfo que haya en la mesa si puedes.',
           'Con 4 jugadores, si la baza ya es de tu compañero no hace falta superarla (salvo que actives esa opción). La mesa solo te deja jugar las cartas permitidas.',
+          'Variante (opción «Sobrefallo libre»): en el arrastre, si no tienes el palo que salió y no puedes superar el triunfo que gana la baza, puedes echar cualquier carta en vez de un triunfo menor.',
         ],
       },
       {
@@ -3851,8 +3894,14 @@ export const T = {
         texto: [
           'No gastes un triunfo en una baza que no tiene puntos.',
           'Guarda el Rey y la Sota de un palo hasta que puedas cantarlos.',
-          'Variante (opción «Sobrefallo libre»): en el arrastre, si no tienes el palo que salió y no puedes superar el triunfo que gana la baza, puedes echar cualquier carta en vez de un triunfo menor.',
           'En el arrastre cuenta los triunfos que han salido: el que tenga el último manda.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el juego típico de Aragón, muy extendido por la mitad norte de España. Es primo del Tute y de la Brisca, de los que toma el valor de las cartas, los cantes y el arrastre. Se juega mucho en parejas, y hay campeonatos en las fiestas de muchos pueblos.',
         ],
       },
     ],
@@ -3863,6 +3912,7 @@ export const T = {
         texto: [
           'Se juega con dos barajas españolas de 40 cartas y 4 comodines, de 2 a 5 jugadores. Cada uno recibe 7 cartas. Gana la mano quien se queda antes sin cartas, bajándolas a la mesa en combinaciones.',
           'Los demás suman los puntos de las cartas que les quedan: cada número lo que vale, las figuras 10 y el comodín 25. Quien pasa de 100 queda eliminado, y gana la partida el último que queda.',
+          'En otros sitios se juega con dos barajas francesas de 52 cartas, se reparten 10 a cada uno y valen también las jugadas de «color».',
         ],
       },
       {
@@ -3894,6 +3944,13 @@ export const T = {
           'Pero si un rival tiene pocas cartas, baja lo que puedas: los comodines y las figuras en la mano cuestan muchos puntos.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego de combinaciones de la familia del Rummy, muy jugado en España durante el siglo XX, con baraja española o francesa. Se cree que su nombre viene de «Rummy», adaptado al oído español, aunque no es seguro.',
+        ],
+      },
     ],
 
     julepe: [
@@ -3908,6 +3965,7 @@ export const T = {
         texto: [
           'Cada uno recibe 5 cartas. La última carta del que reparte se enseña a todos: su palo es el triunfo, y esa carta se queda en su mano.',
           'Al empezar cada mano, el que reparte pone 10 fichas en el bote.',
+          'En otros sitios el que reparte puede «bailarla»: quedarse la muestra sin haber visto sus cartas. Y cuando solo juega uno, los demás defienden el bote entre todos.',
         ],
       },
       {
@@ -3945,6 +4003,13 @@ export const T = {
           'Con muchos jugadores en la mano, es más difícil hacer dos bazas: piénsalo antes de entrar.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego español de bazas y bote, muy popular en el siglo XIX y en el XX, sobre todo en el norte de España. «Dar un julepe» es dar un escarmiento, y así se queda quien no gana sus dos bazas y tiene que pagar el bote.',
+        ],
+      },
     ],
 
     tuteSubastado: [
@@ -3953,6 +4018,7 @@ export const T = {
         texto: [
           'Se juega con la baraja española de 40 cartas y 4 jugadores, sin parejas fijas. En cada mano se subastan los puntos que se van a hacer, y quien gana la subasta juega solo contra los otros tres, que esa mano son compañeros.',
           'Se cobra en fichas. Todos empiezan con 0 y gana quien más tenga al acabar las manos (8 por defecto).',
+          'En otros sitios se juega entre 3, con 12 cartas cada uno (se quitan los doses), y la subasta empieza en 70 puntos.',
         ],
       },
       {
@@ -3999,6 +4065,13 @@ export const T = {
           'Si defiendes y la baza ya es de un compañero, échale tus cartas de puntos.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es una versión moderna del Tute en la que, antes de jugar, se subastan los puntos que cada uno se compromete a hacer. La subasta lo acerca a juegos de contrato como el Tresillo o el Bridge, y es muy popular en España.',
+        ],
+      },
     ],
 
     spiteMalice: [
@@ -4038,6 +4111,13 @@ export const T = {
           'Descarta en escalera descendente (un 9 sobre un 10) para poder jugar luego varias seguidas.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego de paciencia para dos jugadores, de la familia de la «Banca rusa», en el que los dos juegan a la vez. Su nombre, «Rencor y malicia», viene de que se juega también para estorbar al otro.',
+        ],
+      },
     ],
 
     ohHell: [
@@ -4053,6 +4133,7 @@ export const T = {
         texto: [
           'La primera mano reparte todas las cartas posibles dejando una (17 con 3 jugadores, 12 con 4, 10 con 5, 8 con 6 y 7 con 7). Cada mano reparte una carta menos hasta llegar a 1, y después vuelven a subir hasta el máximo.',
           'Tras repartir se pone boca arriba la siguiente carta: su palo es el triunfo.',
+          'En otros sitios se empieza con 1 carta y se sube de una en una hasta el máximo.',
         ],
       },
       {
@@ -4082,6 +4163,13 @@ export const T = {
         texto: [
           'Cuenta como bazas seguras los Ases y los triunfos altos; los reyes solo valen si hay pocos jugadores.',
           'Cuando ya tengas tus bazas, juega la carta más alta que no gane para deshacerte del peligro.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego inglés de bazas en el que cada uno dice cuántas va a ganar, conocido al menos desde principios del siglo XX y con muchos nombres, como «Up and Down the River». Su nombre, «¡Oh, demonios!», es lo que se dice al fallar por una baza.',
         ],
       },
     ],
@@ -4128,6 +4216,13 @@ export const T = {
           'Cuenta jotas y nueves antes de pujar: son la mitad de los puntos. Si tu compañero gana la baza, échale tus cartas con puntos.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego de bazas de la India y Bangladés, de la familia del Jass europeo, en el que la J y el 9 son las cartas más fuertes. Es muy popular en el norte de la India.',
+        ],
+      },
     ],
 
     handAndFoot: [
@@ -4171,6 +4266,13 @@ export const T = {
         titulo: 'Consejos',
         texto: [
           'Llegar pronto al pie te da 11 cartas nuevas. Guarda los comodines para terminar libros, y mira cuántos libros os faltan antes de quedarte sin cartas.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es una variante americana de la Canasta, de finales del siglo XX, en la que cada jugador tiene dos montones de cartas: la «mano» y el «pie».',
         ],
       },
     ],
@@ -4223,6 +4325,13 @@ export const T = {
           'Llama en tu palo más largo: tendrás muchos triunfos. Mientras no se sepa quién es el compañero, fíjate en quién carga puntos en las bazas del llamador.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es la Brisca italiana para cinco jugadores. Quien gana la subasta «llama» a una carta, y su dueño es su compañero en secreto: «chiamata» significa «llamada».',
+        ],
+      },
     ],
 
     treintaYUno: [
@@ -4245,6 +4354,7 @@ export const T = {
         texto: [
           'Toca el mazo o el descarte para robar una carta y después toca la carta de tu mano que descartas (no puedes devolver la que acabas de coger del descarte).',
           'En lugar de robar, puedes plantarte si crees que no tendrás la peor mano. Entonces cada uno de los demás juega un último turno y se enseñan las manos.',
+          'En otros sitios no se roba del mazo: hay tres cartas boca arriba en la mesa, la «viuda», y en tu turno cambias una de las tuyas, o las tres, por las de la mesa.',
         ],
       },
       {
@@ -4257,6 +4367,13 @@ export const T = {
         titulo: 'Consejos',
         texto: [
           'Junta cartas altas de un mismo palo y plántate pronto si tienes una buena mano: cuantos más turnos pasan, más mejoran los demás. Fíjate en lo que cogen los rivales del descarte.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es uno de los juegos de cartas más antiguos de Europa: ya se conocía en el siglo XV, y en España se jugaba en el Siglo de Oro. Se trata de sumar 31 con cartas de un mismo palo.',
         ],
       },
     ],
@@ -4295,6 +4412,13 @@ export const T = {
         titulo: 'Consejos',
         texto: [
           'Guarda parejas y cartas seguidas del mismo palo: son las que te dejan usar más cartas descubiertas. Y no descartes una carta que encaje en las combinaciones del rival.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Se cree que es el antepasado de los juegos de Rummy, y que nació en México o en el sur de Estados Unidos en el siglo XIX. Se juega con la baraja española de 40 cartas.',
         ],
       },
     ],
@@ -4345,6 +4469,13 @@ export const T = {
           'Los matadores son la clave: con dos o tres y unos cuantos triunfos más, puja. Como defensor, ayuda a tu compañero y no gastes cartas altas en una baza que ya es suya.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Viene del «Hombre», el juego español del siglo XVII que conquistó las cortes de Europa: en Inglaterra se llamó «Ombre». Fue el juego de bazas más importante de Europa durante dos siglos, y se llama Tresillo porque se juega entre tres.',
+        ],
+      },
     ],
 
     bourre: [
@@ -4381,6 +4512,13 @@ export const T = {
         titulo: 'Consejos',
         texto: [
           'Pasa con una mano floja: el bourré cuesta caro cuando el bote ha crecido. Con dos o tres triunfos altos, juega y cambia lo demás.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Viene de un juego francés y se juega sobre todo en Luisiana, en Estados Unidos, adonde llegó con los colonos franceses. Quien no gana ninguna baza queda «bourré» y tiene que pagar el bote.',
         ],
       },
     ],
@@ -4422,6 +4560,13 @@ export const T = {
           'En los contratos de evitar, deshazte pronto de tus cartas altas cuando no tengas el palo.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego de varios contratos, parecido al Barbu francés, que se juega en Europa central y del Este. En cada ronda cambia lo que hay que conseguir o evitar.',
+        ],
+      },
     ],
 
     polignac: [
@@ -4436,6 +4581,7 @@ export const T = {
         titulo: 'Las bazas',
         texto: [
           'Sale el jugador siguiente al que reparte. Hay que seguir el palo de salida; si no tienes, puedes echar cualquier carta. Gana la carta más alta del palo de salida, y quien gana sale en la siguiente.',
+          'En otros sitios se juega con el orden antiguo, con el As por debajo de la Jota (Rey, Dama, Jota, As, 10, 9, 8 y 7), y quien no tiene el palo tiene que soltar una Jota, empezando por la de picas.',
         ],
         ejemplo: 'baza',
       },
@@ -4458,6 +4604,13 @@ export const T = {
         texto: [
           'Cuando no tengas el palo, deshazte primero de la J de picas y luego de las otras J.',
           'Sal con cartas bajas de tus palos cortos y no ganes una baza con una J si puedes evitarlo. Anuncia el general solo si tus cartas son las más altas de cada palo.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego francés del siglo XIX que lleva el nombre de Jules de Polignac, ministro de Carlos X. Se cuenta que el nombre era una burla: el ministro sería la J de picas, la carta que nadie quiere.',
         ],
       },
     ],
@@ -4505,6 +4658,13 @@ export const T = {
           'Si nadie coge, cada uno juega para sí y gana quien hace menos puntos con al menos una baza: anota +4 y los demás −1. El blind es para quien gana la última baza.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es la versión americana del Schafkopf bávaro, llevada a Estados Unidos por inmigrantes alemanes en el siglo XIX. Es muy popular en Wisconsin, donde se celebran torneos.',
+        ],
+      },
     ],
 
     tysiacha: [
@@ -4549,6 +4709,13 @@ export const T = {
         texto: [
           'Los matrimonios dan muchos puntos: puja fuerte si tienes uno, y procura ganar pronto una baza para poder cantarlo.',
           'Da a los rivales tus cartas más flojas, los nueves y las jotas sueltas.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego ruso y ucraniano de bazas y cantes. «Tysiacha» significa «mil», los puntos que hay que alcanzar para ganar. Es pariente del Sesenta y seis.',
         ],
       },
     ],
@@ -4603,6 +4770,13 @@ export const T = {
           'Al cambiar, quédate los triunfos y los reyes y deja lo demás.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Nació en Francia a principios del siglo XIX y se extendió por Europa con el ejército de Napoleón. Fue el juego de moda en los salones parisinos. Su nombre viene de «écarter», descartar.',
+        ],
+      },
     ],
 
     pishti: [
@@ -4645,6 +4819,13 @@ export const T = {
         texto: [
           'Guarda las J para cuando el montón valga la pena: con muchas cartas, o con Ases, J, el 2 de tréboles o el 10 de diamantes.',
           'Cuando el montón está vacío, echa una carta de un número que ya haya salido: así el siguiente no te hará pishti.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego de captura muy popular en Turquía y los Balcanes. «Pişti» es la jugada de capturar una carta sola de la mesa con otra igual, que da puntos extra.',
         ],
       },
     ],
@@ -4693,6 +4874,13 @@ export const T = {
           'No dejes la mesa con una sola carta ni con pocas que sumen 7 o menos: es una limpia fácil para el rival.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el juego de cartas nacional de Ecuador, muy popular en Quito y en la sierra. Se juega a llegar a 40 puntos, de ahí su nombre, y es pariente de la Escoba.',
+        ],
+      },
     ],
 
     preference: [
@@ -4739,6 +4927,13 @@ export const T = {
           'La partida termina cuando las pulkas de los tres suman 30. Cada punto de montaña (menos tu pulka) por encima de la media te cuesta 10 whists, y se suman los whists que te deben los demás. Gana quien acaba con el saldo más alto.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el juego de bazas clásico de Rusia y de Europa del Este, nacido en el siglo XIX. Su nombre viene del palo «preferido», que en las primeras versiones valía más que los demás.',
+        ],
+      },
     ],
 
     truco: [
@@ -4783,6 +4978,13 @@ export const T = {
         texto: [
           'Con 30 o más de envido, cántalo. Guarda tus cartas altas para la segunda baza si ya ganaste la primera.',
           'Un truco con mala mano puede salir bien: el rival no ve tus cartas. Pero si te lo quieren, prepárate a perder dos puntos.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el juego de envite más popular de Argentina, Uruguay y el sur de Brasil, adonde llegó desde España. Las señas, los versos al cantar y el arte de engañar al rival son parte del juego.',
         ],
       },
     ],
@@ -4832,6 +5034,13 @@ export const T = {
           'Si juegas, saca los triunfos pronto para quitárselos a los rivales. Si defiendes, sal con el palo llamado para que salga el As y se sepa quién es el compañero.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el juego tradicional de Baviera, en Alemania, conocido desde el siglo XVIII. Su nombre significa «cabeza de oveja»; hay quien dice que es porque los puntos se apuntaban dibujando una cabeza de oveja, pero no es seguro.',
+        ],
+      },
     ],
 
     tressette: [
@@ -4869,6 +5078,13 @@ export const T = {
         texto: [
           'Los Ases valen tanto como tres figuras: no los sueltes si un rival puede llevárselos con el 3 o el 2.',
           'Cuenta los treses y los doses que han salido: cuando tu carta es la más alta que queda de su palo, la baza es tuya. Si la baza es segura para tu compañero, cárgale puntos.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego italiano de bazas, conocido desde el siglo XVIII y muy popular en el sur de Italia. Se cree que su nombre, «tres sietes», viene de una antigua jugada que premiaba reunir tres sietes.',
         ],
       },
     ],
@@ -4915,6 +5131,13 @@ export const T = {
         texto: [
           'Los sietes valen mucho para la primiera: llévatelos siempre que puedas, sobre todo el de oros.',
           'No dejes en la mesa cartas que sumen 10 o menos: el rival podría llevárselas todas de una vez y hacer scopa.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es uno de los juegos más populares de Italia, conocido al menos desde el siglo XVIII. «Scopa» significa escoba: se gana un punto cada vez que se barre la mesa.',
         ],
       },
     ],
@@ -4964,6 +5187,13 @@ export const T = {
           'En la viuda, quédate sin un palo para poder fallar.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Lo creó la United States Playing Card Company en 1904 a partir del Euchre. Fue el juego de bazas más popular de Estados Unidos hasta que llegó el Bridge, y hoy se juega sobre todo en Australia.',
+        ],
+      },
     ],
 
     barbu: [
@@ -4994,6 +5224,7 @@ export const T = {
         texto: [
           'Se juega desde las Jotas. Una Jota abre la fila de su palo; luego encajan la carta siguiente y la anterior de cada fila (del 2 al As).',
           'Si no tienes ninguna carta que encaje, pasas. El primero que se queda sin cartas anota +45, el segundo +20, el tercero +5 y el último −5.',
+          'En otros sitios el que reparte elige el número con el que se empieza, en lugar de las Jotas.',
         ],
         ejemplo: 'domino',
       },
@@ -5002,6 +5233,13 @@ export const T = {
         texto: [
           'Elige primero los contratos que mejor te vienen: el triunfo con un palo largo y Ases, el dominó con Jotas y cartas seguidas.',
           'En los contratos negativos, deshazte pronto de las cartas altas y de las que penalizan cuando no puedas seguir el palo.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego francés de bazas del siglo XX, con siete contratos distintos en cada ronda. Su nombre, «el barbudo», viene del rey de corazones, que se dibuja con barba.',
         ],
       },
     ],
@@ -5057,6 +5295,13 @@ export const T = {
           'Si la baza es de tu compañero, cárgale un 10 o un As. Cuidado con regalar roem al rival.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el juego de bazas más popular de los Países Bajos, conocido desde el siglo XVIII, y pariente del Belote y del Jass. «Klaver» significa trébol.',
+        ],
+      },
     ],
 
     jass: [
@@ -5108,6 +5353,13 @@ export const T = {
           'Si la baza es de tu compañero, cárgale un 10 o un As. Guarda el Buur: ninguna carta lo gana.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el juego nacional de Suiza. Se cree que llegó desde los Países Bajos a finales del siglo XVIII, y que su nombre era el de la J de triunfo, la carta más fuerte.',
+        ],
+      },
     ],
 
     piquet: [
@@ -5156,6 +5408,13 @@ export const T = {
           'Gana las bazas con la carta justa y sal de tu palo más largo.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es uno de los juegos de cartas más antiguos que se siguen jugando, conocido en Francia desde el siglo XVI. Para él se usó la baraja corta de 32 cartas, del 7 al As.',
+        ],
+      },
     ],
 
     sueca: [
@@ -5199,6 +5458,13 @@ export const T = {
         texto: [
           'Si la baza es de tu compañero, cárgale un As o un 7. Si es de un rival, no le regales puntos.',
           'Guarda los triunfos para cazar los Ases y los sietes de los rivales.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el juego de bazas más popular de Portugal, y se juega en parejas con 40 cartas. Su nombre significa «sueca», de Suecia, aunque nadie sabe muy bien por qué.',
         ],
       },
     ],
@@ -5248,6 +5514,13 @@ export const T = {
         texto: [
           'Puja con triunfos altos y oudlers: el 21 y la Excusa no se pierden nunca. Guarda el Petit: si te lo cazan, lo pierdes.',
           'Si tu bando va ganando la baza, cárgale un Rey o una Dama.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Las cartas del tarot nacieron en Italia en el siglo XV para jugar, no para adivinar: el uso esotérico llegó mucho después. El juego de Tarot francés, con sus 21 triunfos y la Excusa, es muy popular en Francia.',
         ],
       },
     ],
@@ -5303,6 +5576,13 @@ export const T = {
           'Anuncia solo con muchos triunfos altos: el anuncio dobla lo que está en juego.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego alemán de bazas de la familia del Schafkopf, con una baraja doble; su nombre significa «cabeza doble». Se juega sobre todo en el norte de Alemania.',
+        ],
+      },
     ],
 
     bezique: [
@@ -5350,6 +5630,13 @@ export const T = {
           'No regales Ases ni dieces mientras quede mazo: guárdalos para las últimas bazas.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego francés del siglo XIX que se puso de moda en Inglaterra hacia 1860; se dice que Winston Churchill era muy aficionado. Se juega con dos barajas cortas y es el antepasado del Pinochle.',
+        ],
+      },
     ],
 
     kingsCorner: [
@@ -5393,6 +5680,13 @@ export const T = {
           'Guarda los K para las esquinas y no dejes huecos que le vengan bien a tu rival.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego americano del siglo XX, como un solitario en grupo, en el que los reyes se colocan en las esquinas y desde ellos se forman escaleras hacia abajo.',
+        ],
+      },
     ],
 
     pesca: [
@@ -5429,6 +5723,13 @@ export const T = {
         texto: [
           'Fíjate en lo que piden los demás: quien pide un valor lo tiene. Si luego te toca a ti, pídeselo.',
           'Quien dijo «¡A pescar!» no tenía ese valor; no se lo pidas hasta que vuelva a robar.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego infantil muy conocido, «Go Fish» en inglés, en el que se piden cartas a los demás para reunir cuatro iguales. Cuando no te las dan, «vas a pescar» al montón.',
         ],
       },
     ],
@@ -5487,6 +5788,13 @@ export const T = {
           'Entre los dos, 25 puntos suelen dar manga (3 ST o 4 en un mayor con 8 cartas entre los dos) y 33, pequeño slam.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Viene del Whist. El Bridge de contrato, el que se juega hoy, lo creó Harold Vanderbilt en 1925 durante un viaje en barco. Es el juego de cartas con más competiciones del mundo, con olimpiadas y campeonatos mundiales.',
+        ],
+      },
     ],
 
     skat: [
@@ -5536,6 +5844,13 @@ export const T = {
           'Como defensor, si tu compañero va ganando la baza y juegas el último, échale tus cartas de más puntos.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Nació en Altenburg, en Alemania, hacia 1810, y es el juego nacional alemán; en Altenburg hay incluso una fuente dedicada a él. Su nombre viene del italiano «scartare», descartar, por las dos cartas que se apartan.',
+        ],
+      },
     ],
 
     sixtySix: [
@@ -5579,6 +5894,13 @@ export const T = {
         texto: [
           'Los nueves no valen nada: úsalos para perder bazas sin regalar puntos.',
           'Guarda los Ases y los dieces para cuando se cierre el mazo, y cierra cuando sepas que llegas a 66.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego alemán muy antiguo; se cuenta que nació en Paderborn en el siglo XVII. Se llama así porque gana la mano quien llega a 66 puntos, y de él vienen el Schnapsen y otros juegos de Europa central.',
         ],
       },
     ],
@@ -5630,6 +5952,13 @@ export const T = {
           'Cierra el mazo cuando tengas los 66 casi asegurados, sobre todo si el rival aún no ha hecho bazas.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el juego clásico de Austria y de los países del antiguo Imperio austrohúngaro, de la familia del Sesenta y seis. Su nombre viene de «Schnaps», el aguardiente: se jugaba por una copa.',
+        ],
+      },
     ],
 
     belote: [
@@ -5678,6 +6007,13 @@ export const T = {
           'Cuando la baza ya es de tu compañero y juegas el último, échale tus cartas de más valor.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el juego de cartas más popular de Francia, conocido desde principios del siglo XX. Viene de juegos de bazas de los Países Bajos, como el Klaverjas, en los que la J y el 9 de triunfo son las cartas más fuertes.',
+        ],
+      },
     ],
 
     cribbage: [
@@ -5708,6 +6044,13 @@ export const T = {
         texto: [
           'Guarda los cincos y las parejas, y si el crib es del otro, no le eches cincos ni cartas que sumen 15.',
           'Al jugar, evita dejar la cuenta en 5 o en 21: un 10 del otro le da 15 o 31.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Se atribuye al poeta inglés John Suckling, hacia 1630, a partir de un juego más antiguo llamado «Noddy». Se apunta con clavijas en un tablero agujereado, y fue muy popular entre los marineros.',
         ],
       },
     ],
@@ -5749,6 +6092,13 @@ export const T = {
           'Si a un rival le quedan pocas cartas, no le dejes salir con sueltas: juega fuerte.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Nació en el sur de China a mediados del siglo XX y es muy popular en Hong Kong, Taiwán y el sudeste asiático. Se llama así porque el 2 es la carta más alta.',
+        ],
+      },
     ],
 
     euchre: [
@@ -5788,6 +6138,13 @@ export const T = {
           'Si tu compañero eligió el triunfo, no gastes tus triunfos en bazas que ya lleva él.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Se cree que llegó a Estados Unidos con inmigrantes alemanes, desde un juego de Alsacia, y en el siglo XIX fue de los juegos más populares del país. Para jugarlo se añadió a la baraja una carta especial, y de ahí nació el comodín.',
+        ],
+      },
     ],
 
     durak: [
@@ -5818,6 +6175,13 @@ export const T = {
         texto: [
           'Guarda los triunfos para el final: con el mazo vacío deciden la partida.',
           'Ataca con números que tengas repetidos, para echar después la pareja. A veces conviene llevarse cartas bajas al principio en vez de gastar un triunfo alto.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el juego de cartas más popular de Rusia, extendido por toda la antigua Unión Soviética. «Durak» significa «tonto»: no hay ganador, sino un perdedor, el último que se queda con cartas.',
         ],
       },
     ],
@@ -5858,6 +6222,13 @@ export const T = {
           'No dejes en la mesa Ases, picas ni los dos Casinos si puedes evitarlo.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego de captura que ya se jugaba en Inglaterra a finales del siglo XVIII, pariente de la Escoba y de la Scopa. Se cree que su nombre viene del italiano «casino», que era una casa pequeña o un club, y no de las salas de juego.',
+        ],
+      },
     ],
 
     sevens: [
@@ -5887,6 +6258,13 @@ export const T = {
         texto: [
           'Guarda las cartas que abren camino a los rivales y juega primero las que te acercan otras tuyas.',
           'Los sietes de palos donde tienes pocas cartas pueden esperar: abrirlos ayuda a los demás.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es la versión inglesa del juego de colocar las cartas en filas a partir de los sietes, como el Cinquillo español. También se le llama «Fan Tan» o «Domino».',
         ],
       },
     ],
@@ -5925,6 +6303,13 @@ export const T = {
         texto: [
           'Si tu compañero ya gana la baza, no se la quites: juega una carta baja.',
           'Sal de tu palo más largo y guarda los triunfos para fallar las cartas buenas de los rivales.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el gran juego de bazas inglés de los siglos XVIII y XIX, y de él vienen el Bridge y las Picas. Edmond Hoyle escribió su famoso tratado sobre el Whist en 1742. Se cree que su nombre viene de «¡whist!», «¡silencio!», porque se jugaba callado.',
         ],
       },
     ],
@@ -5974,6 +6359,13 @@ export const T = {
           'No descartes cartas del valor de las combinaciones de los rivales.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Nació en Uruguay en los años 40, se cree que en Montevideo, y su nombre es «cesta» en español. Llegó a Estados Unidos y a Europa hacia 1950, donde fue una auténtica moda.',
+        ],
+      },
     ],
 
     culo: [
@@ -6016,6 +6408,13 @@ export const T = {
           'Si eres presidente, devuelve las cartas sueltas más bajas.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego de deshacerse de las cartas muy extendido en reuniones, con nombres distintos en cada país: «President» en Francia o «Daifugō» en Japón. Quien acaba primero manda en la siguiente mano, y quien acaba el último es el «culo», que tiene que darle sus mejores cartas.',
+        ],
+      },
     ],
 
     holdem: [
@@ -6052,6 +6451,13 @@ export const T = {
         texto: [
           'Juega pocas manos antes del flop y apuesta fuerte las buenas.',
           'Fíjate en lo que te cuesta igualar frente a lo que hay en el bote: si es caro y tu mano es floja, retírate.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Se cree que nació en Robstown, Texas, a principios del siglo XX, y llegó a Las Vegas en los años 60. Desde que se televisaron los torneos y llegó el póquer en línea, a principios de este siglo, es la forma de póquer más jugada del mundo.',
         ],
       },
     ],
@@ -6093,6 +6499,13 @@ export const T = {
           'Baja pronto: lo que tengas en la mano cuando alguien cierre te resta.',
           'Mira el descarte entero: a veces compensa llevarse muchas cartas por una que te deja bajar.',
           'No sueltes cartas que encajen en la mesa: el siguiente se las apunta.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un Rummy americano del siglo XX en el que también se pueden añadir cartas a las combinaciones de los demás. Se llama así porque la partida acaba cuando alguien llega a 500 puntos.',
         ],
       },
     ],
@@ -6143,6 +6556,13 @@ export const T = {
           'Fíjate en lo que coge el rival del descarte, y no le sueltes cartas que le liguen.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Se cree que lo inventaron en Nueva York, en 1909, Elwood Baker y su hijo, a partir del Rummy. Se puso de moda en los años 30 y 40 entre las estrellas de Hollywood. El nombre sería un juego de palabras: la ginebra («gin») después del ron («rum»).',
+        ],
+      },
     ],
 
     blackjack: [
@@ -6180,6 +6600,13 @@ export const T = {
         texto: [
           'Si la banca enseña un 2 al 6, es fácil que se pase: con 12 o más, plántate.',
           'Dobla con 11, y separa siempre los ases y los ochos.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Viene del Veintiuno («Vingt-et-un»), que ya se jugaba en Francia en el siglo XVIII. Se cuenta que algunos casinos de Estados Unidos pagaban un premio por tener el As y la J de picas, una J negra: de ahí el nombre. Es el juego de banca más jugado en los casinos.',
         ],
       },
     ],
@@ -6222,6 +6649,13 @@ export const T = {
           'Si tu compañero dice Nil, intenta ganar tú las bazas que él podría llevarse.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Nació en Estados Unidos hacia 1930, de la familia del Whist y del Bridge, y se hizo muy popular entre los soldados durante la Segunda Guerra Mundial. Se llama así porque las picas son siempre el triunfo.',
+        ],
+      },
     ],
 
     ochoLoco: [
@@ -6248,6 +6682,13 @@ export const T = {
         ],
       },
       {
+        titulo: 'Cartas especiales (opción)',
+        texto: [
+          'Variante del Ocho americano (opción «Cartas especiales»): el 10 cambia el sentido del juego; el As obliga al siguiente a echar otro As o a robar 2; el 6, a echar otro 6 o a robar 1; el 7 hace que el siguiente pierda el turno.',
+          'Tras un 9, quien no puede echar ninguna carta roba una y pierde el turno. Quien roba por un As o un 6 sigue jugando con normalidad, y la mesa te avisa de lo que tienes que hacer.',
+        ],
+      },
+      {
         titulo: 'Puntos',
         texto: [
           'Quien se queda sin cartas se apunta lo que les queda a los demás: el 8 vale 50, las figuras 10, el As 1 y el resto su número.',
@@ -6260,6 +6701,13 @@ export const T = {
         texto: [
           'Guarda los ochos para cuando no tengas otra cosa: te salvan de robar. Pero si alguien está a punto de quedarse sin cartas, un 8 en la mano son 50 puntos para él.',
           'Al elegir palo con un 8, elige el que más tienes.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Se popularizó en Estados Unidos a mediados del siglo XX, y de él vienen juegos comerciales como el UNO. Su nombre viene de los ochos, que se pueden echar siempre y cambian el palo. En Europa ya existían juegos parecidos, como el Mau-Mau alemán.',
         ],
       },
     ],
@@ -6299,6 +6747,13 @@ export const T = {
           'Mentir con muchas cartas a la vez es arriesgado si el montón es grande: si te pillan, te lo llevas entero.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego de faroles muy extendido, que en inglés se llama «Cheat» o «I doubt it». Las cartas se dejan boca abajo y se puede mentir sobre lo que son. Es un juego de fiestas y reuniones, más de cara que de cálculo.',
+        ],
+      },
     ],
 
     cuatrola: [
@@ -6314,13 +6769,6 @@ export const T = {
         texto: [
           'Empieza a hablar el siguiente al que reparte. En tu turno pasas, pujas «con rey» o pujas «solo», que vale más. Se puede subir de «con rey» a «solo», y quien pasa ya no vuelve a hablar.',
           'Gana quien hizo la última puja: es el jugador. Si pasan los cuatro, se reparte otra vez.',
-      {
-        titulo: 'Cartas especiales (opción)',
-        texto: [
-          'Variante del Ocho americano (opción «Cartas especiales»): el 10 cambia el sentido del juego; el As obliga al siguiente a echar otro As o a robar 2; el 6, a echar otro 6 o a robar 1; el 7 hace que el siguiente pierda el turno.',
-          'Tras un 9, quien no puede echar ninguna carta roba una y pierde el turno. Quien roba por un As o un 6 sigue jugando con normalidad, y la mesa te avisa de lo que tienes que hacer.',
-        ],
-      },
         ],
       },
       {
@@ -6357,6 +6805,13 @@ export const T = {
         texto: [
           'Cuenta tus matadores antes de pujar: con dos o tres y unos cuantos triunfos, ya puedes jugar con rey.',
           'Llama el rey del palo en que tienes menos cartas: tu compañero te ganará esas bazas.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego asturiano de bazas para cuatro, descendiente del Tresillo, que todavía se juega en bares y sidrerías de Asturias. Su nombre viene de que se juega entre cuatro.',
         ],
       },
     ],
@@ -6396,6 +6851,13 @@ export const T = {
           'Una carta del mismo palo encima de otra más baja la bloquea; rebaraja cuando ya no puedas deshacer esos nudos.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un solitario francés del siglo XIX, «La Belle Lucie» («la bella Lucía»), en el que las cartas se reparten en abanicos de tres. Por eso también se llama «Los abanicos».',
+        ],
+      },
     ],
 
     scorpion: [
@@ -6430,6 +6892,13 @@ export const T = {
         texto: [
           'Lo primero es descubrir las cartas tapadas: busca los movimientos que las dejan arriba.',
           'Una columna vacía es valiosa: guárdala para una K que tenga debajo cartas que necesitas.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un solitario del siglo XIX, pariente del Spider, en el que también se forman escaleras de un mismo palo, pero con todas las cartas repartidas desde el principio. El origen de su nombre, «escorpión», no se conoce bien.',
         ],
       },
     ],
@@ -6468,6 +6937,13 @@ export const T = {
         texto: [
           'Las columnas vacías valen oro: no las llenes con cualquier cosa.',
           'Antes de robar, mira si puedes mover algo: cada carta del mazo solo pasa una vez.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un solitario de dos barajas del siglo XIX, y de los más difíciles de ganar. Su nombre recuerda el cuento de Alí Babá y los cuarenta ladrones: son las cuarenta cartas que se reparten al empezar.',
         ],
       },
     ],
@@ -6510,6 +6986,13 @@ export const T = {
           'Una columna vacía saca una carta de la reserva, así que a veces compensa vaciarla.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Lleva el nombre de Richard Canfield, dueño de un famoso casino de Saratoga, en Estados Unidos, a finales del siglo XIX. Se cuenta que vendía la baraja por 50 dólares y pagaba 5 por cada carta que el jugador subiera a las bases. En Inglaterra se conoce como «Demon».',
+        ],
+      },
     ],
 
     yukon: [
@@ -6550,6 +7033,13 @@ export const T = {
           'No vacíes una columna si no tienes un Rey que poner en ella.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es pariente del Klondike y, como él, lleva el nombre de una región del noroeste de Canadá, la del Yukón. Se diferencia en que se pueden mover grupos de cartas aunque no estén ordenados. Aparece en libros de solitarios del siglo XX.',
+        ],
+      },
     ],
 
     tripeaks: [
@@ -6587,6 +7077,13 @@ export const T = {
           'Si puedes elegir, quita las cartas que destapan otras.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Lo inventó Robert Hogue en 1989 a partir del Golf, y su nombre, «tres picos», viene de la forma que tienen las cartas en la mesa. Se hizo muy popular en los ordenadores y después en los móviles.',
+        ],
+      },
     ],
 
     golf: [
@@ -6618,6 +7115,13 @@ export const T = {
           'Si te atascas, puedes deshacer o pedir una pista.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un solitario inglés que se llama así porque, como en el golf, se busca la puntuación más baja: cuantas menos cartas te queden, mejor. Ya aparece en libros de solitarios de principios del siglo XX.',
+        ],
+      },
     ],
 
     piramide: [
@@ -6647,6 +7151,13 @@ export const T = {
           'Antes de usar una carta del descarte, mira si hay en la pirámide otra que haga la pareja: liberar la pirámide es lo que importa.',
           'Fíjate en qué cartas tapan a otras: a veces conviene esperar para quitar una pareja que libera más cartas.',
           'Si te atascas, puedes deshacer o pedir una pista.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un solitario antiguo de parejas que suman 13, con las cartas colocadas en forma de pirámide. Ya aparece en colecciones de solitarios del siglo XIX, y se hizo muy popular en los ordenadores a partir de los años 90.',
         ],
       },
     ],
@@ -6698,6 +7209,13 @@ export const T = {
           'Fíjate en los puntos de envit que muestra el rival: te dicen qué cartas tiene.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el juego de envite de Cataluña, Valencia y Baleares, y tiene las mismas raíces que el Truco de Argentina y Uruguay. Se cree que es de los juegos de cartas más antiguos de la península, y su gracia está en el envite, las señas y el farol.',
+        ],
+      },
     ],
 
     butifarra: [
@@ -6736,6 +7254,7 @@ export const T = {
           'Sale el jugador siguiente al que reparte. Gana la baza el triunfo más alto o, si no hay triunfos, la carta más fuerte del palo que salió. Quien la gana sale en la siguiente.',
           'Hay que seguir el palo que salió y, si puedes, superar la carta que va ganando. Si no tienes de ese palo, tienes que fallar con triunfo (y superar el triunfo más alto si puedes).',
           'Si la baza la va ganando tu compañero, solo tienes que seguir el palo: no hace falta superarle ni fallar. La mesa solo te deja jugar las cartas permitidas.',
+          'Variante (opción «Sobrefallo libre»): si un rival ha fallado y ninguno de tus triunfos lo supera, puedes echar cualquier carta en vez de un triunfo menor.',
         ],
         ejemplo: 'baza',
       },
@@ -6758,6 +7277,15 @@ export const T = {
           'Elige de triunfo el palo en el que tengas más cartas y la manilla o el As.',
           'Si tu compañero va ganando la baza y nadie se la puede quitar, échale puntos.',
           'Cuenta las manillas que han salido: cuando ya no queda ninguna de un palo, su As manda.',
+          'Elige triunfo cuando tengas muchas cartas de un palo con el As o la manilla. Canta butifarra si tienes ases y manillas en varios palos, porque sin triunfo valen más.',
+          'Si tu mano no es clara para ningún palo, delega: tu compañero quizá tenga el juego que te falta.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el juego de bazas de Cataluña, popular desde el siglo XIX, con campeonatos en casinos y fiestas mayores. Comparte nombre con el embutido catalán, aunque no se sabe bien por qué; «hacer butifarra» es jugar sin triunfo.',
         ],
       },
     ],
@@ -6783,6 +7311,7 @@ export const T = {
           'Primero, cada jugador que no es la banca apuesta unas fichas. Después todos reciben una carta boca abajo, que solo ve su dueño.',
           'Por turnos, cada uno pide cartas (llegan boca arriba, todos las ven) o se planta. Si pasas de 7 y medio, te has pasado y pierdes tu apuesta en el acto.',
           'La banca juega la última, viendo las cartas boca arriba de los demás (pero no su carta tapada).',
+          'En otros sitios cada jugador elige si pide la carta tapada o destapada, y así los demás no saben cuánto suma.',
         ],
       },
       {
@@ -6803,7 +7332,6 @@ export const T = {
       {
         titulo: 'En la mesa',
         texto: [
-          'Variante (opción «Sobrefallo libre»): si un rival ha fallado y ninguno de tus triunfos lo supera, puedes echar cualquier carta en vez de un triunfo menor.',
           'Elige tu apuesta con los botones − y + y pulsa «Apostar». En tu turno, pulsa «Pedir carta» o «Plantarse». Junto a tus cartas verás cuánto sumas.',
         ],
       },
@@ -6812,6 +7340,13 @@ export const T = {
         texto: [
           'Con 5 o más, lo normal es plantarse: hay muchas cartas que te harían pasarte.',
           'Fíjate en lo que enseñan los demás: su carta tapada suele ser alta si se plantan pronto.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego de banca español, pariente del Veintiuno (el Blackjack), que se juega sobre todo en Navidad, en familia y por poco dinero. Se cree que ya se jugaba en el siglo XIX. Su nombre sale de la mejor jugada: sumar siete y medio, porque las figuras valen medio punto.',
         ],
       },
     ],
@@ -6858,6 +7393,13 @@ export const T = {
           'Antes de llenar la última celda, piensa si podrás vaciarla.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Tiene sus raíces en solitarios antiguos con casillas libres, pero la versión actual la popularizó Paul Alfille en 1978, en un ordenador de su universidad. Llegó a todo el mundo con Windows en los años 90. Casi todas sus manos tienen solución: de las 32.000 primeras de Windows, solo una no la tiene.',
+        ],
+      },
     ],
 
     cinquillo: [
@@ -6899,6 +7441,13 @@ export const T = {
         texto: [
           'Juega primero las cartas que te abren camino a ti: si tienes el 6 y el 7 de un palo, el 6 te deja jugar luego el 7.',
           'Retén los cincos y las cartas que abrirían camino a los demás si no te hacen falta.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego español muy familiar, de una familia que en otros países se llama «Domino» o «Sevens», porque las cartas se colocan en fila como fichas de dominó. Se llama así porque se empieza por los cincos, y es de los primeros juegos que se aprenden de niño.',
         ],
       },
     ],
@@ -6960,6 +7509,13 @@ export const T = {
           'Con 3, 5 o 6 no hay pase. Siguen los 13 corazones y la Q de picas, así que la luna vale igual: 26 para cada uno de los demás.',
         ],
       },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Viene de una familia de juegos de bazas para evitar que ya se jugaban en el siglo XVIII, como el «Reversis». La versión moderna, con los corazones y la reina de picas, se popularizó en Estados Unidos a finales del siglo XIX y llegó a todo el mundo con Windows.',
+        ],
+      },
     ],
 
     burro: [
@@ -6968,6 +7524,7 @@ export const T = {
         texto: [
           'Se juega con la baraja española, de 3 a 5 jugadores, contra la máquina. Cada uno recibe 4 cartas, y entre todas hay exactamente 4 de cada número en juego (por ejemplo, los cuatro reyes, los cuatro sietes…).',
           'Hay que juntar las 4 cartas de un mismo número. Pero lo importante es no ser el último en darse cuenta de que alguien lo ha conseguido.',
+          'En otros sitios se llama Burro a un juego distinto, de bazas, en el que hay que deshacerse de las cartas: el último que se queda con ellas es el burro.',
         ],
       },
       {
@@ -7003,6 +7560,14 @@ export const T = {
         texto: [
           'Quédate con el número del que más cartas tienes y pasa las sueltas.',
           'No te quedes mirando solo tu mano: el peligro está en las manos ajenas.',
+          'Fíjate en lo que te pasan los demás: si alguien suelta reyes, no los está juntando. Y no te quedes cartas de un número que ya otro va reuniendo.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego familiar muy extendido, de juntar cuatro cartas iguales y estar atento a la mesa. Juegos parecidos se conocen en otros países con nombres como «Spoons» o «Pig», y en todos pierde el último en darse cuenta, que es «el burro».',
         ],
       },
     ],
@@ -7048,6 +7613,13 @@ export const T = {
           'Intenta vaciar una columna: es el mejor sitio para reorganizar.',
           'Antes de repartir, coloca todo lo que puedas: el reparto tapará tus escaleras.',
           'Cuando puedas elegir, pon las cartas sobre otras de su mismo palo.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es uno de los solitarios de dos barajas más conocidos, y ya aparece en libros de solitarios de principios del siglo XX. Se cree que el nombre viene de las ocho escaleras completas que hay que formar, como las ocho patas de una araña. Se hizo muy popular al llegar a Windows en 1998.',
         ],
       },
     ],
@@ -7110,6 +7682,15 @@ export const T = {
           'Ser mano es una gran ventaja: con jugadas iguales, ganas tú.',
           'No quieras envites grandes con jugadas regulares: cada piedra cuenta.',
           'Un órdago de farol solo funciona si el rival no tiene buena jugada.',
+          'Corta el mus cuando tu jugada ya es buena para algún lance (duples, medias o 31): así los rivales no pueden mejorar con el descarte.',
+          'Fíjate en cuántas cartas pide cada rival: quien pide cuatro no tenía nada que guardar; quien pide una suele ir ya bien en pares o en juego.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es el juego de envite más famoso de España, y probablemente nació en el País Vasco hacia el siglo XVIII. De su nombre hay varias explicaciones (del vasco «musu», beso, o de un juego francés), y ninguna es segura. Se juega en parejas, con señas permitidas, y hay campeonatos por todo el mundo.',
         ],
       },
     ],
@@ -7170,6 +7751,13 @@ export const T = {
           'Los Ases y los triunfos altos suelen ganar baza; lo demás, casi nunca.',
           'Apostar 0 también vale 10 puntos: con una mano floja, intenta no ganar ninguna.',
           'Cuando ya tengas tus bazas, deshazte de las cartas altas en bazas que gane otro.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es un juego español de bazas y apuestas que se jugó mucho en el siglo XX, en casas y bares. Pertenece a la familia del Oh Hell inglés, en la que cada uno dice cuántas bazas va a ganar antes de jugar. El origen de su nombre no está claro.',
         ],
       },
     ],
@@ -7234,6 +7822,13 @@ export const T = {
           'Un montón grande suele compensar: lo que bajas suma y lo que te queda en la mano resta.',
           'No descartes cartas que el rival pueda añadir a sus combinaciones.',
           'Guardar las combinaciones para cerrar de golpe puede doblar la mano, pero si el rival cierra antes, todo lo que tengas en la mano resta.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Viene del Bezique francés y llegó a Estados Unidos con inmigrantes alemanes y suizos en el siglo XIX, donde se llamó «Pinochle». Se juega con una baraja doble que solo tiene del 9 al As.',
         ],
       },
     ],

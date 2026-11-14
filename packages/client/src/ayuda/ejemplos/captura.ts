@@ -46,6 +46,18 @@ export const CAPTURA: Partial<Record<IdJuego, EjemplosJuego>> = {
       resaltadas: ['copas-7', 'oros-5', 'bastos-3'],
       explicacion: 'Suman 15 y no queda nada en la mesa: es escoba, 1 punto.',
     },
+    premios: {
+      tipo: 'tabla',
+      descripcion:
+        'Lo que valen los oros y los sietes si te llevas los 10 oros y los 4 sietes, sin la opción de premios y con ella.',
+      titulo: 'Te llevas los 10 oros y los 4 sietes → puntos',
+      filas: [
+        ['Oros, sin premios', '1'],
+        ['Oros, con premios', '2'],
+        ['Sietes, sin premios', '1'],
+        ['Sietes, con premios', '3'],
+      ],
+    },
   },
 
   scopa: {

@@ -2,6 +2,8 @@ import {
   bajadasConquian,
   bajadasPosibles,
   bajadasRemigio,
+  colocarEnMesa,
+  combinacionChinchon,
   basePinacle,
   baseRemigio,
   combinacionRummy,
@@ -62,6 +64,18 @@ test('Chinchón: las combinaciones, la mano para cerrar y los puntos', () => {
   for (const { id, etiqueta } of v.ejemplo('chinchon', 'puntos', 'cartas').cartas) {
     expect(etiqueta, id).toBe(T.ayuda.puntos(puntosCarta(id)));
   }
+});
+
+test('Chinchón: la suelta que se coloca en la combinación a la vista', () => {
+  const e = v.ejemplo('chinchon', 'colocar', 'antesDespues');
+  const de = (zonas: typeof e.antes, nombre: string) =>
+    zonas.find((z) => z.nombre === nombre)!.cartas.filter((c) => c !== null);
+  const mesa = [[...de(e.antes, 'Quien cierra')]];
+  const r = colocarEnMesa(mesa, de(e.antes, 'Tus sueltas'), 'espanola40');
+  expect(r.colocadas).toEqual(e.resaltadas);
+  expect(r.quedan).toEqual(de(e.despues, 'Te suman'));
+  mismas(mesa[0]!, de(e.despues, 'Quien cierra'));
+  expect(combinacionChinchon(de(e.despues, 'Quien cierra'), 'espanola40')).not.toBeNull();
 });
 
 test('Remigio: las combinaciones válidas se pueden bajar y la que no vale, no', () => {

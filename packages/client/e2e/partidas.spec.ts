@@ -249,6 +249,12 @@ for (const juego of ID_JUEGOS) {
         path: `test-results/ejemplos/${juego}-${clave}-${page.viewportSize()!.width}.png`,
       });
     }
+    // «Un poco de historia» (change guias-libros): plegada al abrir, y se despliega.
+    const historia = guia.getByTestId('historia');
+    await expect(historia).not.toHaveAttribute('open');
+    await historia.locator('summary').click();
+    await expect(historia).toHaveAttribute('open', '');
+    await expect(historia.locator('p').first()).toBeVisible();
     const contenido = guia.locator('.contenido');
     const desborde = await contenido.evaluate((c) => c.scrollWidth - c.clientWidth);
     expect(desborde).toBeLessThanOrEqual(0);

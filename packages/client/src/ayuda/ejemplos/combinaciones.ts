@@ -36,6 +36,22 @@ export const COMBINACIONES: Partial<Record<IdJuego, EjemplosJuego>> = {
         ['comodin-1', 25],
       ],
     ),
+    colocar: {
+      tipo: 'antesDespues',
+      descripcion:
+        'Con la opción de colocar las sueltas: quien cierra enseña una escalera de copas del 4 al 6, y tú colocas en ella tu 7 de copas suelto.',
+      antes: [
+        { nombre: 'Quien cierra', cartas: ['copas-4', 'copas-5', 'copas-6'] },
+        { nombre: 'Tus sueltas', cartas: ['copas-7', 'bastos-2'] },
+      ],
+      despues: [
+        { nombre: 'Quien cierra', cartas: ['copas-4', 'copas-5', 'copas-6', 'copas-7'] },
+        { nombre: 'Te suman', cartas: ['bastos-2'] },
+      ],
+      resaltadas: ['copas-7'],
+      explicacion:
+        'El 7 de copas sigue la escalera: lo colocas y ya no te suma. Solo cuentas los 2 puntos del 2 de bastos.',
+    },
   },
 
   remigio: {
