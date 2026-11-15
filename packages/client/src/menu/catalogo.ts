@@ -257,6 +257,7 @@ export const CATALOGO: Readonly<Record<IdJuego, EntradaCatalogo>> = {
   casino: entrada('captura', F, T.menu.casinoDesc, ['diamantes-10', 'picas-2', 'corazones-1']),
   cuarenta: entrada('captura', F, T.menu.cuarentaDesc, ['corazones-5', 'picas-5', 'diamantes-6']),
   pishti: entrada('captura', F, T.menu.pishtiDesc, ['treboles-11', 'diamantes-10', 'treboles-2']),
+  casitaRobada: entrada('captura', E, T.menu.casitaRobadaDesc, ['oros-12', 'copas-12', 'bastos-5']),
   pesca: entrada('captura', F, T.menu.pescaDesc, ['corazones-7', 'picas-7', 'treboles-7']),
 
   // ── Descarte ──

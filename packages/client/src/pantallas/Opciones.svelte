@@ -63,6 +63,7 @@
     ConfigHandAndFoot,
     ConfigPolignac,
     ConfigPokerCinco,
+    ConfigCasitaRobada,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -174,6 +175,7 @@
   let trucoConfig: Editable<ConfigTruco> = $state({ ...JUEGOS.truco.configPorDefecto });
   let cuarentaConfig: Editable<ConfigCuarenta> = $state({ ...JUEGOS.cuarenta.configPorDefecto });
   let pishtiConfig: Editable<ConfigPishti> = $state({ ...JUEGOS.pishti.configPorDefecto });
+  let casitaConfig: Editable<ConfigCasitaRobada> = $state({ ...JUEGOS.casitaRobada.configPorDefecto });
   let ecarteConfig: Editable<ConfigEcarte> = $state({ ...JUEGOS.ecarte.configPorDefecto });
   let tysiachaConfig: Editable<ConfigTysiacha> = $state({ ...JUEGOS.tysiacha.configPorDefecto });
   let sheepsheadConfig: Editable<ConfigSheepshead> = $state({ ...JUEGOS.sheepshead.configPorDefecto });
@@ -294,6 +296,7 @@
       preference: preferenceConfig,
       cuarenta: cuarentaConfig,
       pishti: pishtiConfig,
+      casitaRobada: casitaConfig,
       ecarte: ecarteConfig,
       tysiacha: tysiachaConfig,
       sheepshead: sheepsheadConfig,
@@ -471,6 +474,16 @@
           ><input type="radio" bind:group={cuarentaConfig.jugadores} value={4} data-testid="cuarenta-cuatro" />
           {T.opciones.cuatroJugadores}</label
         >
+      </fieldset>
+    {:else if juego === 'casitaRobada'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [2, 3, 4] as const as n (n)}
+          <label
+            ><input type="radio" bind:group={casitaConfig.jugadores} value={n} data-testid="casita-jugadores-{n}" />
+            {T.opciones.jugadoresN(n)}</label
+          >
+        {/each}
       </fieldset>
     {:else if juego === 'pishti'}
       <fieldset>

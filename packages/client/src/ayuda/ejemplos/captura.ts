@@ -136,6 +136,43 @@ export const CAPTURA: Partial<Record<IdJuego, EjemplosJuego>> = {
     },
   },
 
+  casitaRobada: {
+    captura: {
+      tipo: 'antesDespues',
+      descripcion:
+        'En la mesa hay dos cincos y un 7; juegas el 5 de espadas y te llevas los dos cincos a tu casita.',
+      antes: [
+        { nombre: 'Tu carta', cartas: ['espadas-5'] },
+        { nombre: 'Mesa', cartas: ['oros-5', 'copas-5', 'bastos-7'] },
+      ],
+      despues: [
+        { nombre: 'Mesa', cartas: ['bastos-7'] },
+        { nombre: 'Tu casita', cartas: ['oros-5', 'copas-5', 'espadas-5'] },
+      ],
+      resaltadas: ['oros-5', 'copas-5', 'espadas-5'],
+      explicacion: 'Te llevas todas las del mismo número, y tu carta queda arriba de tu casita.',
+    },
+    robo: {
+      tipo: 'antesDespues',
+      descripcion:
+        'La casita de un rival tiene el Rey de copas arriba; juegas el Rey de oros y se la robas entera.',
+      antes: [
+        { nombre: 'Tu carta', cartas: ['oros-12'] },
+        { nombre: 'Casita del rival', cartas: ['bastos-3', 'espadas-3', 'copas-12'] },
+        { nombre: 'Tu casita', cartas: ['oros-6'] },
+      ],
+      despues: [
+        { nombre: 'Casita del rival', cartas: [] },
+        {
+          nombre: 'Tu casita',
+          cartas: ['oros-6', 'bastos-3', 'espadas-3', 'copas-12', 'oros-12'],
+        },
+      ],
+      resaltadas: ['bastos-3', 'espadas-3', 'copas-12', 'oros-12'],
+      explicacion: 'La casita robada pasa entera a la tuya, con tu carta arriba.',
+    },
+  },
+
   pesca: {
     pedir: {
       tipo: 'antesDespues',

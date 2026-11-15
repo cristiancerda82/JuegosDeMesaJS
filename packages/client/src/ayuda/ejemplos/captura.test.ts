@@ -1,4 +1,5 @@
 import {
+  casitaRobada,
   capturasCuarenta,
   capturasScopa,
   encajaBarbu,
@@ -19,6 +20,7 @@ import {
   valorCasino,
   valorEscoba,
   valorPesca,
+  type EstadoCasitaRobada,
   type IdCarta,
   type PaloFrances,
 } from '@juegos/engine';
@@ -52,6 +54,44 @@ test('Barbu y Rentz: las bazas sin triunfo', () => {
   const rentz = evitar.ejemplo('rentz', 'baza', 'baza');
   expect(ganadoraRentz(mesaDe(rentz)).asiento).toBe(rentz.gana);
   expect(rentz.jugadas.map((j) => j.id)).toContain('corazones-13');
+});
+
+test('Casita robada: la captura y el robo, como los hace el motor', () => {
+  const inicio = casitaRobada.crear({ jugadores: 2 }, 'ejemplo');
+  if (!inicio.ok) throw new Error(inicio.error);
+  // Llevarse las de la mesa.
+  const llevar = captura.ejemplo('casitaRobada', 'captura', 'antesDespues');
+  const [carta] = zona(llevar.antes, 'Tu carta');
+  const tras = casitaRobada.transicion(
+    {
+      ...inicio.valor,
+      mesa: zona(llevar.antes, 'Mesa'),
+      manos: [[carta!, 'oros-1'], ['copas-2']],
+      turno: 0,
+    },
+    0,
+    { tipo: 'jugar', carta: carta!, robar: null },
+  );
+  expect(tras.mesa).toEqual(zona(llevar.despues, 'Mesa'));
+  expect(tras.casitas[0]).toEqual(zona(llevar.despues, 'Tu casita'));
+  // Robar la casita del rival.
+  const robo = captura.ejemplo('casitaRobada', 'robo', 'antesDespues');
+  const [rey] = zona(robo.antes, 'Tu carta');
+  const estado: EstadoCasitaRobada = {
+    ...inicio.valor,
+    mesa: [],
+    manos: [[rey!, 'oros-1'], ['copas-2']],
+    casitas: [zona(robo.antes, 'Tu casita'), zona(robo.antes, 'Casita del rival')],
+    turno: 0,
+  };
+  expect(casitaRobada.accionesLegales(estado, 0)).toContainEqual({
+    tipo: 'jugar',
+    carta: rey,
+    robar: 1,
+  });
+  const robado = casitaRobada.transicion(estado, 0, { tipo: 'jugar', carta: rey!, robar: 1 });
+  expect(robado.casitas[1]).toEqual(zona(robo.despues, 'Casita del rival'));
+  expect(robado.casitas[0]).toEqual(zona(robo.despues, 'Tu casita'));
 });
 
 test('Polignac: la baza y lo que resta cada J', () => {

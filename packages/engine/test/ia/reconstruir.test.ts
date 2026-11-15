@@ -149,6 +149,9 @@ import { handAndFoot } from '../../src/juegos/hand-and-foot';
 import { reconstruirPolignac } from '../../src/ia/reconstruir/polignac';
 import { iaPolignacBasica } from '../../src/ia/polignac-basica';
 import { CONFIG_POLIGNAC_POR_DEFECTO, polignac } from '../../src/juegos/polignac';
+import { reconstruirCasitaRobada } from '../../src/ia/reconstruir/casita-robada';
+import { iaCasitaRobadaBasica } from '../../src/ia/casita-robada-basica';
+import { casitaRobada, CONFIG_CASITA_ROBADA_POR_DEFECTO } from '../../src/juegos/casita-robada';
 import { iaBriscolaChiamataBasica } from '../../src/ia/briscola-chiamata-basica';
 import {
   briscolaChiamata,
@@ -1854,4 +1857,9 @@ describe('Reconstrucción del Polignac', () => {
       expect(polignac.vistaDe(rec, 0)).toEqual(vista);
     }
   });
+});
+
+describirReconstruccion(casitaRobada, reconstruirCasitaRobada, {
+  configs: [CONFIG_CASITA_ROBADA_POR_DEFECTO, { jugadores: 4 }],
+  base: iaCasitaRobadaBasica,
 });

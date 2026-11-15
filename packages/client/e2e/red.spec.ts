@@ -1466,6 +1466,28 @@ test('Póker de cinco cartas en red: lo que cambia uno lo ve el otro', async ({ 
   await expect(ana.getByTestId('puesto-1')).toContainText('Luis');
 });
 
+test('Casita robada en red: la carta que juega uno la ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'casitaRobada');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] [data-carta]')).toHaveCount(3);
+
+  // Empieza Ana (asiento 0): juega una carta, y Luis ve lo que hizo.
+  const carta = await ana
+    .locator('[data-testid="mano"] [data-carta]')
+    .first()
+    .getAttribute('data-carta');
+  await ana.getByTestId(`carta-${carta}`).click();
+  if (await ana.getByTestId('panel-robo').isVisible()) await ana.getByTestId('no-robar').click();
+  await expect(luis.getByTestId('aviso')).toContainText('Ana');
+  await expect(luis.getByTestId('turno')).toHaveText('Tu turno: juega una carta');
+  await expect(ana.getByTestId('puesto-1')).toContainText('Luis');
+});
+
 test('Remigio en red: dos humanos roban y descartan', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

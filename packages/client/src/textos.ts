@@ -224,6 +224,9 @@ export const T = {
     ecarteDesc:
       'El clásico francés para dos con 32 cartas: propón cambiar cartas o juega de autoridad, anuncia el rey y haz 3 de 5 bazas. A 5 puntos.',
     pishti: 'Pishti',
+    casitaRobada: 'Casita robada',
+    casitaRobadaDesc:
+      'El juego de captura de los niños, de 2 a 4: llévate las cartas de tu número y roba la casita de los demás. Gana quien acaba con más cartas.',
     pishtiDesc:
       'El clásico turco de pesca para dos o cuatro en parejas: llévate el montón con la misma carta o con la J, y haz pishti. A 151.',
     cuarenta: 'Cuarenta',
@@ -2647,6 +2650,31 @@ export const T = {
           : 'Después del descarte',
   },
 
+  casitaRobada: {
+    mesa: 'Mesa',
+    mazo: (n: number) => (n === 1 ? 'Queda 1 en el mazo' : `Quedan ${n} en el mazo`),
+    casita: 'Casita',
+    cartas: (n: number) => (n === 1 ? '1 carta' : `${n} cartas`),
+    vacia: 'Vacía',
+    tuTurno: 'Tu turno: juega una carta',
+    robarA: (quien: string, n: number) => `Robar a ${quien} (${n})`,
+    noRobar: 'No robar',
+    cancelar: 'Cancelar',
+    preguntaRobo: '¿Robas una casita con esta carta?',
+    jugada: (quien: string, llevadas: number, robadoA: string | null, robadas: number) => {
+      const tu = quien === 'Tú';
+      if (robadoA !== null) {
+        const a = robadoA === 'Tú' ? 'te roba la casita' : `roba la casita de ${robadoA}`;
+        return tu ? `Robas la casita de ${robadoA} (${robadas})` : `${quien} ${a} (${robadas})`;
+      }
+      if (llevadas > 0) return tu ? `Te llevas ${llevadas}` : `${quien} se lleva ${llevadas}`;
+      return tu ? 'Dejas tu carta en la mesa' : `${quien} deja su carta en la mesa`;
+    },
+    finalMesa: (quien: string, n: number) =>
+      quien === 'Tú' ? `Te llevas las ${n} de la mesa` : `${quien} se lleva las ${n} de la mesa`,
+    clasificacion: 'Cartas en cada casita',
+  },
+
   rummy500: {
     puntos: (n: number) => (n === 1 || n === -1 ? `${n} punto` : `${n} puntos`),
     objetivo: 'A 500',
@@ -3507,6 +3535,7 @@ export const T = {
       preference: 'Cómo se juega al Préférence',
       cuarenta: 'Cómo se juega al Cuarenta',
       pishti: 'Cómo se juega al Pishti',
+      casitaRobada: 'Cómo se juega a la Casita robada',
       ecarte: 'Cómo se juega al Écarté',
       tysiacha: 'Cómo se juega al Tysiącha',
       sheepshead: 'Cómo se juega al Sheepshead',
@@ -4802,6 +4831,55 @@ export const T = {
         plegada: true,
         texto: [
           'Nació en Francia a principios del siglo XIX y se extendió por Europa con el ejército de Napoleón. Fue el juego de moda en los salones parisinos. Su nombre viene de «écarter», descartar.',
+        ],
+      },
+    ],
+
+    casitaRobada: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Un juego de captura de 2 a 4 jugadores con la baraja española de 40 cartas. Gana quien acaba con más cartas en su casita, el montón de lo que se ha llevado.',
+        ],
+      },
+      {
+        titulo: 'El reparto',
+        texto: [
+          'Se ponen 4 cartas boca arriba en la mesa y se reparten 3 a cada jugador. Cuando todos se quedan sin cartas, se reparten otras 3, hasta acabar el mazo.',
+        ],
+      },
+      {
+        titulo: 'Llevarse cartas',
+        texto: [
+          'En tu turno juegas una carta. Te llevas todas las de la mesa del mismo número y las pones en tu casita con la tuya arriba, a la vista. Si no te llevas nada, tu carta se queda en la mesa.',
+        ],
+        ejemplo: 'captura',
+      },
+      {
+        titulo: 'Robar la casita',
+        texto: [
+          'Si la carta de arriba de la casita de un rival es del mismo número que la que juegas, puedes robarle la casita entera: pasa a la tuya, con tu carta arriba.',
+        ],
+        ejemplo: 'robo',
+      },
+      {
+        titulo: 'El final',
+        texto: [
+          'Cuando se acaban el mazo y las manos, las cartas que quedan en la mesa son para el último que se llevó cartas. Gana quien tiene más cartas en su casita.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Fíjate en la carta de arriba de tu casita: si quedan otras de ese número por salir, te la pueden robar.',
+          'Cuando no te llevas nada, deja en la mesa una carta de un número que ya ha salido mucho: es más difícil que alguien se la lleve.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'La casita robada es un juego tradicional de baraja española con el que muchos niños de España y de Hispanoamérica aprenden a jugar a las cartas. No se conoce su origen; se juega en casa y se transmite de mayores a pequeños, con pequeñas variantes según la familia y el país.',
         ],
       },
     ],

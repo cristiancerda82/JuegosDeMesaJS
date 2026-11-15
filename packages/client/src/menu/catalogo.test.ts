@@ -31,7 +31,7 @@ describe('catálogo del menú', () => {
     expect(juegosDeFamilia('bazasContrato')).toHaveLength(16);
     expect(juegosDeFamilia('bazasEvitar')).toEqual(['corazones', 'barbu', 'rentz', 'polignac']);
     expect(juegosDeFamilia('combinaciones')).toHaveLength(9);
-    expect(juegosDeFamilia('captura')).toHaveLength(6);
+    expect(juegosDeFamilia('captura')).toHaveLength(7);
     expect(juegosDeFamilia('descarte')).toHaveLength(10);
     expect(juegosDeFamilia('envite')).toHaveLength(8);
   });

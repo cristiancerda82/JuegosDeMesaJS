@@ -619,6 +619,8 @@ export const CONSEJOS_JUEGO: Readonly<Partial<Record<IdJuego, string>>> = {
     'Préférence: el que gana la subasta juega solo. Puja según tus bazas seguras y defiende con cuidado si juegas en contra.',
   cuarenta:
     'Cuarenta: recoge la carta igual o las que siguen en escalera. Busca las caídas y la limpia, y no dejes cartas fáciles al rival.',
+  casitaRobada:
+    'Casita robada: llévate las cartas del mismo número y, si puedes, roba la casita más grande. Cuidado con la carta que dejas arriba: si un rival tiene otra igual, te la roba.',
   pishti:
     'Pishti: recoge el montón con una carta igual o con una jota. Si el montón tiene una sola carta y la igualas, haces pishti.',
   ecarte:

@@ -74,6 +74,7 @@ import { briscolaChiamata, CONFIG_BRISCOLA_CHIAMATA_POR_DEFECTO } from './juegos
 import { CONFIG_HAND_AND_FOOT_POR_DEFECTO, handAndFoot } from './juegos/hand-and-foot';
 import { CONFIG_POLIGNAC_POR_DEFECTO, polignac } from './juegos/polignac';
 import { CONFIG_POKER_CINCO_POR_DEFECTO, pokerCinco } from './juegos/poker-cinco';
+import { casitaRobada, CONFIG_CASITA_ROBADA_POR_DEFECTO } from './juegos/casita-robada';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -153,6 +154,7 @@ export const IDS_JUEGOS_EN_RED = [
   'handAndFoot',
   'polignac',
   'pokerCinco',
+  'casitaRobada',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -261,6 +263,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   handAndFoot: entrada(handAndFoot, IAS.handAndFoot, CONFIG_HAND_AND_FOOT_POR_DEFECTO),
   polignac: entrada(polignac, IAS.polignac, CONFIG_POLIGNAC_POR_DEFECTO),
   pokerCinco: entrada(pokerCinco, IAS.pokerCinco, CONFIG_POKER_CINCO_POR_DEFECTO),
+  casitaRobada: entrada(casitaRobada, IAS.casitaRobada, CONFIG_CASITA_ROBADA_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

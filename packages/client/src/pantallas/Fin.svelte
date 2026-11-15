@@ -163,6 +163,7 @@
       partida.id !== 'rummy500' &&
       partida.id !== 'holdem' &&
       partida.id !== 'pokerCinco' &&
+      partida.id !== 'casitaRobada' &&
       partida.id !== 'culo' &&
       partida.sesion.vista.config.jugadores === 4),
   );
@@ -980,6 +981,20 @@
           </tbody>
         </table>
       {/if}
+    {:else if partida.id === 'casitaRobada'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      <table data-testid="cartas-casita">
+        <caption>{T.casitaRobada.clasificacion}</caption>
+        <tbody>
+          {#each Array.from({ length: n }, (_, a) => a).sort((a, b) => vista.casitas[b]!.length - vista.casitas[a]!.length) as a, i (a)}
+            <tr>
+              <th scope="row">{nombreChinchon(a, n)}</th>
+              <td data-testid="cartas-fin-{i}">{T.casitaRobada.cartas(vista.casitas[a]!.length)}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
     {:else if partida.id === 'pokerCinco'}
       {@const vista = partida.sesion.vista}
       {@const n = vista.config.jugadores}

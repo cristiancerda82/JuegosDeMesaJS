@@ -135,6 +135,12 @@ import {
   CONFIG_POLIGNAC_POR_DEFECTO,
   pokerCinco,
   CONFIG_POKER_CINCO_POR_DEFECTO,
+  casitaRobada,
+  CONFIG_CASITA_ROBADA_POR_DEFECTO,
+  type AccionCasitaRobada,
+  type ConfigCasitaRobada,
+  type EstadoCasitaRobada,
+  type VistaCasitaRobada,
   type AccionPokerCinco,
   type ConfigPokerCinco,
   type EstadoPokerCinco,
@@ -627,7 +633,8 @@ export type IdJuego =
   | 'briscolaChiamata'
   | 'handAndFoot'
   | 'polignac'
-  | 'pokerCinco';
+  | 'pokerCinco'
+  | 'casitaRobada';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -713,6 +720,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'handAndFoot',
   'polignac',
   'pokerCinco',
+  'casitaRobada',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2329,6 +2337,29 @@ export const DEF_POKER_CINCO: DefPokerCinco = {
   },
 };
 
+export type DefCasitaRobada = DefJuego<
+  ConfigCasitaRobada,
+  EstadoCasitaRobada,
+  AccionCasitaRobada,
+  VistaCasitaRobada
+>;
+
+/** Tiempo para ver cada jugada ajena en la Casita robada. */
+const PAUSA_CASITA_MS = 800;
+
+export const DEF_CASITA_ROBADA: DefCasitaRobada = {
+  id: 'casitaRobada',
+  nombre: T.menu.casitaRobada,
+  juego: casitaRobada,
+  configPorDefecto: CONFIG_CASITA_ROBADA_POR_DEFECTO,
+  ia: IAS.casitaRobada,
+  pausaTras(antes, despues) {
+    const jugada = despues.ultimaJugada;
+    if (jugada === null || jugada === antes.ultimaJugada) return 0;
+    return jugada.asiento !== despues.asiento ? PAUSA_CASITA_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2413,6 +2444,7 @@ export const JUEGOS = {
   handAndFoot: DEF_HAND_AND_FOOT,
   polignac: DEF_POLIGNAC,
   pokerCinco: DEF_POKER_CINCO,
+  casitaRobada: DEF_CASITA_ROBADA,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */
