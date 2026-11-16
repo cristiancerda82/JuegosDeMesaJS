@@ -29,9 +29,9 @@
 
 ## 5. Publicación en Google Play
 
-- [ ] 5.1 `privacidad.html` publicada en Pages y enlazada desde el menú
-- [ ] 5.2 Workflow `android.yml`: JDK, Android SDK, build del cliente, `cap sync` y AAB firmado con la clave de subida desde *secrets*, como artefacto
-- [ ] 5.3 `docs/publicar-android.md`: Railway, clave de subida, pistas de prueba, respuestas de seguridad de datos e IARC (juego de azar simulado sin dinero real), y la lista de comprobación del spec
+- [x] 5.1 `privacidad.html` publicada en Pages y enlazada desde el menú
+- [x] 5.2 Workflow `android.yml`: JDK, Android SDK, build del cliente, `cap sync` y AAB firmado con la clave de subida desde *secrets*, como artefacto
+- [x] 5.3 `docs/publicar-android.md`: Railway, clave de subida, pistas de prueba, respuestas de seguridad de datos e IARC (juego de azar simulado sin dinero real), y la lista de comprobación del spec
 - [ ] 5.4 Crear la app en Play Console con la cuenta existente, comprobar si aplica la prueba cerrada de 12 testers y 14 días, y subir el primer AAB a la pista interna
 - [ ] 5.5 Prueba manual en un dispositivo físico: sin conexión contra la IA, botón atrás en cada pantalla, segundo plano y vuelta en local y en red, y sala en red entre la app y la web
 

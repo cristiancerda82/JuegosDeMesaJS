@@ -201,6 +201,7 @@ ull. */
     </label>
     <button class="enlace" onclick={verEstadisticas} data-testid="ver-estadisticas">{T.menu.estadisticas}</button>
     <button class="enlace" onclick={verCartas}>{T.menu.verCartas}</button>
+    <a class="enlace" href="./privacidad.html" data-testid="privacidad">{T.menu.privacidad}</a>
   </footer>
 
   <!-- Las vistas previas solo se montan al abrir: así no se descargan todos los temas. -->
@@ -410,6 +411,7 @@ ull. */
   .enlace {
     border: none;
     background: none;
+    color: inherit;
     text-decoration: underline;
   }
 </style>

@@ -7,8 +7,9 @@ android {
         applicationId "com.crissdeveloper.juegosdemesa"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // En CI, el número de versión crece con cada ejecución del workflow (Play exige que suba).
+        versionCode((System.getenv("VERSION_CODE") ?: "1") as Integer)
+        versionName(System.getenv("VERSION_NAME") ?: "1.0")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,8 +17,22 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // Firma con la clave de subida de Google Play, solo si se pasa por variables de entorno
+    // (en CI, desde los secrets). Sin ellas, bundleRelease genera un AAB sin firmar.
+    def almacen = System.getenv("ANDROID_KEYSTORE")
+    signingConfigs {
+        if (almacen) {
+            subida {
+                storeFile file(almacen)
+                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         release {
+            if (almacen) signingConfig signingConfigs.subida
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

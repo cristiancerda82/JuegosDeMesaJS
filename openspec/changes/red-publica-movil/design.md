@@ -140,12 +140,16 @@ Si el change `menu-familias-favoritos` ya está aplicado, en el menú, con una f
   - respuestas del formulario de seguridad de datos y del cuestionario IARC: juego de azar simulado sin dinero real (Hold'em, Blackjack, Siete y media, Bourré). No es un juego para niños, así que no se adhiere al programa Familias.
   - la lista de comprobación del spec.
 
+**Al implementarlo** (16-11-2026): la política no pide ningún correo. El contacto son las consultas (*issues*) del repositorio de GitHub, que ya es público. El enlace está en el pie del menú, y dentro de la app el botón atrás vuelve de la política al menú (historial del WebView).
+
 ### 11. CI
 - `pages.yml`: añade `VITE_SERVIDOR_RED` desde una variable del repositorio.
 - `android.yml`, que se lanza a mano o con una etiqueta `v*`:
   - instala JDK 21 y Android SDK;
   - compila el cliente y ejecuta `cap sync`;
   - genera el AAB firmado con los *secrets* de la clave de subida y lo deja como artefacto.
+
+  La firma se configura en `app/build.gradle` con las variables `ANDROID_KEYSTORE*` y `ANDROID_KEY_*`. Sin ellas, el AAB sale sin firmar, que sirve para comprobar en local que compila. `versionCode` es `github.run_number` y `versionName`, la etiqueta (o `1.0.<n>`).
 
   La subida a Play se hace a mano desde Play Console. Automatizarla con la API de publicación se deja para más adelante.
 

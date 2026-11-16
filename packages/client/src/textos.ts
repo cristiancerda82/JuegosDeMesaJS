@@ -338,6 +338,7 @@ export const T = {
     dorso: 'Dorso de las cartas',
     velocidad: 'Velocidad de las jugadas',
     verCartas: 'Ver todas las cartas',
+    privacidad: 'Privacidad',
     estadisticas: 'Estadísticas',
     familias: {
       solitarios: 'Solitarios',
