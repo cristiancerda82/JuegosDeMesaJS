@@ -15,8 +15,8 @@
 ## 3. Despliegue en Railway
 
 - [x] 3.1 `railway.json` (Dockerfile, `healthcheckPath`, una réplica, reinicio en fallo) y documentar las variables `ORIGENES` y `CONFIAR_PROXY`
-- [ ] 3.2 Desplegar, comprobar `/salud` y crear y jugar una sala real por `wss://` desde dos navegadores
-- [ ] 3.3 Añadir `VITE_SERVIDOR_RED` como variable del repositorio en `pages.yml`, publicar y comprobar que la red funciona desde GitHub Pages
+- [x] 3.2 Desplegar, comprobar `/salud` y crear y jugar una sala real por `wss://` desde dos navegadores
+- [x] 3.3 Añadir `VITE_SERVIDOR_RED` como variable del repositorio en `pages.yml`, publicar y comprobar que la red funciona desde GitHub Pages
 
 ## 4. App Android con Capacitor
 
