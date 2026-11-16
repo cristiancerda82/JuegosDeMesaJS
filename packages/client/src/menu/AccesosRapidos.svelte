@@ -1,6 +1,7 @@
 <script lang="ts">
   import { tick } from 'svelte';
   import Carta from '../cartas/Carta.svelte';
+  import { abrirCapa } from '../interfaz/capas';
   import { JUEGOS, type IdJuego } from '../sesion/juegos';
   import { T } from '../textos';
   import { CATALOGO } from './catalogo';
@@ -46,6 +47,9 @@
     abierto = null;
     disparador?.focus();
   }
+
+  // Con un panel abierto, el botón atrás de Android lo cierra (red-publica-movil, decisión 9).
+  $effect(() => (abierto !== null ? abrirCapa(cerrar) : undefined));
 
   function alElegir(juego: IdJuego) {
     abierto = null;

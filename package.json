@@ -13,7 +13,11 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "dev": "pnpm --filter @juegos/client dev",
-    "servidor": "npm --prefix packages/server run build && node packages/server/dist/main.js"
+    "servidor": "npm --prefix packages/server run build && node packages/server/dist/main.js",
+    "movil:build": "node packages/movil/scripts/construir.mjs",
+    "movil:abrir": "cd packages/movil && npx cap open android",
+    "movil:apk": "node packages/movil/scripts/gradle.mjs assembleDebug",
+    "movil:aab": "node packages/movil/scripts/gradle.mjs bundleRelease"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

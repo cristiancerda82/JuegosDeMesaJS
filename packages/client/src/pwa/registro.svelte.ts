@@ -1,3 +1,5 @@
+import { esNativa } from '../plataforma';
+
 /**
  * Registro del service worker y estado de la aplicación instalable: si hay una versión nueva
  * esperando, si el navegador ofrece instalarla y si estamos en iOS (que no lo ofrece).
@@ -20,14 +22,19 @@ class EstadoPwa {
 
   constructor() {
     const nav = typeof navigator === 'undefined' ? null : navigator;
+    // En la app Android ya está «instalada»: el menú no ofrece instalarla (spec app-android).
     this.instalada =
-      typeof matchMedia !== 'undefined' &&
-      (matchMedia('(display-mode: standalone)').matches ||
-        (nav as { standalone?: boolean } | null)?.standalone === true);
+      esNativa() ||
+      (typeof matchMedia !== 'undefined' &&
+        (matchMedia('(display-mode: standalone)').matches ||
+          (nav as { standalone?: boolean } | null)?.standalone === true));
     this.esIOS = nav !== null && /iphone|ipad|ipod/i.test(nav.userAgent);
   }
 
   iniciar(): void {
+    // En la app no hay service worker ni aviso de versión nueva: las actualizaciones llegan
+    // por Google Play y los archivos ya van dentro de la app.
+    if (esNativa()) return;
     addEventListener('beforeinstallprompt', (evento) => {
       evento.preventDefault();
       this.#instalar = evento as EventoInstalar;

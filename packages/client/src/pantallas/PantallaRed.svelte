@@ -1,6 +1,7 @@
 <script lang="ts">
   import { IDS_JUEGOS_EN_RED, type IdJuegoRed } from '@juegos/engine';
   import { LARGO_CODIGO, NOMBRE_MAXIMO, normalizarCodigo } from '@juegos/server/protocolo';
+  import { abrirCapa } from '../interfaz/capas';
   import { JUEGOS } from '../sesion/juegos';
   import {
     guardarNombre,
@@ -29,6 +30,9 @@
   let eligiendo = $state(false);
   let error: string | null = $state(null);
   let verAyuda = $state(false);
+
+  // Eligiendo el juego de la sala, el botón atrás de Android vuelve a la pantalla de red.
+  $effect(() => (eligiendo ? abrirCapa(() => (eligiendo = false)) : undefined));
 
   const nombreValido = $derived(nombre.trim().length >= 1 && nombre.trim().length <= NOMBRE_MAXIMO);
 

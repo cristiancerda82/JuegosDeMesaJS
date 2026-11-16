@@ -13,6 +13,8 @@
     "arte:optimizar": "svgo --config svgo.config.mjs -r -f src/cartas/temas"
   },
   "dependencies": {
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.6.0",
     "@juegos/engine": "workspace:*",
     "@juegos/server": "workspace:*"
   },

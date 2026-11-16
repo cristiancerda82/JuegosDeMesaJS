@@ -230,7 +230,7 @@ ull. */
     max-width: 720px;
     margin: 0 auto;
     /* Hueco para los botones flotantes: la última tarjeta nunca queda tapada. */
-    padding: 24px 16px calc(150px + env(safe-area-inset-bottom));
+    padding: 24px 16px 150px;
   }
 
   header {

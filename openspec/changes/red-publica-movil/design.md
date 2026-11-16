@@ -101,6 +101,13 @@ La dirección guardada en `localStorage` tiene prioridad, como hoy. En la app, s
   - `allowMixedContent` solo en depuración.
 - Iconos adaptables y pantalla de inicio generados con `@capacitor/assets` a partir de los iconos de la PWA.
 
+**Al implementarlo** (16-11-2026):
+- `appId`: `com.crissdeveloper.juegosdemesa`, elegido por el usuario. Capacitor 8.6 (`minSdkVersion 24`, `compileSdk` y `targetSdk` 36).
+- `allowMixedContent` queda en `false` en todas las versiones, no solo en publicación: la app ya rechaza las direcciones `ws://` (decisión 6), así que en depuración tampoco hace falta. La excepción de depuración es solo el `network_security_config.xml` de `src/debug`.
+- `scripts/construir.mjs` compila el cliente con `VITE_SERVIDOR_RED` apuntando a Railway (o al valor de la variable, siempre `wss://`) y hace `cap sync`. Los scripts de la raíz son `movil:build`, `movil:abrir`, `movil:apk` y `movil:aab`.
+- `scripts/iconos.mjs` renderiza con el Chromium de Playwright, a partir de `public/icono.svg`, las imágenes de partida (`assets/`) que usa `@capacitor/assets`. En Android 12 o posterior, la pantalla de inicio es el icono sobre `#0F5132`, y la ventana tiene ese mismo verde detrás de las barras del sistema, con iconos claros (`SystemBars.style: 'DARK'`).
+- Zonas seguras: `body` lleva de relleno las cuatro `env(safe-area-inset-*)`, y los elementos fijos suman la suya. Capacitor 8 (`SystemBars.insetsHandling: 'css'`, por defecto) hace que esos valores sean correctos con `viewport-fit=cover`.
+
 - *Alternativa:* una TWA (Trusted Web Activity), que empaqueta la web publicada. Se descarta porque depende de que la web esté accesible para el primer arranque sin conexión, de Chrome instalado y del dominio verificado. Capacitor incluye los archivos en el APK y abre la puerta a plugins nativos.
 
 ### 8. Detección de plataforma nativa
@@ -119,6 +126,8 @@ Con `@capacitor/app`, `App.addListener('backButton', …)` llama a una función 
    - `partida` en red o `espera`: diálogo de confirmación;
    - `opciones`, `muestrario` o `estadisticas`: volver al menú;
    - `menu`: `App.exitApp()`.
+
+Se apuntan como capas la guía (`ComoSeJuega`), los paneles de favoritos y recientes, y la lista de juegos al crear una sala. Los paneles de fin de mano y de fin de partida no se apuntan, porque forman parte del juego: en una partida local, atrás vuelve al menú, y la partida queda guardada en el punto en que estaba. Para probarlo en el navegador, `?atras` hace que el evento `atras` de `window` haga lo mismo que el botón, y que salir de la app marque `data-app-cerrada` en `<html>` (`e2e/atras.spec.ts`).
 
 Si el change `menu-familias-favoritos` ya está aplicado, en el menú, con una familia abierta o una búsqueda escrita, atrás vuelve primero a las familias.
 

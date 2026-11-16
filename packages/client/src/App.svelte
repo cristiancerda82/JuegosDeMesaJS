@@ -2,6 +2,10 @@
   import type { IdJuegoRed, NivelIA } from '@juegos/engine';
   import type { MensajeCliente } from '@juegos/server/protocolo';
   import { onMount } from 'svelte';
+  import { cerrarUltimaCapa } from './interfaz/capas';
+  import { navegacion } from './menu/navegacion.svelte';
+  import { esNativa } from './plataforma';
+  import { SIMULAR_ATRAS } from './ajustes';
   import Muestrario from './cartas/Muestrario.svelte';
   import Estadisticas from './pantallas/Estadisticas.svelte';
   import Menu from './pantallas/Menu.svelte';
@@ -45,8 +49,7 @@
   let guardado: Guardado | null = $state(null);
   let aviso: string | null = $state(null);
   let dorso = $state(leerDorso());
-  /** Aviso de la pantalla de red (conexión), o 
-ull. */
+  /** Aviso de la pantalla de red (conexión), o null. */
   let avisoRed: string | null = $state(null);
   /** Código de la sala en red de la que se viene al recargar. */
   let salaRed: string | null = $state(salaGuardada()?.codigo ?? null);
@@ -193,6 +196,66 @@ ull. */
 
   $effect(() => {
     document.documentElement.dataset.dorso = dorso;
+  });
+
+  // ── Botón atrás de Android (spec app-android; design, decisión 9) ────────────
+
+  /** Salir de la sala en red, previa confirmación. */
+  function salirDeLaSala() {
+    if (confirm(T.red.confirmarSalir)) irAlMenu();
+  }
+
+  /**
+   * Lo que hace el botón atrás: cerrar la última capa abierta (guía, panel…) o, si no hay,
+   * retroceder una pantalla. Devuelve `false` en el menú principal, donde la app se cierra.
+   */
+  function atras(): boolean {
+    if (cerrarUltimaCapa()) return true;
+    switch (pantalla.tipo) {
+      case 'menu':
+        if (navegacion.busqueda !== '') navegacion.busqueda = '';
+        else if (navegacion.familia !== null) navegacion.familia = null;
+        else return false;
+        return true;
+      case 'partida':
+        // La partida local se guarda al cerrarla y el menú ofrece retomarla.
+        if (pantalla.partida.sesion instanceof SesionRed) salirDeLaSala();
+        else irAlMenu();
+        return true;
+      case 'espera':
+        salirDeLaSala();
+        return true;
+      case 'opcionesRed':
+        pantalla = { tipo: 'red' };
+        return true;
+      default:
+        irAlMenu();
+        return true;
+    }
+  }
+
+  onMount(() => {
+    if (SIMULAR_ATRAS && !esNativa()) {
+      const alPulsarAtras = () => {
+        if (!atras()) document.documentElement.dataset.appCerrada = '';
+      };
+      window.addEventListener('atras', alPulsarAtras);
+      return () => window.removeEventListener('atras', alPulsarAtras);
+    }
+    if (!esNativa()) return;
+    let quitar: (() => void) | null = null;
+    let desmontado = false;
+    void import('@capacitor/app').then(async ({ App: Nativa }) => {
+      const escucha = await Nativa.addListener('backButton', () => {
+        if (!atras()) void Nativa.exitApp();
+      });
+      if (desmontado) void escucha.remove();
+      else quitar = () => void escucha.remove();
+    });
+    return () => {
+      desmontado = true;
+      quitar?.();
+    };
   });
 
   // ── Guardar al ocultar o cerrar la página ────────────────────────────────────

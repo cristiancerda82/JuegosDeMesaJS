@@ -60,7 +60,13 @@ body {
 }
 
 body {
+  box-sizing: border-box;
   min-height: 100dvh;
+  /* Zonas del sistema (barra de estado, muesca y barra de navegación): en la app Android y en
+     los móviles con muesca, nada queda debajo de ellas (spec app-android). Los elementos fijos
+     suman su propia zona. */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
   background: radial-gradient(
     ellipse at 50% 30%,
     var(--tapete-claro),

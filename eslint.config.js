@@ -13,6 +13,8 @@ export default tseslint.config(
       '**/coverage/',
       // Generadores de naipes del usuario: se copian tal cual (temas-naipes, decisión 9).
       'packages/client/src/cartas/temas/propios/vendor/',
+      // Proyecto Android generado por Capacitor (red-publica-movil).
+      'packages/movil/android/',
     ],
   },
   js.configs.recommended,

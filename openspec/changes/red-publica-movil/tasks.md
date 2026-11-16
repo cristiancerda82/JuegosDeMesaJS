@@ -20,12 +20,12 @@
 
 ## 4. App Android con Capacitor
 
-- [ ] 4.1 Fijar el `appId` con el usuario; crear `packages/movil` con `capacitor.config.ts` (`webDir` del cliente, `androidScheme: 'https'`), el proyecto `android/` y los scripts `movil:build`, `movil:abrir` y `movil:aab`
-- [ ] 4.2 `targetSdkVersion 36`, `network_security_config.xml` sin cleartext en `main` y con excepción solo en `debug`, sin `allowMixedContent` en publicación
-- [ ] 4.3 `plataforma.ts` (`esNativa`): sin service worker, «Instalar» ni aviso de versión nueva en la app
-- [ ] 4.4 Registro de capas abiertas (`interfaz/capas.svelte.ts`), con los diálogos, paneles y guías existentes apuntándose en él
-- [ ] 4.5 Botón atrás con `@capacitor/app`: cerrar capa, volver al menú (guardando la partida local), confirmar salida en red o espera, y cerrar la app desde el menú principal
-- [ ] 4.6 Icono adaptable y pantalla de inicio con `@capacitor/assets`, y márgenes de zonas seguras (`env(safe-area-inset-*)`) revisados en la mesa y en el menú, en vertical y en horizontal
+- [x] 4.1 Fijar el `appId` con el usuario; crear `packages/movil` con `capacitor.config.ts` (`webDir` del cliente, `androidScheme: 'https'`), el proyecto `android/` y los scripts `movil:build`, `movil:abrir` y `movil:aab`
+- [x] 4.2 `targetSdkVersion 36`, `network_security_config.xml` sin cleartext en `main` y con excepción solo en `debug`, sin `allowMixedContent` en publicación
+- [x] 4.3 `plataforma.ts` (`esNativa`): sin service worker, «Instalar» ni aviso de versión nueva en la app
+- [x] 4.4 Registro de capas abiertas (`interfaz/capas.ts`), con los diálogos, paneles y guías existentes apuntándose en él
+- [x] 4.5 Botón atrás con `@capacitor/app`: cerrar capa, volver al menú (guardando la partida local), confirmar salida en red o espera, y cerrar la app desde el menú principal
+- [x] 4.6 Icono adaptable y pantalla de inicio con `@capacitor/assets`, y márgenes de zonas seguras (`env(safe-area-inset-*)`) revisados en la mesa y en el menú, en vertical y en horizontal
 
 ## 5. Publicación en Google Play
 

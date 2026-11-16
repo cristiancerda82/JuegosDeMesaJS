@@ -3,3 +3,5 @@ openspec/
 .amazonq/
 .claude/
 packages/client/src/cartas/temas/propios/vendor/
+packages/movil/android/
+packages/movil/assets/

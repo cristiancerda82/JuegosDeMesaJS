@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Solo en las versiones de depuración: permite tráfico sin cifrar para probar con un
+     servidor local. Sustituye al de main al compilar en debug. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

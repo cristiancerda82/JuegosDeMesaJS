@@ -1,6 +1,7 @@
 <script lang="ts">
   import Ejemplo from '../ayuda/Ejemplo.svelte';
   import { EJEMPLOS } from '../ayuda/ejemplos';
+  import { abrirCapa } from '../interfaz/capas';
   import type { IdJuego } from '../sesion/juegos';
   import { T } from '../textos';
 
@@ -30,6 +31,8 @@
   $effect(() => {
     dialogo?.showModal();
   });
+  // El botón atrás de Android cierra la guía (design, decisión 9).
+  $effect(() => abrirCapa(() => dialogo?.close()));
 </script>
 
 <dialog

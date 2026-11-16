@@ -3184,6 +3184,7 @@ export const T = {
     revancha: 'Revancha',
     esperandoRevancha: 'Esperando a que el anfitrión pida la revancha…',
     salir: 'Salir de la sala',
+    confirmarSalir: '¿Seguro que quieres salir de la sala?',
   },
 
   pinacle: {
