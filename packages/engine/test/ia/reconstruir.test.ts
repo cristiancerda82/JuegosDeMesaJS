@@ -309,6 +309,7 @@ describirReconstruccion(sieteYMedia, reconstruirSieteYMedia, {
       cambioBanca: 'sieteYMedia',
     },
     { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, jugadores: 3, tapadas: true },
+    { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, dobleCualquiera: true },
   ],
   base: iaSieteYMediaBasica,
 });

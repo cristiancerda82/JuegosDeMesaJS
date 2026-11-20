@@ -934,8 +934,17 @@
       <fieldset>
         <legend>{T.opciones.pagoDoble}</legend>
         <label class="casilla">
-          <input type="checkbox" bind:checked={sieteYMedia.pagoDoble} />
+          <input type="checkbox" bind:checked={sieteYMedia.pagoDoble} data-testid="opcion-pago-doble" />
           {T.opciones.pagoDobleDesc}
+        </label>
+        <label class="casilla">
+          <input
+            type="checkbox"
+            bind:checked={sieteYMedia.dobleCualquiera}
+            disabled={!sieteYMedia.pagoDoble}
+            data-testid="opcion-doble-cualquiera"
+          />
+          {T.opciones.dobleCualquieraDesc}
         </label>
       </fieldset>
       <fieldset>

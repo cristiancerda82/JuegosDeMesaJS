@@ -247,3 +247,24 @@ test('con cartas tapadas, la mesa entra en 360 × 640 sin scroll horizontal', as
     await expect(page.getByTestId(id)).toBeInViewport();
   await page.screenshot({ path: 'test-results/siete-tapada-360-botones.png' });
 });
+
+// ── Doble con cualquier siete y media ────────────────────────────────────────
+
+test('la casilla del doble con cualquier siete y media depende del pago doble y se juega la partida', async ({
+  page,
+}) => {
+  await page.goto('./?rapido&semilla=doble-cualquiera');
+  await abrirJuego(page, 'sieteYMedia');
+  const cualquiera = page.getByTestId('opcion-doble-cualquiera');
+  await expect(cualquiera).not.toBeChecked();
+  await expect(cualquiera).toBeEnabled();
+  await page.getByTestId('opcion-pago-doble').uncheck();
+  await expect(cualquiera).toBeDisabled();
+  await page.getByTestId('opcion-pago-doble').check();
+  await cualquiera.check();
+  await page.getByLabel('2 jugadores').check();
+  await page.getByLabel('5 manos').check();
+  await page.getByTestId('empezar').click();
+  await jugar(page);
+  await expect(page.getByTestId('fin')).toContainText('Fichas finales');
+});

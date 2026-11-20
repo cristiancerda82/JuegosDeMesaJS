@@ -292,6 +292,65 @@ describe('liquidación', () => {
     expect(f.resultadosManos[0]!.variacion).toEqual([-5, 5]);
   });
 
+  it('una siete y media de tres cartas cobra sencillo sin la opción', () => {
+    let e = enJuego({ cartas: [['oros-6'], ['copas-4', 'oros-3', 'bastos-10']] });
+    e = jugar(e, 1, PLANTARSE);
+    e = jugar(e, 0, PLANTARSE);
+    expect(e.resultadosManos[0]!.variacion).toEqual([-5, 5]);
+  });
+
+  // Variante: el doble para cualquier siete y media.
+  const conOpcion = (parcial: Parameters<typeof enJuego>[0]) =>
+    enJuego({ ...parcial, config: { dobleCualquiera: true, ...parcial.config } });
+
+  it('con la opción, una siete y media de tres cartas cobra el doble', () => {
+    let e = conOpcion({ cartas: [['oros-6'], ['copas-4', 'oros-3', 'bastos-10']] });
+    e = jugar(e, 1, PLANTARSE);
+    e = jugar(e, 0, PLANTARSE);
+    expect(e.resultadosManos[0]!.variacion).toEqual([-10, 10]);
+  });
+
+  it('con la opción, la natural sigue cobrando el doble y el resto, sencillo', () => {
+    let e = conOpcion({
+      config: { jugadores: 3 },
+      cartas: [['oros-6'], ['copas-7', 'oros-10'], ['espadas-7']],
+    });
+    e = jugar(e, 1, PLANTARSE);
+    e = jugar(e, 2, PLANTARSE);
+    e = jugar(e, 0, PLANTARSE);
+    expect(e.resultadosManos[0]!.variacion).toEqual([-15, 10, 5]);
+  });
+
+  it('con la opción, el empate a siete y media es para la banca', () => {
+    let e = conOpcion({
+      cartas: [
+        ['oros-7', 'copas-11'],
+        ['copas-5', 'oros-2', 'bastos-12'],
+      ],
+    });
+    e = jugar(e, 1, PLANTARSE);
+    e = jugar(e, 0, PLANTARSE);
+    expect(e.resultadosManos[0]!.variacion).toEqual([5, -5]);
+  });
+
+  it('sin pago doble, crear deja la opción desactivada', () => {
+    const r = sieteYMedia.crear(
+      { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, pagoDoble: false, dobleCualquiera: true },
+      's',
+    );
+    if (!r.ok) throw new Error(r.error);
+    expect(r.valor.config.dobleCualquiera).toBe(false);
+    const con = sieteYMedia.crear(
+      { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, dobleCualquiera: true },
+      's',
+    );
+    if (!con.ok) throw new Error(con.error);
+    expect(con.valor.config.dobleCualquiera).toBe(true);
+    const sin = sieteYMedia.crear(CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, 's');
+    if (!sin.ok) throw new Error(sin.error);
+    expect(sin.valor.config.dobleCualquiera).toBe(false);
+  });
+
   it('la banca paga en orden hasta quedarse sin fichas', () => {
     let e = enJuego({
       config: { jugadores: 3 },
@@ -381,6 +440,7 @@ describirContrato(sieteYMedia, {
     { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, jugadores: 3, cambioBanca: 'sieteYMedia', manos: 4 },
     { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, jugadores: 4, fichasIniciales: 10, pagoDoble: false },
     { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, jugadores: 3, tapadas: true },
+    { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, jugadores: 4, dobleCualquiera: true },
   ],
   // Cada mano se baraja de nuevo, así que una carta oculta ahora pudo verse en una mano anterior
   // (en su registro o en la última acción): esas no cuentan.

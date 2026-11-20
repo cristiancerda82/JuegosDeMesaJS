@@ -440,6 +440,8 @@ export const T = {
     apuestaN: (n: number) => `Hasta ${n} fichas`,
     pagoDoble: 'Siete y media natural',
     pagoDobleDesc: 'Un 7 y una figura en las dos primeras cartas cobran el doble.',
+    dobleCualquieraDesc:
+      'Con cualquier siete y media: también cobra el doble la que se hace con más cartas.',
     tapadasSieteYMedia: 'Pedir tapada',
     tapadasSieteYMediaDesc:
       'Al pedir, eliges si la carta llega boca arriba o boca abajo: los demás no saben cuánto sumas.',
@@ -7541,6 +7543,7 @@ export const T = {
         texto: [
           'Al final se destapan las cartas. Si tienes más que la banca, o la banca se pasa, la banca te paga tu apuesta. Si tienes lo mismo o menos, la cobra la banca: los empates son para la banca.',
           'Si consigues siete y media con tus dos primeras cartas (un 7 y una figura), cobras el doble.',
+          'Variante (opción «Con cualquier siete y media»): como cuenta Núñez Elvira, cobra el doble cualquier siete y media que gane a la banca, también con más cartas, como un 4, un 3 y una figura. Los empates siguen siendo para la banca.',
         ],
         ejemplo: 'natural',
       },

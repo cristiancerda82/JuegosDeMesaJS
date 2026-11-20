@@ -213,6 +213,24 @@ describe('garantías de la IA de la Siete y media', () => {
     }
   });
 
+  it('con el doble para cualquier siete y media, también gana al azar y las partidas terminan', () => {
+    const config = { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, dobleCualquiera: true };
+    let ganadas = 0;
+    for (let i = 0; i < 400; i++) {
+      const ia = i % 2;
+      const agentes = ia === 0 ? [iaSieteYMediaBasica, azarDe] : [azarDe, iaSieteYMediaBasica];
+      const { final } = jugarPartida(config, `doble-${i}`, agentes);
+      if (final.fichas[ia]! > final.fichas[1 - ia]!) ganadas++;
+    }
+    expect(ganadas, `${ganadas} de 400`).toBeGreaterThan(240);
+    for (const jugadores of [3, 4] as const) {
+      for (let i = 0; i < 20; i++) {
+        const agentes = Array.from({ length: jugadores }, () => iaSieteYMediaBasica);
+        jugarPartida({ ...config, jugadores }, `doble-${jugadores}-${i}`, agentes);
+      }
+    }
+  });
+
   it('misma vista y misma semilla, misma decisión', () => {
     const r = sieteYMedia.crear({ ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, jugadores: 4 }, 'repro');
     if (!r.ok) throw new Error(r.error);

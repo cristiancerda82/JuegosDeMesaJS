@@ -1733,6 +1733,23 @@ test('Siete y media con cartas tapadas en red: la tapada de uno no la ve el otro
   }
 });
 
+test('Siete y media con el doble para cualquier siete y media en red: la sala empieza con la opción', async ({
+  browser,
+}) => {
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'sieteYMedia', (p) =>
+    p.getByTestId('opcion-doble-cualquiera').check(),
+  );
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+
+  // Ana (asiento 0) es la banca: apuesta Luis y le toca pedir o plantarse.
+  await luis.getByTestId('apostar').click();
+  await expect(luis.getByTestId('plantarse')).toBeVisible();
+  await expect(ana.getByTestId('aviso')).toContainText('Luis');
+});
+
 // ── Conexión robusta (spec partidas-en-red: conexiones muertas y segundo plano) ──
 
 /**

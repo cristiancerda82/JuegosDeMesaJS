@@ -14,6 +14,8 @@ export interface ConfigSieteYMedia {
   readonly apuestaMaxima: number;
   /** La siete y media natural (un 7 y una figura) cobra el doble. */
   readonly pagoDoble: boolean;
+  /** Variante: con el pago doble, cobra el doble cualquier siete y media, no solo la natural. */
+  readonly dobleCualquiera?: boolean;
   /** La banca pasa al siguiente cada mano, o a quien le gana con siete y media. */
   readonly cambioBanca: 'rotar' | 'sieteYMedia';
   /** Variante: al pedir, se elige si la carta llega boca arriba o boca abajo. */
@@ -218,7 +220,11 @@ function liquidar(e: EstadoSieteYMedia): EstadoSieteYMedia {
     }
   }
   for (const a of ganadores) {
-    const doble = e.config.pagoDoble && esSieteYMediaNatural(e.cartas[a]!);
+    const doble =
+      e.config.pagoDoble &&
+      (e.config.dobleCualquiera
+        ? valores[a] === SIETE_Y_MEDIA
+        : esSieteYMediaNatural(e.cartas[a]!));
     const pago = Math.min(e.apuestas[a]! * (doble ? 2 : 1), fichas[e.banca]!);
     fichas[a]! += pago;
     fichas[e.banca]! -= pago;
@@ -287,6 +293,7 @@ export const sieteYMedia: Juego<
       fichasIniciales: config.fichasIniciales,
       apuestaMaxima: config.apuestaMaxima,
       pagoDoble: config.pagoDoble,
+      dobleCualquiera: config.pagoDoble && config.dobleCualquiera === true,
       cambioBanca: config.cambioBanca,
       tapadas: config.tapadas === true,
     };
