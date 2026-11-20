@@ -152,7 +152,11 @@ import { iaHandAndFootBasica } from '../../src/ia/hand-and-foot-basica';
 import { handAndFoot } from '../../src/juegos/hand-and-foot';
 import { reconstruirPolignac } from '../../src/ia/reconstruir/polignac';
 import { iaPolignacBasica } from '../../src/ia/polignac-basica';
-import { CONFIG_POLIGNAC_POR_DEFECTO, polignac } from '../../src/juegos/polignac';
+import {
+  CONFIG_POLIGNAC_POR_DEFECTO,
+  polignac,
+  type VistaPolignac,
+} from '../../src/juegos/polignac';
 import { reconstruirCasitaRobada } from '../../src/ia/reconstruir/casita-robada';
 import { iaCasitaRobadaBasica } from '../../src/ia/casita-robada-basica';
 import { casitaRobada, CONFIG_CASITA_ROBADA_POR_DEFECTO } from '../../src/juegos/casita-robada';
@@ -1905,7 +1909,11 @@ describe('Reconstrucción del Hand and Foot', () => {
 });
 
 describirReconstruccion(polignac, reconstruirPolignac, {
-  configs: [CONFIG_POLIGNAC_POR_DEFECTO, { jugadores: 5, limite: 10, general: true }],
+  configs: [
+    CONFIG_POLIGNAC_POR_DEFECTO,
+    { jugadores: 5, limite: 10, general: true },
+    { jugadores: 4, limite: 10, general: true, ordenAntiguo: true },
+  ],
   base: iaPolignacBasica,
 });
 
@@ -1920,6 +1928,21 @@ describe('Reconstrucción del Polignac', () => {
       expect(rec.manos.flat()).not.toContain('picas-7');
       expect(rec.manos.flat()).not.toContain('treboles-7');
       expect(polignac.vistaDe(rec, 0)).toEqual(vista);
+    }
+  });
+
+  it('con el orden antiguo, quien no soltó J no tiene J, y quien soltó otra no tiene la de picas', () => {
+    const r = polignac.crear({ jugadores: 4, limite: 10, general: false, ordenAntiguo: true }, 'j');
+    if (!r.ok) throw new Error(r.error);
+    // El 1 echó un 8 sin el palo y el 2, la J de diamantes.
+    const vista: VistaPolignac = {
+      ...polignac.vistaDe(r.valor, 0),
+      sinJotas: [null, 'todas', 'picas', null],
+    };
+    for (let i = 0; i < 20; i++) {
+      const rec = reconstruirPolignac(vista, crearAzar(`j${i}`));
+      expect(rec.manos[1]!.filter((x) => x.endsWith('-11'))).toEqual([]);
+      expect(rec.manos[2]).not.toContain('picas-11');
     }
   });
 });

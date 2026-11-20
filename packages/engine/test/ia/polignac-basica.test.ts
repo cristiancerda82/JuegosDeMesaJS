@@ -92,6 +92,27 @@ describe('IA básica del Polignac', () => {
   });
 });
 
+describe('IA básica del Polignac con el orden antiguo', () => {
+  const antiguo = (mano: string, parcial: Partial<EstadoPolignac> = {}) => {
+    const e = conMano(mano, parcial);
+    return { ...e, config: { ...e.config, ordenAntiguo: true } };
+  };
+
+  it('anuncia el general con las más altas desde el Rey, no desde el As', () => {
+    expect(decide(antiguo('Kp Qp Kc Qc Kd Qd Kt Qt'))).toEqual({ tipo: 'general' });
+    expect(decide(antiguo('Ap Kp Qp Ac Kc Ad At Kt'))).toEqual({ tipo: 'pasar' });
+  });
+
+  it('sigue el palo por debajo de la carta que gana con el orden antiguo', () => {
+    // Gana la J de corazones; el As está por debajo de la J, el Rey por encima.
+    const e = antiguo('Ac Kc 8p', {
+      fase: 'bazas',
+      mesa: [{ asiento: 0, carta: una('Jc') }],
+    });
+    expect(decide(e)).toEqual({ tipo: 'jugar', carta: una('Ac') });
+  });
+});
+
 describe('IA del Polignac en partidas', () => {
   const azar = aleatorio<VistaPolignac, AccionPolignac>();
 
@@ -121,6 +142,35 @@ describe('IA del Polignac en partidas', () => {
       200,
       unoContraTodos(4),
       'azar',
+    );
+    expect(r.ganadas).toBeGreaterThan(80);
+  });
+
+  it('con el orden antiguo, partidas entre IAs de 3 a 6 sin acciones ilegales', () => {
+    for (const jugadores of [3, 4, 5, 6] as const) {
+      const r = duelo(
+        polignac,
+        { ...CONFIG_POLIGNAC_POR_DEFECTO, jugadores, ordenAntiguo: true },
+        iaPolignacBasica,
+        IAS.polignac.facil,
+        15,
+        unoContraTodos(jugadores),
+        `antiguo-${jugadores}`,
+      );
+      expect(r.partidas).toBe(15);
+      expect(r.maxMs).toBeLessThan(500);
+    }
+  });
+
+  it('con el orden antiguo, gana claramente al azar', () => {
+    const r = duelo(
+      polignac,
+      { ...CONFIG_POLIGNAC_POR_DEFECTO, ordenAntiguo: true },
+      iaPolignacBasica,
+      azar,
+      200,
+      unoContraTodos(4),
+      'azar-antiguo',
     );
     expect(r.ganadas).toBeGreaterThan(80);
   });

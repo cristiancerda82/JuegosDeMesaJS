@@ -13,21 +13,26 @@ import type { Agente } from './agente';
 const AS = 14;
 const esJota = (c: IdCarta) => penalizaPolignac(c) > 0;
 
-const masBaja = (cs: readonly IdCarta[]) =>
-  [...cs].sort((a, b) => rangoPolignac(a) - rangoPolignac(b) || a.localeCompare(b))[0]!;
-const masAlta = (cs: readonly IdCarta[]) =>
-  [...cs].sort((a, b) => rangoPolignac(b) - rangoPolignac(a) || a.localeCompare(b))[0]!;
+const masBaja = (cs: readonly IdCarta[], antiguo: boolean) =>
+  [...cs].sort(
+    (a, b) => rangoPolignac(a, antiguo) - rangoPolignac(b, antiguo) || a.localeCompare(b),
+  )[0]!;
+const masAlta = (cs: readonly IdCarta[], antiguo: boolean) =>
+  [...cs].sort(
+    (a, b) => rangoPolignac(b, antiguo) - rangoPolignac(a, antiguo) || a.localeCompare(b),
+  )[0]!;
 
 /**
  * Si conviene anunciar el general (spec ia-jugadores): en cada palo que tiene, sus cartas son
- * las más altas seguidas desde el As. Saliendo siempre, gana así todas las bazas.
+ * las más altas seguidas desde el As (desde el Rey con el orden antiguo). Saliendo siempre, gana
+ * así todas las bazas.
  */
-export function generalSeguroPolignac(mano: readonly IdCarta[]): boolean {
+export function generalSeguroPolignac(mano: readonly IdCarta[], antiguo = false): boolean {
   if (mano.length === 0) return false;
   return PALOS_FRANCESES.every((palo) => {
     const rangos = mano
       .filter((c) => paloPolignac(c) === palo)
-      .map(rangoPolignac)
+      .map((c) => rangoPolignac(c, antiguo))
       .sort((a, b) => b - a);
     return rangos.every((r, i) => r === AS - i);
   });
@@ -39,14 +44,17 @@ export function cartaPolignac(vista: VistaPolignac, cartas: readonly IdCarta[]):
   const mesa = vista.mesa;
   const yo = vista.asiento!;
   const mano = vista.miMano ?? [];
+  const antiguo = vista.config.ordenAntiguo === true;
+  const ganadora = (m: typeof mesa) => ganadoraPolignac(m, antiguo);
+  const rango = (c: IdCarta) => rangoPolignac(c, antiguo);
 
   if (vista.general !== null) {
-    if (vista.general === yo) return masAlta(cartas);
-    if (mesa.length === 0) return masBaja(cartas);
+    if (vista.general === yo) return masAlta(cartas, antiguo);
+    if (mesa.length === 0) return masBaja(cartas, antiguo);
     const ganadoras = cartas.filter(
-      (c) => ganadoraPolignac([...mesa, { asiento: yo, carta: c }]).asiento === yo,
+      (c) => ganadora([...mesa, { asiento: yo, carta: c }]).asiento === yo,
     );
-    return masBaja(ganadoras.length > 0 ? ganadoras : cartas);
+    return masBaja(ganadoras.length > 0 ? ganadoras : cartas, antiguo);
   }
 
   if (mesa.length === 0) {
@@ -54,20 +62,23 @@ export function cartaPolignac(vista: VistaPolignac, cartas: readonly IdCarta[]):
     const opciones = sinJotas.length > 0 ? sinJotas : cartas;
     const largo = (c: IdCarta) => mano.filter((x) => paloPolignac(x) === paloPolignac(c)).length;
     const minimo = Math.min(...opciones.map(largo));
-    return masBaja(opciones.filter((c) => largo(c) === minimo));
+    return masBaja(
+      opciones.filter((c) => largo(c) === minimo),
+      antiguo,
+    );
   }
   const salida = paloPolignac(mesa[0]!.carta);
   if (cartas.every((c) => paloPolignac(c) === salida)) {
-    const gana = rangoPolignac(ganadoraPolignac(mesa).carta);
-    const debajo = cartas.filter((c) => rangoPolignac(c) < gana);
-    if (debajo.length > 0) return masAlta(debajo);
+    const gana = rango(ganadora(mesa).carta);
+    const debajo = cartas.filter((c) => rango(c) < gana);
+    if (debajo.length > 0) return masAlta(debajo, antiguo);
     const sinJotas = cartas.filter((c) => !esJota(c));
-    return masAlta(sinJotas.length > 0 ? sinJotas : cartas);
+    return masAlta(sinJotas.length > 0 ? sinJotas : cartas, antiguo);
   }
   // Sin el palo: la J de picas, otra J o la más alta.
   if (cartas.includes(JOTA_PICAS_POLIGNAC)) return JOTA_PICAS_POLIGNAC;
   const jotas = cartas.filter(esJota);
-  return jotas.length > 0 ? masAlta(jotas) : masAlta(cartas);
+  return jotas.length > 0 ? masAlta(jotas, antiguo) : masAlta(cartas, antiguo);
 }
 
 export const iaPolignacBasica: Agente<VistaPolignac, AccionPolignac> = {
@@ -75,7 +86,7 @@ export const iaPolignacBasica: Agente<VistaPolignac, AccionPolignac> = {
   decidir(vista, acciones, azar) {
     if (acciones.length === 0) throw new Error('El agente no tiene acciones legales');
     if (vista.fase === 'general') {
-      const anuncia = generalSeguroPolignac(vista.miMano ?? []);
+      const anuncia = generalSeguroPolignac(vista.miMano ?? [], vista.config.ordenAntiguo === true);
       return { accion: { tipo: anuncia ? 'general' : 'pasar' }, azar };
     }
     const cartas = acciones.flatMap((a) => (a.tipo === 'jugar' ? [a.carta] : []));

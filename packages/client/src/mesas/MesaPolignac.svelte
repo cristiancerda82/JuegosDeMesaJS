@@ -51,11 +51,14 @@
     return marcas.join(' · ');
   };
 
-  /** La mano por palos y por valor. */
+  /** La mano por palos y por valor, con el orden de la partida. */
   const manoOrdenada = $derived.by(() => {
     const orden = [...PALOS];
+    const antiguo = vista.config.ordenAntiguo === true;
     return [...(vista.miMano ?? [])].sort(
-      (a, b) => orden.indexOf(paloPolignac(a)) - orden.indexOf(paloPolignac(b)) || rangoPolignac(b) - rangoPolignac(a),
+      (a, b) =>
+        orden.indexOf(paloPolignac(a)) - orden.indexOf(paloPolignac(b)) ||
+        rangoPolignac(b, antiguo) - rangoPolignac(a, antiguo),
     );
   });
 

@@ -132,7 +132,8 @@ test('con viuda: cambiar una carta tocando la tuya y la de la mesa, y cambiar la
   await expect(page.getByTestId('turno')).toHaveText('Ahora toca la carta de la viuda que quieres');
   await page.getByTestId(`viuda-${deLaMesa}`).click();
   await expect(page.locator(`[data-testid="mano"] [data-carta="${deLaMesa}"]`)).toBeVisible();
-  await expect(page.locator(`[data-testid="viuda"] [data-carta="${mia}"]`)).toBeVisible();
+  // La carta propia pasa a la viuda; no se mira allí porque la IA, en rápido, puede cogerla ya.
+  await expect(page.locator(`[data-testid="mano"] [data-carta="${mia}"]`)).toHaveCount(0);
 
   // Le toca otra vez tras la IA: cambia las tres.
   await expect(page.getByTestId('cambiar-todas')).toBeVisible({ timeout: 15_000 });

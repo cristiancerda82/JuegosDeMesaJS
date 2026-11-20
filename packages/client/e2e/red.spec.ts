@@ -1191,6 +1191,30 @@ test('Polignac en red: el general que pasa uno lo ve el otro', async ({ browser 
   await expect(luis.locator('[data-testid="mano"] .carta-mano.jugable')).toHaveCount(8);
 });
 
+test('Polignac con el orden antiguo en red: los dos juegan con la opción', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'polignac', (p) =>
+    p.getByTestId('polignac-orden-antiguo').check(),
+  );
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(8);
+  // La mano de Luis va ordenada con el orden antiguo: la J antes que el As del mismo palo.
+  const cartas = await luis
+    .locator('[data-testid="mano"] .carta-mano')
+    .evaluateAll((els) => els.map((e) => e.getAttribute('data-carta')!));
+  for (const palo of ['picas', 'corazones', 'diamantes', 'treboles']) {
+    const j = cartas.indexOf(`${palo}-11`);
+    const as = cartas.indexOf(`${palo}-1`);
+    if (j >= 0 && as >= 0) expect(j).toBeLessThan(as);
+  }
+  await luis.getByTestId('pasar-general').click();
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Sheepshead en red: lo que decide uno lo ve el otro', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

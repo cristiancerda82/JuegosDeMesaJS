@@ -550,6 +550,13 @@
           {T.opciones.generalPolignacDesc}
         </label>
       </fieldset>
+      <fieldset>
+        <legend>{T.opciones.ordenAntiguoPolignac}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={polignacConfig.ordenAntiguo} data-testid="polignac-orden-antiguo" />
+          {T.opciones.ordenAntiguoPolignacDesc}
+        </label>
+      </fieldset>
     {:else if juego === 'corazones'}
       <fieldset>
         <legend>{T.opciones.jugadores}</legend>

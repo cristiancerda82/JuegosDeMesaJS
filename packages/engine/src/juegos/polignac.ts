@@ -13,6 +13,8 @@ export interface ConfigPolignac {
   readonly limite: 10 | 20 | 30;
   /** Si se puede anunciar el general. */
   readonly general: boolean;
+  /** Variante: el As por debajo de la J, y sin el palo hay que soltar las J (la de picas antes). */
+  readonly ordenAntiguo?: boolean;
 }
 
 export const CONFIG_POLIGNAC_POR_DEFECTO: ConfigPolignac = {
@@ -27,6 +29,9 @@ export const LIMITES_POLIGNAC = [10, 20, 30] as const;
 export const PUNTOS_GENERAL_POLIGNAC = 5;
 
 export type FasePolignac = 'general' | 'bazas';
+
+/** Lo que se sabe de las J de un jugador con el orden antiguo: ninguna, o no la de picas. */
+export type SinJotasPolignac = 'todas' | 'picas' | null;
 
 export interface ResultadoManoPolignac {
   /** Quien jugó el general, si alguien lo anunció. */
@@ -60,6 +65,8 @@ export interface EstadoPolignac {
   readonly jugadasPor: readonly (readonly IdCarta[])[];
   /** Palos de salida que cada uno no siguió. */
   readonly fallos: readonly (readonly PaloFrances[])[];
+  /** Con el orden antiguo: las J que se sabe que no tiene cada uno en la mano. */
+  readonly sinJotas?: readonly SinJotasPolignac[];
   readonly totales: readonly number[];
   readonly resultadosManos: readonly ResultadoManoPolignac[];
 }
@@ -86,6 +93,8 @@ export interface VistaPolignac {
   readonly puntosMano: readonly number[];
   readonly jugadasPor: readonly (readonly IdCarta[])[];
   readonly fallos: readonly (readonly PaloFrances[])[];
+  /** Con el orden antiguo: las J que se sabe que no tiene cada uno en la mano. */
+  readonly sinJotas?: readonly SinJotasPolignac[];
   /** El número de la mano, desde 1. */
   readonly manoNumero: number;
   readonly totales: readonly number[];
@@ -111,11 +120,14 @@ export const cartasPorJugadorPolignac = (jugadores: number) =>
   barajaPolignac(jugadores).length / jugadores;
 
 export const paloPolignac = (c: IdCarta) => cartaDeId(c)!.palo as PaloFrances;
-/** El orden: del 7 (7) al As (14). */
-export const rangoPolignac = (c: IdCarta) => {
+/** El orden: del 7 (7) al As (14); con el orden antiguo, del 7 al 10, As (11), J, Q y K (14). */
+export const rangoPolignac = (c: IdCarta, antiguo = false) => {
   const v = cartaDeId(c)!.valor;
-  return v === 1 ? 14 : v;
+  if (v === 1) return antiguo ? 11 : 14;
+  return antiguo && v >= 11 ? v + 1 : v;
 };
+
+const esJotaPolignac = (c: IdCarta) => cartaDeId(c)!.valor === 11;
 
 /** La J de picas, el «Polignac». */
 export const JOTA_PICAS_POLIGNAC: IdCarta = 'picas-11';
@@ -123,32 +135,49 @@ export const JOTA_PICAS_POLIGNAC: IdCarta = 'picas-11';
 /** Lo que resta una carta ganada: 2 la J de picas, 1 las otras J, 0 el resto. */
 export function penalizaPolignac(c: IdCarta): number {
   if (c === JOTA_PICAS_POLIGNAC) return 2;
-  return rangoPolignac(c) === 11 ? 1 : 0;
+  return esJotaPolignac(c) ? 1 : 0;
 }
 
 // ── Reglas ───────────────────────────────────────────────────────────────────
 
 /** Carta que gana la baza: la más alta del palo de salida (no hay triunfo). */
-export function ganadoraPolignac(mesa: readonly CartaJugada[]): CartaJugada {
+export function ganadoraPolignac(mesa: readonly CartaJugada[], antiguo = false): CartaJugada {
   const salida = paloPolignac(mesa[0]!.carta);
-  const valor = (c: IdCarta) => (paloPolignac(c) === salida ? rangoPolignac(c) : 0);
+  const valor = (c: IdCarta) => (paloPolignac(c) === salida ? rangoPolignac(c, antiguo) : 0);
   return mesa.reduce((mejor, j) => (valor(j.carta) > valor(mejor.carta) ? j : mejor));
 }
 
-/** Cartas que se pueden jugar en una baza: el palo de salida si se tiene; si no, todas. */
+/**
+ * Cartas que se pueden jugar en una baza: el palo de salida si se tiene; si no, todas. Con el
+ * orden antiguo, sin el palo hay que soltar la J de picas si se tiene, y si no, otra J.
+ */
 export function cartasLegalesPolignac(
   mano: readonly IdCarta[],
   mesa: readonly CartaJugada[],
+  antiguo = false,
 ): IdCarta[] {
   if (mesa.length === 0) return [...mano];
   const salida = paloPolignac(mesa[0]!.carta);
   const delPalo = mano.filter((c) => paloPolignac(c) === salida);
-  return delPalo.length > 0 ? delPalo : [...mano];
+  if (delPalo.length > 0) return delPalo;
+  if (antiguo) {
+    if (mano.includes(JOTA_PICAS_POLIGNAC)) return [JOTA_PICAS_POLIGNAC];
+    const jotas = mano.filter(esJotaPolignac);
+    if (jotas.length > 0) return jotas;
+  }
+  return [...mano];
 }
 
 // ── Mano ─────────────────────────────────────────────────────────────────────
 
 const siguiente = (a: Asiento, n: number) => (a + 1) % n;
+const antiguo = (e: Pick<EstadoPolignac, 'config'>) => e.config.ordenAntiguo === true;
+
+/** Lo que se sabe de las J de quien echa `carta` sin seguir el palo, con el orden antiguo. */
+function sinJotasTras(antes: SinJotasPolignac, carta: IdCarta): SinJotasPolignac {
+  if (antes === 'todas' || !esJotaPolignac(carta)) return 'todas';
+  return carta === JOTA_PICAS_POLIGNAC ? antes : 'picas';
+}
 
 const terminada = (e: Pick<EstadoPolignac, 'totales' | 'config'>) =>
   e.totales.some((t) => t <= -e.config.limite);
@@ -179,6 +208,7 @@ function nuevaMano(
     puntosMano: ceros,
     jugadasPor: Array.from({ length: n }, () => []),
     fallos: Array.from({ length: n }, () => []),
+    ...(base.config.ordenAntiguo ? { sinJotas: Array.from({ length: n }, () => null) } : {}),
   };
 }
 
@@ -197,7 +227,7 @@ function cerrarMano(e: EstadoPolignac, cumplido: boolean | null): EstadoPolignac
 }
 
 function resolverBaza(e: EstadoPolignac): EstadoPolignac {
-  const ganador = ganadoraPolignac(e.mesa).asiento;
+  const ganador = ganadoraPolignac(e.mesa, antiguo(e)).asiento;
   const resuelto: EstadoPolignac = {
     ...e,
     mesa: [],
@@ -242,9 +272,15 @@ function resolverBaza(e: EstadoPolignac): EstadoPolignac {
 function jugarBaza(e: EstadoPolignac, asiento: Asiento, carta: IdCarta): EstadoPolignac {
   const mesa = [...e.mesa, { asiento, carta }];
   const salida = paloPolignac(mesa[0]!.carta);
-  const nuevo = paloPolignac(carta) !== salida && !e.fallos[asiento]!.includes(salida);
+  const falla = paloPolignac(carta) !== salida;
+  const nuevo = falla && !e.fallos[asiento]!.includes(salida);
   const jugado: EstadoPolignac = {
     ...e,
+    ...(falla && e.sinJotas
+      ? {
+          sinJotas: e.sinJotas.map((s, a) => (a === asiento ? sinJotasTras(s, carta) : s)),
+        }
+      : {}),
     manos: e.manos.map((m, a) => (a === asiento ? m.filter((c) => c !== carta) : m)),
     mesa,
     jugadasPor: e.jugadasPor.map((j, a) => (a === asiento ? [...j, carta] : j)),
@@ -271,7 +307,12 @@ export const polignac: Juego<ConfigPolignac, EstadoPolignac, AccionPolignac, Vis
     return ok(
       nuevaMano(
         {
-          config: { jugadores: n, limite: config.limite, general: config.general === true },
+          config: {
+            jugadores: n,
+            limite: config.limite,
+            general: config.general === true,
+            ordenAntiguo: config.ordenAntiguo === true,
+          },
           totales: Array.from({ length: n }, () => 0),
           resultadosManos: [],
         },
@@ -286,7 +327,7 @@ export const polignac: Juego<ConfigPolignac, EstadoPolignac, AccionPolignac, Vis
   accionesLegales(e, asiento) {
     if (terminada(e) || asiento !== e.turno) return [];
     if (e.fase === 'general') return [{ tipo: 'general' }, { tipo: 'pasar' }];
-    return cartasLegalesPolignac(e.manos[asiento]!, e.mesa)
+    return cartasLegalesPolignac(e.manos[asiento]!, e.mesa, antiguo(e))
       .sort()
       .map((carta) => ({ tipo: 'jugar', carta }));
   },
@@ -324,6 +365,7 @@ export const polignac: Juego<ConfigPolignac, EstadoPolignac, AccionPolignac, Vis
       puntosMano: [...e.puntosMano],
       jugadasPor: e.jugadasPor.map((j) => [...j]),
       fallos: e.fallos.map((f) => [...f]),
+      ...(e.sinJotas ? { sinJotas: [...e.sinJotas] } : {}),
       manoNumero: e.resultadosManos.length + (terminada(e) ? 0 : 1),
       totales: [...e.totales],
       resultadosManos: [...e.resultadosManos],

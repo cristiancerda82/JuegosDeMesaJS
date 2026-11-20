@@ -214,11 +214,79 @@ describe('fin de la partida', () => {
   });
 });
 
+describe('orden antiguo', () => {
+  const antiguo = (manos: string[], parcial: Partial<EstadoPolignac> = {}): EstadoPolignac => ({
+    ...nueva({ ordenAntiguo: true }),
+    fase: 'bazas',
+    turno: 0,
+    manos: manos.map(c),
+    ...parcial,
+  });
+  const legales = (e: EstadoPolignac) =>
+    polignac.accionesLegales(e, e.turno).map((a) => (a as { carta: string }).carta);
+
+  it('la opción se normaliza y sin ella no hay nada de las J', () => {
+    expect(nueva().config.ordenAntiguo).toBe(false);
+    expect(nueva().sinJotas).toBeUndefined();
+    const e = nueva({ ordenAntiguo: true });
+    expect(e.config.ordenAntiguo).toBe(true);
+    expect(e.sinJotas).toEqual([null, null, null, null]);
+    expect(polignac.vistaDe(e, 1).sinJotas).toEqual([null, null, null, null]);
+  });
+
+  it('el orden es K, Q, J, A, 10, 9, 8 y 7: la J gana al As', () => {
+    const mesa = enMesa([0, 'Ac'], [1, 'Jc'], [2, '10c'], [3, '7p']);
+    expect(ganadoraPolignac(mesa, true).asiento).toBe(1);
+    expect(ganadoraPolignac(mesa).asiento).toBe(0);
+    expect(ganadoraPolignac(enMesa([0, 'Qc'], [1, 'Kc'], [2, 'Jc']), true).asiento).toBe(1);
+  });
+
+  it('sin el palo, solo la J de picas si se tiene', () => {
+    const e = antiguo(['', 'Jp Jd 8d Kt', '', ''], { turno: 1, mesa: enMesa([0, '7c']) });
+    expect(legales(e)).toEqual(c('Jp'));
+  });
+
+  it('sin el palo ni la J de picas, solo las otras J', () => {
+    const e = antiguo(['', 'Jd Jt 8d Kt', '', ''], { turno: 1, mesa: enMesa([0, '7c']) });
+    expect(legales(e)).toEqual(c('Jd Jt').sort());
+  });
+
+  it('sin el palo ni J, cualquier carta; con el palo, el palo aunque se tengan J', () => {
+    const e = antiguo(['', '8d Kt', '', ''], { turno: 1, mesa: enMesa([0, '7c']) });
+    expect(legales(e)).toEqual(c('8d Kt').sort());
+    const f = antiguo(['', '9c Jp', '', ''], { turno: 1, mesa: enMesa([0, '7c']) });
+    expect(legales(f)).toEqual(c('9c'));
+  });
+
+  it('todos ven qué J no tiene quien no siguió el palo', () => {
+    // El 1 echa una J que no es la de picas: no tiene la de picas. El 2 echa un 8: no tiene J.
+    const e = jugar(antiguo(['7c 9c', 'Jd 8t', '8d 9d', 'Ac Kc']), '7c', 'Jd', '8d');
+    expect(e.sinJotas).toEqual([null, 'picas', 'todas', null]);
+    expect(polignac.vistaDe(e, 3).sinJotas).toEqual([null, 'picas', 'todas', null]);
+  });
+
+  it('echar la J de picas sin el palo no dice nada de las otras J', () => {
+    const e = jugar(antiguo(['7c 9c', 'Jp Jd', '8c 9d', 'Ac Kc']), '7c', 'Jp');
+    expect(e.sinJotas).toEqual([null, null, null, null]);
+  });
+
+  it('partidas completas de 3 a 6 jugadores con el orden antiguo', () => {
+    for (const jugadores of [3, 4, 5, 6] as const) {
+      let e = nueva({ jugadores, ordenAntiguo: true }, `antiguo-${jugadores}`);
+      while (polignac.resultado(e) === null) {
+        e = hacer(e, polignac.accionesLegales(e, e.turno).at(-1)!);
+      }
+      expect(e.totales.some((t) => t <= -10)).toBe(true);
+    }
+  });
+});
+
 describirContrato(polignac, {
   configs: [
     CONFIG_POLIGNAC_POR_DEFECTO,
     { jugadores: 3, limite: 10, general: false },
     { jugadores: 6, limite: 20, general: true },
+    { jugadores: 4, limite: 10, general: true, ordenAntiguo: true },
   ],
   cartasOcultas: (e, asiento) => {
     const vistas = new Set<string>(e.ultimaBaza?.cartas.map((j) => j.carta) ?? []);

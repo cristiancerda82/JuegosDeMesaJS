@@ -492,6 +492,9 @@ export const T = {
     limitePolignacN: (n: number) => `Al llegar a −${n}`,
     generalPolignac: 'General',
     generalPolignacDesc: 'Se puede anunciar que te llevarás todas las bazas.',
+    ordenAntiguoPolignac: 'Orden antiguo',
+    ordenAntiguoPolignacDesc:
+      'El As va por debajo de la J (K, Q, J, A, 10, 9, 8, 7) y, sin el palo, hay que soltar una J: la de picas primero.',
     sietesPolignac: 'Con 3, 5 o 6 jugadores se quitan el 7 de picas y el de tréboles.',
     duracionPocha: 'Duración',
     duracionCorta: 'Corta: de 1 a 5 cartas y vuelta (9 manos)',
@@ -4676,7 +4679,7 @@ export const T = {
         titulo: 'Las bazas',
         texto: [
           'Sale el jugador siguiente al que reparte. Hay que seguir el palo de salida; si no tienes, puedes echar cualquier carta. Gana la carta más alta del palo de salida, y quien gana sale en la siguiente.',
-          'En otros sitios se juega con el orden antiguo, con el As por debajo de la Jota (Rey, Dama, Jota, As, 10, 9, 8 y 7), y quien no tiene el palo tiene que soltar una Jota, empezando por la de picas.',
+          'Variante (opción «Orden antiguo»): el As va por debajo de la J (K, Q, J, A, 10, 9, 8 y 7), así que las J ganan más bazas. Y quien no tiene el palo de salida tiene que soltar una J si la tiene: la de picas primero, luego cualquier otra. Solo sin J puedes echar lo que quieras, y entonces todos saben que no te quedan.',
         ],
         ejemplo: 'baza',
       },

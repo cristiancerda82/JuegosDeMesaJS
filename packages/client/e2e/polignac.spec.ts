@@ -120,3 +120,70 @@ for (const jugadores of [4, 6]) {
     await page.screenshot({ path: `test-results/polignac-360-${jugadores}.png` });
   });
 }
+
+// ── Orden antiguo ────────────────────────────────────────────────────────────
+
+/**
+ * Si solo se pueden jugar J y en la mano hay otra carta del palo de alguna de ellas, no se ha
+ * salido de ese palo: es la obligación de soltar la J sin tener el palo de salida.
+ */
+async function soloJotasObligadas(page: Page): Promise<boolean> {
+  const cartas = (l: ReturnType<typeof mano>) =>
+    l.evaluateAll((els) => els.map((e) => e.getAttribute('data-carta')!));
+  const todas = await cartas(mano(page));
+  const libres = await cartas(jugables(page));
+  if (libres.length === 0 || !libres.every((c) => c.endsWith('-11'))) return false;
+  const palo = (c: string) => c.split('-')[0];
+  return todas.some((c) => !c.endsWith('-11') && libres.some((j) => palo(j) === palo(c)));
+}
+
+test('con el orden antiguo: la mano va K, Q, J, A y sin el palo hay que soltar la J', async ({
+  page,
+}) => {
+  test.setTimeout(600_000);
+  await page.goto('./?rapido&semilla=polignac-antiguo');
+  await abrirJuego(page, 'polignac');
+  await page.getByTestId('polignac-orden-antiguo').check();
+  await page.getByTestId('empezar').click();
+  await expect(mano(page)).toHaveCount(8);
+  // Dentro de cada palo, de mayor a menor con el orden antiguo.
+  const RANGO: Record<string, number> = { '1': 11, '11': 12, '12': 13, '13': 14 };
+  const rango = (c: string) => RANGO[c.split('-')[1]!] ?? Number(c.split('-')[1]);
+  const orden = await mano(page).evaluateAll((els) =>
+    els.map((e) => e.getAttribute('data-carta')!),
+  );
+  for (let i = 1; i < orden.length; i++) {
+    if (orden[i]!.split('-')[0] === orden[i - 1]!.split('-')[0]) {
+      expect(rango(orden[i]!)).toBeLessThan(rango(orden[i - 1]!));
+    }
+  }
+  await page.screenshot({
+    path: `test-results/polignac-antiguo-${page.viewportSize()!.width}.png`,
+  });
+
+  let obligada = false;
+  for (let i = 0; i < 3000 && !(await page.getByTestId('fin').isVisible()); i++) {
+    await page
+      .locator(
+        '.carta-mano.jugable, [data-testid="pasar-general"], [data-testid="panel-mano"], [data-testid="fin"]',
+      )
+      .first()
+      .waitFor({ timeout: 30_000 });
+    if (await page.getByTestId('fin').isVisible()) break;
+    if (await page.getByTestId('panel-mano').isVisible()) {
+      await page.getByTestId('siguiente-mano').click();
+    } else if (await page.getByTestId('pasar-general').isVisible()) {
+      await page.getByTestId('pasar-general').click();
+    } else {
+      if (!obligada && (await soloJotasObligadas(page).catch(() => false))) {
+        obligada = true;
+        await page.screenshot({
+          path: `test-results/polignac-antiguo-jota-${page.viewportSize()!.width}.png`,
+        });
+      }
+      await tocarPrimera(page).catch(() => {});
+    }
+  }
+  await expect(page.getByTestId('fin')).toBeVisible();
+  expect(obligada).toBe(true);
+});

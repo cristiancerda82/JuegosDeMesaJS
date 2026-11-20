@@ -3,7 +3,9 @@ import { barajar } from '../../baraja/barajar';
 import { cartasFuera } from '../../baraja/cartas';
 import {
   barajaPolignac,
+  JOTA_PICAS_POLIGNAC,
   paloPolignac,
+  penalizaPolignac,
   polignac,
   type AccionPolignac,
   type ConfigPolignac,
@@ -16,7 +18,8 @@ import { repartirConPermitidos } from './cuatrola';
 
 /**
  * Un estado de Polignac coherente con la vista (spec niveles-ia): las manos ajenas al azar entre
- * las cartas que no se ven, sin los palos que se sabe que no tienen.
+ * las cartas que no se ven, sin los palos que se sabe que no tienen ni, con el orden antiguo, las
+ * J que se sabe que no tienen.
  */
 export function reconstruirPolignac(vista: VistaPolignac, azar: EstadoAzar): EstadoPolignac {
   const yo = vista.asiento;
@@ -31,7 +34,12 @@ export function reconstruirPolignac(vista: VistaPolignac, azar: EstadoAzar): Est
   const repartidas = repartirConPermitidos(
     cartas,
     vista.cartasEnMano.map((n, a) => (a === yo ? 0 : n)),
-    (a, c) => !vista.fallos[a]!.includes(paloPolignac(c)),
+    (a, c) => {
+      if (vista.fallos[a]!.includes(paloPolignac(c))) return false;
+      const sin = vista.sinJotas?.[a] ?? null;
+      if (sin === 'todas') return penalizaPolignac(c) === 0;
+      return sin !== 'picas' || c !== JOTA_PICAS_POLIGNAC;
+    },
     new Generador(azarReparto),
   );
   return {
@@ -50,6 +58,7 @@ export function reconstruirPolignac(vista: VistaPolignac, azar: EstadoAzar): Est
     puntosMano: [...vista.puntosMano],
     jugadasPor: vista.jugadasPor.map((j) => [...j]),
     fallos: vista.fallos.map((f) => [...f]),
+    ...(vista.sinJotas ? { sinJotas: [...vista.sinJotas] } : {}),
     totales: [...vista.totales],
     resultadosManos: [...vista.resultadosManos],
   };
