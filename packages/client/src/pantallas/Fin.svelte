@@ -1167,15 +1167,16 @@
     {:else if partida.id === 'tuteSubastado'}
       {@const vista = partida.sesion.vista}
       {@const ultima = vista.resultadosManos.at(-1)}
+      {@const n = vista.fichas.length}
       {#if ultima}
-        <ResumenTuteSubastado resultado={ultima} nombre={(a) => nombreChinchon(a, 4)} />
+        <ResumenTuteSubastado resultado={ultima} nombre={(a) => nombreChinchon(a, n)} />
       {/if}
       <table>
         <caption>{T.tuteSubastado.clasificacion}</caption>
         <tbody>
-          {#each [0, 1, 2, 3].sort((a, b) => vista.fichas[b]! - vista.fichas[a]!) as a (a)}
+          {#each Array.from({ length: n }, (_, a) => a).sort((a, b) => vista.fichas[b]! - vista.fichas[a]!) as a (a)}
             <tr>
-              <th scope="row">{nombreChinchon(a, 4)}</th>
+              <th scope="row">{nombreChinchon(a, n)}</th>
               <td data-testid="fichas-{a}">{T.tuteSubastado.fichas(vista.fichas[a]!)}</td>
             </tr>
           {/each}

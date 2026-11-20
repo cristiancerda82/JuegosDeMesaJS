@@ -715,7 +715,16 @@
         {/each}
       </fieldset>
     {:else if juego === 'tuteSubastado'}
-      <p class="nota-opciones">{T.opciones.siempreCuatro}</p>
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [4, 3] as const as n (n)}
+          <label>
+            <input type="radio" bind:group={subastado.jugadores} value={n} data-testid="subastado-jugadores-{n}" />
+            {T.opciones.jugadoresN(n)}
+          </label>
+        {/each}
+        <p class="nota-opciones">{T.opciones.subastadoTresDesc}</p>
+      </fieldset>
       <fieldset>
         <legend>{T.opciones.manosJulepe}</legend>
         {#each [8, 4, 12] as const as m (m)}

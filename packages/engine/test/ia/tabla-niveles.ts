@@ -145,6 +145,13 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   ),
   entrada('Remigio', remigio, CONFIG_REMIGIO_POR_DEFECTO, IAS.remigio, 2),
   entrada('Tute subastado', tuteSubastado, CONFIG_TUTE_SUBASTADO_POR_DEFECTO, IAS.tuteSubastado, 4),
+  entrada(
+    'Tute subastado de 3',
+    tuteSubastado,
+    { ...CONFIG_TUTE_SUBASTADO_POR_DEFECTO, jugadores: 3 },
+    IAS.tuteSubastado,
+    3,
+  ),
   entrada('Cuatrola', cuatrola, CONFIG_CUATROLA_POR_DEFECTO, IAS.cuatrola, 4),
   // No simula, pero su difícil (con memoria) tiene que ganar a la normal: entra en la prueba.
   entrada('Mentiroso', mentiroso, CONFIG_MENTIROSO_POR_DEFECTO, IAS.mentiroso, 4),

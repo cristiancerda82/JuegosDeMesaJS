@@ -1,7 +1,8 @@
 import { Generador, type EstadoAzar } from '../../baraja/azar';
 import { barajar } from '../../baraja/barajar';
-import { cartasFuera, crearBaraja, type PaloEspanol } from '../../baraja/cartas';
+import { cartasFuera, type PaloEspanol } from '../../baraja/cartas';
 import {
+  barajaTuteSubastado,
   tuteSubastado,
   type AccionTuteSubastado,
   type ConfigTuteSubastado,
@@ -23,10 +24,11 @@ export function reconstruirTuteSubastado(
   azar: EstadoAzar,
 ): EstadoTuteSubastado {
   const yo = vista.asiento;
+  const n = vista.cartasEnMano.length;
   const jugadas = vista.bazasMano.flatMap((b) => b.cartas.map((j) => j.carta));
   const { cartas, azar: azarReparto } = barajar(
     cartasFuera(
-      crearBaraja('espanola40'),
+      barajaTuteSubastado(vista.config),
       vista.miMano ?? [],
       vista.mesa.map((j) => j.carta),
       jugadas,
@@ -35,8 +37,8 @@ export function reconstruirTuteSubastado(
   );
   const fallos =
     vista.triunfo === null
-      ? Array.from({ length: 4 }, () => new Set<PaloEspanol>())
-      : fallosJulepe([...vista.bazasMano.map((b) => b.cartas), vista.mesa], vista.triunfo, 4);
+      ? Array.from({ length: n }, () => new Set<PaloEspanol>())
+      : fallosJulepe([...vista.bazasMano.map((b) => b.cartas), vista.mesa], vista.triunfo, n);
   const huecos = vista.cartasEnMano.map((n, a) => (a === yo ? 0 : n));
   const repartidas = repartirConFallos(cartas, huecos, fallos, new Generador(azarReparto));
   const manos = repartidas.map((m, a) => (a === yo && vista.miMano ? [...vista.miMano] : m));
@@ -83,7 +85,8 @@ export const SIMULABLE_TUTE_SUBASTADO: Simulable<
     if (!r) return bono;
     // Además de las fichas, por cuánto se cumple o se falla: distingue manos con el mismo cobro.
     const margen = (r.puntosPujador - r.puja) / MARGEN_POR_FICHA;
-    return r.cambio[asiento]! + (asiento === r.pujador ? margen : -margen / 3) + bono;
+    const defensores = r.cambio.length - 1;
+    return r.cambio[asiento]! + (asiento === r.pujador ? margen : -margen / defensores) + bono;
   },
   // Las pujas las decide la base: la simulación no ve que el rival puja alto justo cuando lleva
   // buena mano (spec niveles-ia).

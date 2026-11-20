@@ -573,7 +573,7 @@ describirReconstruccion(remigio, reconstruirRemigio, {
 });
 
 describirReconstruccion(tuteSubastado, reconstruirTuteSubastado, {
-  configs: [{ manos: 4 }],
+  configs: [{ manos: 4 }, { manos: 4, jugadores: 3 }],
   base: iaTuteSubastadoBasica,
   partidas: 3,
   pasosMaximos: 400,
@@ -606,6 +606,17 @@ describe('reconstrucción del Tute subastado', () => {
       revisadas++;
     }
     expect(revisadas).toBeGreaterThan(20);
+  });
+
+  it('con 3 jugadores reparte las 36 cartas sin doses entre tres', () => {
+    const creado = tuteSubastado.crear({ manos: 4, jugadores: 3 }, 'subastado-tres');
+    if (!creado.ok) throw new Error(creado.error);
+    const vista = tuteSubastado.vistaDe(creado.valor, 1);
+    const r = reconstruirTuteSubastado(vista, crearAzar('subastado-tres/r'));
+    expect(r.manos.map((m) => m.length)).toEqual([12, 12, 12]);
+    expect(r.manos[1]).toEqual(vista.miMano);
+    expect(new Set(r.manos.flat()).size).toBe(36);
+    expect(r.manos.flat().some((c) => c.endsWith('-2'))).toBe(false);
   });
 });
 

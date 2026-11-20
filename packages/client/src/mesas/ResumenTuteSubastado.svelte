@@ -38,7 +38,7 @@
     </tr>
   </thead>
   <tbody>
-    {#each [0, 1, 2, 3] as a (a)}
+    {#each resultado.cambio.map((_, a) => a) as a (a)}
       <tr class:pujador={a === resultado.pujador} data-testid="fila-{a}">
         <th scope="row">{nombre(a)}</th>
         <td data-testid="cambio-{a}">{signo(resultado.cambio[a]!)}</td>

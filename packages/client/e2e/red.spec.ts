@@ -366,6 +366,30 @@ test('Tute subastado en red: dos humanos y dos IAs juegan una mano', async ({ br
   }
 });
 
+test('Tute subastado de 3 en red: dos humanos y una IA, con 12 cartas y la subasta desde 70', async ({
+  browser,
+}) => {
+  test.setTimeout(150_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'tuteSubastado', async (p) => {
+    await p.getByTestId('subastado-jugadores-3').check();
+  });
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) await expect(p.locator('.carta-mano')).toHaveCount(12);
+
+  // Ana es mano: puja 70, la mínima con 3, y Luis, que habla después, lo ve en su subasta.
+  const subasta = ana.getByTestId('panel-subasta');
+  await expect(subasta).toBeVisible({ timeout: 30_000 });
+  await expect(subasta.getByTestId('puja-60')).toHaveCount(0);
+  await ana.getByTestId('puja-70').click();
+  const deLuis = luis.getByTestId('panel-subasta');
+  await expect(deLuis).toContainText('puja 70', { timeout: 30_000 });
+  await expect(deLuis.getByTestId('puja-70')).toHaveCount(0);
+  await expect(deLuis.getByTestId('puja-80')).toBeVisible();
+});
+
 test('Cuatrola en red: dos humanos y dos IAs juegan una mano', async ({ browser }) => {
   test.setTimeout(150_000);
   const ana = await jugador(browser);

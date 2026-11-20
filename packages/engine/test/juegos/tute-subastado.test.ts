@@ -9,6 +9,7 @@ import {
   type EstadoTuteSubastado,
 } from '../../src/juegos/tute-subastado';
 import { aplicar } from '../../src/motor/aplicar';
+import { valorDe } from '../../src/motor/bazas';
 import { describirContrato } from '../contrato/verificar-contrato';
 
 // ── Utilidades ───────────────────────────────────────────────────────────────
@@ -83,6 +84,8 @@ describe('reparto', () => {
   it('valida la configuración', () => {
     expect(tuteSubastado.crear({ manos: 5 as 4 }, 'x').ok).toBe(false);
     expect(CONFIG_TUTE_SUBASTADO_POR_DEFECTO.manos).toBe(8);
+    expect(CONFIG_TUTE_SUBASTADO_POR_DEFECTO.jugadores).toBe(4);
+    expect(tuteSubastado.crear({ manos: 4, jugadores: 5 as 4 }, 'x').ok).toBe(false);
   });
 });
 
@@ -329,8 +332,136 @@ describe('vista', () => {
   });
 });
 
+// ── Partida de 3 ─────────────────────────────────────────────────────────────
+
+function nuevaDeTres(semilla = 'ts3'): EstadoTuteSubastado {
+  const r = tuteSubastado.crear({ manos: 4, jugadores: 3 }, semilla);
+  if (!r.ok) throw new Error(r.error);
+  return r.valor;
+}
+
+describe('partida de 3', () => {
+  it('sin la opción juegan 4, también en las partidas guardadas', () => {
+    const e = nueva();
+    expect(e.config.jugadores).toBe(4);
+    const guardada = { ...e, config: { manos: 8 as const } };
+    expect(tuteSubastado.asientos(guardada)).toBe(4);
+    expect(tuteSubastado.accionesLegales(guardada, 0)).toContainEqual(pujar(60));
+  });
+
+  it('12 cartas a cada uno, sin doses, y habla el asiento 0', () => {
+    const e = nuevaDeTres();
+    expect(tuteSubastado.asientos(e)).toBe(3);
+    expect(e.manos.map((m) => m.length)).toEqual([12, 12, 12]);
+    expect(new Set(e.manos.flat()).size).toBe(36);
+    expect(e.manos.flat().some((c) => valorDe(c) === 2)).toBe(false);
+    expect(e.repartidor).toBe(2);
+    expect(e.turno).toBe(0);
+    expect(e.fichas).toEqual([0, 0, 0]);
+  });
+
+  it('la primera puja va de 70 a 230', () => {
+    const pujas = legales(nuevaDeTres()).flatMap((a) => (a.tipo === 'pujar' ? [a.puntos] : []));
+    expect(pujas[0]).toBe(70);
+    expect(pujas.at(-1)).toBe(230);
+    expect(pujas).not.toContain(60);
+    expect(pujasSubastado(null, 70)[0]).toBe(70);
+  });
+
+  it('gana la subasta quien pujó cuando pasan los otros dos', () => {
+    let e = hacer(nuevaDeTres(), pasar);
+    e = hacer(e, pujar(80));
+    e = hacer(e, pasar);
+    expect(e.fase).toBe('triunfo');
+    expect(e.pujador).toBe(1);
+  });
+
+  it('si pasan los tres se reparte otra vez', () => {
+    let e = nuevaDeTres();
+    for (let i = 0; i < 3; i++) e = hacer(e, pasar);
+    expect(e.todosPasaron).toBe(true);
+    expect(e.repartidor).toBe(0);
+    expect(e.turno).toBe(1);
+    expect(e.numeroMano).toBe(0);
+  });
+
+  it('no hay tute: con los cuatro Reyes solo se cantan las parejas', () => {
+    const e: EstadoTuteSubastado = {
+      ...nuevaDeTres(),
+      azar: crearAzar('mesa3'),
+      manos: [
+        ['oros-12', 'oros-11', 'copas-12', 'espadas-12', 'bastos-12'],
+        ['copas-4', 'copas-5', 'copas-6', 'copas-7', 'copas-1'],
+        ['espadas-4', 'espadas-5', 'espadas-6', 'espadas-7', 'espadas-1'],
+      ],
+      fase: 'bazas',
+      turno: 0,
+      dichos: [80, 'paso', 'paso'],
+      puja: 80,
+      pujador: 0,
+      triunfo: 'oros',
+      puedeCantar: 0,
+    };
+    const acciones = legales(e);
+    expect(acciones).not.toContainEqual({ tipo: 'cantarTute' });
+    expect(acciones).toContainEqual({ tipo: 'cantar', palo: 'oros' });
+  });
+
+  it('cumple con 85 sobre 80: gana 16 y cada rival pierde 8', () => {
+    const e: EstadoTuteSubastado = {
+      ...nuevaDeTres(),
+      azar: crearAzar('mesa3'),
+      manos: [['oros-1'], ['copas-4'], ['copas-5']],
+      fase: 'bazas',
+      turno: 0,
+      dichos: [80, 'paso', 'paso'],
+      puja: 80,
+      pujador: 0,
+      triunfo: 'oros',
+      puntos: [64, 0, 0],
+    };
+    let f = e;
+    for (let i = 0; i < 3; i++)
+      f = hacer(
+        f,
+        legales(f).find((a) => a.tipo === 'jugar')!,
+      );
+    expect(f.resultadosManos[0]!.puntosPujador).toBe(85);
+    expect(f.resultadosManos[0]!.cambio).toEqual([16, -8, -8]);
+    expect(f.fichas).toEqual([16, -8, -8]);
+    expect(f.repartidor).toBe(0);
+    expect(f.manos.map((m) => m.length)).toEqual([12, 12, 12]);
+  });
+
+  it('las partidas al azar terminan con las fichas a 0', () => {
+    for (let i = 0; i < 10; i++) {
+      let e = nuevaDeTres(`tres-${i}`);
+      const g = new Generador(crearAzar(`tres-${i}/g`));
+      for (let k = 0; k < 5000 && !tuteSubastado.resultado(e); k++) {
+        const acciones = legales(e);
+        const pasa = e.fase === 'subasta' && g.enteroHasta(2) === 0;
+        e = tuteSubastado.transicion(
+          e,
+          e.turno,
+          pasa ? pasar : acciones[g.enteroHasta(acciones.length)]!,
+        );
+        expect(e.fichas.reduce((suma, f) => suma + f, 0)).toBe(0);
+      }
+      expect(tuteSubastado.resultado(e)).not.toBeNull();
+      expect(e.resultadosManos).toHaveLength(4);
+    }
+  });
+
+  it('la vista tiene tres asientos', () => {
+    const v = tuteSubastado.vistaDe(nuevaDeTres(), 1);
+    expect(v.cartasEnMano).toEqual([12, 12, 12]);
+    expect(v.mano).toBe(0);
+    expect(v.config.jugadores).toBe(3);
+  });
+});
+
 describirContrato(tuteSubastado, {
-  configs: [{ manos: 4 }],
+  configs: [{ manos: 4 }, { manos: 4, jugadores: 3 }],
   // Las cartas de la última baza ya se vieron, aunque sean de la mano anterior.
   cartasOcultas: (e, asiento) => {
     const vistas = new Set<string>(e.ultimaBaza?.cartas.map((j) => j.carta) ?? []);

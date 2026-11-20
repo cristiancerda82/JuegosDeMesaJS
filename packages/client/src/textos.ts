@@ -320,7 +320,7 @@ export const T = {
     ochoLocoDesc: 'De 2 a 5: suelta cartas del mismo palo o número; el 8 cambia de palo.',
     cuatrolaDesc: 'El Tresillo de 4: juega solo o llama a un rey, con espadilla, malilla y basto.',
     tuteSubastadoDesc:
-      'Subasta cuántos puntos harás, elige el triunfo y juega tú solo contra tres.',
+      'De 3 o 4: subasta cuántos puntos harás, elige el triunfo y juega tú solo contra los demás.',
     julepeDesc: 'De 3 a 6: decide si juegas la mano y haz dos bazas, o paga el julepe.',
     truc: 'Truc',
     trucDesc: 'Envit y truc con tres cartas: apuesta, farolea y gana dos de tres bazas.',
@@ -397,6 +397,8 @@ export const T = {
     pasadasN: (n: number | null) =>
       n === null ? 'Sin límite' : n === 1 ? '1 pasada' : `${n} pasadas`,
     siempreCuatro: 'Siempre se juega con 4, cada uno por su cuenta.',
+    subastadoTresDesc:
+      'Con 3, cada uno por su cuenta: 12 cartas sin los doses, la subasta empieza en 70 y no hay tute.',
     dosCames: 'Dos cames de 12 (gana quien gane dos)',
     unaCame: 'Una came de 12',
     scopone: '4 en parejas (Scopone)',
@@ -3858,7 +3860,7 @@ export const T = {
         texto: [
           '1 punto por cada escoba, 1 para quien tenga más cartas, 1 para quien tenga más oros, 1 para quien tenga el 7 de oros y 1 para quien tenga más sietes. Si hay empate en cartas, oros o sietes, ese punto no es para nadie.',
           'Variante (opción «Premios de los oros y los sietes»): quien se lleva los 10 oros se apunta 2 puntos por los oros, y quien se lleva los 4 sietes, 3 por los sietes, en lugar de 1.',
-          'En otros sitios la partida se juega a 31 puntos en lugar de a 21.',
+          'En otros sitios la partida se juega a 31 puntos en lugar de a 21: puedes elegirlo, o una más corta a 15, en las opciones.',
         ],
         ejemplo: 'premios',
       },
@@ -4135,7 +4137,7 @@ export const T = {
         texto: [
           'Se juega con la baraja española de 40 cartas y 4 jugadores, sin parejas fijas. En cada mano se subastan los puntos que se van a hacer, y quien gana la subasta juega solo contra los otros tres, que esa mano son compañeros.',
           'Se cobra en fichas. Todos empiezan con 0 y gana quien más tenga al acabar las manos (8 por defecto).',
-          'En otros sitios se juega entre 3, con 12 cartas cada uno (se quitan los doses), y la subasta empieza en 70 puntos.',
+          'Variante (opción «3 jugadores»): como cuenta Núñez Elvira, se juega entre 3. Se quitan los doses y cada uno recibe 12 cartas, la primera puja es de 70 como mínimo y no se canta el tute. El pujador juega contra los otros dos y cobra de cada uno, o les paga, una ficha por cada 10 puntos pujados.',
         ],
       },
       {

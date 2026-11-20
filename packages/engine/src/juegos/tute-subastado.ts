@@ -7,6 +7,7 @@ import {
   cartasObligadas,
   puntosDe,
   siguiente,
+  valorDe,
   type CartaJugada,
 } from '../motor/bazas';
 import type { Asiento, Fin, Juego } from '../motor/contrato';
@@ -20,20 +21,38 @@ export const MANOS_TUTE_SUBASTADO = [4, 8, 12] as const;
 export interface ConfigTuteSubastado {
   /** Manos que dura la partida (las que se juegan; si todos pasan, no cuenta). */
   readonly manos: (typeof MANOS_TUTE_SUBASTADO)[number];
+  /** Variante: 3 jugadores con 12 cartas sin los doses. Sin ella, 4. */
+  readonly jugadores?: 3 | 4;
 }
 
-export const CONFIG_TUTE_SUBASTADO_POR_DEFECTO: ConfigTuteSubastado = { manos: 8 };
+export const CONFIG_TUTE_SUBASTADO_POR_DEFECTO: ConfigTuteSubastado = { manos: 8, jugadores: 4 };
 
-/** Puja mínima, máxima y salto entre pujas. */
+/** Puja mínima (con 4; con 3, 70), máxima y salto entre pujas. */
 export const PUJA_MINIMA_SUBASTADO = 60;
+export const PUJA_MINIMA_SUBASTADO_TRES = 70;
 export const PUJA_MAXIMA_SUBASTADO = 230;
 export const SALTO_PUJA_SUBASTADO = 10;
 /** Puntos de las bazas de una mano, con las 10 de últimas. */
 export const PUNTOS_MANO_TUTE = 130;
 
-const JUGADORES = 4;
-const CARTAS_EN_MANO = 10;
 const DIEZ_DE_ULTIMAS = 10;
+const DOS = 2;
+
+/** Jugadores de la partida: 3 con la variante, 4 si no (también en las partidas guardadas). */
+export function jugadoresSubastado(config: ConfigTuteSubastado): 3 | 4 {
+  return config.jugadores === 3 ? 3 : 4;
+}
+
+/** La baraja de la partida: las 40 cartas, o las 36 sin los doses con 3 jugadores. */
+export function barajaTuteSubastado(config: ConfigTuteSubastado): IdCarta[] {
+  const baraja = crearBaraja('espanola40');
+  return jugadoresSubastado(config) === 3 ? baraja.filter((c) => valorDe(c) !== DOS) : baraja;
+}
+
+/** La primera puja posible: 60 con 4 jugadores y 70 con 3. */
+export function pujaMinimaSubastado(config: ConfigTuteSubastado): number {
+  return jugadoresSubastado(config) === 3 ? PUJA_MINIMA_SUBASTADO_TRES : PUJA_MINIMA_SUBASTADO;
+}
 
 export type FaseTuteSubastado = 'subasta' | 'triunfo' | 'bazas';
 
@@ -132,8 +151,8 @@ export interface VistaTuteSubastado {
 const partidaTerminada = (e: EstadoTuteSubastado) => e.numeroMano >= e.config.manos;
 
 /** Pujas posibles ahora: de la mínima (o la vigente más 10) a 230, de 10 en 10. */
-export function pujasSubastado(puja: number | null): number[] {
-  const desde = puja === null ? PUJA_MINIMA_SUBASTADO : puja + SALTO_PUJA_SUBASTADO;
+export function pujasSubastado(puja: number | null, minima = PUJA_MINIMA_SUBASTADO): number[] {
+  const desde = puja === null ? minima : puja + SALTO_PUJA_SUBASTADO;
   const pujas: number[] = [];
   for (let p = desde; p <= PUJA_MAXIMA_SUBASTADO; p += SALTO_PUJA_SUBASTADO) pujas.push(p);
   return pujas;
@@ -154,7 +173,7 @@ export function puntosTuteSubastado(
   return { pujador: p, defensores: d };
 }
 
-/** Reparte una mano nueva con `repartidor`: 10 cartas a cada uno y empieza la subasta. */
+/** Reparte una mano nueva con `repartidor`: toda la baraja (10 o 12 cartas cada uno) y la subasta. */
 function nuevaMano(
   base: Pick<
     EstadoTuteSubastado,
@@ -162,29 +181,27 @@ function nuevaMano(
   >,
   todosPasaron: boolean,
 ): EstadoTuteSubastado {
-  const { cartas, azar } = barajar(crearBaraja('espanola40'), base.azar);
-  const reparto = repartir(cartas, new Array<number>(JUGADORES).fill(CARTAS_EN_MANO));
+  const n = jugadoresSubastado(base.config);
+  const { cartas, azar } = barajar(barajaTuteSubastado(base.config), base.azar);
+  const reparto = repartir(cartas, new Array<number>(n).fill(cartas.length / n));
   if (!reparto.ok) throw new Error(reparto.error);
-  const mano = siguiente(base.repartidor, JUGADORES);
-  const manos = Array.from(
-    { length: JUGADORES },
-    (_, a) => reparto.valor.manos[(a - mano + JUGADORES) % JUGADORES]!,
-  );
+  const mano = siguiente(base.repartidor, n);
+  const manos = Array.from({ length: n }, (_, a) => reparto.valor.manos[(a - mano + n) % n]!);
   return {
     ...base,
     azar,
     manos,
     fase: 'subasta',
     turno: mano,
-    dichos: new Array<DichoSubasta>(JUGADORES).fill(null),
+    dichos: new Array<DichoSubasta>(n).fill(null),
     puja: null,
     pujador: null,
     todosPasaron,
     triunfo: null,
     mesa: [],
     bazasMano: [],
-    puntos: new Array<number>(JUGADORES).fill(0),
-    bazas: new Array<number>(JUGADORES).fill(0),
+    puntos: new Array<number>(n).fill(0),
+    bazas: new Array<number>(n).fill(0),
     cantes: [],
     puedeCantar: null,
   };
@@ -197,7 +214,9 @@ function cerrarMano(e: EstadoTuteSubastado, tute: Asiento | null): EstadoTuteSub
   const { pujador: puntosPujador, defensores: puntosDefensores } = puntosTuteSubastado(e, pujador);
   const cumple = tute !== null ? tute === pujador : puntosPujador >= puja;
   const valor = (cumple ? 1 : -1) * (puja / SALTO_PUJA_SUBASTADO);
-  const cambio = e.fichas.map((_, a) => (a === pujador ? 3 * valor : -valor));
+  // El pujador cobra de cada defensor, o le paga: 3 con 4 jugadores, 2 con 3.
+  const defensores = e.fichas.length - 1;
+  const cambio = e.fichas.map((_, a) => (a === pujador ? defensores * valor : -valor));
   const fichas = e.fichas.map((f, a) => f + cambio[a]!);
   const resultadosManos = [
     ...e.resultadosManos,
@@ -222,7 +241,10 @@ function cerrarMano(e: EstadoTuteSubastado, tute: Asiento | null): EstadoTuteSub
     puedeCantar: null,
   };
   if (partidaTerminada(cerrado)) return cerrado;
-  return nuevaMano({ ...cerrado, repartidor: siguiente(e.repartidor, JUGADORES) }, false);
+  return nuevaMano(
+    { ...cerrado, repartidor: siguiente(e.repartidor, jugadoresSubastado(e.config)) },
+    false,
+  );
 }
 
 function resolverBaza(e: EstadoTuteSubastado): EstadoTuteSubastado {
@@ -246,15 +268,16 @@ function resolverBaza(e: EstadoTuteSubastado): EstadoTuteSubastado {
 
 /** Tras pujar o pasar: sigue la subasta, gana el pujador, o se reparte otra vez. */
 function trasHablar(e: EstadoTuteSubastado, asiento: Asiento): EstadoTuteSubastado {
+  const n = jugadoresSubastado(e.config);
   const quedan = e.dichos.flatMap((d, a) => (d === 'paso' ? [] : [a]));
   if (quedan.length === 0) {
-    return nuevaMano({ ...e, repartidor: siguiente(e.repartidor, JUGADORES) }, true);
+    return nuevaMano({ ...e, repartidor: siguiente(e.repartidor, n) }, true);
   }
   if (quedan.length === 1 && e.puja !== null) {
     return { ...e, fase: 'triunfo', turno: e.pujador! };
   }
-  let turno = siguiente(asiento, JUGADORES);
-  while (e.dichos[turno] === 'paso') turno = siguiente(turno, JUGADORES);
+  let turno = siguiente(asiento, n);
+  while (e.dichos[turno] === 'paso') turno = siguiente(turno, n);
   return { ...e, turno };
 }
 
@@ -272,15 +295,23 @@ export const tuteSubastado: Juego<
     if (!(MANOS_TUTE_SUBASTADO as readonly number[]).includes(config.manos)) {
       return error('La partida de Tute subastado dura 4, 8 o 12 manos');
     }
+    if (config.jugadores !== undefined && config.jugadores !== 3 && config.jugadores !== 4) {
+      return error('El Tute subastado es de 3 o 4 jugadores');
+    }
+    const limpia: ConfigTuteSubastado = {
+      manos: config.manos,
+      jugadores: jugadoresSubastado(config),
+    };
+    const n = jugadoresSubastado(limpia);
     // Empieza repartiendo el último asiento, así es mano el asiento 0.
     return ok(
       nuevaMano(
         {
-          config: { manos: config.manos },
+          config: limpia,
           azar: crearAzar(semilla),
           numeroMano: 0,
-          repartidor: JUGADORES - 1,
-          fichas: new Array<number>(JUGADORES).fill(0),
+          repartidor: n - 1,
+          fichas: new Array<number>(n).fill(0),
           resultadosManos: [],
           ultimaBaza: null,
         },
@@ -289,7 +320,7 @@ export const tuteSubastado: Juego<
     );
   },
 
-  asientos: () => JUGADORES,
+  asientos: (e) => jugadoresSubastado(e.config),
 
   accionesLegales(e, asiento) {
     if (partidaTerminada(e) || asiento !== e.turno) return [];
@@ -297,14 +328,20 @@ export const tuteSubastado: Juego<
       case 'subasta':
         return [
           { tipo: 'pasar' },
-          ...pujasSubastado(e.puja).map((puntos) => ({ tipo: 'pujar' as const, puntos })),
+          ...pujasSubastado(e.puja, pujaMinimaSubastado(e.config)).map((puntos) => ({
+            tipo: 'pujar' as const,
+            puntos,
+          })),
         ];
       case 'triunfo':
         return PALOS_ESPANOLES.map((palo) => ({ tipo: 'triunfo' as const, palo }));
       case 'bazas': {
         const acciones: AccionTuteSubastado[] = [];
         if (e.puedeCantar === asiento && e.mesa.length === 0) {
-          if (tieneTute(e.manos[asiento]!)) acciones.push({ tipo: 'cantarTute' });
+          // Con 3 jugadores no hay tute: con 12 cartas no tiene objeto.
+          if (jugadoresSubastado(e.config) === 4 && tieneTute(e.manos[asiento]!)) {
+            acciones.push({ tipo: 'cantarTute' });
+          }
           for (const palo of palosCantables(e, asiento)) acciones.push({ tipo: 'cantar', palo });
         }
         const jugables = cartasObligadas(e.manos[asiento]!, e.mesa, e.triunfo, {
@@ -357,9 +394,8 @@ export const tuteSubastado: Juego<
         );
         const mesa = [...e.mesa, { asiento, carta: accion.carta }];
         const jugado: EstadoTuteSubastado = { ...e, manos, mesa, puedeCantar: null };
-        return mesa.length < JUGADORES
-          ? { ...jugado, turno: siguiente(asiento, JUGADORES) }
-          : resolverBaza(jugado);
+        const n = jugadoresSubastado(e.config);
+        return mesa.length < n ? { ...jugado, turno: siguiente(asiento, n) } : resolverBaza(jugado);
       }
     }
   },
@@ -371,7 +407,7 @@ export const tuteSubastado: Juego<
       miMano: asiento === null ? null : [...e.manos[asiento]!],
       cartasEnMano: e.manos.map((m) => m.length),
       repartidor: e.repartidor,
-      mano: siguiente(e.repartidor, JUGADORES),
+      mano: siguiente(e.repartidor, jugadoresSubastado(e.config)),
       fase: e.fase,
       turno: partidaTerminada(e) ? null : e.turno,
       dichos: [...e.dichos],
@@ -397,7 +433,7 @@ export const tuteSubastado: Juego<
     const maximo = Math.max(...e.fichas);
     const ganadores = e.fichas.flatMap((f, a) => (f === maximo ? [a] : []));
     const puntos = [...e.fichas];
-    if (ganadores.length === JUGADORES) return { ganadores: [], empate: true, puntos };
+    if (ganadores.length === e.fichas.length) return { ganadores: [], empate: true, puntos };
     return { ganadores, empate: false, puntos };
   },
 };

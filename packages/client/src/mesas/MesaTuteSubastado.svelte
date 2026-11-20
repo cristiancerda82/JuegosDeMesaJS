@@ -33,10 +33,12 @@
   const vista = $derived(sesion.vista);
   const legales = $derived(sesion.legales);
 
+  /** 4 jugadores, o 3 con la variante. */
+  const jugadores = $derived(vista.cartasEnMano.length);
   const jugable = (carta: IdCarta) =>
     legales.some((a) => a.tipo === 'jugar' && a.carta === carta);
   const nombre = (asiento: Asiento) =>
-    nombreNumerado(asiento, 4, sesion.asiento, sesion.red, T.tuteSubastado.rivalN);
+    nombreNumerado(asiento, jugadores, sesion.asiento, sesion.red, T.tuteSubastado.rivalN);
   const detalle = (asiento: Asiento) =>
     vista.fase === 'bazas'
       ? T.tuteSubastado.detalleBazas(
@@ -64,7 +66,7 @@
 
   /** La última baza se ve hasta que empieza la subasta de la mano siguiente. */
   const vistaMesa: VistaBazas = $derived({
-    config: { jugadores: 4 },
+    config: { jugadores },
     miMano: vista.miMano,
     cartasEnMano: vista.cartasEnMano,
     mazo: 0,
@@ -233,7 +235,7 @@
         {/each}
       </div>
       <ul class="dichos">
-        {#each [0, 1, 2, 3].filter((a) => a !== sesion.asiento) as a (a)}
+        {#each vista.dichos.map((_, a) => a).filter((a) => a !== sesion.asiento) as a (a)}
           <li>{nombre(a)}: {T.tuteSubastado.detalle(vista.dichos[a] ?? null, vista.fichas[a] ?? 0)}</li>
         {/each}
       </ul>
@@ -336,7 +338,7 @@
     color: var(--texto-suave);
   }
 
-  /* Las 10 cartas en una fila: se encogen en pantallas estrechas. */
+  /* Las 10 o 12 cartas en una fila: se encogen en pantallas estrechas. */
   .mano-subasta {
     display: flex;
     justify-content: center;

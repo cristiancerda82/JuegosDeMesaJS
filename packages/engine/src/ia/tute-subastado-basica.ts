@@ -1,5 +1,9 @@
 import { PALOS_ESPANOLES, type IdCarta, type PaloEspanol } from '../baraja/cartas';
-import type { AccionTuteSubastado, VistaTuteSubastado } from '../juegos/tute-subastado';
+import {
+  barajaTuteSubastado,
+  type AccionTuteSubastado,
+  type VistaTuteSubastado,
+} from '../juegos/tute-subastado';
 import { cartaGanadora, fuerza, paloDe, puntosDe, valorDe } from '../motor/bazas';
 import type { Agente } from './agente';
 import { cartaParaResponder, cartaParaSalir, coste } from './bazas-heuristica';
@@ -22,8 +26,10 @@ const TRES = 3;
 const REY = 12;
 const CABALLO = 11;
 
-/** Puntos que, de media, traen las cartas de los rivales en una baza ganada. */
+/** Puntos que, de media, traen las cartas de los tres rivales en una baza ganada. */
 const PUNTOS_AJENOS_POR_BAZA = 8;
+/** Rivales de cada baza con 4 jugadores: con 3, los puntos ajenos se escalan a dos. */
+const RIVALES_CON_CUATRO = 3;
 /** Parte de las 10 de últimas que se espera llevarse. */
 const ULTIMAS_ESPERADAS = 5;
 
@@ -50,10 +56,15 @@ function probabilidadGanar(carta: IdCarta, mano: readonly IdCarta[], triunfo: Pa
  * Puntos que espera hacer con su mano si el triunfo es `triunfo`: cada carta que puede ganar su
  * baza aporta sus puntos y los que traen los rivales, más los cantes y parte de las últimas.
  */
-export function estimarPuntos(mano: readonly IdCarta[], triunfo: PaloEspanol): number {
+export function estimarPuntos(
+  mano: readonly IdCarta[],
+  triunfo: PaloEspanol,
+  jugadores = 4,
+): number {
+  const ajenos = (PUNTOS_AJENOS_POR_BAZA * (jugadores - 1)) / RIVALES_CON_CUATRO;
   let puntos = ULTIMAS_ESPERADAS;
   for (const c of mano) {
-    puntos += probabilidadGanar(c, mano, triunfo) * (puntosDe(c) + PUNTOS_AJENOS_POR_BAZA);
+    puntos += probabilidadGanar(c, mano, triunfo) * (puntosDe(c) + ajenos);
   }
   for (const palo of PALOS_ESPANOLES) {
     if (mano.includes(`${palo}-${REY}`) && mano.includes(`${palo}-${CABALLO}`)) {
@@ -64,10 +75,13 @@ export function estimarPuntos(mano: readonly IdCarta[], triunfo: PaloEspanol): n
 }
 
 /** El palo de triunfo con el que más puntos espera hacer, y esos puntos. */
-export function mejorTriunfo(mano: readonly IdCarta[]): { palo: PaloEspanol; puntos: number } {
+export function mejorTriunfo(
+  mano: readonly IdCarta[],
+  jugadores = 4,
+): { palo: PaloEspanol; puntos: number } {
   let mejor: { palo: PaloEspanol; puntos: number } = { palo: PALOS_ESPANOLES[0], puntos: -1 };
   for (const palo of PALOS_ESPANOLES) {
-    const puntos = estimarPuntos(mano, palo);
+    const puntos = estimarPuntos(mano, palo, jugadores);
     if (puntos > mejor.puntos) mejor = { palo, puntos };
   }
   return mejor;
@@ -78,15 +92,16 @@ function elegir(
   acciones: readonly AccionTuteSubastado[],
 ): AccionTuteSubastado {
   const mano = vista.miMano ?? [];
+  const jugadores = vista.cartasEnMano.length;
   switch (vista.fase) {
     case 'subasta': {
       // La puja más baja posible, si no pasa de lo que espera hacer.
-      const { puntos } = mejorTriunfo(mano);
+      const { puntos } = mejorTriunfo(mano, jugadores);
       const minima = acciones.find((a) => a.tipo === 'pujar');
       return minima && minima.puntos <= puntos ? minima : { tipo: 'pasar' };
     }
     case 'triunfo':
-      return { tipo: 'triunfo', palo: mejorTriunfo(mano).palo };
+      return { tipo: 'triunfo', palo: mejorTriunfo(mano, jugadores).palo };
     case 'bazas':
       return enBazas(vista, acciones);
   }
@@ -132,7 +147,7 @@ function enBazas(
   const carta = cartaParaResponder(
     {
       asiento,
-      jugadores: 4,
+      jugadores: vista.cartasEnMano.length,
       triunfo,
       mesa: vista.mesa,
       companero: (otro) => asiento !== pujador && otro !== pujador,
@@ -151,7 +166,7 @@ function salida(vista: VistaTuteSubastado, cartas: readonly IdCarta[]): IdCarta 
   if (vista.asiento === vista.pujador) {
     const jugadas = new Set(vista.bazasMano.flatMap((b) => b.cartas.map((j) => j.carta)));
     const mano = vista.miMano ?? [];
-    const fuera = triunfosFuera(triunfo, mano, jugadas);
+    const fuera = triunfosFuera(vista, mano, jugadas);
     const mios = cartas.filter((c) => paloDe(c) === triunfo);
     if (fuera.length > 0 && mios.length > 0) {
       const alto = [...mios].sort((a, b) => fuerza(b) - fuerza(a))[0]!;
@@ -161,18 +176,15 @@ function salida(vista: VistaTuteSubastado, cartas: readonly IdCarta[]): IdCarta 
   return cartaParaSalir(triunfo, cartas);
 }
 
-/** Triunfos que no tiene ni se han jugado: los que pueden tener los rivales. */
+/** Triunfos de la baraja de la partida que no tiene ni se han jugado: los de los rivales. */
 function triunfosFuera(
-  triunfo: PaloEspanol,
+  vista: VistaTuteSubastado,
   mano: readonly IdCarta[],
   jugadas: ReadonlySet<IdCarta>,
 ): IdCarta[] {
-  const fuera: IdCarta[] = [];
-  for (const v of [1, 2, 3, 4, 5, 6, 7, 10, 11, 12]) {
-    const c: IdCarta = `${triunfo}-${v}`;
-    if (!mano.includes(c) && !jugadas.has(c)) fuera.push(c);
-  }
-  return fuera;
+  return barajaTuteSubastado(vista.config).filter(
+    (c) => paloDe(c) === vista.triunfo && !mano.includes(c) && !jugadas.has(c),
+  );
 }
 
 /** Reyes y caballos de los palos en los que la mano propia aún puede cantar. */

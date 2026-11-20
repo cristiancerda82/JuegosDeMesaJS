@@ -5,10 +5,11 @@ import type { IdCarta } from '@juegos/engine';
 /** Toca la esquina superior izquierda, que queda a la vista aunque las cartas se solapen. */
 const ESQUINA = { position: { x: 8, y: 8 } };
 
-async function empezarSubastado(page: Page, query: string, manos?: number) {
+async function empezarSubastado(page: Page, query: string, manos?: number, tres = false) {
   await page.goto(`./?${query}`);
   await abrirJuego(page, 'tuteSubastado');
   if (manos) await page.getByLabel(`${manos} manos`, { exact: true }).check();
+  if (tres) await page.getByTestId('subastado-jugadores-3').check();
   await page.getByTestId('empezar').click();
 }
 
@@ -146,6 +147,72 @@ test('la subasta y la mesa del Tute subastado entran en 360 × 640', async ({ pa
   await page.getByTestId('pasar').click();
   await jugarSubastado(page, async () => (await page.locator('.carta-mano.jugable').count()) > 0);
   await page.screenshot({ path: 'test-results/subastado-mesa-360.png' });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+    ancho,
+  );
+});
+
+// ── Partida de 3 ─────────────────────────────────────────────────────────────
+
+test('Tute subastado de 3: 12 cartas, dos rivales, la subasta desde 70 y el resumen de tres', async ({
+  page,
+}) => {
+  await empezarSubastado(page, 'rapido&semilla=subastado-tres', undefined, true);
+  await expect(page.locator('.carta-mano')).toHaveCount(12);
+  await expect(page.locator('.carta-mano[data-carta$="-2"]')).toHaveCount(0);
+  await expect(page.getByTestId('asiento-1')).toBeVisible();
+  await expect(page.getByTestId('asiento-2')).toBeVisible();
+  await expect(page.getByTestId('asiento-3')).toHaveCount(0);
+
+  // El jugador es mano: pujas de 70 a 230, y lo que dijo cada uno de los dos rivales.
+  const subasta = page.getByTestId('panel-subasta');
+  await expect(subasta).toBeVisible();
+  await expect(subasta.locator('[data-testid^="puja-"]')).toHaveCount(17);
+  await expect(subasta.getByTestId('puja-60')).toHaveCount(0);
+  await expect(subasta.locator('.dichos li')).toHaveCount(2);
+  await page.screenshot({ path: 'test-results/subastado-tres-subasta.png' });
+  await page.getByTestId('puja-230').click();
+
+  await page.getByTestId('triunfo-oros').click({ timeout: 30_000 });
+  const panel = page.getByTestId('panel-mano');
+  await jugarSubastado(page, () => panel.isVisible());
+  await expect(panel.getByTestId('cumple')).toContainText('No llegas a tus 230');
+  // Paga 23 a cada uno de los dos rivales.
+  await expect(panel.getByTestId('cambio-0')).toHaveText('−46');
+  await expect(panel.locator('[data-testid^="fila-"]')).toHaveCount(3);
+  await page.screenshot({ path: 'test-results/subastado-tres-resumen.png' });
+});
+
+test('partida de Tute subastado de 3 completa de 4 manos', async ({ page }) => {
+  test.setTimeout(240_000);
+  await empezarSubastado(page, 'rapido&semilla=subastado-tres-completa', 4, true);
+  await jugarSubastado(page);
+  const fin = page.getByTestId('fin');
+  await expect(fin).toContainText(/¡Has ganado!|Has perdido|Empate/);
+  await expect(fin.getByTestId('fichas-2')).toBeVisible();
+  await expect(fin.getByTestId('fichas-3')).toHaveCount(0);
+});
+
+test('la subasta de 3 con 12 cartas entra en 360 × 640', async ({ page }) => {
+  test.skip(page.viewportSize()?.width !== 360, 'solo en el perfil móvil');
+  await empezarSubastado(page, 'semilla=pequena-tres', undefined, true);
+  const subasta = page.getByTestId('panel-subasta');
+  await subasta.waitFor();
+  await page.waitForFunction(() => document.getAnimations().length === 0);
+  const ancho = await page.evaluate(() => window.innerWidth);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+    ancho,
+  );
+  for (const id of ['pasar', 'puja-70', 'puja-230']) {
+    const caja = (await page.getByTestId(id).boundingBox())!;
+    expect(caja.x).toBeGreaterThanOrEqual(0);
+    expect(caja.x + caja.width).toBeLessThanOrEqual(ancho);
+    expect(caja.y + caja.height).toBeLessThanOrEqual(640);
+  }
+  await page.screenshot({ path: 'test-results/subastado-tres-360.png' });
+  await page.getByTestId('pasar').click();
+  await jugarSubastado(page, async () => (await page.locator('.carta-mano.jugable').count()) > 0);
+  await page.screenshot({ path: 'test-results/subastado-tres-mesa-360.png' });
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
     ancho,
   );

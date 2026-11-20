@@ -169,3 +169,71 @@ describe('garantías de la IA del Tute subastado', () => {
     expect(b).toEqual(a);
   });
 });
+
+describe('IA del Tute subastado de 3', () => {
+  const TRES = { manos: 4, jugadores: 3 } as const;
+
+  it('puja 70 con una mano que espera llegar', () => {
+    const r = tuteSubastado.crear({ ...TRES, manos: 8 }, 'ia3');
+    if (!r.ok) throw new Error(r.error);
+    const buena: IdCarta[] = [
+      'oros-1',
+      'oros-3',
+      'oros-12',
+      'oros-11',
+      'oros-10',
+      'copas-1',
+      'copas-3',
+      'espadas-1',
+      'bastos-4',
+      'bastos-5',
+      'copas-5',
+      'espadas-6',
+    ];
+    const e = { ...r.valor, manos: r.valor.manos.map((m, a) => (a === 0 ? buena : m)) };
+    expect(decide(e)).toEqual({ tipo: 'pujar', puntos: 70 });
+  });
+
+  it('con dos rivales cada baza trae menos puntos ajenos', () => {
+    const mano: IdCarta[] = ['oros-1', 'oros-3', 'copas-1'];
+    expect(estimarPuntos(mano, 'oros', 3)).toBeLessThan(estimarPuntos(mano, 'oros'));
+  });
+
+  it('las partidas entre IAs y con el azar terminan sin acciones ilegales', () => {
+    expect(
+      duelo(
+        tuteSubastado,
+        TRES,
+        iaTuteSubastadoBasica,
+        iaTuteSubastadoBasica,
+        150,
+        unoContraTodos(3),
+        'tres',
+      ).partidas,
+    ).toBe(150);
+    expect(
+      duelo(
+        tuteSubastado,
+        TRES,
+        iaTuteSubastadoBasica,
+        azarDe,
+        60,
+        (a, i) => (a + i) % 2 === 0,
+        'tres-mezcla',
+      ).partidas,
+    ).toBe(60);
+  });
+
+  it('gana claramente más de lo que le toca contra el azar', () => {
+    const r = duelo(
+      tuteSubastado,
+      { ...TRES, manos: 8 },
+      iaTuteSubastadoBasica,
+      azarDe,
+      300,
+      unoContraTodos(3),
+      'tres-contra-azar',
+    );
+    expect(r.ganadas).toBeGreaterThan(200);
+  });
+});
