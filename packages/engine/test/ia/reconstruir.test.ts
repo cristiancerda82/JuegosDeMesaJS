@@ -1285,7 +1285,10 @@ describe('Reconstrucción del Klaverjas', () => {
 });
 
 describirReconstruccion(barbu, reconstruirBarbu, {
-  configs: [{ jugadores: 4, manos: 2 }],
+  configs: [
+    { jugadores: 4, manos: 2 },
+    { jugadores: 4, manos: 7, dominoElegido: true },
+  ],
   base: iaBarbuBasica,
 });
 
@@ -1309,6 +1312,20 @@ describe('Reconstrucción del Barbu', () => {
       expect(rec.manos[1]).not.toContain('picas-13');
       expect(rec.manos[2]!.some((c) => c.startsWith('diamantes'))).toBe(false);
       expect(rec.manos.map((m) => m.length)).toEqual(e.manos.map((m) => m.length));
+    }
+  });
+
+  it('con el número elegido, el estado reconstruido conserva el número y lo que encaja', () => {
+    const r = barbu.crear({ jugadores: 4, manos: 1, dominoElegido: true }, 'elegido');
+    if (!r.ok) throw new Error(r.error);
+    let e = barbu.transicion(r.valor, 0, { tipo: 'contrato', contrato: 'domino' });
+    e = barbu.transicion(e, 0, { tipo: 'inicio', rango: 7 });
+    for (let k = 0; k < 10; k++) {
+      // Desde el repartidor, al que le toca: sus cartas jugables son las mismas.
+      const rec = reconstruirBarbu(barbu.vistaDe(e, 0), crearAzar(`e${k}`));
+      expect(rec.inicio).toBe(7);
+      expect(barbu.vistaDe(rec, 0)).toEqual(barbu.vistaDe(e, 0));
+      expect(barbu.accionesLegales(rec, 0)).toEqual(barbu.accionesLegales(e, 0));
     }
   });
 });

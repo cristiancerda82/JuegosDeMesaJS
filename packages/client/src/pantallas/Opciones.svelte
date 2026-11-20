@@ -557,6 +557,14 @@
           {T.opciones.ordenAntiguoPolignacDesc}
         </label>
       </fieldset>
+    {:else if juego === 'barbu'}
+      <fieldset>
+        <legend>{T.opciones.dominoElegidoBarbu}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={barbuConfig.dominoElegido} data-testid="barbu-domino-elegido" />
+          {T.opciones.dominoElegidoBarbuDesc}
+        </label>
+      </fieldset>
     {:else if juego === 'corazones'}
       <fieldset>
         <legend>{T.opciones.jugadores}</legend>

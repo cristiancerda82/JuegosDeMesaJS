@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { crearAzar } from '../../src/baraja/azar';
 import type { IdCarta } from '../../src/baraja/cartas';
 import { aleatorio } from '../../src/ia/agente';
-import { iaBarbuBasica } from '../../src/ia/barbu-basica';
+import { iaBarbuBasica, inicioBarbu } from '../../src/ia/barbu-basica';
 import { IAS } from '../../src/ia/ias';
 import { barbu, type AccionBarbu, type EstadoBarbu, type VistaBarbu } from '../../src/juegos/barbu';
 import { duelo, unoContraTodos } from './duelo';
@@ -92,6 +92,70 @@ describe('IA difícil del Barbu', () => {
     expect(IAS.barbu.dificil.decidir(v, acciones, crearAzar('s'))).toEqual(
       IAS.barbu.dificil.decidir(v, acciones, crearAzar('s')),
     );
+  });
+});
+
+describe('IA básica del Barbu con el número del dominó elegido', () => {
+  /** Con 7 manos se juegan todos los contratos, también el dominó. */
+  const ELEGIDO = { jugadores: 4, manos: 7, dominoElegido: true } as const;
+
+  it('elige el número con el que más cartas suelta', () => {
+    // Tres sietes, con el 8 y el 6 de picas seguidos al de picas, y sueltas del resto.
+    const mano = c('7p 7c 7d 8p 6p 2t 3d 4c 9t 10d Qc Kt Ad');
+    expect(inicioBarbu(mano)).toBe(7);
+  });
+
+  it('a igualdad, el número más cercano al 8', () => {
+    expect(inicioBarbu(c('2p 9c'))).toBe(9);
+    expect(inicioBarbu(c('7p 9c'))).toBe(7);
+  });
+
+  it('en la fase de elegir el número, elige con su mano', () => {
+    const r = barbu.crear(ELEGIDO, 'ia');
+    if (!r.ok) throw new Error(r.error);
+    const e: EstadoBarbu = {
+      ...r.valor,
+      fase: 'inicio',
+      contrato: 'domino',
+      jugados: ['domino'],
+      manos: [c('5p 5c 5d 5t 4p 6p 2c 3c 9d 10t Qd Kc Ap'), ...r.valor.manos.slice(1)],
+    };
+    expect(decide(e)).toEqual({ tipo: 'inicio', rango: 5 });
+  });
+
+  it('juega el dominó desde el número elegido', () => {
+    const r = barbu.crear(ELEGIDO, 'ia');
+    if (!r.ok) throw new Error(r.error);
+    // Con el 7: abre el 7 de picas, que le deja el 6 y el 5 de picas por jugar.
+    const e: EstadoBarbu = {
+      ...r.valor,
+      fase: 'domino',
+      contrato: 'domino',
+      inicio: 7,
+      jugados: ['domino'],
+      manos: [c('7p 6p 5p 7c'), ...r.valor.manos.slice(1)],
+    };
+    expect(decide(e)).toEqual({ tipo: 'jugar', carta: una('7p') });
+  });
+
+  it('partidas entre IAs con la opción terminan sin acciones ilegales y rápidas', () => {
+    const r = duelo(
+      barbu,
+      ELEGIDO,
+      iaBarbuBasica,
+      IAS.barbu.facil,
+      20,
+      unoContraTodos(4),
+      'elegido',
+    );
+    expect(r.partidas).toBe(20);
+    expect(r.maxMs).toBeLessThan(500);
+  });
+
+  it('con la opción, gana claramente al azar', () => {
+    const azar = aleatorio<VistaBarbu, AccionBarbu>();
+    const r = duelo(barbu, ELEGIDO, iaBarbuBasica, azar, 100, unoContraTodos(4), 'azar-elegido');
+    expect(r.ganadas).toBeGreaterThan(35);
   });
 });
 

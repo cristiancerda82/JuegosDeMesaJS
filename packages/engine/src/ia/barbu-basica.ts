@@ -2,6 +2,8 @@ import { PALOS_FRANCESES, type IdCarta, type PaloFrances } from '../baraja/carta
 import {
   CONTRATOS_BARBU,
   ganadoraBarbu,
+  INICIO_DOMINO_BARBU,
+  INICIOS_BARBU,
   paloBarbu,
   penalizaBarbu,
   rangoBarbu,
@@ -12,6 +14,8 @@ import {
 import type { Agente } from './agente';
 
 const JOTA = 11;
+/** El número de en medio: a igualdad, se prefiere empezar el dominó cerca de él. */
+const CENTRO = 8;
 const delPalo = (mano: readonly IdCarta[], palo: PaloFrances) =>
   mano.filter((c) => paloBarbu(c) === palo);
 
@@ -22,20 +26,41 @@ function paloMasLargo(mano: readonly IdCarta[]): PaloFrances {
   return [...PALOS_FRANCESES].sort((a, b) => valor(b) - valor(a))[0]!;
 }
 
-/** Cartas seguidas a las Jotas que tiene, hacia arriba y hacia abajo. */
-function seguidasAJotas(mano: readonly IdCarta[]): number {
+/**
+ * Lo que vale empezar el dominó por `inicio` con esta mano: las cartas de ese número más las
+ * seguidas a ellas en su palo, hacia arriba y hacia abajo.
+ */
+export function valorInicioBarbu(mano: readonly IdCarta[], inicio: number): number {
   let n = 0;
   for (const palo of PALOS_FRANCESES) {
     const rangos = new Set(delPalo(mano, palo).map(rangoBarbu));
-    if (!rangos.has(JOTA)) continue;
-    for (let r = JOTA + 1; rangos.has(r); r++) n++;
-    for (let r = JOTA - 1; rangos.has(r); r--) n++;
+    if (!rangos.has(inicio)) continue;
+    n++;
+    for (let r = inicio + 1; rangos.has(r); r++) n++;
+    for (let r = inicio - 1; rangos.has(r); r--) n++;
   }
   return n;
 }
 
-/** Lo que estima anotar con su mano en un contrato (spec ia-jugadores). */
-export function estimacionBarbu(mano: readonly IdCarta[], contrato: ContratoBarbu): number {
+/** El número de salida que elige: el de más valor; a igualdad, el más cercano al 8 y el más bajo. */
+export function inicioBarbu(mano: readonly IdCarta[]): number {
+  return [...INICIOS_BARBU].sort(
+    (a, b) =>
+      valorInicioBarbu(mano, b) - valorInicioBarbu(mano, a) ||
+      Math.abs(a - CENTRO) - Math.abs(b - CENTRO) ||
+      a - b,
+  )[0]!;
+}
+
+/**
+ * Lo que estima anotar con su mano en un contrato (spec ia-jugadores). Con `dominoElegido`, el
+ * dominó se valora con el mejor número de salida.
+ */
+export function estimacionBarbu(
+  mano: readonly IdCarta[],
+  contrato: ContratoBarbu,
+  dominoElegido = false,
+): number {
   const altas = (cs: readonly IdCarta[]) => cs.filter((c) => rangoBarbu(c) >= JOTA).length;
   const corazones = delPalo(mano, 'corazones');
   switch (contrato) {
@@ -58,16 +83,20 @@ export function estimacionBarbu(mano: readonly IdCarta[], contrato: ContratoBarb
       return 5 * (largo + mano.filter((c) => rangoBarbu(c) === 14).length - 4);
     }
     case 'domino':
-      return 5 * (mano.filter((c) => rangoBarbu(c) === JOTA).length + seguidasAJotas(mano)) - 10;
+      return (
+        5 * valorInicioBarbu(mano, dominoElegido ? inicioBarbu(mano) : INICIO_DOMINO_BARBU) - 10
+      );
   }
 }
 
 function eleccionBarbu(vista: VistaBarbu): AccionBarbu {
   const mano = vista.miMano ?? [];
   if (vista.fase === 'triunfo') return { tipo: 'triunfo', palo: paloMasLargo(mano) };
+  if (vista.fase === 'inicio') return { tipo: 'inicio', rango: inicioBarbu(mano) };
   const quedan = CONTRATOS_BARBU.filter((c) => !vista.jugados.includes(c));
+  const elegido = vista.config.dominoElegido === true;
   const contrato = [...quedan].sort(
-    (a, b) => estimacionBarbu(mano, b) - estimacionBarbu(mano, a),
+    (a, b) => estimacionBarbu(mano, b, elegido) - estimacionBarbu(mano, a, elegido),
   )[0]!;
   return { tipo: 'contrato', contrato };
 }
@@ -119,16 +148,18 @@ export function cartaBazaBarbu(vista: VistaBarbu, cartas: readonly IdCarta[]): I
 /** La carta en el dominó: la que le deja más cartas suyas por jugar en esa fila. */
 export function cartaDominoBarbu(vista: VistaBarbu, cartas: readonly IdCarta[]): IdCarta {
   const mano = vista.miMano ?? [];
+  // Las filas se abren con el número de salida (la Jota si no se eligió otro).
+  const inicio = vista.inicio;
   const abre = (c: IdCarta) => {
     const r = rangoBarbu(c);
     const palo = delPalo(mano, paloBarbu(c)).filter((x) => x !== c);
-    if (r === JOTA && vista.filas[paloBarbu(c)] === null) return palo.length;
-    return palo.filter((x) => (r < JOTA ? rangoBarbu(x) < r : rangoBarbu(x) > r)).length;
+    if (r === inicio && vista.filas[paloBarbu(c)] === null) return palo.length;
+    return palo.filter((x) => (r < inicio ? rangoBarbu(x) < r : rangoBarbu(x) > r)).length;
   };
   return [...cartas].sort(
     (a, b) =>
       abre(b) - abre(a) ||
-      Math.abs(rangoBarbu(b) - JOTA) - Math.abs(rangoBarbu(a) - JOTA) ||
+      Math.abs(rangoBarbu(b) - inicio) - Math.abs(rangoBarbu(a) - inicio) ||
       a.localeCompare(b),
   )[0]!;
 }
@@ -137,7 +168,7 @@ export const iaBarbuBasica: Agente<VistaBarbu, AccionBarbu> = {
   id: 'barbu-basica',
   decidir(vista, acciones, azar) {
     if (acciones.length === 0) throw new Error('El agente no tiene acciones legales');
-    if (vista.fase === 'contrato' || vista.fase === 'triunfo') {
+    if (vista.fase === 'contrato' || vista.fase === 'triunfo' || vista.fase === 'inicio') {
       return { accion: eleccionBarbu(vista), azar };
     }
     const cartas = acciones.flatMap((a) => (a.tipo === 'jugar' ? [a.carta] : []));

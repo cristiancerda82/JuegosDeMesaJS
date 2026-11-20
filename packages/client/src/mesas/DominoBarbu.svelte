@@ -24,7 +24,6 @@
 
   let { sesion, nombre }: Props = $props();
 
-  const JOTA = 11;
   const JUGADORES = 4;
   const vista = $derived(sesion.vista);
   const legales = $derived(sesion.legales);
@@ -57,7 +56,8 @@
 
   function hueco(palo: PaloFrances, r: number): boolean {
     const f = vista.filas[palo];
-    if (f === null) return r === JOTA;
+    // Las filas vacías se abren con el número de salida (la Jota si no se eligió otro).
+    if (f === null) return r === vista.inicio;
     return r === f.bajo - 1 || r === f.alto + 1;
   }
 
@@ -103,7 +103,7 @@
 </script>
 
 <div class="domino" bind:this={raiz} style:--en-mano={Math.max(1, mano.length)}>
-  <p class="contrato" data-testid="contrato-barbu">{T.barbu.contrato('domino', null)}</p>
+  <p class="contrato" data-testid="contrato-barbu">{vista.config.dominoElegido ? T.barbu.dominoDesde(T.barbu.rango(vista.inicio)) : T.barbu.contrato('domino', null)}</p>
   <div class="rivales">
     {#each rivales as asiento (asiento)}
       <div class="rival" class:activo={activo(asiento)} data-testid="asiento-{asiento}" data-zona="mano-{asiento}">

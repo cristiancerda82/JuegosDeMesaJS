@@ -156,3 +156,49 @@ test('el Barbu entra en 360 × 640 sin scroll horizontal, también el dominó', 
     await page.screenshot({ path: `test-results/barbu-360-${fase}.png` });
   }
 });
+
+// ── Dominó con el número elegido ─────────────────────────────────────────────
+
+test('con la opción, quien reparte elige el número del dominó y solo encaja ese número', async ({
+  page,
+}) => {
+  test.setTimeout(180_000);
+  await page.goto('./?rapido&semilla=barbu-elegido');
+  await abrirJuego(page, 'barbu');
+  await page.getByTestId('barbu-domino-elegido').check();
+  await page.getByTestId('empezar').click();
+  await expect(cartasMano(page)).toHaveCount(13);
+
+  await page.getByTestId('contrato-domino').click();
+  await expect(page.locator('[data-testid^="inicio-"]')).toHaveCount(13);
+  await expect(page.getByTestId('inicio-14')).toHaveText('A');
+  await page.screenshot({ path: `test-results/barbu-inicio-${page.viewportSize()!.width}.png` });
+
+  // Elige el número de su primera carta: solo se pueden jugar las de ese número.
+  const mano = await ids(cartasMano(page));
+  const valor = Number(mano[0]!.split('-')[1]);
+  const rango = valor === 1 ? 14 : valor;
+  const nombre = { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' }[rango] ?? `${rango}`;
+  await page.getByTestId(`inicio-${rango}`).click();
+  await expect(page.getByTestId('contrato-barbu')).toHaveText(
+    `Dominó · número de salida: ${nombre}`,
+  );
+  const delNumero = mano.filter((c) => c.endsWith(`-${valor}`));
+  await expect(jugables(page)).toHaveCount(delNumero.length);
+  expect((await ids(jugables(page))).sort()).toEqual(delNumero.sort());
+  await page.screenshot({ path: `test-results/barbu-elegido-${page.viewportSize()!.width}.png` });
+
+  // Juega la mano del dominó hasta el resumen.
+  for (let i = 0; i < 200; i++) {
+    await page
+      .locator(
+        '[data-testid="paso"], [data-testid="mano"] .carta-mano.jugable, [data-testid="siguiente-mano"]',
+      )
+      .first()
+      .waitFor({ timeout: 30_000 });
+    if (await page.getByTestId('siguiente-mano').isVisible()) break;
+    if (await page.getByTestId('paso').isVisible()) await page.getByTestId('paso').click();
+    else await jugarPrimera(page).catch(() => {});
+  }
+  await expect(page.getByTestId('siguiente-mano')).toBeVisible();
+});

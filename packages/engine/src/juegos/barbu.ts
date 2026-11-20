@@ -17,6 +17,8 @@ import { error, ok } from '../resultado';
 export interface ConfigBarbu {
   readonly jugadores: 4;
   readonly manos: number;
+  /** Variante: en el dominó, el repartidor elige el número de salida en lugar de las Jotas. */
+  readonly dominoElegido?: boolean;
 }
 
 export const MANOS_BARBU = 7;
@@ -38,7 +40,10 @@ export const CONTRATOS_BARBU: readonly ContratoBarbu[] = [
 /** Puntos del dominó por orden de acabar. */
 export const PUNTOS_DOMINO_BARBU = [45, 20, 5, -5] as const;
 
-export type FaseBarbu = 'contrato' | 'triunfo' | 'bazas' | 'domino';
+export type FaseBarbu = 'contrato' | 'triunfo' | 'inicio' | 'bazas' | 'domino';
+
+/** El número con el que se abren las filas del dominó si no se elige otro: la Jota. */
+export const INICIO_DOMINO_BARBU = 11;
 
 /** Una fila del dominó: de la carta más baja a la más alta (As 14). */
 export interface FilaBarbu {
@@ -74,6 +79,8 @@ export interface EstadoBarbu {
   readonly bazasJugadas: number;
   readonly puntosMano: readonly number[];
   readonly filas: FilasBarbu;
+  /** El número con el que se abren las filas del dominó, si se eligió (si no, la Jota). */
+  readonly inicio?: number;
   /** En el dominó, los que se han quedado sin cartas, por orden. */
   readonly acabados: readonly Asiento[];
   /** Las cartas que ha jugado cada uno en la mano. */
@@ -89,6 +96,7 @@ export interface EstadoBarbu {
 export type AccionBarbu =
   | { readonly tipo: 'contrato'; readonly contrato: ContratoBarbu }
   | { readonly tipo: 'triunfo'; readonly palo: PaloFrances }
+  | { readonly tipo: 'inicio'; readonly rango: number }
   | { readonly tipo: 'jugar'; readonly carta: IdCarta }
   | { readonly tipo: 'pasar' };
 
@@ -108,6 +116,8 @@ export interface VistaBarbu {
   readonly bazasJugadas: number;
   readonly puntosMano: readonly number[];
   readonly filas: FilasBarbu;
+  /** El número con el que se abren las filas del dominó (la Jota si no se eligió otro). */
+  readonly inicio: number;
   readonly acabados: readonly Asiento[];
   readonly jugadasPor: readonly (readonly IdCarta[])[];
   readonly fallos: readonly (readonly PaloFrances[])[];
@@ -128,7 +138,6 @@ export const rangoBarbu = (c: IdCarta) => {
 };
 const idDe = (palo: PaloFrances, rango: number) => `${palo}-${rango === 14 ? 1 : rango}` as IdCarta;
 
-const JOTA = 11;
 const REY_CORAZONES: IdCarta = 'corazones-13';
 const AS_CORAZONES: IdCarta = 'corazones-1';
 
@@ -196,19 +205,23 @@ export const FILAS_VACIAS: FilasBarbu = {
   treboles: null,
 };
 
-/** Si una carta encaja en las filas del dominó. */
-export function encajaBarbu(filas: FilasBarbu, c: IdCarta): boolean {
+/** Si una carta encaja en las filas del dominó, que se abren con `inicio`. */
+export function encajaBarbu(
+  filas: FilasBarbu,
+  c: IdCarta,
+  inicio: number = INICIO_DOMINO_BARBU,
+): boolean {
   const fila = filas[paloBarbu(c)];
   const r = rangoBarbu(c);
-  if (fila === null) return r === JOTA;
+  if (fila === null) return r === inicio;
   return r === fila.bajo - 1 || r === fila.alto + 1;
 }
 
 /** Las cartas que encajan ahora en las filas (estén donde estén). */
-export function encajanBarbu(filas: FilasBarbu): IdCarta[] {
+export function encajanBarbu(filas: FilasBarbu, inicio: number = INICIO_DOMINO_BARBU): IdCarta[] {
   return PALOS_FRANCESES.flatMap((palo) => {
     const fila = filas[palo];
-    if (fila === null) return [idDe(palo, JOTA)];
+    if (fila === null) return [idDe(palo, inicio)];
     const r: IdCarta[] = [];
     if (fila.bajo > 2) r.push(idDe(palo, fila.bajo - 1));
     if (fila.alto < 14) r.push(idDe(palo, fila.alto + 1));
@@ -231,6 +244,11 @@ function ponerEnFila(filas: FilasBarbu, c: IdCarta): FilasBarbu {
 
 // ── Mano ─────────────────────────────────────────────────────────────────────
 
+const inicioDe = (e: Pick<EstadoBarbu, 'inicio'>) => e.inicio ?? INICIO_DOMINO_BARBU;
+
+/** Los números de salida que se pueden elegir: del 2 al As. */
+export const INICIOS_BARBU: readonly number[] = Array.from({ length: 13 }, (_, i) => i + 2);
+
 const terminada = (e: Pick<EstadoBarbu, 'resultadosManos' | 'config'>) =>
   e.resultadosManos.length >= e.config.manos;
 
@@ -246,8 +264,10 @@ function nuevaMano(
   const manos = Array.from({ length: JUGADORES }, (_, k) =>
     cartas.slice(k * CARTAS_EN_MANO, (k + 1) * CARTAS_EN_MANO),
   );
+  // El número de salida de la mano anterior no pasa a esta.
+  const { inicio: _inicio, ...sinInicio } = base as typeof base & Pick<EstadoBarbu, 'inicio'>;
   return {
-    ...base,
+    ...sinInicio,
     azar: sig,
     repartidor,
     fase: 'contrato',
@@ -353,7 +373,9 @@ function siguienteEnDomino(e: EstadoBarbu, desde: Asiento): Asiento {
 
 function jugarDomino(e: EstadoBarbu, asiento: Asiento, carta: IdCarta | null): EstadoBarbu {
   if (carta === null) {
-    const encajan = encajanBarbu(e.filas).filter((c) => !e.noTiene[asiento]!.includes(c));
+    const encajan = encajanBarbu(e.filas, inicioDe(e)).filter(
+      (c) => !e.noTiene[asiento]!.includes(c),
+    );
     return {
       ...e,
       noTiene: e.noTiene.map((n, a) => (a === asiento ? [...n, ...encajan] : n)),
@@ -393,7 +415,11 @@ export const barbu: Juego<ConfigBarbu, EstadoBarbu, AccionBarbu, VistaBarbu> = {
     return ok(
       nuevaMano(
         {
-          config: { jugadores: 4, manos: config.manos },
+          config: {
+            jugadores: 4,
+            manos: config.manos,
+            dominoElegido: config.dominoElegido === true,
+          },
           jugados: [],
           totales: CEROS,
           resultadosManos: [],
@@ -417,12 +443,16 @@ export const barbu: Juego<ConfigBarbu, EstadoBarbu, AccionBarbu, VistaBarbu> = {
         }));
       case 'triunfo':
         return PALOS_FRANCESES.map((palo) => ({ tipo: 'triunfo', palo }));
+      case 'inicio':
+        return INICIOS_BARBU.map((rango) => ({ tipo: 'inicio', rango }));
       case 'bazas':
         return cartasLegalesBarbu(e.manos[asiento]!, e.mesa, e.contrato!, e.triunfo)
           .sort()
           .map((carta) => ({ tipo: 'jugar', carta }));
       case 'domino': {
-        const encajan = e.manos[asiento]!.filter((c) => encajaBarbu(e.filas, c)).sort();
+        const encajan = e.manos[asiento]!.filter((c) =>
+          encajaBarbu(e.filas, c, inicioDe(e)),
+        ).sort();
         return encajan.length > 0
           ? encajan.map((carta) => ({ tipo: 'jugar', carta }))
           : [{ tipo: 'pasar' }];
@@ -438,12 +468,16 @@ export const barbu: Juego<ConfigBarbu, EstadoBarbu, AccionBarbu, VistaBarbu> = {
           accion.contrato === 'triunfo'
             ? 'triunfo'
             : accion.contrato === 'domino'
-              ? 'domino'
+              ? e.config.dominoElegido
+                ? 'inicio'
+                : 'domino'
               : 'bazas';
         return { ...e, contrato: accion.contrato, jugados, fase };
       }
       case 'triunfo':
         return { ...e, triunfo: accion.palo, fase: 'bazas' };
+      case 'inicio':
+        return { ...e, inicio: accion.rango, fase: 'domino' };
       case 'jugar':
         return e.fase === 'domino'
           ? jugarDomino(e, asiento, accion.carta)
@@ -470,6 +504,7 @@ export const barbu: Juego<ConfigBarbu, EstadoBarbu, AccionBarbu, VistaBarbu> = {
       bazasJugadas: e.bazasJugadas,
       puntosMano: [...e.puntosMano],
       filas: e.filas,
+      inicio: inicioDe(e),
       acabados: [...e.acabados],
       jugadasPor: e.jugadasPor.map((j) => [...j]),
       fallos: e.fallos.map((f) => [...f]),

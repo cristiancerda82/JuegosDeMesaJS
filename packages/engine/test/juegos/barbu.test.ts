@@ -4,6 +4,7 @@ import {
   barbu,
   CONTRATOS_BARBU,
   encajaBarbu,
+  encajanBarbu,
   FILAS_VACIAS,
   type AccionBarbu,
   type EstadoBarbu,
@@ -232,6 +233,72 @@ describe('dominó', () => {
   });
 });
 
+describe('dominó con el número elegido', () => {
+  const conOpcion = () => {
+    const r = barbu.crear({ jugadores: 4, manos: 7, dominoElegido: true }, 'elegido');
+    if (!r.ok) throw new Error(r.error);
+    return r.valor;
+  };
+
+  it('la opción se normaliza y sin ella el dominó empieza con las Jotas', () => {
+    expect(nueva().config.dominoElegido).toBe(false);
+    expect(conOpcion().config.dominoElegido).toBe(true);
+    const e = hacer(nueva(), { tipo: 'contrato', contrato: 'domino' });
+    expect(e.fase).toBe('domino');
+    expect(barbu.vistaDe(e, 1).inicio).toBe(11);
+  });
+
+  it('al elegir el dominó, el repartidor elige un número del 2 al As y empieza él', () => {
+    let e = hacer(conOpcion(), { tipo: 'contrato', contrato: 'domino' });
+    expect(e.fase).toBe('inicio');
+    expect(barbu.accionesLegales(e, e.turno)).toEqual(
+      [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map((rango) => ({ tipo: 'inicio', rango })),
+    );
+    expect(barbu.accionesLegales(e, 1)).toEqual([]);
+    e = hacer(e, { tipo: 'inicio', rango: 7 });
+    expect(e.fase).toBe('domino');
+    expect(e.turno).toBe(0);
+    expect(barbu.vistaDe(e, 2).inicio).toBe(7);
+  });
+
+  it('con el 7, solo abren los sietes; y quien pasa no tiene los sietes', () => {
+    expect(encajaBarbu(FILAS_VACIAS, una('7p'), 7)).toBe(true);
+    expect(encajaBarbu(FILAS_VACIAS, una('Jp'), 7)).toBe(false);
+    let e = mesa(['2p 3p', '7p 4d', '5d', '6d'], 'domino', { inicio: 7 });
+    expect(legales(e)).toEqual(['pasar']);
+    e = hacer(e, { tipo: 'pasar' });
+    expect(e.noTiene[0]).toEqual(expect.arrayContaining(c('7p 7c 7d 7t')));
+    expect(legales(e)).toEqual(c('7p'));
+    e = hacer(e, '7p');
+    expect(e.filas.picas).toEqual({ bajo: 7, alto: 7 });
+  });
+
+  it('desde el As, la fila solo baja; desde el 2, solo sube', () => {
+    const filas = { ...FILAS_VACIAS, picas: { bajo: 14, alto: 14 } };
+    expect(encajanBarbu(filas, 14).filter((x) => x.startsWith('picas'))).toEqual(c('Kp'));
+    const dos = { ...FILAS_VACIAS, picas: { bajo: 2, alto: 2 } };
+    expect(encajanBarbu(dos, 2).filter((x) => x.startsWith('picas'))).toEqual(c('3p'));
+  });
+
+  it('el número no pasa a la mano siguiente', () => {
+    let e = hacer(conOpcion(), { tipo: 'contrato', contrato: 'domino' });
+    e = hacer(e, { tipo: 'inicio', rango: 3 });
+    e = acabarMano(e);
+    expect(e.resultadosManos).toHaveLength(1);
+    expect(e.inicio).toBeUndefined();
+    expect(barbu.vistaDe(e, 0).inicio).toBe(11);
+  });
+
+  it('partida completa con la opción', () => {
+    const r = barbu.crear({ jugadores: 4, manos: 7, dominoElegido: true }, 'partida-elegido');
+    if (!r.ok) throw new Error(r.error);
+    let e = r.valor;
+    for (let m = 0; m < 7; m++) e = acabarMano(e);
+    expect(barbu.resultado(e)).not.toBeNull();
+    expect(e.totales.reduce((s, t) => s + t, 0)).toBe(0);
+  });
+});
+
 describe('partida', () => {
   it('tras 7 manos se han jugado todos los contratos y gana quien más suma', () => {
     let e = nueva('partida');
@@ -255,7 +322,10 @@ describe('vista', () => {
 });
 
 describirContrato(barbu, {
-  configs: [{ jugadores: 4, manos: 3 }],
+  configs: [
+    { jugadores: 4, manos: 3 },
+    { jugadores: 4, manos: 7, dominoElegido: true },
+  ],
   // Las cartas de la última baza ya se vieron, aunque tras barajar estén en otra mano; las de
   // `noTiene` se nombran para decir quién no las tiene, no dónde están.
   cartasOcultas: (e, asiento) => {

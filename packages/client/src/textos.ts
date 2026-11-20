@@ -479,6 +479,9 @@ export const T = {
     cartasEspecialesDesc:
       'El 10 cambia el sentido, el As hace robar 2, el 6 robar 1, el 7 salta un turno y tras un 9 quien no puede echar roba y pasa.',
     jugadoresN: (n: number) => `${n} jugadores`,
+    dominoElegidoBarbu: 'Dominó: elige el número',
+    dominoElegidoBarbuDesc:
+      'Quien reparte y elige el dominó decide con qué número se abren las filas, en lugar de las Jotas.',
     blackLady:
       'Con 3, 5 o 6 jugadores (Black Lady) se quitan algunos doses para repartir igual y no hay pase.',
     baraja: 'Baraja',
@@ -2351,6 +2354,11 @@ export const T = {
       )[palo]!,
     eligeContrato: 'Elige el contrato',
     eligeTriunfo: 'Elige el palo de triunfo',
+    eligeInicio: 'Elige el número de salida',
+    /** El nombre de un número del dominó: del 2 al 10, J, Q, K y A (el As vale 14). */
+    rango: (r: number) =>
+      (({ 11: 'J', 12: 'Q', 13: 'K', 14: 'A' }) as Record<number, string>)[r] ?? `${r}`,
+    dominoDesde: (r: string) => `Dominó · número de salida: ${r}`,
     eligiendo: (quien: string) => `${quien} elige…`,
     eligio: (quien: string, contrato: string) => `${quien}: ${contrato}`,
     manoRonda: (n: number, total: number) => `Mano ${n} de ${total}`,
@@ -5371,7 +5379,7 @@ export const T = {
         texto: [
           'Se juega desde las Jotas. Una Jota abre la fila de su palo; luego encajan la carta siguiente y la anterior de cada fila (del 2 al As).',
           'Si no tienes ninguna carta que encaje, pasas. El primero que se queda sin cartas anota +45, el segundo +20, el tercero +5 y el último −5.',
-          'En otros sitios el que reparte elige el número con el que se empieza, en lugar de las Jotas.',
+          'Variante (opción «Dominó: elige el número»): quien reparte, al elegir el dominó, decide con qué número se abren las filas, del 2 al As, en lugar de las Jotas. Las filas crecen igual, y si se empieza por el As o por el 2 solo crecen hacia un lado. Elige el número del que más cartas tengas, y mejor si son seguidas.',
         ],
         ejemplo: 'domino',
       },

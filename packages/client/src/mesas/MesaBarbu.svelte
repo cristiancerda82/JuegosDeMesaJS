@@ -66,11 +66,25 @@
 
   // ── Contrato y triunfo ─────────────────────────────────────────────────────
 
-  const decisiones = $derived(legales.filter((a) => a.tipo === 'contrato' || a.tipo === 'triunfo'));
+  const decisiones = $derived(
+    legales.filter((a) => a.tipo === 'contrato' || a.tipo === 'triunfo' || a.tipo === 'inicio'),
+  );
   const idDe = (a: AccionBarbu) =>
-    a.tipo === 'contrato' ? `contrato-${a.contrato}` : a.tipo === 'triunfo' ? `triunfo-${a.palo}` : a.tipo;
+    a.tipo === 'contrato'
+      ? `contrato-${a.contrato}`
+      : a.tipo === 'triunfo'
+        ? `triunfo-${a.palo}`
+        : a.tipo === 'inicio'
+          ? `inicio-${a.rango}`
+          : a.tipo;
   const etiqueta = (a: AccionBarbu) =>
-    a.tipo === 'contrato' ? T.barbu.nombreContrato(a.contrato) : a.tipo === 'triunfo' ? T.barbu.palo(a.palo) : '';
+    a.tipo === 'contrato'
+      ? T.barbu.nombreContrato(a.contrato)
+      : a.tipo === 'triunfo'
+        ? T.barbu.palo(a.palo)
+        : a.tipo === 'inicio'
+          ? T.barbu.rango(a.rango)
+          : '';
 
   const aviso = $derived.by(() => {
     if (sesion.fin !== null) return null;
@@ -79,6 +93,9 @@
     }
     if (vista.fase === 'triunfo') {
       return vista.turno === yo ? T.barbu.eligeTriunfo : T.barbu.eligiendo(nombre(vista.repartidor));
+    }
+    if (vista.fase === 'inicio') {
+      return vista.turno === yo ? T.barbu.eligeInicio : T.barbu.eligiendo(nombre(vista.repartidor));
     }
     return null;
   });

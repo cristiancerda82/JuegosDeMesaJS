@@ -190,6 +190,14 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Klaverjas', klaverjas, { jugadores: 4, manos: 2 }, IAS.klaverjas, 'bandos'),
   // Dos manos, para que las partidas de las pruebas no sean tan largas.
   entrada('Barbu', barbu, { jugadores: 4, manos: 2 }, IAS.barbu, 4),
+  // Con 7 manos se juegan todos los contratos, también el dominó con el número elegido.
+  entrada(
+    'Barbu con el número del dominó elegido',
+    barbu,
+    { jugadores: 4, manos: 7, dominoElegido: true },
+    IAS.barbu,
+    4,
+  ),
   // A 200 puntos, para que las partidas de las pruebas no sean tan largas.
   entrada('Five Hundred', fiveHundred, { jugadores: 4, meta: 200 }, IAS.fiveHundred, 'bandos'),
   entrada('Scopa', scopa, CONFIG_SCOPA_POR_DEFECTO, IAS.scopa, 'bandos'),

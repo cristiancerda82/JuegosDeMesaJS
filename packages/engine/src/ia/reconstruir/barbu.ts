@@ -46,6 +46,7 @@ export function reconstruirBarbu(vista: VistaBarbu, azar: EstadoAzar): EstadoBar
     bazasJugadas: vista.bazasJugadas,
     puntosMano: [...vista.puntosMano],
     filas: vista.filas,
+    inicio: vista.inicio,
     acabados: [...vista.acabados],
     jugadasPor: vista.jugadasPor.map((j) => [...j]),
     fallos: vista.fallos.map((f) => [...f]),
@@ -59,8 +60,9 @@ export const SIMULABLE_BARBU: Simulable<ConfigBarbu, EstadoBarbu, AccionBarbu, V
   juego: barbu,
   reconstruir: reconstruirBarbu,
   manoTerminada: (inicio, e) => e.resultadosManos.length > inicio.resultadosManos.length,
-  // El contrato y el triunfo los decide la base; se simulan las jugadas.
-  decideLaBase: (vista) => vista.fase === 'contrato' || vista.fase === 'triunfo',
+  // El contrato, el triunfo y el número del dominó los decide la base; se simulan las jugadas.
+  decideLaBase: (vista) =>
+    vista.fase === 'contrato' || vista.fase === 'triunfo' || vista.fase === 'inicio',
   valorar(inicio, final, asiento) {
     const bono = bonoPartida(barbu.resultado(final), asiento);
     const r = final.resultadosManos[inicio.resultadosManos.length];

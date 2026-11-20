@@ -924,6 +924,27 @@ test('Barbu en red: el contrato que elige uno lo ve el otro', async ({ browser }
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Barbu con el número del dominó elegido en red: el número que elige uno lo ve el otro', async ({
+  browser,
+}) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'barbu', (p) =>
+    p.getByTestId('barbu-domino-elegido').check(),
+  );
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(13);
+
+  // Reparte Ana (asiento 0): elige el dominó y el 7, y Luis lo ve.
+  await ana.getByTestId('contrato-domino').click();
+  await expect(luis.getByTestId('aviso')).toContainText('elige');
+  await ana.getByTestId('inicio-7').click();
+  await expect(luis.getByTestId('contrato-barbu')).toHaveText('Dominó · número de salida: 7');
+});
+
 test('Klaverjas en red: lo que dice uno lo ve el otro', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);
