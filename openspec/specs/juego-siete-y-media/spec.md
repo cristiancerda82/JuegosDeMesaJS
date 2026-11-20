@@ -66,6 +66,10 @@ Al terminar la mano se MUST destapar la carta tapada de todos los jugadores y li
 - **WHEN** con el pago doble activado un punto que apostó 5 gana con un 7 y una Sota
 - **THEN** cobra 10 fichas de la banca
 
+#### Scenario: Siete y media de tres cartas sin la opción
+- **WHEN** con el pago doble activado y sin la opción de cualquier siete y media, un punto que apostó 5 gana con un 4, un 3 y una Sota
+- **THEN** cobra 5 fichas de la banca
+
 ### Requirement: Cambio de banca
 La configuración MUST permitir que la banca rote cada mano (por defecto) o que la banca la conserve el mismo jugador hasta que un punto le gane con siete y media. En ese caso, la banca pasa a ese punto y, si son varios, al primero en el orden de turno. Un jugador sin fichas MUST NOT ser banca ni punto.
 
@@ -115,3 +119,20 @@ Con la opción:
 #### Scenario: Partida sin la opción
 - **WHEN** se juega una partida sin la opción de pedir tapada
 - **THEN** solo se puede pedir carta boca arriba, como siempre
+
+### Requirement: Cobrar el doble con cualquier siete y media
+La Siete y media MAY jugarse con la opción «Con cualquier siete y media» (desactivada por defecto), que solo cuenta con el pago doble activado. Una partida o una sala sin esa opción, o sin pago doble, MUST liquidarse como siempre.
+
+Con la opción y el pago doble, todo punto que gana con siete y media MUST cobrar el doble de su apuesta, tenga las cartas que tenga. La banca MUST seguir ganando los empates, también a siete y media, y pagar en orden de turno mientras le alcancen las fichas.
+
+#### Scenario: Siete y media de tres cartas con la opción
+- **WHEN** con la opción un punto que apostó 5 gana con un 4, un 3 y una Sota
+- **THEN** cobra 10 fichas de la banca
+
+#### Scenario: Empate a siete y media
+- **WHEN** con la opción un punto y la banca terminan los dos con siete y media
+- **THEN** el punto pierde su apuesta y la cobra la banca
+
+#### Scenario: Sin pago doble
+- **WHEN** la opción está marcada pero el pago doble no
+- **THEN** la partida se juega sin la opción y nadie cobra el doble
