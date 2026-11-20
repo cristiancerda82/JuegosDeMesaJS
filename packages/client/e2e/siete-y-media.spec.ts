@@ -1,4 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
+import {
+  crearAzar,
+  CONFIG_SIETE_Y_MEDIA_POR_DEFECTO,
+  iaSieteYMediaBasica,
+  sieteYMedia,
+  type EstadoSieteYMedia,
+} from '@juegos/engine';
 import { abrirJuego } from './menu';
 
 async function empezar(page: Page, query: string, jugadores = 2) {
@@ -116,4 +123,127 @@ test('la mesa de la Siete y media entra en 360 × 640 sin scroll horizontal', as
     expect(anchos.pagina).toBeLessThanOrEqual(anchos.ventana);
     await page.screenshot({ path: `test-results/siete-y-media${jugadores}-360.png` });
   }
+});
+
+// ── Pedir tapada ─────────────────────────────────────────────────────────────
+
+/**
+ * Una semilla de 2 jugadores, a 5 manos y con cartas tapadas, en la que el humano (banca en la
+ * primera mano, que se planta) llega a la segunda como punto, apuesta 5 y pide tapada sin pasarse.
+ */
+function semillaTapada(): string {
+  const config = { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, manos: 5, tapadas: true };
+  for (let i = 0; i < 500; i++) {
+    const semilla = `tapada-${i}`;
+    const r = sieteYMedia.crear(config, semilla);
+    if (!r.ok) throw new Error(r.error);
+    let e: EstadoSieteYMedia = r.valor;
+    for (let pasos = 0; pasos < 50 && e.resultadosManos.length === 0; pasos++) {
+      const accion =
+        e.turno === 0
+          ? ({ tipo: 'plantarse' } as const)
+          : iaSieteYMediaBasica.decidir(
+              sieteYMedia.vistaDe(e, 1),
+              sieteYMedia.accionesLegales(e, 1),
+              crearAzar('x'),
+            ).accion;
+      e = sieteYMedia.transicion(e, e.turno, accion);
+    }
+    if (e.banca !== 1 || e.turno !== 0) continue;
+    e = sieteYMedia.transicion(e, 0, { tipo: 'apostar', fichas: Math.min(5, e.fichas[0]!) });
+    const tras = sieteYMedia.transicion(e, 0, { tipo: 'pedirTapada' });
+    if (tras.estados[0] === 'jugando') return semilla;
+  }
+  throw new Error('Ninguna semilla de prueba sirve');
+}
+
+/** Le toca al jugador como punto (no como banca), con el botón de pedir tapada. */
+async function esPuntoConTurno(page: Page) {
+  return (
+    (await page.getByTestId('pedir-tapada').isVisible()) &&
+    (await page.getByTestId('banca').textContent())?.trim() !== 'Tú'
+  );
+}
+
+async function empezarConTapadas(page: Page, query: string) {
+  await page.goto(`./?${query}`);
+  await abrirJuego(page, 'sieteYMedia');
+  await page.getByLabel('2 jugadores').check();
+  await page.getByLabel('5 manos').check();
+  await page.getByTestId('opcion-tapadas').check();
+  await page.getByTestId('empezar').click();
+}
+
+test('con cartas tapadas: pedir tapada deja la carta marcada y boca abajo para los demás', async ({
+  page,
+}) => {
+  await empezarConTapadas(page, `rapido&semilla=${semillaTapada()}`);
+  // En la primera mano el jugador es la banca: se planta cuando le toca.
+  for (let i = 0; i < 30 && !(await esPuntoConTurno(page)); i++) {
+    await page
+      .locator('[data-testid="plantarse"], [data-testid="siguiente-mano"], [data-testid="apostar"]')
+      .first()
+      .waitFor({ timeout: 15_000 });
+    if (await page.getByTestId('siguiente-mano').isVisible())
+      await page.getByTestId('siguiente-mano').click();
+    else if (await page.getByTestId('apostar').isVisible())
+      await page.getByTestId('apostar').click();
+    else if (!(await esPuntoConTurno(page))) await page.getByTestId('plantarse').click();
+  }
+  await expect(page.getByTestId('pedir')).toHaveText('Pedir destapada');
+  await expect(page.locator('[data-testid^="tapada-"]')).toHaveCount(1);
+  await page.getByTestId('pedir-tapada').click();
+  await expect(page.locator('[data-testid^="tapada-"]')).toHaveCount(2);
+  await expect(page.getByTestId('aviso')).toHaveText('Pides una carta tapada');
+  await page.screenshot({ path: `test-results/siete-tapada-${page.viewportSize()!.width}.png` });
+});
+
+test('con cartas tapadas: partida completa contra la IA', async ({ page }) => {
+  test.setTimeout(300_000);
+  await empezarConTapadas(page, 'rapido&semilla=siete-tapadas-completa');
+  for (let pasos = 0; pasos < 500; pasos++) {
+    await page
+      .locator(
+        '[data-testid="apostar"], [data-testid="plantarse"], [data-testid="panel-mano"], [data-testid="fin"]',
+      )
+      .first()
+      .waitFor();
+    if (await page.getByTestId('fin').isVisible()) break;
+    if (await page.getByTestId('panel-mano').isVisible()) {
+      await page.getByTestId('siguiente-mano').click();
+    } else if (await page.getByTestId('apostar').isVisible()) {
+      await page.getByTestId('apostar').click();
+    } else {
+      const tapada = page.getByTestId('pedir-tapada');
+      if ((await miValor(page)) < 5 && (await tapada.isVisible()) && (await tapada.isEnabled())) {
+        await tapada.click();
+      } else await page.getByTestId('plantarse').click();
+    }
+  }
+  await expect(page.getByTestId('fin')).toBeVisible();
+});
+
+test('con cartas tapadas, la mesa entra en 360 × 640 sin scroll horizontal', async ({ page }) => {
+  test.skip(page.viewportSize()?.width !== 360, 'solo en el perfil móvil');
+  await empezarConTapadas(page, `rapido&semilla=${semillaTapada()}`);
+  for (let i = 0; i < 30 && !(await esPuntoConTurno(page)); i++) {
+    await page
+      .locator('[data-testid="plantarse"], [data-testid="siguiente-mano"], [data-testid="apostar"]')
+      .first()
+      .waitFor({ timeout: 15_000 });
+    if (await page.getByTestId('siguiente-mano').isVisible())
+      await page.getByTestId('siguiente-mano').click();
+    else if (await page.getByTestId('apostar').isVisible())
+      await page.getByTestId('apostar').click();
+    else if (!(await esPuntoConTurno(page))) await page.getByTestId('plantarse').click();
+  }
+  await page.waitForFunction(() => document.getAnimations().length === 0);
+  const anchos = await page.evaluate(() => ({
+    pagina: document.documentElement.scrollWidth,
+    ventana: window.innerWidth,
+  }));
+  expect(anchos.pagina).toBeLessThanOrEqual(anchos.ventana);
+  for (const id of ['pedir', 'pedir-tapada', 'plantarse'])
+    await expect(page.getByTestId(id)).toBeInViewport();
+  await page.screenshot({ path: 'test-results/siete-tapada-360-botones.png' });
 });

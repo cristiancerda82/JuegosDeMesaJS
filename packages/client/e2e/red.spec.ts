@@ -1599,6 +1599,33 @@ test('Treinta y uno con viuda en red: el cambio de uno lo ve el otro', async ({ 
   await expect(luis.getByTestId('aviso-viuda')).toContainText('Ana cambia las tres');
 });
 
+test('Siete y media con cartas tapadas en red: la tapada de uno no la ve el otro', async ({
+  browser,
+}) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'sieteYMedia', (p) =>
+    p.getByTestId('opcion-tapadas').check(),
+  );
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+
+  // Ana (asiento 0) es la banca: apuesta Luis y pide tapada; Ana ve una carta boca abajo más.
+  await luis.getByTestId('apostar').click();
+  await expect(luis.getByTestId('pedir-tapada')).toBeVisible();
+  const antes = await ana.locator('[data-zona="mano-1"] .mini').count();
+  await luis.getByTestId('pedir-tapada').click();
+  await expect(ana.getByTestId('aviso')).toHaveText(/Luis (pide una carta tapada|se pasa)/);
+  // La partida en red no tiene semilla fija: si Luis se pasa, la mano termina y sale el resumen.
+  if ((await ana.getByTestId('aviso').textContent())?.includes('tapada')) {
+    await expect(ana.locator('[data-zona="mano-1"] .mini')).toHaveCount(antes + 1);
+    await expect(ana.locator('[data-zona="mano-1"] [data-carta]')).toHaveCount(0);
+  } else {
+    await expect(ana.getByTestId('panel-mano')).toBeVisible();
+  }
+});
+
 // ── Conexión robusta (spec partidas-en-red: conexiones muertas y segundo plano) ──
 
 /**

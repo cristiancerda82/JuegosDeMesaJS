@@ -47,6 +47,7 @@ function enJuego(parcial: Parcial & Pick<EstadoSieteYMedia, 'cartas'>): EstadoSi
     ultimaAccion: null,
     resultadosManos: [],
     ...parcial,
+    tapadas: parcial.tapadas ?? parcial.cartas.map((c) => c.map((_, i) => i === 0)),
     config,
   };
 }
@@ -58,6 +59,71 @@ function jugar(e: EstadoSieteYMedia, asiento: number, accion: AccionSieteYMedia)
 }
 
 const PEDIR: AccionSieteYMedia = { tipo: 'pedir' };
+
+describe('pedir tapada', () => {
+  const conTapadas = (parcial: Parcial & Pick<EstadoSieteYMedia, 'cartas'>) =>
+    enJuego({ ...parcial, config: { tapadas: true, ...parcial.config } });
+
+  it('sin la opción solo se pide boca arriba', () => {
+    const e = enJuego({ cartas: [['oros-1'], ['copas-2']] });
+    expect(sieteYMedia.accionesLegales(e, 1)).toEqual([{ tipo: 'pedir' }, { tipo: 'plantarse' }]);
+  });
+
+  it('pedir tapada: el dueño la ve y los demás no, ni en la última jugada', () => {
+    const e = jugar(conTapadas({ cartas: [['oros-1'], ['copas-2']], mazo: ['bastos-5'] }), 1, {
+      tipo: 'pedirTapada',
+    });
+    expect(e.cartas[1]).toEqual(['copas-2', 'bastos-5']);
+    expect(e.tapadas[1]).toEqual([true, true]);
+    const propia = sieteYMedia.vistaDe(e, 1);
+    expect(propia.cartas[1]).toEqual(['copas-2', 'bastos-5']);
+    expect(propia.ultimaAccion).toMatchObject({ carta: 'bastos-5', tapada: true });
+    const ajena = sieteYMedia.vistaDe(e, 0);
+    expect(ajena.cartas[1]).toEqual([null, null]);
+    expect(ajena.visibles[1]).toBe(0);
+    expect(ajena.tapadas[1]).toEqual([true, true]);
+    expect(ajena.ultimaAccion).toMatchObject({ tipo: 'pedir', carta: null, tapada: true });
+    expect(JSON.stringify(ajena)).not.toContain('bastos-5');
+  });
+
+  it('pedir destapada con la opción, como siempre', () => {
+    const e = jugar(
+      conTapadas({ cartas: [['oros-1'], ['copas-2']], mazo: ['bastos-5'] }),
+      1,
+      PEDIR,
+    );
+    expect(e.tapadas[1]).toEqual([true, false]);
+    expect(sieteYMedia.vistaDe(e, 0).cartas[1]).toEqual([null, 'bastos-5']);
+    expect(sieteYMedia.vistaDe(e, 0).visibles[1]).toBe(10);
+  });
+
+  it('pasarse con una tapada: paga en el acto y los demás no ven la carta', () => {
+    const e = jugar(
+      conTapadas({
+        config: { jugadores: 3 },
+        cartas: [['oros-1'], ['copas-6'], ['espadas-2']],
+        mazo: ['bastos-3'],
+        fichas: [50, 50, 50],
+      }),
+      1,
+      { tipo: 'pedirTapada' },
+    );
+    expect(e.estados[1]).toBe('pasado');
+    expect(e.fichas).toEqual([55, 45, 50]);
+    expect(e.turno).toBe(2);
+    const ajena = sieteYMedia.vistaDe(e, 0);
+    expect(ajena.estados[1]).toBe('pasado');
+    expect(JSON.stringify(ajena.cartas)).not.toContain('bastos-3');
+    expect(ajena.ultimaAccion).toMatchObject({ carta: null, pasado: true });
+  });
+
+  it('al terminar la mano, el resultado destapa todas las cartas', () => {
+    const e = jugar(conTapadas({ cartas: [['oros-1'], ['copas-6']], mazo: ['bastos-3'] }), 1, {
+      tipo: 'pedirTapada',
+    });
+    expect(e.resultadosManos.at(-1)!.cartas[1]).toEqual(['copas-6', 'bastos-3']);
+  });
+});
 const PLANTARSE: AccionSieteYMedia = { tipo: 'plantarse' };
 
 // ── Valores ──────────────────────────────────────────────────────────────────
@@ -314,15 +380,19 @@ describirContrato(sieteYMedia, {
     CONFIG_SIETE_Y_MEDIA_POR_DEFECTO,
     { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, jugadores: 3, cambioBanca: 'sieteYMedia', manos: 4 },
     { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, jugadores: 4, fichasIniciales: 10, pagoDoble: false },
+    { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, jugadores: 3, tapadas: true },
   ],
   // Cada mano se baraja de nuevo, así que una carta oculta ahora pudo verse en una mano anterior
   // (en su registro o en la última acción): esas no cuentan.
   cartasOcultas: (e, asiento) => {
     const vistas = new Set<IdCarta>(e.resultadosManos.flatMap((r) => r.cartas.flat()));
-    if (e.ultimaAccion?.tipo === 'pedir') vistas.add(e.ultimaAccion.carta);
+    const u = e.ultimaAccion;
+    if (u?.tipo === 'pedir' && u.carta !== null && (!u.tapada || u.asiento === asiento)) {
+      vistas.add(u.carta);
+    }
     return [
       ...e.mazo,
-      ...e.cartas.flatMap((c, a) => (a === asiento || c.length === 0 ? [] : [c[0]!])),
+      ...e.cartas.flatMap((c, a) => (a === asiento ? [] : c.filter((_, i) => e.tapadas[a]![i]))),
     ].filter((c) => !vistas.has(c));
   },
   pasosMaximos: 300,

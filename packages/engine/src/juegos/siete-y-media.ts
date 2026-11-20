@@ -16,6 +16,8 @@ export interface ConfigSieteYMedia {
   readonly pagoDoble: boolean;
   /** La banca pasa al siguiente cada mano, o a quien le gana con siete y media. */
   readonly cambioBanca: 'rotar' | 'sieteYMedia';
+  /** Variante: al pedir, se elige si la carta llega boca arriba o boca abajo. */
+  readonly tapadas?: boolean;
 }
 
 export const CONFIG_SIETE_Y_MEDIA_POR_DEFECTO: ConfigSieteYMedia = {
@@ -34,7 +36,9 @@ export type UltimaAccionSieteYMedia =
   | {
       readonly asiento: Asiento;
       readonly tipo: 'pedir';
-      readonly carta: IdCarta;
+      /** La carta pedida; `null` en la vista ajena si llegó tapada. */
+      readonly carta: IdCarta | null;
+      readonly tapada: boolean;
       readonly pasado: boolean;
     }
   | { readonly asiento: Asiento; readonly tipo: 'plantarse' };
@@ -64,8 +68,10 @@ export interface EstadoSieteYMedia {
   readonly apuestas: readonly (number | null)[];
   /** Cartas boca abajo; la siguiente que se pide es la última. Vacío hasta repartir. */
   readonly mazo: readonly IdCarta[];
-  /** Cartas de cada jugador: la primera, tapada; las demás, boca arriba. */
+  /** Cartas de cada jugador: la primera, tapada; las demás, como se pidieron. */
   readonly cartas: readonly (readonly IdCarta[])[];
+  /** Qué cartas de cada jugador van boca abajo (paralelo a `cartas`). */
+  readonly tapadas: readonly (readonly boolean[])[];
   readonly estados: readonly EstadoJugada[];
   readonly ultimaAccion: UltimaAccionSieteYMedia | null;
   readonly resultadosManos: readonly ResultadoManoSieteYMedia[];
@@ -74,6 +80,8 @@ export interface EstadoSieteYMedia {
 export type AccionSieteYMedia =
   | { readonly tipo: 'apostar'; readonly fichas: number }
   | { readonly tipo: 'pedir' }
+  /** Con la opción de las tapadas: pide la carta boca abajo. */
+  | { readonly tipo: 'pedirTapada' }
   | { readonly tipo: 'plantarse' };
 
 export interface VistaSieteYMedia {
@@ -84,8 +92,10 @@ export interface VistaSieteYMedia {
   readonly fase: 'apostar' | 'jugar';
   readonly turno: Asiento | null;
   readonly apuestas: readonly (number | null)[];
-  /** Cartas de cada jugador; la tapada ajena es `null`. */
+  /** Cartas de cada jugador; las tapadas ajenas son `null`. */
   readonly cartas: readonly (readonly (IdCarta | null)[])[];
+  /** Qué cartas de cada jugador van boca abajo. */
+  readonly tapadas: readonly (readonly boolean[])[];
   /** Valor de la jugada propia en medios puntos; `null` para un espectador. */
   readonly miValor: number | null;
   /** Valor de las cartas boca arriba de cada jugador, en medios puntos. */
@@ -159,6 +169,7 @@ function nuevaMano(
     apuestas: new Array<number | null>(n).fill(null),
     mazo: [],
     cartas: Array.from({ length: n }, () => []),
+    tapadas: Array.from({ length: n }, () => []),
     estados: new Array<EstadoJugada>(n).fill('jugando'),
     ultimaAccion,
     resultadosManos,
@@ -171,8 +182,12 @@ function repartir(e: EstadoSieteYMedia): EstadoSieteYMedia {
   const { cartas: barajadas, azar } = barajar(crearBaraja('espanola40'), e.azar);
   const mazo = [...barajadas];
   const cartas = e.cartas.map((c) => [...c]);
-  for (const a of [...puntos(e), e.banca]) cartas[a]!.push(mazo.pop()!);
-  return { ...e, azar, mazo, cartas, fase: 'jugar', turno: puntos(e)[0]! };
+  const tapadas = e.tapadas.map((t) => [...t]);
+  for (const a of [...puntos(e), e.banca]) {
+    cartas[a]!.push(mazo.pop()!);
+    tapadas[a]!.push(true);
+  }
+  return { ...e, azar, mazo, cartas, tapadas, fase: 'jugar', turno: puntos(e)[0]! };
 }
 
 /** Pasa el turno al siguiente punto que siga jugando, a la banca o a la liquidación. */
@@ -229,6 +244,15 @@ function liquidar(e: EstadoSieteYMedia): EstadoSieteYMedia {
   return nuevaMano(e.config, e.azar, banca, fichas, resultadosManos, e.ultimaAccion);
 }
 
+/** La carta pedida tapada solo la ve quien la pidió. */
+function ocultarPedida(
+  u: UltimaAccionSieteYMedia | null,
+  asiento: Asiento | null,
+): UltimaAccionSieteYMedia | null {
+  if (u === null || u.tipo !== 'pedir' || !u.tapada || u.asiento === asiento) return u;
+  return { ...u, carta: null };
+}
+
 // ── Juego ────────────────────────────────────────────────────────────────────
 
 const entero = (x: unknown, minimo: number) =>
@@ -264,6 +288,7 @@ export const sieteYMedia: Juego<
       apuestaMaxima: config.apuestaMaxima,
       pagoDoble: config.pagoDoble,
       cambioBanca: config.cambioBanca,
+      tapadas: config.tapadas === true,
     };
     const fichas = new Array<number>(limpia.jugadores).fill(limpia.fichasIniciales);
     return ok(nuevaMano(limpia, crearAzar(semilla), 0, fichas, [], null));
@@ -279,6 +304,7 @@ export const sieteYMedia: Juego<
     }
     const acciones: AccionSieteYMedia[] = [];
     if (e.mazo.length > 0) acciones.push({ tipo: 'pedir' });
+    if (e.mazo.length > 0 && e.config.tapadas) acciones.push({ tipo: 'pedirTapada' });
     acciones.push({ tipo: 'plantarse' });
     return acciones;
   },
@@ -295,10 +321,13 @@ export const sieteYMedia: Juego<
         const pendiente = puntos(e).find((a) => apuestas[a] === null);
         return pendiente === undefined ? repartir(apostado) : { ...apostado, turno: pendiente };
       }
-      case 'pedir': {
+      case 'pedir':
+      case 'pedirTapada': {
+        const tapada = accion.tipo === 'pedirTapada';
         const mazo = e.mazo.slice(0, -1);
         const carta = e.mazo.at(-1)!;
         const cartas = e.cartas.map((c, a) => (a === asiento ? [...c, carta] : c));
+        const tapadas = e.tapadas.map((t, a) => (a === asiento ? [...t, tapada] : t));
         const valor = valorJugada(cartas[asiento]!);
         const pasado = valor > SIETE_Y_MEDIA;
         const fichas = [...e.fichas];
@@ -314,9 +343,10 @@ export const sieteYMedia: Juego<
           ...e,
           mazo,
           cartas,
+          tapadas,
           fichas,
           estados,
-          ultimaAccion: { asiento, tipo: 'pedir', carta, pasado },
+          ultimaAccion: { asiento, tipo: 'pedir', carta, tapada, pasado },
         };
         return estados[asiento] === 'jugando' ? pedido : avanzar(pedido);
       }
@@ -337,13 +367,14 @@ export const sieteYMedia: Juego<
       turno: partidaTerminada(e) ? null : e.turno,
       apuestas: [...e.apuestas],
       cartas: e.cartas.map((c, a) =>
-        c.map((carta, i) => (i === 0 && a !== asiento ? null : carta)),
+        c.map((carta, i) => (e.tapadas[a]![i] && a !== asiento ? null : carta)),
       ),
+      tapadas: e.tapadas.map((t) => [...t]),
       miValor: asiento === null ? null : valorJugada(e.cartas[asiento]!),
-      visibles: e.cartas.map((c) => valorJugada(c.slice(1))),
+      visibles: e.cartas.map((c, a) => valorJugada(c.filter((_, i) => !e.tapadas[a]![i]))),
       estados: [...e.estados],
       mazo: e.mazo.length,
-      ultimaAccion: e.ultimaAccion,
+      ultimaAccion: ocultarPedida(e.ultimaAccion, asiento),
       resultadosManos: [...e.resultadosManos],
     };
   },

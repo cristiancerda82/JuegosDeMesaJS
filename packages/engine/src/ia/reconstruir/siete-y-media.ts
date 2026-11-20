@@ -36,6 +36,7 @@ export function reconstruirSieteYMedia(
     apuestas: [...vista.apuestas],
     mazo: ocultas.tomar(vista.mazo),
     cartas,
+    tapadas: vista.tapadas.map((t) => [...t]),
     estados: [...vista.estados],
     ultimaAccion: vista.ultimaAccion,
     resultadosManos: [...vista.resultadosManos],

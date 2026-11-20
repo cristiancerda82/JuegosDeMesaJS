@@ -118,6 +118,13 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Escoba', escoba, CONFIG_ESCOBA_POR_DEFECTO, IAS.escoba, 'bandos'),
   entrada('Chinchón', chinchon, CONFIG_CHINCHON_POR_DEFECTO, IAS.chinchon, 2),
   entrada('Siete y media', sieteYMedia, CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, IAS.sieteYMedia, 2),
+  entrada(
+    'Siete y media con tapadas',
+    sieteYMedia,
+    { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, tapadas: true },
+    IAS.sieteYMedia,
+    2,
+  ),
   entrada('Cinquillo', cinquillo, CONFIG_CINQUILLO_POR_DEFECTO, IAS.cinquillo, 4),
   entrada('Pocha', pocha, CONFIG_POCHA_POR_DEFECTO, IAS.pocha, 4),
   entrada('Mus', mus, CONFIG_MUS_POR_DEFECTO, IAS.mus, 'bandos', false),

@@ -438,6 +438,9 @@ export const T = {
     apuestaN: (n: number) => `Hasta ${n} fichas`,
     pagoDoble: 'Siete y media natural',
     pagoDobleDesc: 'Un 7 y una figura en las dos primeras cartas cobran el doble.',
+    tapadasSieteYMedia: 'Pedir tapada',
+    tapadasSieteYMediaDesc:
+      'Al pedir, eliges si la carta llega boca arriba o boca abajo: los demás no saben cuánto sumas.',
     cambioBanca: 'La banca',
     bancaRotar: 'Pasa al siguiente cada mano',
     bancaSieteYMedia: 'Pasa a quien le gana con siete y media',
@@ -3342,6 +3345,11 @@ export const T = {
     mas: 'Más',
     apostar: (n: number) => `Apostar ${n}`,
     pedir: 'Pedir carta',
+    pedirDestapada: 'Pedir destapada',
+    pedirTapada: 'Pedir tapada',
+    tapada: 'Tapada',
+    pideTapada: (quien: string) =>
+      quien === 'Tú' ? 'Pides una carta tapada' : `${quien} pide una carta tapada`,
     plantarse: 'Plantarse',
     faseApostar: 'Haz tu apuesta',
     faseJugar: 'Pide carta o plántate',
@@ -7491,7 +7499,7 @@ export const T = {
           'Primero, cada jugador que no es la banca apuesta unas fichas. Después todos reciben una carta boca abajo, que solo ve su dueño.',
           'Por turnos, cada uno pide cartas (llegan boca arriba, todos las ven) o se planta. Si pasas de 7 y medio, te has pasado y pierdes tu apuesta en el acto.',
           'La banca juega la última, viendo las cartas boca arriba de los demás (pero no su carta tapada).',
-          'En otros sitios cada jugador elige si pide la carta tapada o destapada, y así los demás no saben cuánto suma.',
+          'Variante (opción «Pedir tapada»): al pedir, eliges si la carta llega boca arriba o boca abajo. Las tapadas solo las ves tú hasta el final de la mano, así que los demás no saben cuánto sumas. Si te pasas con una tapada, pierdes igual, pero nadie ve con qué.',
         ],
       },
       {

@@ -54,12 +54,56 @@ function vista(parcial: Partial<VistaSieteYMedia>): VistaSieteYMedia {
     ultimaAccion: null,
     resultadosManos: [],
     ...parcial,
+    tapadas:
+      parcial.tapadas ??
+      (parcial.cartas ?? [[null], ['oros-1']]).map((c) => c.map((_, i) => i === 0)),
   };
 }
 
 const JUGAR: AccionSieteYMedia[] = [{ tipo: 'pedir' }, { tipo: 'plantarse' }];
 const decide = (v: VistaSieteYMedia, acciones = JUGAR) =>
   iaSieteYMediaBasica.decidir(v, acciones, crearAzar('x')).accion;
+
+describe('IA básica con cartas tapadas', () => {
+  const CON_TAPADA: AccionSieteYMedia[] = [
+    { tipo: 'pedir' },
+    { tipo: 'pedirTapada' },
+    { tipo: 'plantarse' },
+  ];
+  const config = { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, tapadas: true };
+
+  it('el punto pide tapada', () => {
+    // Un 3 (6 medios): pide.
+    const v = vista({ config, cartas: [[null], ['oros-3']], miValor: 6 });
+    expect(decide(v, CON_TAPADA)).toEqual({ tipo: 'pedirTapada' });
+  });
+
+  it('la banca cuenta medio punto por cada tapada y pide destapada', () => {
+    // Banca con 5 (10 medios); el punto se planta con un 4 a la vista y tres tapadas: 5,5 al menos.
+    const v = vista({
+      config,
+      asiento: 0,
+      turno: 0,
+      cartas: [['oros-5'], [null, 'copas-4', null, null]],
+      tapadas: [[true], [true, false, true, true]],
+      miValor: 10,
+      visibles: [0, 8],
+      estados: ['jugando', 'plantado'],
+    });
+    expect(decide(v, CON_TAPADA)).toEqual({ tipo: 'pedir' });
+    // Con solo la primera tapada (al menos 4,5), la banca con 5 se planta.
+    const una = vista({
+      config,
+      asiento: 0,
+      turno: 0,
+      cartas: [['oros-5'], [null, 'copas-4']],
+      miValor: 10,
+      visibles: [0, 8],
+      estados: ['jugando', 'plantado'],
+    });
+    expect(decide(una, CON_TAPADA)).toEqual({ tipo: 'plantarse' });
+  });
+});
 
 describe('IA básica de la Siete y media', () => {
   it('el punto se planta con 5,5', () => {
@@ -149,6 +193,24 @@ describe('garantías de la IA de la Siete y media', () => {
       if (final.fichas[ia]! > final.fichas[1 - ia]!) ganadas++;
     }
     expect(ganadas).toBeGreaterThan(600);
+  });
+
+  it('con cartas tapadas, también gana al azar y las partidas de 2 a 4 terminan', () => {
+    const config = { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, tapadas: true };
+    let ganadas = 0;
+    for (let i = 0; i < 400; i++) {
+      const ia = i % 2;
+      const agentes = ia === 0 ? [iaSieteYMediaBasica, azarDe] : [azarDe, iaSieteYMediaBasica];
+      const { final } = jugarPartida(config, `tapadas-${i}`, agentes);
+      if (final.fichas[ia]! > final.fichas[1 - ia]!) ganadas++;
+    }
+    expect(ganadas, `${ganadas} de 400`).toBeGreaterThan(240);
+    for (const jugadores of [3, 4] as const) {
+      for (let i = 0; i < 20; i++) {
+        const agentes = Array.from({ length: jugadores }, () => iaSieteYMediaBasica);
+        jugarPartida({ ...config, jugadores }, `tapadas-${jugadores}-${i}`, agentes);
+      }
+    }
   });
 
   it('misma vista y misma semilla, misma decisión', () => {

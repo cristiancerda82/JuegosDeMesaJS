@@ -42,6 +42,8 @@
   let apuesta = $state(5);
   const apuestaValida = $derived(Math.min(Math.max(apuesta, 1), Math.max(maxApuesta, 1)));
   const puedePedir = $derived(legales.some((a) => a.tipo === 'pedir'));
+  const puedePedirTapada = $derived(legales.some((a) => a.tipo === 'pedirTapada'));
+  const conTapadas = $derived(vista.config.tapadas === true);
   const puedePlantarse = $derived(legales.some((a) => a.tipo === 'plantarse'));
 
   const turno = $derived.by(() => {
@@ -64,7 +66,8 @@
     const quien = nombre(a.asiento);
     if (a.tipo === 'apostar') return T.sieteYMedia.apuesta1(quien, a.fichas);
     if (a.tipo === 'plantarse') return T.sieteYMedia.planta(quien);
-    return a.pasado ? T.sieteYMedia.sePasa(quien) : T.sieteYMedia.pide(quien);
+    if (a.pasado) return T.sieteYMedia.sePasa(quien);
+    return a.tapada ? T.sieteYMedia.pideTapada(quien) : T.sieteYMedia.pide(quien);
   });
 
   const detalle = (asiento: Asiento) => {
@@ -160,8 +163,13 @@
     </div>
 
     <div class="mi-jugada" data-zona="mano-{yo}">
-      {#each vista.cartas[yo]! as id (id)}
-        <div class="carta-propia" data-carta={id} data-testid="mia-{id}"><Carta {id} /></div>
+      {#each vista.cartas[yo]! as id, k (id)}
+        <div class="carta-propia" data-carta={id} data-testid="mia-{id}">
+          <Carta {id} />
+          {#if conTapadas && vista.tapadas[yo]?.[k]}
+            <span class="marca-tapada" data-testid="tapada-{id}">{T.sieteYMedia.tapada}</span>
+          {/if}
+        </div>
       {/each}
       {#if vista.cartas[yo]!.length > 0 && vista.miValor !== null}
         <span class="valor" class:pasado={vista.estados[yo] === 'pasado'} data-testid="mi-valor">
@@ -194,8 +202,18 @@
         >
       {:else if puedePlantarse}
         <button data-accion="pedir" class="principal" data-testid="pedir" disabled={!puedePedir} onclick={() => sesion.jugar({ tipo: 'pedir' })}
-          >{T.sieteYMedia.pedir}</button
+          >{conTapadas ? T.sieteYMedia.pedirDestapada : T.sieteYMedia.pedir}</button
         >
+        {#if conTapadas}
+          <button
+            data-accion="pedirTapada"
+            data-jugada={JSON.stringify({ tipo: 'pedirTapada' })}
+            class="principal"
+            data-testid="pedir-tapada"
+            disabled={!puedePedirTapada}
+            onclick={() => sesion.jugar({ tipo: 'pedirTapada' })}>{T.sieteYMedia.pedirTapada}</button
+          >
+        {/if}
         <button data-accion="plantarse" data-testid="plantarse" onclick={() => sesion.jugar({ tipo: 'plantarse' })}
           >{T.sieteYMedia.plantarse}</button
         >
@@ -408,6 +426,7 @@
   }
 
   .carta-propia {
+    position: relative;
     width: var(--ancho-carta);
     aspect-ratio: 100 / 140;
     flex: none;
@@ -482,5 +501,19 @@
   .dialogo > button {
     margin-top: 14px;
     width: 100%;
+  }
+
+  .marca-tapada {
+    position: absolute;
+    left: 50%;
+    bottom: 4px;
+    translate: -50% 0;
+    padding: 0 6px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    background: rgb(0 0 0 / 0.65);
+    pointer-events: none;
   }
 </style>

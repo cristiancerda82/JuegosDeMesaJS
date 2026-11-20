@@ -16,7 +16,11 @@ import { reconstruirChinchon } from '../../src/ia/reconstruir/chinchon';
 import { chinchon, CONFIG_CHINCHON_POR_DEFECTO } from '../../src/juegos/chinchon';
 import { reconstruirSieteYMedia } from '../../src/ia/reconstruir/siete-y-media';
 import { iaSieteYMediaBasica } from '../../src/ia/siete-y-media-basica';
-import { CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, sieteYMedia } from '../../src/juegos/siete-y-media';
+import {
+  CONFIG_SIETE_Y_MEDIA_POR_DEFECTO,
+  sieteYMedia,
+  type EstadoSieteYMedia,
+} from '../../src/juegos/siete-y-media';
 import { iaCinquilloBasica } from '../../src/ia/cinquillo-basica';
 import { iaOchoLocoBasica } from '../../src/ia/ocho-loco-basica';
 import { iaPicasBasica } from '../../src/ia/picas-basica';
@@ -300,8 +304,40 @@ describirReconstruccion(sieteYMedia, reconstruirSieteYMedia, {
       pagoDoble: false,
       cambioBanca: 'sieteYMedia',
     },
+    { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, jugadores: 3, tapadas: true },
   ],
   base: iaSieteYMediaBasica,
+});
+
+describe('Reconstrucción de la Siete y media con cartas tapadas', () => {
+  it('las tapadas ajenas salen al azar, con su sitio, y la vista no cambia', () => {
+    // Una semilla en la que el punto pide tapada sin pasarse ni plantarse.
+    let e: EstadoSieteYMedia | null = null;
+    for (let i = 0; i < 100 && e === null; i++) {
+      const r = sieteYMedia.crear(
+        { ...CONFIG_SIETE_Y_MEDIA_POR_DEFECTO, tapadas: true },
+        `tapadas-${i}`,
+      );
+      if (!r.ok) throw new Error(r.error);
+      const x = sieteYMedia.transicion(
+        sieteYMedia.transicion(r.valor, 1, { tipo: 'apostar', fichas: 2 }),
+        1,
+        { tipo: 'pedirTapada' },
+      );
+      if (x.estados[1] === 'jugando' && x.cartas[1]!.length === 2) e = x;
+    }
+    if (e === null) throw new Error('Ninguna semilla de prueba sirve');
+    const vista = sieteYMedia.vistaDe(e, 0);
+    expect(vista.cartas[1]).toEqual([null, null]);
+    const vistas = new Set<string>();
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirSieteYMedia(vista, crearAzar(`s${i}`));
+      expect(rec.tapadas[1]).toEqual([true, true]);
+      vistas.add(rec.cartas[1]!.join());
+      expect(sieteYMedia.vistaDe(rec, 0)).toEqual(vista);
+    }
+    expect(vistas.size).toBeGreaterThan(1);
+  });
 });
 
 describirReconstruccion(cinquillo, reconstruirCinquillo, {

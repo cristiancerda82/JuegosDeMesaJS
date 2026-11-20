@@ -32,14 +32,18 @@ function elegir(
   const puedePedir = acciones.some((a) => a.tipo === 'pedir');
   let pedir = valor < PLANTARSE_DESDE;
   if (asiento === vista.banca) {
-    // La tapada de cada punto plantado vale, como mínimo, medio punto.
+    // Cada carta tapada de un punto plantado vale, como mínimo, medio punto.
+    const tapadas = (a: number) => vista.tapadas[a]!.filter(Boolean).length;
     const amenaza = Math.max(
       0,
       ...vista.estados.flatMap((s, a) =>
-        a !== asiento && s === 'plantado' ? [vista.visibles[a]! + 1] : [],
+        a !== asiento && s === 'plantado' ? [vista.visibles[a]! + tapadas(a)] : [],
       ),
     );
     pedir ||= valor < BANCA_SEGURA && amenaza > valor;
   }
-  return pedir && puedePedir ? { tipo: 'pedir' } : { tipo: 'plantarse' };
+  if (!pedir || !puedePedir) return { tipo: 'plantarse' };
+  // Con la opción, el punto pide tapada para que la banca no vea su jugada.
+  const tapada = asiento !== vista.banca && acciones.some((a) => a.tipo === 'pedirTapada');
+  return { tipo: tapada ? 'pedirTapada' : 'pedir' };
 }

@@ -903,6 +903,13 @@
           {T.opciones.pagoDobleDesc}
         </label>
       </fieldset>
+      <fieldset>
+        <legend>{T.opciones.tapadasSieteYMedia}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={sieteYMedia.tapadas} data-testid="opcion-tapadas" />
+          {T.opciones.tapadasSieteYMediaDesc}
+        </label>
+      </fieldset>
     {:else if juego === 'ohHell'}
       <fieldset>
         <legend>{T.opciones.jugadores}</legend>
