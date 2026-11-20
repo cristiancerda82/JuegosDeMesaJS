@@ -508,12 +508,32 @@ describe('reconstrucción del Truc', () => {
 });
 
 describirReconstruccion(julepe, reconstruirJulepe, {
-  configs: [CONFIG_JULEPE_POR_DEFECTO, { jugadores: 6, manos: 6 }, { jugadores: 3, manos: 6 }],
+  configs: [
+    CONFIG_JULEPE_POR_DEFECTO,
+    { jugadores: 6, manos: 6 },
+    { jugadores: 3, manos: 6 },
+    { jugadores: 4, manos: 6, bailarla: true, defensa: true },
+  ],
   base: iaJulepeBasica,
   partidas: 4,
 });
 
 describe('reconstrucción del Julepe', () => {
+  it('el que reparte, antes de bailarla o mirar, tiene 5 cartas con la muestra al final', () => {
+    const c = julepe.crear({ jugadores: 4, manos: 6, bailarla: true, defensa: true }, 'ciegas');
+    if (!c.ok) throw new Error(c.error);
+    const e = c.valor;
+    const vista = julepe.vistaDe(e, 3);
+    expect(vista.miMano).toEqual([e.cartaTriunfo]);
+    for (let i = 0; i < 10; i++) {
+      const r = reconstruirJulepe(vista, crearAzar(`ciegas-${i}`));
+      expect(r.manos[3]).toHaveLength(5);
+      expect(r.manos[3]!.at(-1)).toBe(e.cartaTriunfo);
+      expect(julepe.vistaDe(r, 3)).toEqual(vista);
+      expect(new Set([...r.manos.flat(), ...r.mazo]).size).toBe(40);
+    }
+  });
+
   it('la carta de triunfo sigue en la mano del repartidor y se respetan los fallos', () => {
     let revisadas = 0;
     for (let i = 0; i < 150; i++) {

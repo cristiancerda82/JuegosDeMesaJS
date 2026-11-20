@@ -55,6 +55,12 @@ export function bazasEsperadas(
 function elegir(vista: VistaJulepe, acciones: readonly AccionJulepe[]): AccionJulepe {
   const mano = vista.miMano ?? [];
   switch (vista.fase) {
+    case 'bailar': {
+      // Solo ve la muestra: la baila si es un As o un Tres, el triunfo más alto.
+      const muestra = vista.cartaTriunfo;
+      const alta = muestra !== null && (valorDe(muestra) === AS || valorDe(muestra) === TRES);
+      return { tipo: alta ? 'bailar' : 'mirar' };
+    }
     case 'decidir': {
       if (!acciones.some((a) => a.tipo === 'pasar')) return { tipo: 'jugar' };
       const rivales = vista.eliminados.filter((x) => !x).length - 1;
@@ -63,6 +69,14 @@ function elegir(vista: VistaJulepe, acciones: readonly AccionJulepe[]): AccionJu
         : { tipo: 'pasar' };
     }
     case 'descartar': {
+      if (vista.defiende && vista.asiento === vista.repartidor) {
+        // Defiende el bote: suelta su peor carta, mejor si no es triunfo, As ni Tres.
+        const malas = mano.filter((c) => !buena(c, vista.triunfo));
+        const peor = [...(malas.length > 0 ? malas : mano)].sort(
+          (a, b) => fuerza(a) - fuerza(b),
+        )[0]!;
+        return { tipo: 'descartar', cartas: [peor] };
+      }
       // Las malas, de la más baja a la más alta, tantas como deje el mazo.
       const malas = mano
         .filter((c) => !buena(c, vista.triunfo))

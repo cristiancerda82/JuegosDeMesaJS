@@ -230,6 +230,29 @@ test('Truc en red: dos humanos juegan una mano completa', async ({ browser }) =>
   }
 });
 
+test('Julepe con bailarla y la defensa del bote en red: los dos ven lo que decide quien reparte', async ({
+  browser,
+}) => {
+  test.setTimeout(150_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'julepe', async (p) => {
+    await p.getByTestId('julepe-bailarla').check();
+    await p.getByTestId('julepe-defensa').check();
+  });
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) await expect(p.locator('.carta-mano')).toHaveCount(5);
+
+  // Reparte una IA: decide si la baila antes que nadie, y después le toca a Ana, que es mano.
+  await expect(ana.getByTestId('julepe-jugar')).toBeVisible({ timeout: 30_000 });
+  const bailada = await ana.getByTestId('marca-julepe').count();
+  await expect(luis.getByTestId('marca-julepe')).toHaveCount(bailada);
+  if (bailada > 0) await expect(luis.getByTestId('marca-julepe')).toContainText('la baila');
+  await ana.getByTestId('julepe-pasar').click();
+  await expect(luis.getByTestId('asiento-0')).toContainText('pasa');
+});
+
 test('Julepe en red: dos humanos y dos IAs juegan una mano', async ({ browser }) => {
   test.setTimeout(150_000);
   const ana = await jugador(browser);

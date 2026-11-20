@@ -57,9 +57,11 @@ export function reconstruirJulepe(vista: VistaJulepe, azar: EstadoAzar): EstadoJ
   );
   const descartadas = vista.cambios.reduce<number>((s, c) => s + (c ?? 0), 0);
   // Sitios ocultos: las manos ajenas, el mazo (n) y los descartes (n + 1), sin restricciones.
+  // La mano propia también tiene huecos si el que reparte aún no ha visto sus cartas.
+  const propias = vista.miMano?.length ?? 0;
   const huecos = [
     ...vista.cartasEnMano.map((c, a) =>
-      a === yo ? 0 : a === vista.repartidor && triunfoAjeno !== null ? c - 1 : c,
+      a === yo ? c - propias : a === vista.repartidor && triunfoAjeno !== null ? c - 1 : c,
     ),
     vista.mazo,
     descartadas,
@@ -71,7 +73,8 @@ export function reconstruirJulepe(vista: VistaJulepe, azar: EstadoAzar): EstadoJ
   ];
   const repartidas = repartirConFallos(cartas, huecos, fallos, new Generador(azarReparto));
   const manos = Array.from({ length: n }, (_, a): IdCarta[] => {
-    if (a === yo && vista.miMano) return [...vista.miMano];
+    // A ciegas, sus cartas sin ver van antes que la muestra, que es la última.
+    if (a === yo && vista.miMano) return [...repartidas[a]!, ...vista.miMano];
     if (a === vista.repartidor && triunfoAjeno !== null) return [...repartidas[a]!, triunfoAjeno];
     return repartidas[a]!;
   });
@@ -88,6 +91,8 @@ export function reconstruirJulepe(vista: VistaJulepe, azar: EstadoAzar): EstadoJ
     fase: vista.fase,
     turno: vista.turno ?? 0,
     juega: [...vista.juega],
+    ...(vista.bailada ? { bailada: true } : {}),
+    ...(vista.defiende ? { defiende: true } : {}),
     cambios: [...vista.cambios],
     mesa: [...vista.mesa],
     bazasJugadas: [...vista.bazasJugadas],
@@ -111,8 +116,9 @@ export const SIMULABLE_JULEPE: Simulable<ConfigJulepe, EstadoJulepe, AccionJulep
     if (!r) return bono;
     return r.cobrado[asiento]! - r.julepe[asiento]! + bono;
   },
-  // Los descartes los decide la base: hasta 32 formas de descartar no caben en el presupuesto.
-  decideLaBase: (vista) => vista.fase === 'descartar',
+  // Los descartes y bailarla los decide la base: hasta 32 formas de descartar no caben en el
+  // presupuesto, y bailarla se decide a ciegas.
+  decideLaBase: (vista) => vista.fase === 'descartar' || vista.fase === 'bailar',
   reconstrucciones: 24,
   presupuesto: 160,
 };

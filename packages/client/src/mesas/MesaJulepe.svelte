@@ -48,6 +48,18 @@
   const puedeDecidir = $derived(legales.some((a) => a.tipo === 'jugar'));
   const puedePasar = $derived(legales.some((a) => a.tipo === 'pasar'));
   const puedoDescartar = $derived(legales.some((a) => a.tipo === 'descartar'));
+  const puedeBailar = $derived(legales.some((a) => a.tipo === 'bailar'));
+  /** Defiende el bote: suelta una sola carta y no roba. */
+  const soyDefensor = $derived(vista.defiende && sesion.asiento === vista.repartidor);
+  const maximoDescarte = $derived(soyDefensor ? 1 : vista.mazo);
+  /** Lo que todos deben saber del que reparte en esta mano. */
+  const marca = $derived(
+    vista.bailada
+      ? T.julepe.marcaBailada(nombre(vista.repartidor))
+      : vista.defiende
+        ? T.julepe.marcaDefiende(nombre(vista.repartidor))
+        : null,
+  );
 
   /** La última baza se ve hasta que empieza a decidirse la mano siguiente. */
   const vistaMesa: VistaBazas = $derived({
@@ -66,7 +78,8 @@
 
   function marcar(id: IdCarta) {
     if (marcadas.includes(id)) marcadas = marcadas.filter((c) => c !== id);
-    else if (marcadas.length < vista.mazo) marcadas = [...marcadas, id];
+    else if (marcadas.length < maximoDescarte) marcadas = [...marcadas, id];
+    else if (soyDefensor) marcadas = [id];
   }
 
   function descartar() {
@@ -90,6 +103,9 @@
     const r = ahora.resultadosManos.at(-1);
     if (ahora.resultadosManos.length > previa.resultadosManos.length && r?.nadieJugo) {
       anunciado = T.julepe.nadieJuega(nombre(r.repartidor));
+    } else if (previa.fase === 'bailar') {
+      anunciado =
+        quien === sesion.asiento ? null : ahora.bailada ? T.julepe.laBaila(nombre(quien)) : T.julepe.mira(nombre(quien));
     } else if (previa.fase === 'decidir') {
       anunciado =
         quien === sesion.asiento
@@ -148,9 +164,32 @@
     <span data-testid="mano-julepe">
       {T.julepe.mano(Math.min(vista.numeroMano + 1, vista.config.manos), vista.config.manos)}
     </span>
+    {#if marca !== null}
+      <span class="marca" data-testid="marca-julepe">{marca}</span>
+    {/if}
   {/snippet}
 
   {#snippet acciones(cancelar: () => void)}
+    {#if puedeBailar}
+      <div class="decision" role="group" aria-label={T.julepe.aCiegas}>
+        <span class="obligado">{T.julepe.aCiegas}</span>
+        <button data-accion="bailar"
+          class="principal"
+          data-testid="julepe-bailar"
+          onclick={() => {
+            cancelar();
+            sesion.jugar({ tipo: 'bailar' });
+          }}>{T.julepe.laBailo}</button
+        >
+        <button data-accion="mirar"
+          data-testid="julepe-mirar"
+          onclick={() => {
+            cancelar();
+            sesion.jugar({ tipo: 'mirar' });
+          }}>{T.julepe.miro}</button
+        >
+      </div>
+    {/if}
     {#if puedeDecidir && vista.fase === 'decidir'}
       <div class="decision" role="group" aria-label={T.julepe.decidir}>
         <button data-accion="jugar"
@@ -180,8 +219,8 @@
 {#if puedoDescartar && resumen === null && sesion.fin === null}
   <div class="velo descarte">
     <div class="dialogo" role="dialog" aria-modal="true" aria-labelledby="titulo-descarte" data-testid="panel-descarte">
-      <h2 id="titulo-descarte">{T.julepe.marcaCambio}</h2>
-      <p class="nota">{T.julepe.mazo(vista.mazo)}</p>
+      <h2 id="titulo-descarte">{soyDefensor ? T.julepe.defiendeDescarte : T.julepe.marcaCambio}</h2>
+      <p class="nota">{soyDefensor ? T.julepe.noRobas : T.julepe.mazo(vista.mazo)}</p>
       <div class="cartas-descarte">
         {#each vista.miMano ?? [] as id (id)}
           <button
@@ -195,8 +234,13 @@
           </button>
         {/each}
       </div>
-      <button class="principal" data-testid="descartar" onclick={descartar}>
-        {T.julepe.cambiar(marcadas.length)}
+      <button
+        class="principal"
+        data-testid="descartar"
+        disabled={soyDefensor && marcadas.length !== 1}
+        onclick={descartar}
+      >
+        {soyDefensor ? (marcadas.length === 1 ? T.julepe.soltar : T.julepe.eligeUna) : T.julepe.cambiar(marcadas.length)}
       </button>
     </div>
   </div>
@@ -233,6 +277,11 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
+  }
+
+  .marca {
+    font-weight: 700;
+    color: var(--acento);
   }
 
   .obligado {

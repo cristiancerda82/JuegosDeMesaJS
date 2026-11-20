@@ -15,6 +15,10 @@ export interface ConfigJulepe {
   readonly jugadores: 3 | 4 | 5 | 6;
   /** Manos que dura la partida. */
   readonly manos: (typeof MANOS_JULEPE)[number];
+  /** Variante: el que reparte puede bailarla (jugar sin ver sus cartas) y cobra y paga doble. */
+  readonly bailarla?: boolean;
+  /** Variante: si solo juega uno antes del que reparte, este defiende el bote con 6 cartas. */
+  readonly defensa?: boolean;
 }
 
 export const CONFIG_JULEPE_POR_DEFECTO: ConfigJulepe = { jugadores: 4, manos: 12 };
@@ -28,7 +32,7 @@ export const BAZAS_MANO_JULEPE = 5;
 export const BAZAS_MINIMAS_JULEPE = 2;
 const CARTAS_EN_MANO = 5;
 
-export type FaseJulepe = 'decidir' | 'descartar' | 'jugar';
+export type FaseJulepe = 'bailar' | 'decidir' | 'descartar' | 'jugar';
 
 export interface ResultadoManoJulepe {
   readonly repartidor: Asiento;
@@ -44,6 +48,10 @@ export interface ResultadoManoJulepe {
   readonly julepe: readonly number[];
   readonly fichasTras: readonly number[];
   readonly eliminadosTras: readonly boolean[];
+  /** El que repartía la bailó. */
+  readonly bailada?: true;
+  /** El que repartía defendió el bote. */
+  readonly defensa?: true;
 }
 
 export interface EstadoJulepe {
@@ -63,6 +71,10 @@ export interface EstadoJulepe {
   readonly turno: Asiento;
   /** Quién juega la mano: `null` si no ha decidido o está eliminado. */
   readonly juega: readonly (boolean | null)[];
+  /** Con la opción: el que reparte la bailó en esta mano. */
+  readonly bailada?: boolean;
+  /** Con la opción: el que reparte defiende el bote en esta mano. */
+  readonly defiende?: boolean;
   /** Cartas que cambió cada uno en el descarte; `null` si no ha descartado. */
   readonly cambios: readonly (number | null)[];
   readonly mesa: readonly CartaJugada[];
@@ -87,6 +99,8 @@ export interface EstadoJulepe {
 export type AccionJulepe =
   | { readonly tipo: 'jugar' }
   | { readonly tipo: 'pasar' }
+  | { readonly tipo: 'bailar' }
+  | { readonly tipo: 'mirar' }
   | { readonly tipo: 'descartar'; readonly cartas: readonly IdCarta[] }
   | { readonly tipo: 'carta'; readonly carta: IdCarta };
 
@@ -105,6 +119,10 @@ export interface VistaJulepe {
   readonly fase: FaseJulepe;
   readonly turno: Asiento | null;
   readonly juega: readonly (boolean | null)[];
+  /** El que reparte la bailó en esta mano. */
+  readonly bailada: boolean;
+  /** El que reparte defiende el bote en esta mano. */
+  readonly defiende: boolean;
   readonly cambios: readonly (number | null)[];
   readonly mesa: readonly CartaJugada[];
   readonly bazasJugadas: EstadoJulepe['bazasJugadas'];
@@ -158,7 +176,8 @@ function nuevaMano(
     | 'bazasJugadas'
     | 'bazas'
     | 'boteMano'
-  >,
+  > &
+    Partial<Pick<EstadoJulepe, 'bailada' | 'defiende'>>,
 ): EstadoJulepe {
   const n = base.config.jugadores;
   const { cartas, azar } = barajar(crearBaraja('espanola40'), base.azar);
@@ -179,16 +198,18 @@ function nuevaMano(
   const puesta = Math.min(PUESTA_JULEPE, base.fichas[base.repartidor]!);
   const fichas = base.fichas.map((f, a) => (a === base.repartidor ? f - puesta : f));
   const bote = base.bote + puesta;
+  // Lo que decidió el que repartía la mano anterior no pasa a esta.
+  const { bailada: _bailada, defiende: _defiende, ...limpia } = base;
   return {
-    ...base,
+    ...limpia,
     azar,
     manos,
     mazo: reparto.valor.mazo,
     descartadas: [],
     cartaTriunfo,
     triunfo: paloDe(cartaTriunfo),
-    fase: 'decidir',
-    turno: mano,
+    fase: base.config.bailarla ? 'bailar' : 'decidir',
+    turno: base.config.bailarla ? base.repartidor : mano,
     juega: new Array<boolean | null>(n).fill(null),
     cambios: new Array<number | null>(n).fill(null),
     mesa: [],
@@ -211,17 +232,26 @@ function cerrarMano(e: EstadoJulepe, nadieJugo: boolean): EstadoJulepe {
     cobrado[e.repartidor] = bote;
     bote = 0;
   } else {
+    // Quien la bailó cobra el último: el doble, sin pasar de lo que quede en el bote.
+    const bailo = (a: Asiento) => e.bailada === true && a === e.repartidor;
     for (let a = 0; a < n; a++) {
-      if (e.juega[a] !== true) continue;
+      if (e.juega[a] !== true || bailo(a)) continue;
       cobrado[a] = e.bazas[a]! * valorBaza;
       bote -= cobrado[a]!;
+    }
+    if (e.bailada === true && e.juega[e.repartidor] === true) {
+      cobrado[e.repartidor] = Math.min(bote, 2 * e.bazas[e.repartidor]! * valorBaza);
+      bote -= cobrado[e.repartidor]!;
     }
   }
   let fichas = e.fichas.map((f, a) => f + cobrado[a]!);
   if (!nadieJugo) {
     for (let a = 0; a < n; a++) {
       if (e.juega[a] !== true || e.bazas[a]! >= BAZAS_MINIMAS_JULEPE) continue;
-      julepe[a] = Math.min(e.boteMano, fichas[a]!);
+      // Quien defiende el bote no paga julepe; quien la bailó lo paga doble.
+      if (a === e.repartidor && e.defiende === true) continue;
+      const doble = a === e.repartidor && e.bailada === true ? 2 : 1;
+      julepe[a] = Math.min(doble * e.boteMano, fichas[a]!);
       bote += julepe[a]!;
     }
     fichas = fichas.map((f, a) => f - julepe[a]!);
@@ -239,6 +269,8 @@ function cerrarMano(e: EstadoJulepe, nadieJugo: boolean): EstadoJulepe {
       julepe,
       fichasTras: fichas,
       eliminadosTras: eliminados,
+      ...(e.bailada === true ? { bailada: true as const } : {}),
+      ...(e.defiende === true ? { defensa: true as const } : {}),
     },
   ];
   const cerrado: EstadoJulepe = {
@@ -305,7 +337,12 @@ export const julepe: Juego<ConfigJulepe, EstadoJulepe, AccionJulepe, VistaJulepe
     if (!(MANOS_JULEPE as readonly number[]).includes(config.manos)) {
       return error('La partida de Julepe dura 6, 12 o 20 manos');
     }
-    const limpia: ConfigJulepe = { jugadores: config.jugadores, manos: config.manos };
+    const limpia: ConfigJulepe = {
+      jugadores: config.jugadores,
+      manos: config.manos,
+      bailarla: config.bailarla === true,
+      defensa: config.defensa === true,
+    };
     const n = limpia.jugadores;
     // Empieza repartiendo el último asiento, así es mano el asiento 0.
     return ok(
@@ -328,11 +365,17 @@ export const julepe: Juego<ConfigJulepe, EstadoJulepe, AccionJulepe, VistaJulepe
   accionesLegales(e, asiento) {
     if (partidaTerminada(e) || asiento !== e.turno) return [];
     switch (e.fase) {
+      case 'bailar':
+        return [{ tipo: 'bailar' }, { tipo: 'mirar' }];
       case 'decidir':
         // El repartidor está obligado si antes de él juega uno solo, o nadie (y se lleva el bote).
         if (asiento === e.repartidor && juegan(e) <= 1) return [{ tipo: 'jugar' }];
         return [{ tipo: 'jugar' }, { tipo: 'pasar' }];
       case 'descartar':
+        // El que defiende el bote suelta una sola carta y no roba.
+        if (asiento === e.repartidor && e.defiende === true) {
+          return e.manos[asiento]!.map((c) => ({ tipo: 'descartar' as const, cartas: [c] }));
+        }
         return subconjuntos(e.manos[asiento]!, e.mazo.length).map((cartas) => ({
           tipo: 'descartar' as const,
           cartas,
@@ -348,25 +391,51 @@ export const julepe: Juego<ConfigJulepe, EstadoJulepe, AccionJulepe, VistaJulepe
   transicion(e, asiento, accion) {
     const n = e.config.jugadores;
     switch (accion.tipo) {
+      case 'bailar':
+      case 'mirar': {
+        const bailada = accion.tipo === 'bailar';
+        return {
+          ...e,
+          bailada,
+          juega: bailada ? e.juega.map((j, a) => (a === e.repartidor ? true : j)) : e.juega,
+          fase: 'decidir',
+          turno: manoJulepe(e),
+        };
+      }
       case 'jugar':
       case 'pasar': {
-        const decidido: EstadoJulepe = {
+        let decidido: EstadoJulepe = {
           ...e,
           juega: e.juega.map((j, a) => (a === asiento ? accion.tipo === 'jugar' : j)),
         };
-        if (asiento === e.repartidor) return trasDecidir(decidido);
-        return { ...decidido, turno: siguienteQue(asiento, n, activo(e)) };
+        if (asiento === e.repartidor) {
+          // Con la defensa, si antes de él juega uno solo, defiende el bote con una sexta carta.
+          if (e.config.defensa && accion.tipo === 'jugar' && juegan(e) === 1) {
+            decidido = {
+              ...decidido,
+              defiende: true,
+              manos: e.manos.map((m, a) => (a === asiento ? [...m, e.mazo[0]!] : m)),
+              mazo: e.mazo.slice(1),
+            };
+          }
+          return trasDecidir(decidido);
+        }
+        const siguiente = siguienteQue(asiento, n, activo(e));
+        // Si la bailó, el que reparte ya ha decidido.
+        if (siguiente === e.repartidor && e.bailada === true) return trasDecidir(decidido);
+        return { ...decidido, turno: siguiente };
       }
       case 'descartar': {
         const k = accion.cartas.length;
-        const robadas = e.mazo.slice(0, k);
+        const defiende = asiento === e.repartidor && e.defiende === true;
+        const robadas = defiende ? [] : e.mazo.slice(0, k);
         const manos = e.manos.map((m, a) =>
           a === asiento ? [...m.filter((c) => !accion.cartas.includes(c)), ...robadas] : m,
         );
         const descartado: EstadoJulepe = {
           ...e,
           manos,
-          mazo: e.mazo.slice(k),
+          mazo: e.mazo.slice(robadas.length),
           descartadas: [...e.descartadas, ...accion.cartas],
           cartaTriunfo:
             e.cartaTriunfo !== null && accion.cartas.includes(e.cartaTriunfo)
@@ -405,7 +474,13 @@ export const julepe: Juego<ConfigJulepe, EstadoJulepe, AccionJulepe, VistaJulepe
     return {
       config: e.config,
       asiento,
-      miMano: asiento === null ? null : [...e.manos[asiento]!],
+      miMano:
+        asiento === null
+          ? null
+          : // Antes de bailarla o mirar, el que reparte solo ve la muestra.
+            e.fase === 'bailar' && asiento === e.repartidor && e.cartaTriunfo !== null
+            ? [e.cartaTriunfo]
+            : [...e.manos[asiento]!],
       cartasEnMano: e.manos.map((m) => m.length),
       mazo: e.mazo.length,
       muestra: null,
@@ -416,6 +491,8 @@ export const julepe: Juego<ConfigJulepe, EstadoJulepe, AccionJulepe, VistaJulepe
       fase: e.fase,
       turno: partidaTerminada(e) ? null : e.turno,
       juega: [...e.juega],
+      bailada: e.bailada === true,
+      defiende: e.defiende === true,
       cambios: [...e.cambios],
       mesa: [...e.mesa],
       bazasJugadas: [...e.bazasJugadas],

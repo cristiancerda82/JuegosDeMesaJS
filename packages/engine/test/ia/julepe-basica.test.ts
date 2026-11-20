@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { crearAzar } from '../../src/baraja/azar';
 import type { IdCarta } from '../../src/baraja/cartas';
 import { aleatorio } from '../../src/ia/agente';
+import { IAS } from '../../src/ia/ias';
 import { iaJulepeBasica } from '../../src/ia/julepe-basica';
 import {
   CONFIG_JULEPE_POR_DEFECTO,
@@ -65,6 +66,80 @@ describe('IA básica del Julepe', () => {
       mesa: [{ asiento: 1, carta: 'copas-11' }],
     };
     expect(decide(e)).toEqual({ tipo: 'carta', carta: 'copas-12' });
+  });
+});
+
+describe('IA básica del Julepe con bailarla y la defensa del bote', () => {
+  const OPCIONES = { ...CONFIG_JULEPE_POR_DEFECTO, bailarla: true, defensa: true };
+
+  /** El que reparte (asiento 3), a punto de bailarla o mirar, con esta muestra. */
+  function conMuestra(muestra: IdCarta): EstadoJulepe {
+    const r = julepe.crear(OPCIONES, 'ia');
+    if (!r.ok) throw new Error(r.error);
+    const e = r.valor;
+    const otras = e.manos[3]!.filter((c) => c !== e.cartaTriunfo).slice(0, 4);
+    return {
+      ...e,
+      manos: e.manos.map((m, a) =>
+        a === 3 ? [...otras.filter((c) => c !== muestra), muestra] : m,
+      ),
+      cartaTriunfo: muestra,
+      triunfo: muestra.split('-')[0] as EstadoJulepe['triunfo'],
+    };
+  }
+
+  it('la baila con un As o un Tres de muestra, y si no, mira', () => {
+    expect(decide(conMuestra('copas-1'))).toEqual({ tipo: 'bailar' });
+    expect(decide(conMuestra('copas-3'))).toEqual({ tipo: 'bailar' });
+    expect(decide(conMuestra('copas-12'))).toEqual({ tipo: 'mirar' });
+  });
+
+  it('al defender el bote, suelta su peor carta', () => {
+    const r = julepe.crear(OPCIONES, 'ia');
+    if (!r.ok) throw new Error(r.error);
+    const e: EstadoJulepe = {
+      ...r.valor,
+      fase: 'descartar',
+      triunfo: 'oros',
+      cartaTriunfo: null,
+      defiende: true,
+      juega: [true, false, false, true],
+      cambios: [0, null, null, null],
+      turno: 3,
+      manos: r.valor.manos.map((m, a) =>
+        a === 3 ? ['oros-5', 'oros-7', 'copas-1', 'espadas-3', 'bastos-4', 'oros-2'] : m,
+      ),
+    };
+    expect(decide(e)).toEqual({ tipo: 'descartar', cartas: ['bastos-4'] });
+    // Si todas son buenas, la más baja.
+    const buenas: EstadoJulepe = {
+      ...e,
+      manos: e.manos.map((m, a) =>
+        a === 3 ? ['oros-5', 'oros-7', 'copas-1', 'espadas-3', 'oros-2', 'bastos-1'] : m,
+      ),
+    };
+    expect(decide(buenas)).toEqual({ tipo: 'descartar', cartas: ['oros-2'] });
+  });
+
+  it('partidas entre IAs de 3 a 6 con las opciones terminan sin acciones ilegales', () => {
+    for (const jugadores of [3, 4, 5, 6] as const) {
+      const r = duelo(
+        julepe,
+        { ...OPCIONES, jugadores, manos: 6 },
+        iaJulepeBasica,
+        IAS.julepe.facil,
+        40,
+        unoContraTodos(jugadores),
+        `opciones-${jugadores}`,
+      );
+      expect(r.partidas).toBe(40);
+      expect(r.maxMs).toBeLessThan(500);
+    }
+  });
+
+  it('con las opciones, gana claramente más de lo que le toca contra el azar', () => {
+    const r = duelo(julepe, OPCIONES, iaJulepeBasica, azarDe, 300, unoContraTodos(4), 'azar-opc');
+    expect(r.ganadas).toBeGreaterThan(150);
   });
 });
 

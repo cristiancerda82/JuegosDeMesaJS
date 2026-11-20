@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { abrirJuego } from './menu';
-import type { IdCarta } from '@juegos/engine';
+import { crearAzar, iaJulepeBasica, julepe, type EstadoJulepe, type IdCarta } from '@juegos/engine';
 
 /** Toca la esquina superior izquierda, que queda a la vista aunque las cartas se solapen. */
 const ESQUINA = { position: { x: 8, y: 8 } };
@@ -180,4 +180,115 @@ test('la mesa del Julepe de 6 entra en 360 × 640 sin scroll horizontal', async 
   await page.screenshot({ path: 'test-results/julepe6-baza-360.png' });
   const tras = await page.evaluate(() => document.documentElement.scrollWidth);
   expect(tras).toBeLessThanOrEqual(anchos.ventana);
+});
+
+// ── Bailarla y defensa del bote ──────────────────────────────────────────────
+
+async function empezarConOpciones(page: Page, query: string, bailarla: boolean, defensa: boolean) {
+  await page.goto(`./?${query}`);
+  await abrirJuego(page, 'julepe');
+  await page.getByLabel('3 jugadores', { exact: true }).check();
+  await page.getByLabel('6 manos', { exact: true }).check();
+  if (bailarla) await page.getByTestId('julepe-bailarla').check();
+  if (defensa) await page.getByTestId('julepe-defensa').check();
+  await page.getByTestId('empezar').click();
+}
+
+/** Pasa la primera mano, en la que reparte una IA, hasta que reparte el jugador. */
+async function hastaQueReparto(page: Page) {
+  await page.getByTestId('julepe-pasar').click();
+  await page.getByTestId('panel-mano').waitFor({ timeout: 30_000 });
+  await page.getByTestId('siguiente-mano').click();
+}
+
+/**
+ * Una semilla de 3 jugadores a 6 manos con la defensa en la que, pasando el jugador la primera
+ * mano, en la segunda (reparte él) juega exactamente una IA antes que él.
+ */
+function semillaDefensa(): string {
+  const config = { jugadores: 3, manos: 6, defensa: true } as const;
+  for (let i = 0; i < 500; i++) {
+    const semilla = `defensa-${i}`;
+    const r = julepe.crear(config, semilla);
+    if (!r.ok) throw new Error(r.error);
+    let e: EstadoJulepe = r.valor;
+    for (let pasos = 0; pasos < 200 && !(e.numeroMano === 1 && e.turno === 0); pasos++) {
+      const accion =
+        e.turno === 0 && e.numeroMano === 0
+          ? ({ tipo: 'pasar' } as const)
+          : iaJulepeBasica.decidir(
+              julepe.vistaDe(e, e.turno),
+              julepe.accionesLegales(e, e.turno),
+              crearAzar('x'),
+            ).accion;
+      e = julepe.transicion(e, e.turno, accion);
+    }
+    if (e.numeroMano === 1 && e.repartidor === 0 && e.fase === 'decidir') {
+      if (e.juega.filter((j) => j === true).length === 1) return semilla;
+    }
+  }
+  throw new Error('Ninguna semilla de prueba sirve');
+}
+
+test('bailarla: el que reparte solo ve la muestra y, si la baila, todos lo ven', async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  await empezarConOpciones(page, 'rapido&semilla=julepe-bailar', true, false);
+  await hastaQueReparto(page);
+  await expect(page.getByTestId('julepe-bailar')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByTestId('julepe-mirar')).toBeVisible();
+  // Solo ve la muestra.
+  await expect(page.locator('.carta-mano')).toHaveCount(1);
+  await page.screenshot({ path: `test-results/julepe-bailar-${page.viewportSize()!.width}.png` });
+  await page.getByTestId('julepe-bailar').click();
+  await expect(page.getByTestId('marca-julepe')).toHaveText('La bailas (cobras doble)');
+  // Ve sus cartas al llegar el descarte, sin haber vuelto a decidir.
+  await expect(page.getByTestId('julepe-jugar')).toHaveCount(0);
+  await expect(page.locator('.carta-mano')).toHaveCount(5, { timeout: 30_000 });
+});
+
+test('defensa del bote: el que reparte defiende con 6 cartas y suelta una', async ({ page }) => {
+  test.setTimeout(120_000);
+  await empezarConOpciones(page, `rapido&semilla=${semillaDefensa()}`, false, true);
+  await hastaQueReparto(page);
+  await expect(page.getByTestId('obligado')).toBeVisible({ timeout: 30_000 });
+  await page.getByTestId('julepe-jugar').click();
+  await expect(page.getByTestId('marca-julepe')).toHaveText('Defiendes el bote');
+  const panel = page.getByTestId('panel-descarte');
+  await panel.waitFor({ timeout: 30_000 });
+  await expect(panel).toContainText('Defiendes el bote: suelta una carta');
+  const cartas = page.locator('[data-testid^="descarte-"]');
+  await expect(cartas).toHaveCount(6);
+  await expect(page.getByTestId('descartar')).toBeDisabled();
+  // Solo se marca una: al tocar otra, cambia la marcada.
+  await cartas.nth(0).click();
+  await cartas.nth(1).click();
+  await expect(page.locator('[data-testid^="descarte-"][aria-pressed="true"]')).toHaveCount(1);
+  await page.screenshot({ path: `test-results/julepe-defensa-${page.viewportSize()!.width}.png` });
+  await page.getByTestId('descartar').click();
+  await expect(panel).toBeHidden();
+  await expect(page.locator('.carta-mano')).toHaveCount(5);
+});
+
+test('partida de Julepe completa con bailarla y la defensa del bote', async ({ page }) => {
+  test.setTimeout(300_000);
+  await empezarConOpciones(page, 'rapido&semilla=julepe-variantes', true, true);
+  const fin = page.getByTestId('fin');
+  for (let paso = 0; paso < 1500 && !(await fin.isVisible()); paso++) {
+    await page.locator(`${ESPERA}, [data-testid="julepe-bailar"]`).first().waitFor();
+    if (await fin.isVisible()) break;
+    if (await page.getByTestId('panel-mano').isVisible()) {
+      await page.getByTestId('siguiente-mano').click();
+    } else if (await page.getByTestId('julepe-bailar').isVisible()) {
+      await page.getByTestId('julepe-bailar').click();
+    } else if (await page.getByTestId('panel-descarte').isVisible()) {
+      if (await page.getByTestId('descartar').isDisabled())
+        await page.locator('[data-testid^="descarte-"]').first().click();
+      await page.getByTestId('descartar').click();
+    } else if (await page.getByTestId('julepe-jugar').isVisible()) {
+      await page.getByTestId('julepe-jugar').click();
+    } else await jugarCarta(page);
+  }
+  await expect(fin).toBeVisible();
 });

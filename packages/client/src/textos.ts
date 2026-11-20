@@ -479,6 +479,11 @@ export const T = {
     cartasEspecialesDesc:
       'El 10 cambia el sentido, el As hace robar 2, el 6 robar 1, el 7 salta un turno y tras un 9 quien no puede echar roba y pasa.',
     jugadoresN: (n: number) => `${n} jugadores`,
+    variantesJulepe: 'Variantes',
+    bailarlaJulepeDesc:
+      'Bailarla: el que reparte puede jugar sin ver sus cartas; cobra el doble por baza y, si no hace 2, paga julepe doble.',
+    defensaJulepeDesc:
+      'Defensa del bote: si solo juega uno, el que reparte lo defiende con 6 cartas y no paga julepe si pierde.',
     dominoElegidoBarbu: 'Dominó: elige el número',
     dominoElegidoBarbuDesc:
       'Quien reparte y elige el dominó decide con qué número se abren las filas, en lugar de las Jotas.',
@@ -728,6 +733,19 @@ export const T = {
     juego: 'Juego',
     paso: 'Paso',
     obligado: 'Estás obligado a jugar',
+    laBailo: 'La bailo',
+    miro: 'Miro mis cartas',
+    aCiegas: 'Solo ves la muestra: ¿la bailas?',
+    laBaila: (quien: string) => (quien === 'Tú' ? 'La bailas' : `${quien} la baila`),
+    mira: (quien: string) => (quien === 'Tú' ? 'Miras tus cartas' : `${quien} mira sus cartas`),
+    marcaBailada: (quien: string) =>
+      quien === 'Tú' ? 'La bailas (cobras doble)' : `${quien} la baila (cobra doble)`,
+    marcaDefiende: (quien: string) =>
+      quien === 'Tú' ? 'Defiendes el bote' : `${quien} defiende el bote`,
+    defiendeDescarte: 'Defiendes el bote: suelta una carta',
+    noRobas: 'Tienes 6 cartas: sueltas una y no robas',
+    soltar: 'Soltar esta',
+    eligeUna: 'Toca la carta que sueltas',
     decidir: '¿Juegas la mano?',
     marcaCambio: 'Toca las cartas que quieras cambiar',
     cambiar: (n: number) => (n === 0 ? 'No cambio' : n === 1 ? 'Cambiar 1' : `Cambiar ${n}`),
@@ -4064,7 +4082,7 @@ export const T = {
         texto: [
           'Cada uno recibe 5 cartas. La última carta del que reparte se enseña a todos: su palo es el triunfo, y esa carta se queda en su mano.',
           'Al empezar cada mano, el que reparte pone 10 fichas en el bote.',
-          'En otros sitios el que reparte puede «bailarla»: quedarse la muestra sin haber visto sus cartas. Y cuando solo juega uno, los demás defienden el bote entre todos.',
+          'Variantes (en las opciones): con «Bailarla», el que reparte decide antes de mirar sus cartas, viendo solo la muestra, si la baila. Si la baila juega seguro: cada baza suya vale el doble (sin pasar de lo que quede en el bote) y, si no hace 2, paga julepe doble. Con «Defensa del bote», si solo juega uno antes del que reparte, este defiende el bote: recibe una sexta carta, suelta una sin robar y, si no hace 2 bazas, no paga julepe.',
         ],
       },
       {

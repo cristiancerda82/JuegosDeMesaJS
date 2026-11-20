@@ -136,6 +136,13 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Butifarra', butifarra, CONFIG_BUTIFARRA_POR_DEFECTO, IAS.butifarra, 'bandos'),
   entrada('Truc', truc, CONFIG_TRUC_POR_DEFECTO, IAS.truc, 'bandos'),
   entrada('Julepe', julepe, CONFIG_JULEPE_POR_DEFECTO, IAS.julepe, 4),
+  entrada(
+    'Julepe con bailarla y la defensa del bote',
+    julepe,
+    { ...CONFIG_JULEPE_POR_DEFECTO, bailarla: true, defensa: true },
+    IAS.julepe,
+    4,
+  ),
   entrada('Remigio', remigio, CONFIG_REMIGIO_POR_DEFECTO, IAS.remigio, 2),
   entrada('Tute subastado', tuteSubastado, CONFIG_TUTE_SUBASTADO_POR_DEFECTO, IAS.tuteSubastado, 4),
   entrada('Cuatrola', cuatrola, CONFIG_CUATROLA_POR_DEFECTO, IAS.cuatrola, 4),

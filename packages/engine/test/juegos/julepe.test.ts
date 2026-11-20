@@ -230,6 +230,166 @@ describe('fin de la partida', () => {
   });
 });
 
+// ── Bailarla ─────────────────────────────────────────────────────────────────
+
+describe('bailarla', () => {
+  const previa = { cartas: [], ganador: 0 };
+
+  it('las opciones se normalizan y sin ellas la mano empieza decidiendo', () => {
+    const e = nueva();
+    expect(e.config.bailarla).toBe(false);
+    expect(e.config.defensa).toBe(false);
+    expect(e.fase).toBe('decidir');
+    expect(julepe.vistaDe(e, 0).bailada).toBe(false);
+  });
+
+  it('el que reparte decide primero, viendo solo la muestra', () => {
+    const e = nueva({ bailarla: true });
+    expect(e.fase).toBe('bailar');
+    expect(e.turno).toBe(3);
+    expect(tipos(e)).toEqual(['bailar', 'mirar']);
+    const v = julepe.vistaDe(e, 3);
+    expect(v.miMano).toEqual([e.cartaTriunfo]);
+    expect(v.cartasEnMano[3]).toBe(5);
+    expect(julepe.vistaDe(e, 0).miMano).toHaveLength(5);
+  });
+
+  it('si mira, se decide como siempre; si la baila, juega y no vuelve a decidir', () => {
+    const mira = hacer(nueva({ bailarla: true }), { tipo: 'mirar' });
+    expect(mira.fase).toBe('decidir');
+    expect(mira.turno).toBe(0);
+    expect(julepe.vistaDe(mira, 3).miMano).toHaveLength(5);
+
+    let e = hacer(nueva({ bailarla: true }), { tipo: 'bailar' });
+    expect(e.bailada).toBe(true);
+    expect(e.juega[3]).toBe(true);
+    expect(julepe.vistaDe(e, 1).bailada).toBe(true);
+    e = decidir(e, false, true, false);
+    // Juegan el 1 y el que reparte: al descarte sin que este vuelva a decidir.
+    expect(e.fase).toBe('descartar');
+    expect(e.turno).toBe(1);
+  });
+
+  it('si la baila y no juega nadie más, se lleva el bote', () => {
+    let e = hacer(nueva({ bailarla: true }), { tipo: 'bailar' });
+    e = decidir(e, false, false, false);
+    const r = e.resultadosManos[0]!;
+    expect(r.nadieJugo).toBe(true);
+    expect(r.cobrado).toEqual([0, 0, 0, 10]);
+    expect(r.bailada).toBe(true);
+  });
+
+  it('cobra el doble sin pasar del bote: con 3 bazas, los 6 que quedan', () => {
+    // Juegan el 0 y el 3, que la bailó; falta la última baza, que gana el 0 con el As.
+    let e = enJuego([['copas-1'], [], [], ['copas-2']], {
+      config: { ...CONFIG_JULEPE_POR_DEFECTO, bailarla: true, defensa: false },
+      repartidor: 3,
+      bailada: true,
+      bote: 10,
+      boteMano: 10,
+      fichas: [50, 50, 50, 40],
+      bazas: [1, 0, 0, 3],
+      bazasJugadas: [previa, previa, previa, previa],
+    });
+    for (const carta of ['copas-1', 'copas-2'] as IdCarta[]) e = hacer(e, { tipo: 'carta', carta });
+    const r = e.resultadosManos[0]!;
+    expect(r.bazas).toEqual([2, 0, 0, 3]);
+    // El 0 cobra 4; al 3 le corresponderían 12, pero solo quedan 6.
+    expect(r.cobrado).toEqual([4, 0, 0, 6]);
+    expect(r.julepe).toEqual([0, 0, 0, 0]);
+  });
+
+  it('con una baza, paga julepe doble', () => {
+    let e = enJuego([['copas-1'], [], [], ['copas-2']], {
+      config: { ...CONFIG_JULEPE_POR_DEFECTO, bailarla: true, defensa: false },
+      repartidor: 3,
+      bailada: true,
+      bote: 10,
+      boteMano: 10,
+      fichas: [50, 50, 50, 40],
+      bazas: [3, 0, 0, 1],
+      bazasJugadas: [previa, previa, previa, previa],
+    });
+    for (const carta of ['copas-1', 'copas-2'] as IdCarta[]) e = hacer(e, { tipo: 'carta', carta });
+    const r = e.resultadosManos[0]!;
+    // Le corresponderían 4 por su baza, pero tras cobrar el 0 solo quedan 2 en el bote.
+    expect(r.cobrado).toEqual([8, 0, 0, 2]);
+    expect(r.julepe).toEqual([0, 0, 0, 20]);
+    expect(r.fichasTras[3]).toBe(22);
+  });
+
+  it('lo que decidió no pasa a la mano siguiente', () => {
+    let e = hacer(nueva({ bailarla: true }), { tipo: 'bailar' });
+    e = decidir(e, false, false, false);
+    expect(e.bailada).toBeUndefined();
+    expect(e.fase).toBe('bailar');
+    expect(e.turno).toBe(e.repartidor);
+  });
+});
+
+// ── Defensa del bote ─────────────────────────────────────────────────────────
+
+describe('defensa del bote', () => {
+  it('si solo juega uno, el que reparte defiende con 6 cartas y suelta una sin robar', () => {
+    let e = decidir(nueva({ defensa: true }), false, true, false);
+    expect(tipos(e)).toEqual(['jugar']);
+    const mazo = e.mazo.length;
+    e = hacer(e, { tipo: 'jugar' });
+    expect(e.defiende).toBe(true);
+    expect(e.manos[3]).toHaveLength(6);
+    expect(e.mazo).toHaveLength(mazo - 1);
+    expect(julepe.vistaDe(e, 0).defiende).toBe(true);
+    // Descarta primero el 1, como siempre; después el defensor, una sola carta.
+    e = hacer(e, { tipo: 'descartar', cartas: [] });
+    expect(e.turno).toBe(3);
+    const legales = julepe.accionesLegales(e, 3);
+    expect(legales).toHaveLength(6);
+    expect(legales.every((a) => a.tipo === 'descartar' && a.cartas.length === 1)).toBe(true);
+    const antes = e.mazo.length;
+    e = hacer(e, legales[0]!);
+    expect(e.manos[3]).toHaveLength(5);
+    expect(e.mazo).toHaveLength(antes);
+    expect(e.fase).toBe('jugar');
+  });
+
+  it('sin la opción, el obligado juega con 5 cartas', () => {
+    const e = hacer(decidir(nueva(), false, true, false), { tipo: 'jugar' });
+    expect(e.defiende).toBeUndefined();
+    expect(e.manos[3]).toHaveLength(5);
+  });
+
+  it('con dos que juegan antes, no hay defensa', () => {
+    const e = hacer(decidir(nueva({ defensa: true }), true, true, false), { tipo: 'jugar' });
+    expect(e.defiende).toBeUndefined();
+  });
+
+  it('quien defiende y hace una baza la cobra y no paga julepe', () => {
+    const previa = { cartas: [], ganador: 0 };
+    let e = enJuego([['copas-1'], [], [], ['copas-2']], {
+      config: { ...CONFIG_JULEPE_POR_DEFECTO, bailarla: false, defensa: true },
+      repartidor: 3,
+      defiende: true,
+      bote: 10,
+      boteMano: 10,
+      fichas: [50, 50, 50, 40],
+      bazas: [3, 0, 0, 1],
+      bazasJugadas: [previa, previa, previa, previa],
+    });
+    for (const carta of ['copas-1', 'copas-2'] as IdCarta[]) e = hacer(e, { tipo: 'carta', carta });
+    const r = e.resultadosManos[0]!;
+    expect(r.cobrado).toEqual([8, 0, 0, 2]);
+    expect(r.julepe).toEqual([0, 0, 0, 0]);
+    expect(r.defensa).toBe(true);
+  });
+
+  it('si la bailó, no defiende aunque solo juegue uno', () => {
+    let e = hacer(nueva({ bailarla: true, defensa: true }), { tipo: 'bailar' });
+    e = decidir(e, false, true, false);
+    expect(e.defiende).toBeUndefined();
+    expect(e.manos[3]).toHaveLength(5);
+  });
+});
+
 describe('vista', () => {
   it('no muestra manos ajenas, mazo ni descartes', () => {
     let e = decidir(nueva(), true, true, false, true);
@@ -255,6 +415,7 @@ describirContrato(julepe, {
     { jugadores: 3, manos: 6 },
     { jugadores: 5, manos: 6 },
     { jugadores: 6, manos: 6 },
+    { jugadores: 4, manos: 6, bailarla: true, defensa: true },
   ],
   // La carta de triunfo está a la vista y las de la última baza ya se vieron.
   cartasOcultas: (e, asiento) => {

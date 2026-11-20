@@ -735,6 +735,17 @@
           <label><input type="radio" bind:group={julepeConfig.manos} value={m} /> {T.opciones.manosJulepeN(m)}</label>
         {/each}
       </fieldset>
+      <fieldset>
+        <legend>{T.opciones.variantesJulepe}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={julepeConfig.bailarla} data-testid="julepe-bailarla" />
+          {T.opciones.bailarlaJulepeDesc}
+        </label>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={julepeConfig.defensa} data-testid="julepe-defensa" />
+          {T.opciones.defensaJulepeDesc}
+        </label>
+      </fieldset>
     {:else if juego === 'truc'}
       <fieldset>
         <legend>{T.opciones.jugadores}</legend>
