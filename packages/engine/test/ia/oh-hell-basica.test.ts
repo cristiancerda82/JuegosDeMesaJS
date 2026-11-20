@@ -131,6 +131,27 @@ describe('garantías de la IA del Oh Hell', () => {
     expect(r.ganadas).toBeGreaterThan(100);
   });
 
+  it('empezando con 1 carta: partidas entre IAs de 3 a 7 sin acciones ilegales', () => {
+    for (const jugadores of [3, 4, 5, 6, 7] as const) {
+      const r = duelo(
+        ohHell,
+        { jugadores, subiendo: true },
+        iaOhHellBasica,
+        IAS.ohHell.facil,
+        20,
+        unoContraTodos(jugadores),
+        'subiendo',
+      );
+      expect(r.maxMs).toBeLessThan(500);
+    }
+  });
+
+  it('empezando con 1 carta, gana claramente al azar', () => {
+    const config = { jugadores: 4, subiendo: true } as const;
+    const r = duelo(ohHell, config, iaOhHellBasica, azar, 200, cuatro, 'azar-subiendo');
+    expect(r.ganadas).toBeGreaterThan(100);
+  });
+
   it('la difícil decide en menos de 500 ms, también con 3 jugadores y 17 cartas', () => {
     for (const config of [CONFIG_OH_HELL_POR_DEFECTO, { jugadores: 3 as const }]) {
       const r = duelo(

@@ -836,6 +836,21 @@ test('Oh Hell en red: la apuesta de uno la ve el otro', async ({ browser }) => {
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Oh Hell empezando con 1 carta en red: los dos empiezan con 1 carta', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'ohHell', (p) => p.getByTestId('opcion-subiendo').check());
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) {
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(1);
+    await expect(p.getByTestId('mano-oh-hell')).toHaveText('Mano 1 de 12 · 1 carta');
+  }
+  await ana.getByTestId('apostar-1').click();
+  await expect(luis.getByTestId('asiento-0')).toContainText('apuesta 1');
+});
+
 test('Spite and Malice en red: el descarte de uno lo ve el otro', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

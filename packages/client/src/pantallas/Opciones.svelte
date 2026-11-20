@@ -917,6 +917,13 @@
           <label><input type="radio" bind:group={ohHellConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
         {/each}
       </fieldset>
+      <fieldset>
+        <legend>{T.opciones.subiendoOhHell}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={ohHellConfig.subiendo} data-testid="opcion-subiendo" />
+          {T.opciones.subiendoOhHellDesc}
+        </label>
+      </fieldset>
     {:else if juego === 'tarot'}
       <fieldset>
         <legend>{T.opciones.jugadores}</legend>

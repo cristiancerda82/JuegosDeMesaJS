@@ -441,6 +441,9 @@ export const T = {
     tapadasSieteYMedia: 'Pedir tapada',
     tapadasSieteYMediaDesc:
       'Al pedir, eliges si la carta llega boca arriba o boca abajo: los demás no saben cuánto sumas.',
+    subiendoOhHell: 'Empezar con 1 carta',
+    subiendoOhHellDesc:
+      'La primera mano es de 1 carta y cada una sube una hasta el máximo, donde termina la partida.',
     cambioBanca: 'La banca',
     bancaRotar: 'Pasa al siguiente cada mano',
     bancaSieteYMedia: 'Pasa a quien le gana con siete y media',
@@ -4218,7 +4221,7 @@ export const T = {
         texto: [
           'La primera mano reparte todas las cartas posibles dejando una (17 con 3 jugadores, 12 con 4, 10 con 5, 8 con 6 y 7 con 7). Cada mano reparte una carta menos hasta llegar a 1, y después vuelven a subir hasta el máximo.',
           'Tras repartir se pone boca arriba la siguiente carta: su palo es el triunfo.',
-          'En otros sitios se empieza con 1 carta y se sube de una en una hasta el máximo.',
+          'Variante (opción «Empezar con 1 carta»): la primera mano es de 1 carta y cada mano reparte una más hasta el máximo, donde termina la partida. Es más corta (12 manos con 4 jugadores) y las manos grandes, las que más puntos dan, quedan para el final.',
         ],
       },
       {

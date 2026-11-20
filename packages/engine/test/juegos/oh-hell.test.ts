@@ -165,6 +165,46 @@ describe('puntos y partida', () => {
   });
 });
 
+describe('empezando con 1 carta', () => {
+  it('con 4 jugadores: 1, 2… 12, 12 manos', () => {
+    expect(secuenciaOhHell(4, true)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    expect([3, 4, 5, 6, 7].map((n) => secuenciaOhHell(n, true).length)).toEqual([17, 12, 10, 8, 7]);
+  });
+
+  it('la primera mano reparte 1 carta y se apuesta 0 o 1', () => {
+    const e = nueva({ jugadores: 4, subiendo: true });
+    expect(e.manos.map((m) => m.length)).toEqual([1, 1, 1, 1]);
+    expect(legales(e)).toEqual([apostar(0), apostar(1)]);
+    const v = ohHell.vistaDe(e, 0);
+    expect(v.cartasMano).toBe(1);
+    expect(v.totalManos).toBe(12);
+  });
+
+  it('la segunda mano reparte 2 cartas', () => {
+    let e = nueva({ jugadores: 4, subiendo: true });
+    while (e.resultadosManos.length === 0) e = jugar(e, legales(e)[0]!);
+    expect(e.manos.map((m) => m.length)).toEqual([2, 2, 2, 2]);
+  });
+
+  it('la partida termina tras la mano del máximo', () => {
+    for (const jugadores of [3, 7] as const) {
+      let e = nueva({ jugadores, subiendo: true }, 'fin-subiendo');
+      let pasos = 0;
+      while (ohHell.resultado(e) === null && pasos++ < 10_000) e = jugar(e, legales(e)[0]!);
+      expect(e.resultadosManos.map((r) => r.cartas)).toEqual(secuenciaOhHell(jugadores, true));
+    }
+  });
+
+  it('la opción se normaliza y sin ella la secuencia es la de siempre', () => {
+    expect(nueva().config.subiendo).toBe(false);
+    expect(nueva({ jugadores: 4, subiendo: true }).config.subiendo).toBe(true);
+    expect(ohHell.vistaDe(nueva(), 0).totalManos).toBe(23);
+    // Una partida guardada antes de la opción, sin el campo, sigue la secuencia de siempre.
+    const antigua = { ...nueva(), config: { jugadores: 4 as const } };
+    expect(ohHell.vistaDe(antigua, 0).totalManos).toBe(23);
+  });
+});
+
 describe('vista', () => {
   it('no contiene las manos ajenas ni el mazo', () => {
     const e = nueva();
@@ -176,7 +216,12 @@ describe('vista', () => {
 });
 
 describirContrato(ohHell, {
-  configs: [{ jugadores: 3 }, CONFIG_OH_HELL_POR_DEFECTO, { jugadores: 7 }],
+  configs: [
+    { jugadores: 3 },
+    CONFIG_OH_HELL_POR_DEFECTO,
+    { jugadores: 7 },
+    { jugadores: 4, subiendo: true },
+  ],
   // La carta del triunfo y las de la última baza ya se vieron.
   cartasOcultas: (e, asiento) => {
     const vistas = new Set<IdCarta>([

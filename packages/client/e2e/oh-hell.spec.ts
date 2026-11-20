@@ -4,10 +4,11 @@ import { abrirJuego } from './menu';
 /** Toca la esquina superior izquierda, que queda a la vista aunque las cartas se solapen. */
 const ESQUINA = { position: { x: 6, y: 8 } };
 
-async function empezar(page: Page, query: string, jugadores?: number) {
+async function empezar(page: Page, query: string, jugadores?: number, subiendo = false) {
   await page.goto(`./?${query}`);
   await abrirJuego(page, 'ohHell');
   if (jugadores) await page.getByLabel(`${jugadores} jugadores`).check();
+  if (subiendo) await page.getByTestId('opcion-subiendo').check();
   await page.getByTestId('empezar').click();
 }
 
@@ -122,4 +123,21 @@ test('el Oh Hell con 7 jugadores entra en 360 × 640 sin scroll horizontal', asy
   expect(anchos.pagina).toBeLessThanOrEqual(anchos.ventana);
   await expect(page.getByTestId('apostar-0')).toBeInViewport();
   await page.screenshot({ path: 'test-results/oh-hell-360.png' });
+});
+
+// ── Empezando con 1 carta ────────────────────────────────────────────────────
+
+test('empezando con 1 carta: la primera mano es de 1 y la segunda de 2', async ({ page }) => {
+  test.setTimeout(120_000);
+  await empezar(page, 'rapido&semilla=oh-hell-subiendo', 4, true);
+  await expect(page.locator('.carta-mano')).toHaveCount(1);
+  await expect(page.getByTestId('mano-oh-hell')).toHaveText('Mano 1 de 12 · 1 carta');
+  await expect(page.locator('[data-testid^="apostar-"]')).toHaveCount(2);
+  await page.screenshot({
+    path: `test-results/oh-hell-subiendo-${page.viewportSize()!.width}.png`,
+  });
+  await terminarMano(page);
+  await page.getByTestId('siguiente-mano').click();
+  await expect(page.getByTestId('mano-oh-hell')).toHaveText('Mano 2 de 12 · 2 cartas');
+  await expect(page.locator('.carta-mano')).toHaveCount(2);
 });

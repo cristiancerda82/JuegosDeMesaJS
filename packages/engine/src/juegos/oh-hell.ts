@@ -10,6 +10,8 @@ import { error, ok } from '../resultado';
 export interface ConfigOhHell {
   /** Cada uno juega por su cuenta. */
   readonly jugadores: 3 | 4 | 5 | 6 | 7;
+  /** Variante: se empieza con 1 carta y se sube hasta el máximo, donde termina la partida. */
+  readonly subiendo?: boolean;
 }
 
 export const CONFIG_OH_HELL_POR_DEFECTO: ConfigOhHell = { jugadores: 4 };
@@ -102,9 +104,10 @@ export const rangoOhHell = (c: IdCarta) => {
   return v === 1 ? 14 : v;
 };
 
-/** Las cartas de cada mano: del máximo a 1 y de 2 al máximo. */
-export function secuenciaOhHell(jugadores: number): number[] {
+/** Las cartas de cada mano: del máximo a 1 y de 2 al máximo, o de 1 al máximo subiendo. */
+export function secuenciaOhHell(jugadores: number, subiendo = false): number[] {
   const max = Math.floor((BARAJA_OH_HELL.length - 1) / jugadores);
+  if (subiendo) return Array.from({ length: max }, (_, i) => i + 1);
   const bajada = Array.from({ length: max }, (_, i) => max - i);
   const subida = Array.from({ length: max - 1 }, (_, i) => i + 2);
   return [...bajada, ...subida];
@@ -137,9 +140,11 @@ export function cartasLegalesOhHell(
 
 const n = (e: Pick<EstadoOhHell, 'config'>) => e.config.jugadores;
 const siguiente = (e: Pick<EstadoOhHell, 'config'>, a: Asiento) => (a + 1) % n(e);
-const totalManos = (e: Pick<EstadoOhHell, 'config'>) => secuenciaOhHell(n(e)).length;
+const secuencia = (e: Pick<EstadoOhHell, 'config'>) =>
+  secuenciaOhHell(n(e), e.config.subiendo === true);
+const totalManos = (e: Pick<EstadoOhHell, 'config'>) => secuencia(e).length;
 const cartasDeMano = (e: Pick<EstadoOhHell, 'config' | 'indiceMano'>) =>
-  secuenciaOhHell(n(e))[e.indiceMano]!;
+  secuencia(e)[e.indiceMano]!;
 const partidaTerminada = (e: Pick<EstadoOhHell, 'config' | 'resultadosManos'>) =>
   e.resultadosManos.length >= totalManos(e);
 
@@ -161,7 +166,7 @@ function nuevaMano(
   previo: Pick<EstadoOhHell, 'puntos' | 'resultadosManos' | 'ultimaBaza' | 'ultimaAccion'>,
 ): EstadoOhHell {
   const jugadores = config.jugadores;
-  const cartas = secuenciaOhHell(jugadores)[indiceMano]!;
+  const cartas = secuenciaOhHell(jugadores, config.subiendo === true)[indiceMano]!;
   const { cartas: barajadas, azar: azarSiguiente } = barajar(BARAJA_OH_HELL, azar);
   const manos: IdCarta[][] = new Array<IdCarta[]>(jugadores);
   for (let k = 0; k < jugadores; k++) {
@@ -241,12 +246,18 @@ export const ohHell: Juego<ConfigOhHell, EstadoOhHell, AccionOhHell, VistaOhHell
       return error('El Oh Hell se juega de 3 a 7');
     }
     return ok(
-      nuevaMano({ ...config }, crearAzar(semilla), 0, config.jugadores - 1, {
-        puntos: new Array<number>(config.jugadores).fill(0),
-        resultadosManos: [],
-        ultimaBaza: null,
-        ultimaAccion: null,
-      }),
+      nuevaMano(
+        { ...config, subiendo: config.subiendo === true },
+        crearAzar(semilla),
+        0,
+        config.jugadores - 1,
+        {
+          puntos: new Array<number>(config.jugadores).fill(0),
+          resultadosManos: [],
+          ultimaBaza: null,
+          ultimaAccion: null,
+        },
+      ),
     );
   },
 

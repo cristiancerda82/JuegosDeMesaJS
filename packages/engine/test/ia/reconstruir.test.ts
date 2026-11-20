@@ -928,7 +928,12 @@ describe('Reconstrucción del Skat', () => {
 });
 
 describirReconstruccion(ohHell, reconstruirOhHell, {
-  configs: [{ jugadores: 3 }, CONFIG_OH_HELL_POR_DEFECTO, { jugadores: 7 }],
+  configs: [
+    { jugadores: 3 },
+    CONFIG_OH_HELL_POR_DEFECTO,
+    { jugadores: 7 },
+    { jugadores: 4, subiendo: true },
+  ],
   base: iaOhHellBasica,
 });
 

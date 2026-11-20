@@ -164,6 +164,13 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Sixty-six', schnapsen, CONFIG_SIXTY_SIX, IAS.schnapsen, 2),
   entrada('Skat', skat, CONFIG_SKAT_POR_DEFECTO, IAS.skat, 3),
   entrada('Oh Hell', ohHell, CONFIG_OH_HELL_POR_DEFECTO, IAS.ohHell, 4),
+  entrada(
+    'Oh Hell empezando con 1 carta',
+    ohHell,
+    { ...CONFIG_OH_HELL_POR_DEFECTO, subiendo: true },
+    IAS.ohHell,
+    4,
+  ),
   entrada('Spite and Malice', spiteMalice, CONFIG_SPITE_MALICE_POR_DEFECTO, IAS.spiteMalice, 2),
   entrada('Bridge', bridge, CONFIG_BRIDGE_POR_DEFECTO, IAS.bridge, 'bandos'),
   entrada('Pesca', pesca, CONFIG_PESCA_POR_DEFECTO, IAS.pesca, 4),
