@@ -14,7 +14,7 @@ import { bonoPartida } from './comun';
 
 /**
  * Un estado de Treinta y uno coherente con la vista: las manos ajenas y el mazo al azar entre las
- * cartas que no se ven, con las que cada uno cogió del descarte fijas en su mano.
+ * cartas que no se ven, con las que cada uno cogió del descarte (o de la viuda) fijas en su mano.
  */
 export function reconstruirTreintaYUno(
   vista: VistaTreintaYUno,
@@ -23,7 +23,7 @@ export function reconstruirTreintaYUno(
   const yo = vista.asiento;
   const mia = vista.miMano ?? [];
   const { cartas, azar: azarReparto } = barajar(
-    cartasFuera(BARAJA_TREINTA, mia, vista.descarte, vista.conocidas.flat()),
+    cartasFuera(BARAJA_TREINTA, mia, vista.descarte, vista.viuda, vista.conocidas.flat()),
     azar,
   );
   let i = 0;
@@ -41,6 +41,9 @@ export function reconstruirTreintaYUno(
     manos,
     mazo: cartas.slice(i, i + vista.enMazo),
     descarte: [...vista.descarte],
+    viuda: [...vista.viuda],
+    pasadas: vista.pasadas,
+    ultimaJugada: vista.ultimaJugada,
     conocidas: vista.conocidas.map((cs) => [...cs]),
     fase: vista.fase,
     turno: vista.turno ?? 0,

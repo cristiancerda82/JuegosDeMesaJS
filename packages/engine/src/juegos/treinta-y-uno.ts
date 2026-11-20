@@ -12,6 +12,8 @@ export type JugadoresTreinta = 2 | 3 | 4 | 5 | 6;
 export interface ConfigTreintaYUno {
   readonly jugadores: JugadoresTreinta;
   readonly vidas: number;
+  /** Variante con viuda: tres cartas boca arriba en la mesa en lugar de robar. */
+  readonly viuda?: boolean;
 }
 
 export const CONFIG_TREINTA_Y_UNO_POR_DEFECTO: ConfigTreintaYUno = { jugadores: 4, vidas: 3 };
@@ -21,7 +23,21 @@ export type FaseTreintaYUno = 'robar' | 'descartar';
 export type AccionTreintaYUno =
   | { readonly tipo: 'robar'; readonly desde: 'mazo' | 'descarte' }
   | { readonly tipo: 'plantarse' }
-  | { readonly tipo: 'descartar'; readonly carta: IdCarta };
+  | { readonly tipo: 'descartar'; readonly carta: IdCarta }
+  /** Con viuda: cambia una de sus cartas por una de la viuda. */
+  | { readonly tipo: 'cambiar'; readonly mia: IdCarta; readonly mesa: IdCarta }
+  /** Con viuda: cambia sus tres cartas por las tres de la viuda. */
+  | { readonly tipo: 'cambiarTodas' }
+  /** Con viuda: no cambia nada. */
+  | { readonly tipo: 'pasar' };
+
+/** La última jugada, para avisar en la mesa. */
+export interface JugadaTreinta {
+  readonly asiento: Asiento;
+  readonly accion: AccionTreintaYUno;
+  /** Si tras esa jugada se puso una viuda nueva porque habían pasado todos. */
+  readonly viudaNueva: boolean;
+}
 
 export interface ResultadoRondaTreinta {
   readonly empieza: Asiento;
@@ -42,11 +58,16 @@ export interface EstadoTreintaYUno {
   readonly manos: readonly (readonly IdCarta[])[];
   /** El siguiente que se roba es el primero. */
   readonly mazo: readonly IdCarta[];
-  /** El último es el de arriba. */
+  /** El último es el de arriba. Con viuda, las viudas apartadas. */
   readonly descarte: readonly IdCarta[];
-  /** Las cartas que cada uno cogió del descarte y aún tiene. */
+  /** Con viuda, las tres cartas boca arriba de la mesa; si no, vacía. */
+  readonly viuda: readonly IdCarta[];
+  /** Con viuda, cuántos han pasado seguidos. */
+  readonly pasadas: number;
+  /** Las cartas que cada uno cogió del descarte (o de la viuda) y aún tiene. */
   readonly conocidas: readonly (readonly IdCarta[])[];
   readonly fase: FaseTreintaYUno;
+  readonly ultimaJugada: JugadaTreinta | null;
   readonly turno: Asiento;
   /** La carta recién cogida del descarte, que no se puede descartar en ese turno. */
   readonly cogida: IdCarta | null;
@@ -68,6 +89,9 @@ export interface VistaTreintaYUno {
   readonly cartasEnMano: readonly number[];
   readonly conocidas: readonly (readonly IdCarta[])[];
   readonly descarte: readonly IdCarta[];
+  readonly viuda: readonly IdCarta[];
+  readonly pasadas: number;
+  readonly ultimaJugada: JugadaTreinta | null;
   readonly enMazo: number;
   readonly fase: FaseTreintaYUno;
   readonly turno: Asiento | null;
@@ -113,6 +137,8 @@ export function valorManoTreinta(mano: readonly IdCarta[]): number {
 export const CARTAS_EN_MANO_TREINTA = 3;
 /** Vueltas sin que nadie se plante tras las que se enseñan las manos. */
 export const VUELTAS_MAXIMAS_TREINTA = 8;
+/** Cartas de la viuda. */
+export const CARTAS_VIUDA_TREINTA = 3;
 
 const conVidas = (vidas: readonly number[]) => vidas.flatMap((v, a) => (v > 0 ? [a] : []));
 
@@ -141,13 +167,19 @@ function nuevaRonda(
     i += CARTAS_EN_MANO_TREINTA;
     return m;
   });
+  const conViuda = base.config.viuda === true;
+  const viuda = conViuda ? cartas.slice(i, i + CARTAS_VIUDA_TREINTA) : [];
+  const resto = cartas.slice(i + viuda.length);
   return {
     ...base,
     azar: sig,
     empieza,
     manos,
-    descarte: [cartas[i]!],
-    mazo: cartas.slice(i + 1),
+    descarte: conViuda ? [] : [resto[0]!],
+    mazo: conViuda ? resto : resto.slice(1),
+    viuda,
+    pasadas: 0,
+    ultimaJugada: null,
     conocidas: base.vidas.map(() => []),
     fase: 'robar',
     turno: empieza,
@@ -182,6 +214,46 @@ function ensenar(e: EstadoTreintaYUno): EstadoTreintaYUno {
   return nuevaRonda(cerrado, siguienteVivo(vidasTras, e.empieza), e.azar);
 }
 
+/**
+ * Cierra el turno: le toca al siguiente con vidas y, si alguien se plantó o se acabaron las
+ * vueltas, se enseñan las manos.
+ */
+function finTurno(r: EstadoTreintaYUno, asiento: Asiento): EstadoTreintaYUno {
+  const tras: EstadoTreintaYUno = {
+    ...r,
+    turnos: r.turnos + 1,
+    fase: 'robar',
+    turno: siguienteVivo(r.vidas, asiento),
+  };
+  if (tras.plantado !== null) {
+    const ultimos = tras.ultimos - 1;
+    return ultimos === 0 ? ensenar({ ...tras, ultimos }) : { ...tras, ultimos };
+  }
+  const maximo = VUELTAS_MAXIMAS_TREINTA * conVidas(tras.vidas).length;
+  return tras.turnos >= maximo ? ensenar(tras) : tras;
+}
+
+/** Con viuda, tras pasar todos: la viuda se aparta y se ponen tres cartas nuevas. */
+function viudaNueva(e: EstadoTreintaYUno): EstadoTreintaYUno {
+  let { mazo, azar } = e;
+  let descarte = [...e.descarte, ...e.viuda];
+  if (mazo.length < CARTAS_VIUDA_TREINTA) {
+    // Las viudas apartadas se barajan y van debajo del mazo.
+    const r = barajar(descarte, azar);
+    mazo = [...mazo, ...r.cartas];
+    azar = r.azar;
+    descarte = [];
+  }
+  return {
+    ...e,
+    azar,
+    viuda: mazo.slice(0, CARTAS_VIUDA_TREINTA),
+    mazo: mazo.slice(CARTAS_VIUDA_TREINTA),
+    descarte,
+    pasadas: 0,
+  };
+}
+
 // ── Juego ────────────────────────────────────────────────────────────────────
 
 export const treintaYUno: Juego<
@@ -202,7 +274,11 @@ export const treintaYUno: Juego<
     return ok(
       nuevaRonda(
         {
-          config: { jugadores: config.jugadores, vidas: config.vidas },
+          config: {
+            jugadores: config.jugadores,
+            vidas: config.vidas,
+            viuda: config.viuda === true,
+          },
           vidas: new Array<number>(config.jugadores).fill(config.vidas),
           resultadosRondas: [],
         },
@@ -216,6 +292,15 @@ export const treintaYUno: Juego<
 
   accionesLegales(e, asiento) {
     if (terminada(e) || asiento !== e.turno) return [];
+    if (e.config.viuda) {
+      const r: AccionTreintaYUno[] = [];
+      for (const mia of [...e.manos[asiento]!].sort()) {
+        for (const mesa of [...e.viuda].sort()) r.push({ tipo: 'cambiar', mia, mesa });
+      }
+      r.push({ tipo: 'cambiarTodas' }, { tipo: 'pasar' });
+      if (e.plantado === null) r.push({ tipo: 'plantarse' });
+      return r;
+    }
     if (e.fase === 'descartar') {
       return [...e.manos[asiento]!]
         .filter((c) => c !== e.cogida)
@@ -263,30 +348,64 @@ export const treintaYUno: Juego<
       case 'plantarse':
         return {
           ...e,
+          pasadas: 0,
+          ultimaJugada: { asiento, accion, viudaNueva: false },
           plantado: asiento,
           ultimos: conVidas(e.vidas).length - 1,
           turnos: e.turnos + 1,
           turno: siguienteVivo(e.vidas, asiento),
         };
-      case 'descartar': {
-        const r: EstadoTreintaYUno = {
+      case 'descartar':
+        return finTurno(
+          {
+            ...e,
+            manos: e.manos.map((m, a) => (a === asiento ? m.filter((c) => c !== accion.carta) : m)),
+            descarte: [...e.descarte, accion.carta],
+            conocidas: e.conocidas.map((cs, a) =>
+              a === asiento ? cs.filter((c) => c !== accion.carta) : cs,
+            ),
+            cogida: null,
+            ultimaJugada: { asiento, accion, viudaNueva: false },
+          },
+          asiento,
+        );
+      case 'cambiar':
+        return finTurno(
+          {
+            ...e,
+            manos: e.manos.map((m, a) =>
+              a === asiento ? m.map((c) => (c === accion.mia ? accion.mesa : c)) : m,
+            ),
+            viuda: e.viuda.map((c) => (c === accion.mesa ? accion.mia : c)),
+            conocidas: e.conocidas.map((cs, a) =>
+              a === asiento ? [...cs.filter((c) => c !== accion.mia), accion.mesa] : cs,
+            ),
+            pasadas: 0,
+            ultimaJugada: { asiento, accion, viudaNueva: false },
+          },
+          asiento,
+        );
+      case 'cambiarTodas':
+        return finTurno(
+          {
+            ...e,
+            manos: e.manos.map((m, a) => (a === asiento ? [...e.viuda] : m)),
+            viuda: [...e.manos[asiento]!],
+            conocidas: e.conocidas.map((cs, a) => (a === asiento ? [...e.viuda] : cs)),
+            pasadas: 0,
+            ultimaJugada: { asiento, accion, viudaNueva: false },
+          },
+          asiento,
+        );
+      case 'pasar': {
+        const pasadas = e.pasadas + 1;
+        const todos = pasadas >= conVidas(e.vidas).length;
+        const tras: EstadoTreintaYUno = {
           ...e,
-          manos: e.manos.map((m, a) => (a === asiento ? m.filter((c) => c !== accion.carta) : m)),
-          descarte: [...e.descarte, accion.carta],
-          conocidas: e.conocidas.map((cs, a) =>
-            a === asiento ? cs.filter((c) => c !== accion.carta) : cs,
-          ),
-          cogida: null,
-          turnos: e.turnos + 1,
-          fase: 'robar',
-          turno: siguienteVivo(e.vidas, asiento),
+          pasadas,
+          ultimaJugada: { asiento, accion, viudaNueva: todos },
         };
-        if (r.plantado !== null) {
-          const ultimos = r.ultimos - 1;
-          return ultimos === 0 ? ensenar({ ...r, ultimos }) : { ...r, ultimos };
-        }
-        const maximo = VUELTAS_MAXIMAS_TREINTA * conVidas(r.vidas).length;
-        return r.turnos >= maximo ? ensenar(r) : r;
+        return finTurno(todos ? viudaNueva(tras) : tras, asiento);
       }
     }
   },
@@ -300,6 +419,9 @@ export const treintaYUno: Juego<
       cartasEnMano: e.manos.map((m) => m.length),
       conocidas: e.conocidas.map((cs) => [...cs]),
       descarte: [...e.descarte],
+      viuda: [...e.viuda],
+      pasadas: e.pasadas,
+      ultimaJugada: e.ultimaJugada,
       enMazo: e.mazo.length,
       fase: e.fase,
       turno: terminada(e) ? null : e.turno,

@@ -104,3 +104,81 @@ describe('IA del Treinta y uno en partidas', () => {
     expect(r.maxMs).toBeLessThan(500);
   });
 });
+
+describe('IA básica del Treinta y uno con viuda', () => {
+  function conViuda(mano: string, viuda: string): EstadoTreintaYUno {
+    const r = treintaYUno.crear({ jugadores: 4, vidas: 3, viuda: true }, 'ia-viuda');
+    if (!r.ok) throw new Error(r.error);
+    return {
+      ...r.valor,
+      manos: r.valor.manos.map((m, a) => (a === 0 ? c(mano) : m)),
+      viuda: c(viuda),
+    };
+  }
+
+  it('coge el As de su palo', () => {
+    expect(decide(conViuda('Kc 9c 2p', 'Ac 4t 6d'))).toEqual({
+      tipo: 'cambiar',
+      mia: una('2p'),
+      mesa: una('Ac'),
+    });
+  });
+
+  it('se lleva la viuda entera', () => {
+    expect(decide(conViuda('2p 3c 5t', 'Ad Kd Qd'))).toEqual({ tipo: 'cambiarTodas' });
+  });
+
+  it('pasa si nada la mejora', () => {
+    expect(decide(conViuda('Ac 4c 10p', '2t 3d 4p'))).toEqual({ tipo: 'pasar' });
+  });
+
+  it('se planta con 27 o más', () => {
+    expect(decide(conViuda('Ac Kc 7c', '2t 3d 4p'))).toEqual({ tipo: 'plantarse' });
+  });
+});
+
+describe('IA del Treinta y uno con viuda en partidas', () => {
+  const azar = aleatorio<VistaTreintaYUno, AccionTreintaYUno>();
+
+  it('partidas entre IAs de 2 a 6 terminan sin acciones ilegales y rápidas', () => {
+    for (const jugadores of [2, 3, 4, 5, 6] as const) {
+      const r = duelo(
+        treintaYUno,
+        { jugadores, vidas: 2, viuda: true },
+        iaTreintaYUnoBasica,
+        IAS.treintaYUno.facil,
+        20,
+        unoContraTodos(jugadores),
+        `viuda-${jugadores}`,
+      );
+      expect(r.partidas).toBe(20);
+      expect(r.maxMs).toBeLessThan(500);
+    }
+  });
+
+  it('gana claramente al azar', () => {
+    const r = duelo(
+      treintaYUno,
+      { jugadores: 4, vidas: 2, viuda: true },
+      iaTreintaYUnoBasica,
+      azar,
+      200,
+      unoContraTodos(4),
+      'viuda-azar',
+    );
+    expect(r.ganadas, `${r.ganadas} de 200`).toBeGreaterThan(80);
+  });
+
+  it('la difícil decide en menos de 500 ms', () => {
+    const r = duelo(
+      treintaYUno,
+      { jugadores: 4, vidas: 1, viuda: true },
+      IAS.treintaYUno.dificil,
+      iaTreintaYUnoBasica,
+      2,
+      unoContraTodos(4),
+      'viuda-tiempo',
+    );
+    expect(r.maxMs).toBeLessThan(500);
+  });
+});

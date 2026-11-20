@@ -23,6 +23,7 @@ import {
   rangoTruc,
   sonCuatroIguales,
   superaCulo,
+  treintaYUno,
   valorBigTwo,
   valorBlackjack,
   valorCarta,
@@ -234,6 +235,28 @@ test('Treinta y uno: el valor de cada mano', () => {
   for (const f of envite.ejemplo('treintaYUno', 'manos', 'jugadas').filas) {
     expect(String(valorManoTreinta(f.cartas)).replace('.', ','), f.nombre).toBe(f.nombre);
   }
+});
+
+test('Treinta y uno con viuda: el cambio del ejemplo, como lo hace el motor', () => {
+  const e = envite.ejemplo('treintaYUno', 'viuda', 'antesDespues');
+  const zona = (estado: EjemploAntesDespues['antes'], nombre: string) =>
+    estado.find((z) => z.nombre === nombre)!.cartas.filter((c): c is IdCarta => c !== null);
+  const mano = zona(e.antes, 'Tu mano');
+  const viuda = zona(e.antes, 'Viuda');
+  const r = treintaYUno.crear({ jugadores: 2, vidas: 3, viuda: true }, 'ejemplo');
+  if (!r.ok) throw new Error(r.error);
+  const [coge, deja] = e.resaltadas as [IdCarta, IdCarta];
+  const estado = { ...r.valor, manos: [mano, r.valor.manos[1]!], viuda, turno: 0 };
+  expect(treintaYUno.accionesLegales(estado, 0)).toContainEqual({
+    tipo: 'cambiar',
+    mia: deja,
+    mesa: coge,
+  });
+  const tras = treintaYUno.transicion(estado, 0, { tipo: 'cambiar', mia: deja, mesa: coge });
+  expect(tras.manos[0]).toEqual(zona(e.despues, 'Tu mano'));
+  expect(tras.viuda).toEqual(zona(e.despues, 'Viuda'));
+  expect(valorManoTreinta(mano)).toBe(19);
+  expect(valorManoTreinta(tras.manos[0]!)).toBe(30);
 });
 
 test('todos los ejemplos de envite están comprobados', () => {

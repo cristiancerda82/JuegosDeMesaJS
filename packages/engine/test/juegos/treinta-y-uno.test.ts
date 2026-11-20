@@ -179,11 +179,97 @@ describe('vidas y fin', () => {
   });
 });
 
+describe('con viuda', () => {
+  function conViuda(jugadores: JugadoresTreinta = 4, semilla = 'viuda') {
+    const r = treintaYUno.crear({ jugadores, vidas: 3, viuda: true }, semilla);
+    if (!r.ok) throw new Error(r.error);
+    return r.valor;
+  }
+
+  it('reparte 3 a cada uno, 3 a la viuda y el resto al mazo, sin descarte', () => {
+    const e = conViuda();
+    expect(e.manos.map((m) => m.length)).toEqual([3, 3, 3, 3]);
+    expect(e.viuda).toHaveLength(3);
+    expect(e.mazo).toHaveLength(37);
+    expect(e.descarte).toEqual([]);
+    const tipos = new Set(treintaYUno.accionesLegales(e, 0).map((a) => a.tipo));
+    expect([...tipos].sort()).toEqual(['cambiar', 'cambiarTodas', 'pasar', 'plantarse']);
+    expect(treintaYUno.accionesLegales(e, 0).filter((a) => a.tipo === 'cambiar')).toHaveLength(9);
+  });
+
+  it('cambiar una: la carta de la viuda pasa a la mano, y es conocida', () => {
+    const e = {
+      ...conViuda(),
+      manos: [c('4t 9c Kc'), c('2p 3p 5d'), c('6d 7d 8t'), c('Jt Qt 2d')],
+      viuda: c('Ap 5c 10d'),
+    };
+    const r = hacer(e, { tipo: 'cambiar', mia: c('4t')[0]!, mesa: c('Ap')[0]! });
+    expect(r.manos[0]).toEqual(c('Ap 9c Kc'));
+    expect(r.viuda).toEqual(c('4t 5c 10d'));
+    expect(r.conocidas[0]).toEqual(c('Ap'));
+    expect(r.turno).toBe(1);
+    expect(treintaYUno.vistaDe(r, 1).conocidas[0]).toEqual(c('Ap'));
+  });
+
+  it('cambiar las tres', () => {
+    const e = {
+      ...conViuda(),
+      manos: [c('4t 9c Kc'), c('2p 3p 5d'), c('6d 7d 8t'), c('Jt Qt 2d')],
+      viuda: c('Ap 5c 10d'),
+    };
+    const r = hacer(e, { tipo: 'cambiarTodas' });
+    expect(r.manos[0]).toEqual(c('Ap 5c 10d'));
+    expect(r.viuda).toEqual(c('4t 9c Kc'));
+    expect(r.conocidas[0]).toEqual(c('Ap 5c 10d'));
+  });
+
+  it('si pasan todos, la viuda se aparta y salen tres nuevas del mazo', () => {
+    let e = conViuda(3);
+    const vieja = e.viuda;
+    const mazo = e.mazo;
+    e = hacer(e, { tipo: 'pasar' });
+    e = hacer(e, { tipo: 'pasar' });
+    expect(e.viuda).toEqual(vieja);
+    e = hacer(e, { tipo: 'pasar' });
+    expect(e.viuda).toEqual(mazo.slice(0, 3));
+    expect(e.descarte).toEqual(vieja);
+    expect(e.pasadas).toBe(0);
+    expect(e.ultimaJugada).toMatchObject({ asiento: 2, viudaNueva: true });
+  });
+
+  it('si el mazo no alcanza, las viudas apartadas se barajan debajo', () => {
+    let e = conViuda(2);
+    e = { ...e, mazo: e.mazo.slice(0, 1), descarte: e.mazo.slice(1, 10) };
+    e = hacer(e, { tipo: 'pasar' });
+    e = hacer(e, { tipo: 'pasar' });
+    expect(e.viuda).toHaveLength(3);
+    expect(e.descarte).toEqual([]);
+    expect(e.mazo.length + e.viuda.length).toBe(1 + 9 + 3);
+  });
+
+  it('plantarse da un último turno a los demás, como sin viuda', () => {
+    let e = conViuda();
+    e = hacer(e, { tipo: 'plantarse' });
+    for (let i = 0; i < 3; i++) e = hacer(e, { tipo: 'pasar' });
+    expect(e.resultadosRondas).toHaveLength(1);
+    expect(e.resultadosRondas[0]!.plantado).toBe(0);
+  });
+
+  it('una config sin la opción juega como siempre', () => {
+    const e = nueva();
+    expect(e.config.viuda).toBe(false);
+    expect(e.viuda).toEqual([]);
+    expect(e.descarte).toHaveLength(1);
+  });
+});
+
 describirContrato(treintaYUno, {
   configs: [
     CONFIG_TREINTA_Y_UNO_POR_DEFECTO,
     { jugadores: 2, vidas: 1 },
     { jugadores: 6, vidas: 2 },
+    { jugadores: 4, vidas: 2, viuda: true },
+    { jugadores: 2, vidas: 1, viuda: true },
   ],
   // El descarte y las cartas cogidas de él son públicos; las manos enseñadas, también.
   cartasOcultas: (e, asiento) => {

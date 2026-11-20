@@ -455,6 +455,9 @@ export const T = {
     vueltaGolf: 'La K y el As',
     vueltaGolfDesc: 'Con vuelta: sobre una K va un As, y sobre un As una K.',
     escobaInicialDesc: 'Si las 4 cartas iniciales de la mesa suman 15, son escoba del que reparte.',
+    viudaTreinta: 'Con viuda',
+    viudaTreintaDesc:
+      'Tres cartas boca arriba en la mesa: en tu turno cambias una o las tres, pasas o te plantas.',
     premiosEscoba: 'Premios de los oros y los sietes',
     premiosEscobaDesc: 'Los 10 oros valen 2 puntos y los 4 sietes 3, en lugar de 1.',
     sobrefallo: 'Sobrefallo libre',
@@ -1659,6 +1662,22 @@ export const T = {
     valor: (v: number) => `Tu mano: ${String(v).replace('.', ',')}`,
     faseRobar: 'Roba del mazo o del descarte, o plántate',
     faseDescartar: 'Toca la carta que descartas',
+    faseViuda: 'Toca una carta tuya y una de la viuda para cambiarlas',
+    marcaMesa: 'Ahora toca la carta de la viuda que quieres',
+    marcaMia: 'Ahora toca la carta tuya que dejas',
+    viuda: 'Viuda',
+    mazo: (n: number) => (n === 1 ? 'Queda 1 en el mazo' : `Quedan ${n} en el mazo`),
+    cambiarTodas: 'Cambiar las tres',
+    pasar: 'Pasar',
+    jugada: (quien: string, tipo: string, deja: string, coge: string) => {
+      const tu = quien === 'Tú';
+      if (tipo === 'cambiar')
+        return tu ? `Cambias ${deja} por ${coge}` : `${quien} cambia ${deja} por ${coge}`;
+      if (tipo === 'cambiarTodas') return tu ? 'Cambias las tres' : `${quien} cambia las tres`;
+      if (tipo === 'pasar') return tu ? 'Pasas' : `${quien} pasa`;
+      return '';
+    },
+    viudaNueva: 'Han pasado todos: viuda nueva',
     plantarse: 'Plantarse',
     robarMazo: 'Robar del mazo',
     robarDescarte: 'Coger la carta del descarte',
@@ -4412,8 +4431,15 @@ export const T = {
         texto: [
           'Toca el mazo o el descarte para robar una carta y después toca la carta de tu mano que descartas (no puedes devolver la que acabas de coger del descarte).',
           'En lugar de robar, puedes plantarte si crees que no tendrás la peor mano. Entonces cada uno de los demás juega un último turno y se enseñan las manos.',
-          'En otros sitios no se roba del mazo: hay tres cartas boca arriba en la mesa, la «viuda», y en tu turno cambias una de las tuyas, o las tres, por las de la mesa.',
         ],
+      },
+      {
+        titulo: 'Con viuda',
+        texto: [
+          'Variante (opción «Con viuda»): no se roba ni se descarta. Hay tres cartas boca arriba en la mesa, la «viuda», y en tu turno cambias una de tus cartas por una de la viuda, cambias las tres por las tres, pasas o te plantas.',
+          'Si pasan todos seguidos, la viuda se aparta y se ponen tres cartas nuevas del mazo. Lo demás es igual: plantarse, el último turno de los demás y las vidas.',
+        ],
+        ejemplo: 'viuda',
       },
       {
         titulo: 'Las vidas',

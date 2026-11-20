@@ -203,6 +203,13 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Conquián', conquian, { manosParaGanar: 2 }, IAS.conquian, 2),
   // Dos vidas, para que las partidas de las pruebas no sean tan largas.
   entrada('Treinta y uno', treintaYUno, { jugadores: 4, vidas: 2 }, IAS.treintaYUno, 4),
+  entrada(
+    'Treinta y uno con viuda',
+    treintaYUno,
+    { jugadores: 4, vidas: 2, viuda: true },
+    IAS.treintaYUno,
+    4,
+  ),
   // A 2 puntos de juego, para que las partidas de las pruebas no sean tan largas.
   entrada('Twenty-Nine', twentyNine, { objetivo: 2 }, IAS.twentyNine, 'bandos'),
   entrada('Briscola Chiamata', briscolaChiamata, { manos: 2 }, IAS.briscolaChiamata, 5),

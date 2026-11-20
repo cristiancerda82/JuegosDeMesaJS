@@ -103,3 +103,81 @@ test('el Treinta y uno con 6 entra en 360 × 640 sin scroll horizontal', async (
   await expect(mano(page).last()).toBeInViewport();
   await page.screenshot({ path: 'test-results/treinta-360.png' });
 });
+
+// ── Con viuda ────────────────────────────────────────────────────────────────
+
+async function empezarConViuda(page: Page, query: string, jugadores?: number) {
+  await page.goto(`./?${query}`);
+  await abrirJuego(page, 'treintaYUno');
+  if (jugadores) await page.getByTestId(`treinta-jugadores-${jugadores}`).check();
+  await page.getByTestId('opcion-viuda').check();
+  await page.getByTestId('empezar').click();
+}
+
+const viuda = (page: Page) => page.locator('[data-testid="viuda"] [data-carta]');
+
+test('con viuda: cambiar una carta tocando la tuya y la de la mesa, y cambiar las tres', async ({
+  page,
+}) => {
+  await empezarConViuda(page, 'rapido&semilla=treinta-viuda', 2);
+  await expect(mano(page)).toHaveCount(3);
+  await expect(viuda(page)).toHaveCount(3);
+  await expect(page.getByTestId('descarte')).toHaveCount(0);
+  await expect(page.getByTestId('en-mazo')).toHaveText('Quedan 43 en el mazo');
+  await page.screenshot({ path: `test-results/treinta-viuda-${page.viewportSize()!.width}.png` });
+
+  const mia = await mano(page).first().getAttribute('data-carta');
+  const deLaMesa = await viuda(page).first().getAttribute('data-carta');
+  await page.getByTestId(`mano-${mia}`).click();
+  await expect(page.getByTestId('turno')).toHaveText('Ahora toca la carta de la viuda que quieres');
+  await page.getByTestId(`viuda-${deLaMesa}`).click();
+  await expect(page.locator(`[data-testid="mano"] [data-carta="${deLaMesa}"]`)).toBeVisible();
+  await expect(page.locator(`[data-testid="viuda"] [data-carta="${mia}"]`)).toBeVisible();
+
+  // Le toca otra vez tras la IA: cambia las tres.
+  await expect(page.getByTestId('cambiar-todas')).toBeVisible({ timeout: 15_000 });
+  const mesa = await viuda(page).evaluateAll((els) => els.map((e) => e.getAttribute('data-carta')));
+  await page.getByTestId('cambiar-todas').click();
+  for (const c of mesa)
+    await expect(page.locator(`[data-testid="mano"] [data-carta="${c}"]`)).toBeVisible();
+});
+
+test('con viuda: partida completa contra la IA pasando y plantándose', async ({ page }) => {
+  test.setTimeout(300_000);
+  await empezarConViuda(page, 'rapido&semilla=treinta-viuda-completa', 3);
+  const fin = page.getByTestId('fin');
+  for (let paso = 0; paso < 2_000; paso++) {
+    await page
+      .locator('[data-testid="fin"], [data-testid="siguiente-mano"], [data-testid="pasar"]')
+      .first()
+      .waitFor({ timeout: 30_000 });
+    if (await fin.isVisible()) break;
+    if (await page.getByTestId('siguiente-mano').isVisible()) {
+      await page.getByTestId('siguiente-mano').click();
+    } else if (await page.getByTestId('plantarse').isVisible()) {
+      await page.getByTestId('plantarse').click();
+    } else {
+      await page.getByTestId('pasar').click();
+    }
+  }
+  await expect(fin).toBeVisible();
+});
+
+test('con viuda, el Treinta y uno de 6 entra en 360 × 640 sin scroll horizontal', async ({
+  page,
+}) => {
+  test.skip(page.viewportSize()?.width !== 360, 'solo en el perfil móvil');
+  await empezarConViuda(page, 'semilla=treinta-viuda-pequena', 6);
+  await expect(viuda(page)).toHaveCount(3);
+  await page.waitForFunction(() => document.getAnimations().length === 0);
+  const anchos = await page.evaluate(() => ({
+    pagina: document.documentElement.scrollWidth,
+    ventana: window.innerWidth,
+  }));
+  expect(anchos.pagina).toBeLessThanOrEqual(anchos.ventana);
+  await expect(page.getByTestId('pasar')).toBeInViewport();
+  await expect(page.getByTestId('cambiar-todas')).toBeInViewport();
+  await expect(viuda(page).last()).toBeInViewport();
+  await expect(mano(page).last()).toBeInViewport();
+  await page.screenshot({ path: 'test-results/treinta-viuda-360.png' });
+});

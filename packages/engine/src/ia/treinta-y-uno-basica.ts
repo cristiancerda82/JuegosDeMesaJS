@@ -24,10 +24,38 @@ export function mejorDescarteTreinta(
   )[0]!;
 }
 
+/**
+ * Con viuda (spec ia-jugadores): con 27 o más se planta; si no, el cambio que más sube la mano
+ * (una carta o las tres, y a igualdad una); si ninguno la sube, pasa.
+ */
+export function decisionViudaTreinta(
+  vista: VistaTreintaYUno,
+  acciones: readonly AccionTreintaYUno[],
+): AccionTreintaYUno {
+  const mano = vista.miMano ?? [];
+  const valor = valorManoTreinta(mano);
+  if (valor >= PLANTARSE_TREINTA && acciones.some((a) => a.tipo === 'plantarse')) {
+    return { tipo: 'plantarse' };
+  }
+  let mejor: AccionTreintaYUno = { tipo: 'pasar' };
+  let mejorValor = valor;
+  for (const a of acciones) {
+    if (a.tipo !== 'cambiar') continue;
+    const v = valorManoTreinta(mano.map((c) => (c === a.mia ? a.mesa : c)));
+    if (v > mejorValor) {
+      mejor = a;
+      mejorValor = v;
+    }
+  }
+  if (valorManoTreinta(vista.viuda) > mejorValor) return { tipo: 'cambiarTodas' };
+  return mejor;
+}
+
 export function decisionTreintaYUno(
   vista: VistaTreintaYUno,
   acciones: readonly AccionTreintaYUno[],
 ): AccionTreintaYUno {
+  if (vista.config.viuda) return decisionViudaTreinta(vista, acciones);
   const mano = vista.miMano ?? [];
   if (vista.fase === 'descartar') {
     const descartables = acciones.flatMap((a) => (a.tipo === 'descartar' ? [a.carta] : []));

@@ -509,6 +509,13 @@
           >
         {/each}
       </fieldset>
+      <fieldset>
+        <legend>{T.opciones.viudaTreinta}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={treintaConfig.viuda} data-testid="opcion-viuda" />
+          {T.opciones.viudaTreintaDesc}
+        </label>
+      </fieldset>
     {:else if juego === 'polignac'}
       <fieldset>
         <legend>{T.opciones.jugadores}</legend>

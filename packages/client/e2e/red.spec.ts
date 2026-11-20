@@ -1578,6 +1578,27 @@ test('Treinta y uno en red: lo que roba uno lo ve el otro', async ({ browser }) 
   await expect(luis.getByTestId('asiento-0')).toContainText('Plantado');
 });
 
+test('Treinta y uno con viuda en red: el cambio de uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'treintaYUno', (p) => p.getByTestId('opcion-viuda').check());
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="viuda"] [data-carta]')).toHaveCount(3);
+
+  // Juega primero Ana (asiento 0): cambia las tres, y Luis ve en la viuda las cartas de Ana.
+  const deAna = await ana
+    .locator('[data-testid="mano"] [data-carta]')
+    .evaluateAll((els) => els.map((e) => e.getAttribute('data-carta')));
+  await ana.getByTestId('cambiar-todas').click();
+  for (const c of deAna) {
+    await expect(luis.locator(`[data-testid="viuda"] [data-carta="${c}"]`)).toBeVisible();
+  }
+  await expect(luis.getByTestId('aviso-viuda')).toContainText('Ana cambia las tres');
+});
+
 // ── Conexión robusta (spec partidas-en-red: conexiones muertas y segundo plano) ──
 
 /**

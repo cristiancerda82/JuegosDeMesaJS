@@ -1744,7 +1744,11 @@ describe('Reconstrucción del Conquián', () => {
 });
 
 describirReconstruccion(treintaYUno, reconstruirTreintaYUno, {
-  configs: [CONFIG_TREINTA_Y_UNO_POR_DEFECTO, { jugadores: 6, vidas: 1 }],
+  configs: [
+    CONFIG_TREINTA_Y_UNO_POR_DEFECTO,
+    { jugadores: 6, vidas: 1 },
+    { jugadores: 4, vidas: 2, viuda: true },
+  ],
   base: iaTreintaYUnoBasica,
 });
 
@@ -1758,6 +1762,26 @@ describe('Reconstrucción del Treinta y uno', () => {
     for (let i = 0; i < 10; i++) {
       const rec = reconstruirTreintaYUno(vista, crearAzar(`t${i}`));
       expect(rec.manos[0]).toContain(arriba);
+      expect(treintaYUno.vistaDe(rec, 1)).toEqual(vista);
+    }
+  });
+});
+
+describe('Reconstrucción del Treinta y uno con viuda', () => {
+  it('la viuda queda igual y la carta cogida de ella sigue en la mano del rival', () => {
+    const r = treintaYUno.crear({ jugadores: 4, vidas: 3, viuda: true }, 'viuda');
+    if (!r.ok) throw new Error(r.error);
+    const cogida = r.valor.viuda[0]!;
+    const e = treintaYUno.transicion(r.valor, 0, {
+      tipo: 'cambiar',
+      mia: r.valor.manos[0]![0]!,
+      mesa: cogida,
+    });
+    const vista = treintaYUno.vistaDe(e, 1);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirTreintaYUno(vista, crearAzar(`v${i}`));
+      expect(rec.manos[0]).toContain(cogida);
+      expect(rec.viuda).toEqual(e.viuda);
       expect(treintaYUno.vistaDe(rec, 1)).toEqual(vista);
     }
   });

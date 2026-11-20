@@ -196,5 +196,20 @@ export const ENVITE: Partial<Record<IdJuego, EjemplosJuego>> = {
       ],
       nota: 'Solo cuenta el palo que más suma: la K de diamantes no se suma a las picas.',
     },
+    viuda: {
+      tipo: 'antesDespues',
+      descripcion:
+        'Con viuda: tienes la K y el 9 de corazones y el 2 de picas, y en la viuda está el As de corazones. Cambias el 2 de picas por el As y tu mano pasa de 19 a 30.',
+      antes: [
+        { nombre: 'Tu mano', cartas: ['corazones-13', 'corazones-9', 'picas-2'] },
+        { nombre: 'Viuda', cartas: ['corazones-1', 'treboles-4', 'diamantes-6'] },
+      ],
+      despues: [
+        { nombre: 'Tu mano', cartas: ['corazones-13', 'corazones-9', 'corazones-1'] },
+        { nombre: 'Viuda', cartas: ['picas-2', 'treboles-4', 'diamantes-6'] },
+      ],
+      resaltadas: ['corazones-1', 'picas-2'],
+      explicacion: 'La carta que dejas queda en la viuda, a la vista de todos.',
+    },
   },
 };

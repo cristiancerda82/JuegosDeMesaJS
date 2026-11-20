@@ -10,6 +10,7 @@
     type VistaTreintaYUno,
   } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
+  import { nombreCarta } from '../cartas/dibujo';
   import type { SesionMesa } from '../sesion/sesion-mesa';
   import { T } from '../textos';
   import AsientoRival from './bazas/AsientoRival.svelte';
@@ -29,7 +30,7 @@
   const rivales = $derived(Array.from({ length: n }, (_, a) => a).filter((a) => a !== yo));
   const nombre = (asiento: Asiento) =>
     nombreNumerado(asiento, n, yo, sesion.red, T.brisca.rivalN, T.brisca.rival);
-  const miTurno = $derived(vista.turno === yo && sesion.fin === null);
+  const miTurno = $derived(vista.turno === yo && sesion.fin === null && !sesion.bloqueada);
 
   // ── Acciones ───────────────────────────────────────────────────────────────
 
@@ -40,6 +41,41 @@
 
   function jugar(accion: AccionTreintaYUno | undefined) {
     if (accion) sesion.jugar(accion);
+  }
+
+  // ── Con viuda: tocar una carta propia y una de la viuda las cambia ──────────
+
+  const conViuda = $derived(vista.config.viuda === true);
+  let mia: IdCarta | null = $state(null);
+  let deLaMesa: IdCarta | null = $state(null);
+  // Al cambiar de turno se olvida lo marcado.
+  $effect(() => {
+    if (!miTurno) {
+      mia = null;
+      deLaMesa = null;
+    }
+  });
+  const cambio = (m: IdCarta, v: IdCarta) =>
+    legales.find((a) => a.tipo === 'cambiar' && a.mia === m && a.mesa === v);
+  const cambiarTodas = $derived(legales.find((a) => a.tipo === 'cambiarTodas'));
+  const pasar = $derived(legales.find((a) => a.tipo === 'pasar'));
+
+  function intentarCambio() {
+    if (mia === null || deLaMesa === null) return;
+    const accion = cambio(mia, deLaMesa);
+    mia = null;
+    deLaMesa = null;
+    jugar(accion);
+  }
+  function tocarMia(c: IdCarta) {
+    if (!miTurno) return;
+    mia = mia === c ? null : c;
+    intentarCambio();
+  }
+  function tocarViuda(c: IdCarta) {
+    if (!miTurno) return;
+    deLaMesa = deLaMesa === c ? null : c;
+    intentarCambio();
   }
 
   // ── Mano ordenada: por palo y de mayor a menor ─────────────────────────────
@@ -69,7 +105,27 @@
       return `${T.brisca.turnoDe(nombre(sesion.pensando))} · ${T.brisca.pensando}`;
     }
     if (vista.turno !== yo) return T.brisca.turnoDe(nombre(vista.turno));
+    if (conViuda) {
+      if (mia !== null) return T.treinta.marcaMesa;
+      if (deLaMesa !== null) return T.treinta.marcaMia;
+      return T.treinta.faseViuda;
+    }
     return vista.fase === 'descartar' ? T.treinta.faseDescartar : T.treinta.faseRobar;
+  });
+
+  /** Con viuda, lo que hizo el último y si se puso una viuda nueva. */
+  const avisoViuda = $derived.by(() => {
+    const j = vista.ultimaJugada;
+    if (!conViuda || j === null) return null;
+    if (j.viudaNueva) return T.treinta.viudaNueva;
+    return (
+      T.treinta.jugada(
+        nombre(j.asiento),
+        j.accion.tipo,
+        j.accion.tipo === 'cambiar' ? nombreCarta(j.accion.mia) : '',
+        j.accion.tipo === 'cambiar' ? nombreCarta(j.accion.mesa) : '',
+      ) || null
+    );
   });
 
   const avisoPlantado = $derived(
@@ -119,6 +175,25 @@
   {/each}
 
   <div class="centro">
+    {#if conViuda}
+      <div class="viuda" data-testid="viuda" aria-label={T.treinta.viuda}>
+        {#each vista.viuda as c (c)}
+          <button
+            class="carta-viuda"
+            class:marcada={deLaMesa === c}
+            data-testid="viuda-{c}"
+            data-carta={c}
+            aria-pressed={deLaMesa === c}
+            disabled={!miTurno}
+            onclick={() => tocarViuda(c)}
+          >
+            <Carta id={c} />
+          </button>
+        {/each}
+      </div>
+      <p class="en-mazo" data-testid="en-mazo">{T.treinta.mazo(vista.enMazo)}</p>
+      {#if avisoViuda}<p class="aviso" role="status" data-testid="aviso-viuda">{avisoViuda}</p>{/if}
+    {:else}
     <div class="pilas">
       <div
         class="pila"
@@ -150,6 +225,7 @@
         {/if}
       </div>
     </div>
+    {/if}
     {#if avisoPlantado}
       <p class="aviso" role="status" data-testid="aviso-plantado">{avisoPlantado}</p>
     {/if}
@@ -160,6 +236,16 @@
       <span class="nombre">{T.brisca.tu}</span>
       <span class="valor" data-testid="valor">{T.treinta.valor(vista.valor ?? 0)}</span>
       <span class="turno" role="status" data-testid="turno">{turno}</span>
+      {#if miTurno && conViuda && cambiarTodas}
+        <button data-accion="cambiarTodas" data-jugada={JSON.stringify(cambiarTodas)} data-testid="cambiar-todas" onclick={() => jugar(cambiarTodas)}>
+          {T.treinta.cambiarTodas}
+        </button>
+      {/if}
+      {#if miTurno && conViuda && pasar}
+        <button data-accion="pasar" data-jugada={JSON.stringify(pasar)} data-testid="pasar" onclick={() => jugar(pasar)}>
+          {T.treinta.pasar}
+        </button>
+      {/if}
       {#if miTurno && plantarse}
         <button data-accion={plantarse.tipo} data-jugada={JSON.stringify(plantarse)} class="principal" data-testid="plantarse" onclick={() => jugar(plantarse)}>
           {T.treinta.plantarse}
@@ -168,15 +254,17 @@
     </div>
     <div class="mano" data-testid="mano">
       {#each manoOrdenada as c (c)}
-        {@const accion = descarte(c)}
+        {@const accion = conViuda ? undefined : descarte(c)}
         <button data-accion={accion?.tipo} data-jugada={JSON.stringify(accion)}
           class="carta-mano"
-          class:jugable={accion !== undefined}
+          class:jugable={conViuda ? miTurno : accion !== undefined}
           class:cogida={vista.cogida === c}
+          class:marcada={mia === c}
           data-testid="mano-{c}"
           data-carta={c}
-          disabled={accion === undefined}
-          onclick={() => jugar(accion)}
+          aria-pressed={conViuda ? mia === c : undefined}
+          disabled={conViuda ? !miTurno : accion === undefined}
+          onclick={() => (conViuda ? tocarMia(c) : jugar(accion))}
         >
           <Carta id={c} />
         </button>
@@ -291,6 +379,42 @@
     font-size: 0.75rem;
     font-weight: 700;
     background: rgb(0 0 0 / 0.55);
+  }
+
+  .viuda {
+    display: flex;
+    gap: 6px;
+  }
+
+  .carta-viuda {
+    width: calc(var(--ancho-carta) * 0.8);
+    padding: 0;
+    border: 0;
+    background: none;
+    border-radius: 7%;
+    transition: translate 120ms;
+  }
+
+  .carta-viuda:disabled {
+    opacity: 1;
+    cursor: default;
+  }
+
+  .carta-viuda.marcada,
+  .carta-mano.marcada {
+    translate: 0 -8px;
+  }
+
+  .carta-viuda.marcada :global(.carta),
+  .carta-mano.marcada :global(.carta) {
+    outline: 3px solid var(--resalte);
+    border-radius: 7%;
+  }
+
+  .en-mazo {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--texto-suave);
   }
 
   .aviso {
