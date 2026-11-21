@@ -2873,7 +2873,6 @@ La guía MUST incluir una línea que empiece por «En otros sitios» para cada v
 - el Julepe en el que quien reparte «la baila»;
 - la Brisca con señas entre compañeros;
 - el Tute subastado de 3 jugadores con 12 cartas;
-- el Remigio de 10 cartas con dos barajas de 52;
 - el Polignac con el orden antiguo (el As por debajo de la J);
 - el Treinta y uno con viuda;
 - el Oh Hell que sube de 1 carta al máximo;
@@ -3087,3 +3086,28 @@ Las opciones de la Siete y media MUST tener la casilla «Con cualquier siete y m
 #### Scenario: La variante en la guía
 - **WHEN** el jugador abre la guía de la Siete y media
 - **THEN** ve explicado que se puede cobrar el doble con cualquier siete y media y en qué opción se activa
+
+### Requirement: Remigio de diez cartas en el cliente
+Las opciones del Remigio MUST tener la casilla «Diez cartas», desactivada por defecto, en local y al crear una sala en red.
+
+Con la opción, la mesa del Remigio MUST:
+- no mostrar la zona de combinaciones ni el botón «Bajar»;
+- tener el botón «Cerrar», activo cuando el jugador ha robado y ha elegido una carta que, al soltarla, deja las otras diez ligadas;
+- mostrar los puntos sin ligar de su mano;
+- ordenar la mano por los palos franceses o por número, del As a la K.
+
+El resumen de cada mano MUST decir con qué premio se cerró y por cuánto se multiplica, y mostrar las cartas sin ligar de cada jugador en lugar de toda su mano.
+
+La guía del Remigio MUST explicar la variante (la baraja, las 10 cartas, cómo se liga, el color y los premios) y decir que se activa con la opción «Diez cartas».
+
+#### Scenario: Cerrar con diez cartas
+- **WHEN** con la opción «Diez cartas», el jugador ha robado, elige la carta que le sobra y las otras diez están ligadas
+- **THEN** el botón «Cerrar» está activo y, al pulsarlo, termina la mano y ve el resumen
+
+#### Scenario: El premio en el resumen
+- **WHEN** un rival cierra con color y sin comodines
+- **THEN** el resumen dice que cerró con color, que los demás pagan por cuatro, y muestra las cartas sin ligar de cada uno
+
+#### Scenario: La variante en la guía
+- **WHEN** el jugador abre la guía del Remigio
+- **THEN** lee cómo se juega con diez cartas y en qué opción se activa
