@@ -2871,7 +2871,6 @@ La guía MUST incluir una línea que empiece por «En otros sitios» para cada v
 - la Escoba a 31 puntos;
 - la Siete y media con la carta tapada o destapada;
 - el Julepe en el que quien reparte «la baila»;
-- la Brisca con señas entre compañeros;
 - el Tute subastado de 3 jugadores con 12 cartas;
 - el Polignac con el orden antiguo (el As por debajo de la J);
 - el Treinta y uno con viuda;
@@ -3111,3 +3110,25 @@ La guía del Remigio MUST explicar la variante (la baraja, las 10 cartas, cómo 
 #### Scenario: La variante en la guía
 - **WHEN** el jugador abre la guía del Remigio
 - **THEN** lee cómo se juega con diez cartas y en qué opción se activa
+
+### Requirement: Brisca con señas en el cliente
+Las opciones de la Brisca MUST tener la casilla «Con señas», desactivada por defecto, en local y al crear una sala en red. Con 2 jugadores la casilla MUST aparecer desactivada.
+
+Con la opción y 4 jugadores, la barra de información de la mesa MUST mostrar las señas del compañero:
+- los nombres de sus cartas de triunfo con puntos, de la más fuerte a la más débil;
+- «sin triunfo» si no tiene ninguna carta del palo de triunfo;
+- «ninguna» si tiene triunfos, pero ninguno con puntos.
+
+La guía de la Brisca MUST explicar la variante (qué cartas se señalan, que solo las ve el compañero y que se juega con 4) y decir que se activa con la opción «Con señas».
+
+#### Scenario: Las señas en la mesa
+- **WHEN** con señas, el compañero del jugador tiene el As y el Rey de triunfo
+- **THEN** la barra de información muestra «Señas: As, Rey»
+
+#### Scenario: La casilla con dos jugadores
+- **WHEN** el jugador elige 2 jugadores en las opciones de la Brisca
+- **THEN** la casilla «Con señas» aparece desactivada
+
+#### Scenario: La variante en la guía
+- **WHEN** el jugador abre la guía de la Brisca
+- **THEN** lee cómo se juega con señas y en qué opción se activa
