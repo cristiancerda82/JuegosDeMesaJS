@@ -1,5 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { CADA_PING_MS, ClienteRed, ESPERA_PONG_MS } from './red.svelte';
+import {
+  CADA_PING_MS,
+  ClienteRed,
+  ESPERA_PONG_MS,
+  guardarServidor,
+  servidorGuardado,
+  servidorPorDefecto,
+} from './red.svelte';
 
 // ── Un WebSocket simulado ────────────────────────────────────────────────────
 
@@ -165,5 +172,56 @@ describe('ClienteRed: volver del segundo plano', () => {
     volverVisible();
     vi.advanceTimersByTime(20_000);
     expect(SocketFalso.creados).toHaveLength(1);
+  });
+});
+
+// ── La dirección del servidor guardada ───────────────────────────────────────
+
+describe('servidor guardado', () => {
+  const CLAVE = 'juegos-de-mesa/red/servidor';
+  let almacen: Map<string, string>;
+
+  function enPagina(protocolo: string) {
+    vi.stubGlobal('location', { protocol: protocolo, hostname: 'ejemplo.github.io' });
+  }
+
+  beforeEach(() => {
+    almacen = new Map();
+    vi.stubGlobal('localStorage', {
+      getItem: (k: string) => almacen.get(k) ?? null,
+      setItem: (k: string, v: string) => almacen.set(k, v),
+      removeItem: (k: string) => almacen.delete(k),
+    });
+  });
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('en una página https descarta un ws:// guardado por una versión anterior', () => {
+    enPagina('https:');
+    almacen.set(CLAVE, 'ws://ejemplo.github.io:8787');
+    expect(servidorGuardado()).toBe(servidorPorDefecto());
+  });
+
+  it('en una página https mantiene los wss:// y los ws:// hacia el propio equipo', () => {
+    enPagina('https:');
+    almacen.set(CLAVE, 'wss://otro.example');
+    expect(servidorGuardado()).toBe('wss://otro.example');
+    almacen.set(CLAVE, 'ws://localhost:8787');
+    expect(servidorGuardado()).toBe('ws://localhost:8787');
+  });
+
+  it('en una página http mantiene un ws:// de la red local', () => {
+    enPagina('http:');
+    almacen.set(CLAVE, 'ws://192.168.1.20:8787');
+    expect(servidorGuardado()).toBe('ws://192.168.1.20:8787');
+  });
+
+  it('no guarda la dirección por defecto, para seguirla si cambia', () => {
+    enPagina('https:');
+    guardarServidor(` ${servidorPorDefecto()} `);
+    expect(almacen.has(CLAVE)).toBe(false);
+    guardarServidor('wss://otro.example');
+    expect(almacen.get(CLAVE)).toBe('wss://otro.example');
+    guardarServidor(servidorPorDefecto());
+    expect(almacen.has(CLAVE)).toBe(false);
   });
 });

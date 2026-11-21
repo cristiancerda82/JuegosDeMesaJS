@@ -48,11 +48,33 @@ export function servidorPorDefecto(): string {
 /** En la app nativa solo valen servidores seguros: Android bloquea `ws://` (spec partidas-en-red). */
 export const servidorAdmitido = (url: string) => !esNativa() || !url.trim().startsWith('ws://');
 
+/**
+ * Una página servida por https no puede abrir `ws://` (el navegador lo bloquea como contenido
+ * mixto), salvo hacia el propio equipo. Así se descarta una dirección guardada por una versión
+ * anterior, como la `ws://<host>:8787` de antes de tener servidor público.
+ */
+function utilEnEstaPagina(url: string): boolean {
+  if (typeof location === 'undefined' || location.protocol !== 'https:') return true;
+  const valor = url.trim();
+  if (!valor.startsWith('ws://')) return true;
+  try {
+    return ['localhost', '127.0.0.1', '[::1]'].includes(new URL(valor).hostname);
+  } catch {
+    return false;
+  }
+}
+
 export function servidorGuardado(): string {
   const guardado = leer(CLAVE_SERVIDOR);
-  return guardado !== null && servidorAdmitido(guardado) ? guardado : servidorPorDefecto();
+  return guardado !== null && servidorAdmitido(guardado) && utilEnEstaPagina(guardado)
+    ? guardado
+    : servidorPorDefecto();
 }
-export const guardarServidor = (url: string) => escribir(CLAVE_SERVIDOR, url.trim());
+/** Solo se guarda una dirección distinta de la de por defecto, para seguirla si esta cambia. */
+export function guardarServidor(url: string): void {
+  const valor = url.trim();
+  escribir(CLAVE_SERVIDOR, valor === '' || valor === servidorPorDefecto() ? null : valor);
+}
 export const nombreGuardado = () => leer(CLAVE_NOMBRE) ?? '';
 export const guardarNombre = (nombre: string) => escribir(CLAVE_NOMBRE, nombre.trim());
 
