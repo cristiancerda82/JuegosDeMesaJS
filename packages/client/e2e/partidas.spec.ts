@@ -76,6 +76,40 @@ test('Brisca de 4 jugadores: las manos ajenas se ven boca abajo', async ({ page 
   await expect(page.getByTestId('fin')).toContainText('Tu pareja');
 });
 
+test('Brisca con señas: se ven las de tu compañero hasta el final de la partida', async ({
+  page,
+}) => {
+  await abrirJuego(page, 'brisca', '&semilla=senas');
+  // Con 2 jugadores la casilla está desactivada; con 4 se puede marcar.
+  await expect(page.getByTestId('opcion-senas')).toBeDisabled();
+  await page.getByLabel('4 jugadores en parejas').check();
+  await page.getByTestId('opcion-senas').check();
+  await page.getByTestId('empezar').click();
+  await expect(page.getByTestId('senas')).toHaveText(
+    /^Señas: (sin triunfo|ninguna|(As|Tres|Rey|Caballo|Sota)(, (Tres|Rey|Caballo|Sota))*)$/,
+  );
+  await page.screenshot({ path: 'test-results/brisca-senas.png' });
+  await jugarBrisca(page);
+  await expect(page.getByTestId('fin')).toContainText('Tu pareja');
+});
+
+test('sin la opción de señas, la Brisca de 4 no las enseña', async ({ page }) => {
+  await abrirJuego(page, 'brisca', '&semilla=cuatro');
+  await page.getByLabel('4 jugadores en parejas').check();
+  await page.getByTestId('empezar').click();
+  await expect(page.locator('.carta-mano')).toHaveCount(3);
+  await expect(page.getByTestId('senas')).toHaveCount(0);
+});
+
+test('la guía de la Brisca explica la variante con señas', async ({ page }) => {
+  await abrirJuego(page, 'brisca');
+  await page.getByTestId('ver-ayuda').click();
+  const guia = page.getByTestId('como-se-juega');
+  await expect(guia).toContainText('Variante: con señas');
+  await expect(guia).toContainText('Con la opción «Con señas»');
+  await expect(guia).not.toContainText('En otros sitios');
+});
+
 // ── Interacción ──────────────────────────────────────────────────────────────
 
 test('un movimiento ilegal devuelve la carta y no cambia la partida', async ({ page }) => {

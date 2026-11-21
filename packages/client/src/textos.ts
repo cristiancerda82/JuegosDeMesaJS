@@ -409,6 +409,9 @@ export const T = {
     cambioTrasBaza: 'Solo tras ganar una baza',
     arrastre: 'Arrastre al acabarse el mazo',
     arrastreDesc: 'Obliga a seguir el palo, a superar y a fallar con triunfo.',
+    senasBrisca: 'Señas (solo con 4 jugadores)',
+    senasBriscaDesc:
+      'Con señas: ves qué triunfos con puntos tiene tu compañero, o si no tiene triunfo.',
     manos: 'Partida',
     manosN: (n: number) => (n === 1 ? 'Una mano' : `Al mejor de ${n} manos`),
     cambioSiete: 'Cambio del 7 de triunfo (solo con 2 jugadores)',
@@ -583,6 +586,14 @@ export const T = {
     finMano: (a: number, b: number) => `Fin de la mano: ${a} a ${b}`,
     nosotros: 'Tu pareja',
     ellos: 'Rivales',
+    senas: 'Señas',
+    senasNinguna: 'ninguna',
+    senasSinTriunfo: 'sin triunfo',
+    cartaSena: { 1: 'As', 3: 'Tres', 12: 'Rey', 11: 'Caballo', 10: 'Sota' } as Record<
+      number,
+      string
+    >,
+    senasTitulo: 'Lo que tu compañero te dice con señas',
   },
 
   tute: {
@@ -3736,7 +3747,14 @@ export const T = {
         titulo: 'Con 4 jugadores',
         texto: [
           'Se juega en parejas: tu compañero es el que está sentado enfrente, y vuestros puntos se suman.',
-          'En otros sitios los compañeros se hacen señas, gestos acordados para avisarse de sus cartas buenas sin decir nada.',
+        ],
+      },
+      {
+        titulo: 'Variante: con señas',
+        texto: [
+          'Con la opción «Con señas», que solo cuenta con 4 jugadores, los compañeros se avisan de sus cartas buenas de triunfo sin que lo vean los rivales.',
+          'En la mesa real se hace con gestos acordados: torcer la boca, guiñar un ojo, encoger los hombros… Aquí verás las señas de tu compañero junto al triunfo: sus triunfos con puntos (As, Tres, Rey, Caballo y Sota), «ninguna» si sus triunfos no tienen puntos, o «sin triunfo» si no tiene ninguno.',
+          'Las señas siempre dicen la verdad y se ponen al día cada vez que tu compañero roba. Sirven para saber si puedes cargarle puntos en una baza que él va a ganar.',
         ],
       },
       {

@@ -3,11 +3,13 @@ import { crearAzar, type EstadoAzar } from '../../src/baraja/azar';
 import type { IdCarta } from '../../src/baraja/cartas';
 import { aleatorio, type Agente } from '../../src/ia/agente';
 import { iaBriscaBasica } from '../../src/ia/brisca-basica';
+import { reconstruirBrisca } from '../../src/ia/reconstruir/brisca';
 import {
   bandoDe,
   brisca,
   CONFIG_BRISCA_POR_DEFECTO,
   puntosDe,
+  senasDe,
   type AccionBrisca,
   type ConfigBrisca,
   type EstadoBrisca,
@@ -71,6 +73,7 @@ function vista(parcial: Partial<VistaBrisca> & Pick<VistaBrisca, 'miMano'>): Vis
     jugadas: [],
     resultadosManos: [],
     manosGanadas: [0, 0],
+    senas: null,
     ...parcial,
   };
 }
@@ -153,6 +156,66 @@ describe('IA básica de la Brisca', () => {
   });
 });
 
+describe('Brisca con señas', () => {
+  const CONFIG_SENAS: ConfigBrisca = { ...CONFIG_BRISCA_POR_DEFECTO, jugadores: 4, senas: true };
+  /** El asiento 1 responde a la salida del 0; su compañero es el 3. */
+  const responde = (senas: VistaBrisca['senas']) =>
+    vista({
+      config: CONFIG_SENAS,
+      miMano: ['copas-3', 'oros-2', 'bastos-4'],
+      mesa: [{ asiento: 0, carta: 'espadas-4' }],
+      cartasEnMano: [2, 3, 3, 3],
+      puntos: [0, 0, 0, 0],
+      bazas: [0, 0, 0, 0],
+      senas,
+    });
+
+  it('la IA normal decide igual con señas que sin ellas', () => {
+    const sinSenas = decide(responde(null));
+    for (const senas of [
+      { cartas: ['oros-1'], sinTriunfo: false },
+      { cartas: ['oros-12', 'oros-10'], sinTriunfo: false },
+      { cartas: [], sinTriunfo: true },
+    ] as const) {
+      expect(decide(responde(senas))).toEqual(sinSenas);
+    }
+  });
+
+  it('la reconstrucción del difícil respeta las señas del compañero', () => {
+    const e = brisca.crear(CONFIG_SENAS, 'senas-reconstruir');
+    if (!e.ok) throw new Error(e.error);
+    for (const a of [0, 1, 2, 3]) {
+      const v = brisca.vistaDe(e.valor, a);
+      const { cartas, sinTriunfo } = v.senas!;
+      for (let i = 0; i < 30; i++) {
+        const r = reconstruirBrisca(v, crearAzar(`r-${a}-${i}`));
+        const mano = r.manos[(a + 2) % 4]!;
+        expect(senasDe(mano, r.triunfo)).toEqual({ cartas, sinTriunfo });
+      }
+    }
+  });
+
+  it('con señas «ninguna», el compañero tiene algún triunfo y ninguno con puntos', () => {
+    const v = vista({ ...responde({ cartas: [], sinTriunfo: false }), mazo: 20 });
+    for (let i = 0; i < 50; i++) {
+      const r = reconstruirBrisca(v, crearAzar(`ninguna-${i}`));
+      expect(senasDe(r.manos[3]!, 'oros')).toEqual({ cartas: [], sinTriunfo: false });
+    }
+  });
+
+  it('con el compañero sin triunfo, ninguna reconstrucción le da triunfos', () => {
+    const v = vista({
+      ...responde({ cartas: [], sinTriunfo: true }),
+      jugadas: ['copas-4', 'copas-5', 'copas-6'],
+      mazo: 20,
+    });
+    for (let i = 0; i < 50; i++) {
+      const r = reconstruirBrisca(v, crearAzar(`sin-${i}`));
+      expect(r.manos[3]!.some((c) => c.startsWith('oros'))).toBe(false);
+    }
+  });
+});
+
 // ── Garantías de los agentes ─────────────────────────────────────────────────
 
 describe('garantías de la IA', () => {
@@ -161,6 +224,7 @@ describe('garantías de la IA', () => {
     { jugadores: 2, cambioMuestra: 'trasGanarBaza', arrastreFinal: true, manos: 3 },
     { jugadores: 4, cambioMuestra: 'libre', arrastreFinal: false, manos: 1 },
     { jugadores: 4, cambioMuestra: 'no', arrastreFinal: true, manos: 1 },
+    { jugadores: 4, cambioMuestra: 'libre', arrastreFinal: false, manos: 1, senas: true },
   ];
 
   it('1.000 partidas entre IAs terminan sin acciones ilegales', () => {

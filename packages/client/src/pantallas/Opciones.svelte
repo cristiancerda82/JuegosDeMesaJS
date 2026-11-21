@@ -1099,6 +1099,18 @@
           {T.opciones.arrastreDesc}
         </label>
       </fieldset>
+      <fieldset>
+        <legend>{T.opciones.senasBrisca}</legend>
+        <label class="casilla">
+          <input
+            type="checkbox"
+            bind:checked={brisca.senas}
+            disabled={brisca.jugadores !== 4}
+            data-testid="opcion-senas"
+          />
+          {T.opciones.senasBriscaDesc}
+        </label>
+      </fieldset>
     {/if}
 
     <div class="botones">

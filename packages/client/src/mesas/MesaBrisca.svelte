@@ -1,6 +1,7 @@
 <script lang="ts">
   import {
     cartaDeCambio,
+    valorDe,
     type AccionBrisca,
     type ConfigBrisca,
     type EstadoBrisca,
@@ -22,6 +23,16 @@
   const legales = $derived(sesion.legales);
   const cambio = $derived(legales.find((a) => a.tipo === 'cambiarMuestra'));
 
+  const senas = $derived(
+    vista.senas === null
+      ? null
+      : vista.senas.sinTriunfo
+        ? T.brisca.senasSinTriunfo
+        : vista.senas.cartas.length === 0
+          ? T.brisca.senasNinguna
+          : vista.senas.cartas.map((c) => T.brisca.cartaSena[valorDe(c)]).join(', '),
+  );
+
   const jugable = (carta: IdCarta) =>
     legales.some((a) => a.tipo === 'jugar' && a.carta === carta);
 </script>
@@ -34,6 +45,9 @@
 >
   {#snippet info()}
     <span>{T.brisca.triunfo}: <b class="triunfo">{vista.triunfo}</b></span>
+    {#if senas !== null}
+      <span data-testid="senas" title={T.brisca.senasTitulo}>{T.brisca.senas}: <b>{senas}</b></span>
+    {/if}
     {#if vista.config.manos > 1}
       <span>{T.brisca.manosGanadas(...porBando(vista.manosGanadas, sesion.asiento))}</span>
     {/if}

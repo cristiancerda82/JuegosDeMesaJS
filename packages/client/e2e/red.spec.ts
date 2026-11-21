@@ -1650,6 +1650,18 @@ test('Remigio de diez cartas en red: la sala empieza con la opción', async ({ b
   await expect(luis.getByTestId('mazo')).toHaveClass(/robable/);
 });
 
+test('Brisca con señas en red: cada uno ve las de su compañero', async ({ browser }) => {
+  const jugadores = await Promise.all([0, 1, 2, 3].map(() => jugador(browser)));
+  const [ana, ...otros] = jugadores as [Page, ...Page[]];
+  const codigo = await crearSala(ana, 'brisca', async (p) => {
+    await p.getByLabel('4 jugadores en parejas').check();
+    await p.getByTestId('opcion-senas').check();
+  });
+  for (const [i, p] of otros.entries()) await unirse(p, codigo, ['Luis', 'Eva', 'Juan'][i]!);
+  await ana.getByTestId('empezar-red').click();
+  for (const p of jugadores) await expect(p.getByTestId('senas')).toContainText('Señas:');
+});
+
 test('sin servidor, la pantalla de red lo dice', async ({ page }) => {
   await abrirRed(page, 'Ana');
   await page.locator('summary').click();

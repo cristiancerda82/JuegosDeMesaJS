@@ -1,5 +1,5 @@
 import type { EstadoAzar } from '../../baraja/azar';
-import { cartasFuera, crearBaraja } from '../../baraja/cartas';
+import { cartasFuera, crearBaraja, type IdCarta } from '../../baraja/cartas';
 import {
   brisca,
   bandoDe,
@@ -7,9 +7,11 @@ import {
   type ConfigBrisca,
   type EstadoBrisca,
   type VistaBrisca,
+  paloDe,
+  puntosDe,
 } from '../../juegos/brisca';
 import type { Simulable } from '../niveles';
-import { bonoPartida, manosOcultas, Ocultas } from './comun';
+import { bonoPartida, Ocultas } from './comun';
 
 /** Un estado de Brisca coherente con la vista: manos ajenas y mazo, al azar. */
 export function reconstruirBrisca(vista: VistaBrisca, azar: EstadoAzar): EstadoBrisca {
@@ -23,7 +25,16 @@ export function reconstruirBrisca(vista: VistaBrisca, azar: EstadoAzar): EstadoB
     ),
     azar,
   );
-  const manos = manosOcultas(vista.cartasEnMano, vista.asiento, vista.miMano, ocultas);
+  const companero = vista.senas ? (vista.asiento! + 2) % 4 : -1;
+  // Con señas, el compañero recibe primero sus cartas señaladas y luego otras que no las contradigan.
+  const manoCompanero = vista.senas ? manoSegunSenas(vista, ocultas) : null;
+  const manos = vista.cartasEnMano.map((n, a) =>
+    a === vista.asiento && vista.miMano
+      ? [...vista.miMano]
+      : a === companero
+        ? manoCompanero!
+        : ocultas.tomar(n),
+  );
   return {
     config: vista.config,
     azar,
@@ -39,6 +50,21 @@ export function reconstruirBrisca(vista: VistaBrisca, azar: EstadoAzar): EstadoB
     ultimaBaza: vista.ultimaBaza,
     resultadosManos: [...vista.resultadosManos],
   };
+}
+
+function manoSegunSenas(vista: VistaBrisca, ocultas: Ocultas<IdCarta>): IdCarta[] {
+  const { cartas, sinTriunfo } = vista.senas!;
+  const n = vista.cartasEnMano[(vista.asiento! + 2) % 4]!;
+  const triunfoSinPuntos = (c: IdCarta) => paloDe(c) === vista.triunfo && puntosDe(c) === 0;
+  // «Ninguna»: tiene triunfos, pero sin puntos, así que al menos uno de esos.
+  const fijas = [
+    ...cartas,
+    ...(cartas.length === 0 && !sinTriunfo ? [ocultas.todas.find(triunfoSinPuntos)!] : []),
+  ];
+  const elegidas = ocultas.sacar(fijas);
+  const admite = (c: IdCarta) =>
+    paloDe(c) !== vista.triunfo || (!sinTriunfo && triunfoSinPuntos(c));
+  return [...elegidas, ...ocultas.sacar(ocultas.todas.filter(admite).slice(0, n - fijas.length))];
 }
 
 /** Puntos de la mano por bando: los del resultado si ya se cerró, o los que lleva. */

@@ -260,6 +260,7 @@ describirReconstruccion(brisca, reconstruirBrisca, {
   configs: [
     CONFIG_BRISCA_POR_DEFECTO,
     { jugadores: 4, cambioMuestra: 'trasGanarBaza', arrastreFinal: true, manos: 3 },
+    { jugadores: 4, cambioMuestra: 'libre', arrastreFinal: false, manos: 1, senas: true },
   ],
   base: iaBriscaBasica,
 });

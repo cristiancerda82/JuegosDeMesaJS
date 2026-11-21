@@ -7,6 +7,7 @@ import {
   cartaDeCambio,
   cartaGanadora,
   cartasObligadas,
+  fuerza,
   paloDe,
   puntosDe,
   robar,
@@ -40,6 +41,8 @@ export interface ConfigBrisca {
   readonly arrastreFinal: boolean;
   /** Partida a una mano o al mejor de N (N impar). */
   readonly manos: number;
+  /** Con 4 jugadores, cada uno ve las señas de su compañero. Ausente en partidas antiguas. */
+  readonly senas?: boolean;
 }
 
 export const CONFIG_BRISCA_POR_DEFECTO: ConfigBrisca = {
@@ -54,6 +57,14 @@ export interface ResultadoMano {
   readonly puntos: readonly [number, number];
   /** Bando ganador, o `null` si empataron a 60. */
   readonly ganador: 0 | 1 | null;
+}
+
+/** Lo que un compañero le dice al otro con señas. */
+export interface SenasBrisca {
+  /** Sus cartas de triunfo con puntos, de la más fuerte a la más débil. */
+  readonly cartas: readonly IdCarta[];
+  /** No tiene ninguna carta del palo de triunfo. */
+  readonly sinTriunfo: boolean;
 }
 
 export interface EstadoBrisca {
@@ -103,9 +114,20 @@ export interface VistaBrisca {
   readonly ultimaBaza: EstadoBrisca['ultimaBaza'];
   readonly resultadosManos: readonly ResultadoMano[];
   readonly manosGanadas: readonly [number, number];
+  /** Señas del compañero, con la opción; `null` sin ella, para un espectador o al terminar. */
+  readonly senas: SenasBrisca | null;
 }
 
 // ── Reglas ───────────────────────────────────────────────────────────────────
+
+/** Las señas que haría quien tiene esta mano: sus triunfos con puntos, o que no tiene triunfo. */
+export function senasDe(mano: readonly IdCarta[], triunfo: PaloEspanol): SenasBrisca {
+  const triunfos = mano.filter((c) => paloDe(c) === triunfo);
+  return {
+    cartas: triunfos.filter((c) => puntosDe(c) > 0).sort((a, b) => fuerza(b) - fuerza(a)),
+    sinTriunfo: triunfos.length === 0,
+  };
+}
 
 const siguiente = (e: EstadoBrisca, a: Asiento) => siguienteAsiento(a, e.config.jugadores);
 const mazoAgotado = (e: EstadoBrisca) => e.mazo.length === 0 && e.muestra === null;
@@ -224,6 +246,7 @@ export const brisca: Juego<ConfigBrisca, EstadoBrisca, AccionBrisca, VistaBrisca
       cambioMuestra: config.cambioMuestra,
       arrastreFinal: config.arrastreFinal,
       manos: config.manos,
+      ...(config.senas === true && config.jugadores === 4 && { senas: true }),
     };
     // Empieza repartiendo el último asiento, así sale el asiento 0.
     return ok(nuevaMano(limpia, crearAzar(semilla), limpia.jugadores - 1, []));
@@ -281,6 +304,10 @@ export const brisca: Juego<ConfigBrisca, EstadoBrisca, AccionBrisca, VistaBrisca
       ultimaBaza: e.ultimaBaza,
       resultadosManos: [...e.resultadosManos],
       manosGanadas: manosGanadas(e),
+      senas:
+        e.config.senas === true && asiento !== null && !partidaTerminada(e)
+          ? senasDe(e.manos[(asiento + 2) % 4]!, e.triunfo)
+          : null,
     };
   },
 

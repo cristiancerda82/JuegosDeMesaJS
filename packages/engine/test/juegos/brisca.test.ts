@@ -7,6 +7,7 @@ import {
   CONFIG_BRISCA_POR_DEFECTO,
   fuerza,
   puntosDe,
+  senasDe,
   type AccionBrisca,
   type ConfigBrisca,
   type EstadoBrisca,
@@ -429,6 +430,77 @@ describe('arrastre al final', () => {
   });
 });
 
+// ── Señas ────────────────────────────────────────────────────────────────────
+
+describe('señas entre compañeros', () => {
+  const conSenas = (parcial: Parcial = {}) =>
+    mesa({ ...parcial, config: { jugadores: 4, senas: true, ...parcial.config } });
+
+  it('la vista incluye los triunfos con puntos del compañero, del más fuerte al más débil', () => {
+    const e = conSenas({
+      manos: [['copas-2'], ['copas-4'], ['oros-4', 'oros-10', 'oros-1', 'bastos-1'], ['copas-5']],
+    });
+    expect(brisca.vistaDe(e, 0).senas).toEqual({
+      cartas: ['oros-1', 'oros-10'],
+      sinTriunfo: false,
+    });
+  });
+
+  it('con triunfos sin puntos no hay cartas que señalar, pero tampoco dice que no tenga', () => {
+    const e = conSenas({ manos: [['copas-2'], [], ['oros-4', 'copas-1'], []] });
+    expect(brisca.vistaDe(e, 0).senas).toEqual({ cartas: [], sinTriunfo: false });
+  });
+
+  it('dice que el compañero no tiene triunfo', () => {
+    const e = conSenas({ manos: [['oros-1'], [], ['copas-1', 'bastos-3'], []] });
+    expect(brisca.vistaDe(e, 0).senas).toEqual({ cartas: [], sinTriunfo: true });
+    expect(brisca.vistaDe(e, 2).senas).toEqual({ cartas: ['oros-1'], sinTriunfo: false });
+  });
+
+  it('los espectadores no ven señas, y sin la opción nadie las ve', () => {
+    const manos: IdCarta[][] = [['oros-1'], ['oros-3'], ['oros-12'], ['oros-11']];
+    expect(brisca.vistaDe(conSenas({ manos }), null).senas).toBeNull();
+    expect(brisca.vistaDe(mesa({ config: { jugadores: 4 }, manos }), 0).senas).toBeNull();
+  });
+
+  it('cada uno ve solo las de su compañero, no las de los rivales', () => {
+    const e = nueva({ jugadores: 4, senas: true }, 'senas');
+    for (const a of [0, 1, 2, 3]) {
+      expect(brisca.vistaDe(e, a).senas).toEqual(senasDe(e.manos[(a + 2) % 4]!, e.triunfo));
+    }
+  });
+
+  it('las señas se ponen al día cuando el compañero roba', () => {
+    // Gana el asiento 2 con el As de copas y roba primero: la última del mazo, el Tres de oros.
+    let e = conSenas({
+      manos: [
+        ['copas-4', 'bastos-4'],
+        ['copas-5', 'bastos-5'],
+        ['copas-1', 'bastos-6'],
+        ['copas-6', 'bastos-7'],
+      ],
+      mazo: ['espadas-4', 'espadas-5', 'espadas-6', 'oros-3'],
+    });
+    expect(brisca.vistaDe(e, 0).senas!.cartas).toEqual([]);
+    for (const [a, c] of [
+      [0, 'copas-4'],
+      [1, 'copas-5'],
+      [2, 'copas-1'],
+      [3, 'copas-6'],
+    ] as const) {
+      e = jugar(e, a, carta(c));
+    }
+    expect(e.manos[2]).toContain('oros-3');
+    expect(brisca.vistaDe(e, 0).senas!.cartas).toEqual(['oros-3']);
+  });
+
+  it('con 2 jugadores la opción no se guarda; las partidas antiguas siguen sin ella', () => {
+    expect(nueva({ senas: true }).config.senas).toBeUndefined();
+    expect(nueva({ jugadores: 4 }).config).toEqual({ ...CONFIG_BRISCA_POR_DEFECTO, jugadores: 4 });
+    expect(nueva({ jugadores: 4, senas: true }).config.senas).toBe(true);
+  });
+});
+
 // ── Vista y contrato ─────────────────────────────────────────────────────────
 
 describe('vista', () => {
@@ -448,10 +520,18 @@ describirContrato(brisca, {
     CONFIG_BRISCA_POR_DEFECTO,
     { jugadores: 4, cambioMuestra: 'trasGanarBaza', arrastreFinal: true, manos: 1 },
     { jugadores: 2, cambioMuestra: 'libre', arrastreFinal: true, manos: 3 },
+    { jugadores: 4, cambioMuestra: 'libre', arrastreFinal: false, manos: 3, senas: true },
   ],
+  // Con señas, las cartas señaladas del compañero se ven; el resto de su mano, no.
   cartasOcultas: (e, asiento) => [
     ...e.mazo,
-    ...e.manos.flatMap((m, a) => (a === asiento ? [] : m)),
+    ...e.manos.flatMap((m, a) =>
+      a === asiento
+        ? []
+        : e.config.senas && asiento !== null && a === (asiento + 2) % 4
+          ? m.filter((c) => !senasDe(m, e.triunfo).cartas.includes(c))
+          : m,
+    ),
   ],
   pasosMaximos: 120,
   ejecuciones: 40,

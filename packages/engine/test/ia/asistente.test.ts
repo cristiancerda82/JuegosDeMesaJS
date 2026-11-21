@@ -42,6 +42,7 @@ function vista(miMano: IdCarta[], salida: IdCarta): VistaBrisca {
     jugadas: ['bastos-5', 'bastos-6', 'bastos-7', 'espadas-5', 'espadas-6', 'espadas-7'],
     resultadosManos: [],
     manosGanadas: [0, 0],
+    senas: null,
   };
 }
 
