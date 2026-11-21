@@ -1627,6 +1627,29 @@ test('Remigio en red: dos humanos roban y descartan', async ({ browser }) => {
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
 });
 
+test('Remigio de diez cartas en red: la sala empieza con la opción', async ({ browser }) => {
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'remigio', (p) => p.getByTestId('remigio-diez').check());
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) {
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(10);
+    await expect(p.getByTestId('sin-ligar')).toBeVisible();
+  }
+
+  // Ana roba y ve «Cerrar» en lugar de «Bajar»; descarta y le toca a Luis.
+  await ana.getByTestId('mazo').click();
+  await expect(ana.getByTestId('cerrar')).toBeVisible();
+  await expect(ana.getByTestId('bajar')).toHaveCount(0);
+  await ana
+    .locator('[data-testid="mano"] .carta-mano')
+    .first()
+    .click({ position: { x: 6, y: 6 } });
+  await ana.getByTestId('descartar').click();
+  await expect(luis.getByTestId('mazo')).toHaveClass(/robable/);
+});
+
 test('sin servidor, la pantalla de red lo dice', async ({ page }) => {
   await abrirRed(page, 'Ana');
   await page.locator('summary').click();

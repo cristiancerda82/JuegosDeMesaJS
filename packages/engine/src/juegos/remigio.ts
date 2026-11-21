@@ -16,12 +16,24 @@ import {
   type JugadaRemigio,
   type NuevaCombinacionRemigio,
 } from './remigio-combinaciones';
+import {
+  CARTAS_MANO_REMIGIO_DIEZ,
+  cartasDeCierreRemigioDiez,
+  cierreRemigioDiez,
+  sueltasRemigioDiez,
+  type JugadaCierreRemigio,
+} from './remigio-diez';
 
 // ── Tipos ────────────────────────────────────────────────────────────────────
 
 export interface ConfigRemigio {
   /** De 2 a 5 jugadores, cada uno por su cuenta. */
   readonly jugadores: 2 | 3 | 4 | 5;
+  /**
+   * El Remigio de diez cartas (opcional, desactivado por defecto): dos barajas francesas, 10
+   * cartas, nadie baja y se cierra con las diez ligadas, con premios que multiplican.
+   */
+  readonly diezCartas?: boolean;
 }
 
 export const CONFIG_REMIGIO_POR_DEFECTO: ConfigRemigio = { jugadores: 2 };
@@ -47,18 +59,30 @@ export type AccionRemigio =
       readonly puesto?: number;
     }
   | { readonly tipo: 'cambiar'; readonly combinacion: number; readonly carta: CartaRemigio }
-  | { readonly tipo: 'descartar'; readonly carta: CartaRemigio };
+  | { readonly tipo: 'descartar'; readonly carta: CartaRemigio }
+  /** Con diez cartas: suelta la carta al montón y cierra con las otras diez ligadas. */
+  | { readonly tipo: 'cerrar'; readonly carta: CartaRemigio };
 
 export interface ResultadoManoRemigio {
   readonly repartidor: Asiento;
   /** Quien cerró; `null` si la mano se anuló sin cierre (mazo rehecho demasiadas veces). */
   readonly cerro: Asiento | null;
   readonly remigio: boolean;
-  /** Cartas que le quedaron a cada uno (vacía para quien cerró y los eliminados). */
+  /**
+   * Cartas que le quedaron a cada uno (vacía para los eliminados y, sin diez cartas, para quien
+   * cerró; con diez, las suyas son las diez ligadas con las que cerró).
+   */
   readonly manos: readonly (readonly CartaRemigio[])[];
   readonly puntosMano: readonly number[];
   readonly totalesTras: readonly number[];
   readonly eliminadosTras: readonly boolean[];
+  /** Con diez cartas y cierre: la jugada con la que se cerró. */
+  readonly jugada?: JugadaCierreRemigio;
+  readonly conComodines?: boolean;
+  /** Con diez cartas y cierre: por cuánto se multiplican los puntos de los demás. */
+  readonly multiplicador?: number;
+  /** Con diez cartas: las cartas que cada uno no pudo ligar (vacía para quien cerró). */
+  readonly sueltas?: readonly (readonly CartaRemigio[])[];
 }
 
 export interface EstadoRemigio {
@@ -131,7 +155,9 @@ function partidaTerminada(e: EstadoRemigio): boolean {
   return activos(e) <= 1;
 }
 
-/** Reparte una mano: 7 cartas a cada uno que sigue, y la primera del mazo al montón. */
+const diez = (e: Pick<EstadoRemigio, 'config'>) => e.config.diezCartas === true;
+
+/** Reparte una mano: 7 cartas (o 10) a cada uno que sigue, y la primera del mazo al montón. */
 function nuevaMano(
   base: Pick<
     EstadoRemigio,
@@ -139,7 +165,7 @@ function nuevaMano(
   >,
 ): EstadoRemigio {
   const n = base.config.jugadores;
-  const { cartas, azar } = barajar(cartasRemigio(), base.azar);
+  const { cartas, azar } = barajar(cartasRemigio(diez(base)), base.azar);
   const mano = siguienteActivo(base, base.repartidor);
   const orden: Asiento[] = [];
   for (let a = mano; ; a = siguienteActivo(base, a)) {
@@ -148,7 +174,7 @@ function nuevaMano(
   }
   const reparto = repartir(
     cartas,
-    orden.map(() => CARTAS_MANO_REMIGIO),
+    orden.map(() => (diez(base) ? CARTAS_MANO_REMIGIO_DIEZ : CARTAS_MANO_REMIGIO)),
   );
   if (!reparto.ok) throw new Error(reparto.error);
   const manos: CartaRemigio[][] = Array.from({ length: n }, () => []);
@@ -176,6 +202,7 @@ function nuevaMano(
  * `cerro` a `null` la mano se anula y nadie suma.
  */
 function cerrarMano(e: EstadoRemigio, cerro: Asiento | null): EstadoRemigio {
+  if (diez(e)) return cerrarManoDiez(e, cerro);
   const remigio = cerro !== null && !e.bajadoAntesDelTurno;
   const multiplicador = remigio ? 2 : 1;
   const puntosMano = e.manos.map((m, a) =>
@@ -183,6 +210,40 @@ function cerrarMano(e: EstadoRemigio, cerro: Asiento | null): EstadoRemigio {
       ? 0
       : m.reduce((s, c) => s + puntosCartaRemigio(c), 0) * multiplicador,
   );
+  return anotarMano(e, cerro, remigio, puntosMano, {});
+}
+
+/**
+ * Cierra una mano de diez cartas: los demás suman sus puntos sin ligar por el multiplicador de
+ * la jugada de quien cierra. Con `cerro` a `null` la mano se anula y nadie suma.
+ */
+function cerrarManoDiez(e: EstadoRemigio, cerro: Asiento | null): EstadoRemigio {
+  const cierre = cerro === null ? null : cierreRemigioDiez(e.manos[cerro]!);
+  const multiplicador = cierre?.multiplicador ?? 0;
+  const sueltas = e.manos.map((m, a) =>
+    a === cerro || e.eliminados[a] ? [] : [...sueltasRemigioDiez(m).cartas],
+  );
+  const puntosMano = sueltas.map(
+    (s) => s.reduce((t, c) => t + puntosCartaRemigio(c), 0) * multiplicador,
+  );
+  return anotarMano(e, cerro, false, puntosMano, {
+    sueltas,
+    ...(cierre && {
+      jugada: cierre.jugada,
+      conComodines: cierre.conComodines,
+      multiplicador: cierre.multiplicador,
+    }),
+  });
+}
+
+/** Suma los puntos de la mano, registra su resultado, elimina y reparte la siguiente. */
+function anotarMano(
+  e: EstadoRemigio,
+  cerro: Asiento | null,
+  remigio: boolean,
+  puntosMano: readonly number[],
+  extra: Partial<ResultadoManoRemigio>,
+): EstadoRemigio {
   const puntos = e.puntos.map((p, a) => p + puntosMano[a]!);
   const eliminados = e.eliminados.map((x, a) => x || puntos[a]! > LIMITE_REMIGIO);
   const resultadosManos = [
@@ -191,10 +252,11 @@ function cerrarMano(e: EstadoRemigio, cerro: Asiento | null): EstadoRemigio {
       repartidor: e.repartidor,
       cerro,
       remigio,
-      manos: e.manos.map((m, a) => (a === cerro ? [] : [...m])),
+      manos: e.manos.map((m, a) => (a === cerro && !diez(e) ? [] : [...m])),
       puntosMano,
       totalesTras: puntos,
       eliminadosTras: eliminados,
+      ...extra,
     },
   ];
   const cerrado: EstadoRemigio = { ...e, puntos, eliminados, resultadosManos };
@@ -240,7 +302,10 @@ export const remigio: Juego<ConfigRemigio, EstadoRemigio, AccionRemigio, VistaRe
     if (![2, 3, 4, 5].includes(config.jugadores)) {
       return error('El Remigio se juega de 2 a 5 jugadores');
     }
-    const limpia: ConfigRemigio = { jugadores: config.jugadores };
+    const limpia: ConfigRemigio = {
+      jugadores: config.jugadores,
+      ...(config.diezCartas === true && { diezCartas: true }),
+    };
     const n = limpia.jugadores;
     // Empieza repartiendo el último asiento, así empieza el asiento 0.
     return ok(
@@ -267,6 +332,17 @@ export const remigio: Juego<ConfigRemigio, EstadoRemigio, AccionRemigio, VistaRe
       return acciones;
     }
     const mano = e.manos[asiento]!;
+    if (diez(e)) {
+      // Con diez cartas no se baja: se descarta o, si las otras diez quedan ligadas, se cierra.
+      const clases = unaPorClase(mano);
+      return [
+        ...clases.map((carta) => ({ tipo: 'descartar' as const, carta })),
+        ...cartasDeCierreRemigioDiez(mano, clases).map((carta) => ({
+          tipo: 'cerrar' as const,
+          carta,
+        })),
+      ];
+    }
     const acciones: AccionRemigio[] = bajadasRemigio(mano).map((combinacion) => ({
       tipo: 'bajar' as const,
       combinacion,
@@ -327,6 +403,15 @@ export const remigio: Juego<ConfigRemigio, EstadoRemigio, AccionRemigio, VistaRe
         if (manos[asiento]!.length === 0) return cerrarMano(s, asiento);
         // Tras descartar el montón tiene carta: el siguiente siempre puede robar.
         return pasarTurno(s);
+      }
+      case 'cerrar': {
+        const manos = e.manos.map((m, a) =>
+          a === asiento ? m.filter((c) => c !== accion.carta) : m,
+        );
+        return cerrarMano(
+          hecho({ ...e, manos, monton: [...e.monton, accion.carta] }, accion.carta),
+          asiento,
+        );
       }
     }
   },

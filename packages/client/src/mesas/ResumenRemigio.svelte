@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { baseRemigio, type Asiento, type ResultadoManoRemigio } from '@juegos/engine';
+  import {
+    baseRemigio,
+    esComodinRemigio,
+    numeroRemigio,
+    type Asiento,
+    type ResultadoManoRemigio,
+  } from '@juegos/engine';
   import Carta from '../cartas/Carta.svelte';
   import { T } from '../textos';
 
@@ -17,22 +23,50 @@
       a === resultado.cerro || resultado.manos[a]!.length > 0 ? [a] : [],
     ),
   );
+  /** Con diez cartas se enseñan las cartas sin ligar de cada uno, no toda su mano. */
+  const cartasDe = (a: Asiento) => resultado.sueltas?.[a] ?? resultado.manos[a]!;
+  /** Con diez cartas, las de quien cerró: sus diez cartas ligadas, por número. */
+  const ligadas = $derived(
+    resultado.sueltas && resultado.cerro !== null
+      ? [...resultado.manos[resultado.cerro]!].sort(
+          (a, b) =>
+            (esComodinRemigio(a) ? 99 : numeroRemigio(a)) -
+              (esComodinRemigio(b) ? 99 : numeroRemigio(b)) || a.localeCompare(b),
+        )
+      : [],
+  );
 </script>
 
 <p class="cierre" data-testid="quien-cierra">
   {#if resultado.cerro === null}
     {T.remigio.anulada}
+  {:else if resultado.jugada && resultado.multiplicador}
+    <span data-testid="cierre-diez">
+      {T.remigio.cierreDiez(
+        nombre(resultado.cerro),
+        T.remigio.jugadas[resultado.jugada],
+        resultado.conComodines === true,
+        resultado.multiplicador,
+      )}
+    </span>
   {:else if resultado.remigio}
     <b class="remigio" data-testid="es-remigio">{T.remigio.remigio(nombre(resultado.cerro))}</b>
   {:else}
     {T.remigio.cierra(nombre(resultado.cerro))}
   {/if}
 </p>
+{#if ligadas.length > 0}
+  <div class="cartas ligadas" data-testid="ligadas">
+    {#each ligadas as carta (carta)}
+      <span class="mini"><Carta id={baseRemigio(carta)} /></span>
+    {/each}
+  </div>
+{/if}
 <table data-testid="resumen-remigio">
   <thead>
     <tr>
       <th scope="col">{T.remigio.jugador}</th>
-      <th scope="col">{T.remigio.lesQueda}</th>
+      <th scope="col">{resultado.sueltas ? T.remigio.sinLigarCol : T.remigio.lesQueda}</th>
       <th scope="col">{T.remigio.manoCol}</th>
       <th scope="col">{T.remigio.totalCol}</th>
     </tr>
@@ -43,7 +77,7 @@
         <th scope="row">{nombre(a)}</th>
         <td>
           <div class="cartas">
-            {#each resultado.manos[a]! as carta (carta)}
+            {#each cartasDe(a) as carta (carta)}
               <span class="mini"><Carta id={baseRemigio(carta)} /></span>
             {/each}
           </div>
@@ -105,6 +139,10 @@
     width: 24px;
     aspect-ratio: 100 / 140;
     margin-right: -12px;
+  }
+
+  .ligadas {
+    margin-bottom: 8px;
   }
 
   .eliminado td {

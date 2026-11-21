@@ -484,6 +484,9 @@ export const T = {
       'El 10 cambia el sentido, el As hace robar 2, el 6 robar 1, el 7 salta un turno y tras un 9 quien no puede echar roba y pasa.',
     jugadoresN: (n: number) => `${n} jugadores`,
     variantesJulepe: 'Variantes',
+    variantesRemigio: 'Variante',
+    diezCartasRemigioDesc:
+      'Diez cartas: dos barajas francesas; nadie baja, se cierra con las diez ligadas y los cierres difíciles multiplican.',
     bailarlaJulepeDesc:
       'Bailarla: el que reparte puede jugar sin ver sus cartas; cobra el doble por baza y, si no hace 2, paga julepe doble.',
     defensaJulepeDesc:
@@ -690,6 +693,21 @@ export const T = {
     cerrarPanel: 'Cerrar',
     faseRobar: 'Roba del mazo o del montón',
     faseBajar: 'Elige cartas para bajar, o una para descartar',
+    faseDescartarDiez: 'Elige la carta que sueltas: descártala o, si las demás ligan, cierra',
+    cerrar: 'Cerrar',
+    sinLigar: (n: number) => `Sin ligar: ${n}`,
+    cierraDiez: (quien: string) => `${quien} cierra`,
+    jugadas: {
+      normal: 'con las diez ligadas',
+      color: 'con color',
+      escalera: 'con escalera de diez',
+      escaleraColor: 'con escalera de color',
+    },
+    cierreDiez: (quien: string, jugada: string, conComodines: boolean, multiplicador: number) =>
+      `${quien === 'Tú' ? 'Has cerrado' : `Ha cerrado ${quien}`} ${jugada}, ${
+        conComodines ? 'con comodines' : 'sin comodines'
+      }: ${multiplicador === 1 ? 'los demás pagan lo suyo' : `los demás pagan por ${multiplicador}`}`,
+    sinLigarCol: 'Sin ligar',
     bajar: 'Bajar',
     descartar: 'Descartar',
     limpiar: 'Quitar selección',
@@ -4033,7 +4051,6 @@ export const T = {
         texto: [
           'Se juega con dos barajas españolas de 40 cartas y 4 comodines, de 2 a 5 jugadores. Cada uno recibe 7 cartas. Gana la mano quien se queda antes sin cartas, bajándolas a la mesa en combinaciones.',
           'Los demás suman los puntos de las cartas que les quedan: cada número lo que vale, las figuras 10 y el comodín 25. Quien pasa de 100 queda eliminado, y gana la partida el último que queda.',
-          'En otros sitios se juega con dos barajas francesas de 52 cartas, se reparten 10 a cada uno y valen también las jugadas de «color».',
         ],
       },
       {
@@ -4063,6 +4080,14 @@ export const T = {
         texto: [
           'No tengas prisa por bajar si estás cerca de cerrarlo todo de golpe: un remigio hace mucho daño.',
           'Pero si un rival tiene pocas cartas, baja lo que puedas: los comodines y las figuras en la mano cuestan muchos puntos.',
+        ],
+      },
+      {
+        titulo: 'Variante: diez cartas',
+        texto: [
+          'Con la opción «Diez cartas» se juega otra versión, la que cuentan algunos libros clásicos: con dos barajas francesas de 52 cartas y 4 comodines, y 10 cartas para cada uno. Nadie baja durante la mano: en tu turno robas y descartas.',
+          'Cierras en lugar de descartar cuando, al soltar una carta, las otras diez quedan ligadas. Ligan los grupos de 3 o más cartas del mismo número y las escaleras de 3 o más cartas seguidas, en las dos de cualquier palo. El As va abajo (A-2-3) o arriba (Q-K-A). El comodín sustituye a cualquier carta, y cada combinación lleva al menos 2 de verdad. También ligan diez cartas del mismo palo o del mismo color aunque no combinen: es un «color».',
+          'Los demás suman solo las cartas que no pueden ligar: los números lo que valen, la J 10, la Q 11, la K 12 y el comodín 25. Según cómo cierres, pagan más: el doble si cierras sin comodines; por 3 con color (por 4 sin comodines); por 5 con una escalera de diez (por 6 sin comodines), y por 8 con una escalera de color (por 10 sin comodines).',
         ],
       },
       {

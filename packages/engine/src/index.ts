@@ -78,6 +78,7 @@ export * from './juegos/truc';
 export * from './juegos/julepe';
 export * from './juegos/remigio';
 export * from './juegos/remigio-combinaciones';
+export * from './juegos/remigio-diez';
 export * from './juegos/remigio-plan';
 export * from './juegos/escoba';
 export * from './juegos/chinchon';

@@ -567,7 +567,7 @@ describe('reconstrucción del Julepe', () => {
 });
 
 describirReconstruccion(remigio, reconstruirRemigio, {
-  configs: [CONFIG_REMIGIO_POR_DEFECTO, { jugadores: 4 }],
+  configs: [CONFIG_REMIGIO_POR_DEFECTO, { jugadores: 4 }, { jugadores: 3, diezCartas: true }],
   base: iaRemigioBasica,
   partidas: 3,
   pasosMaximos: 400,

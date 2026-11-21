@@ -144,6 +144,7 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
     4,
   ),
   entrada('Remigio', remigio, CONFIG_REMIGIO_POR_DEFECTO, IAS.remigio, 2),
+  entrada('Remigio de diez cartas', remigio, { jugadores: 2, diezCartas: true }, IAS.remigio, 2),
   entrada('Tute subastado', tuteSubastado, CONFIG_TUTE_SUBASTADO_POR_DEFECTO, IAS.tuteSubastado, 4),
   entrada(
     'Tute subastado de 3',

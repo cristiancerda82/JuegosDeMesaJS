@@ -2,6 +2,7 @@ import {
   cartaDeId,
   esComodin,
   PALOS_ESPANOLES,
+  PALOS_FRANCESES,
   type IdCarta,
   type PaloEspanol,
 } from '../baraja/cartas';
@@ -25,12 +26,21 @@ export const baseRemigio = (carta: CartaRemigio): IdCarta =>
 export const VALORES_ESCALERA = [1, 2, 3, 4, 5, 6, 7, 10, 11, 12] as const;
 export const POSICION_MAXIMA = VALORES_ESCALERA.length;
 
-/** Las 84 cartas: dos barajas españolas de 40 y 4 comodines, en orden canónico. */
-export function cartasRemigio(): CartaRemigio[] {
+/**
+ * Las cartas en orden canónico: dos barajas españolas de 40 y 4 comodines (84) o, con diez
+ * cartas, dos barajas francesas de 52 y 4 comodines (108).
+ */
+export function cartasRemigio(diezCartas = false): CartaRemigio[] {
   const cartas: CartaRemigio[] = [];
   for (let copia = 0; copia < 2; copia++) {
-    for (const palo of PALOS_ESPANOLES) {
-      for (const v of VALORES_ESCALERA) cartas.push(`${palo}-${v}#${copia}`);
+    if (diezCartas) {
+      for (const palo of PALOS_FRANCESES) {
+        for (let v = 1; v <= 13; v++) cartas.push(`${palo}-${v}#${copia}`);
+      }
+    } else {
+      for (const palo of PALOS_ESPANOLES) {
+        for (const v of VALORES_ESCALERA) cartas.push(`${palo}-${v}#${copia}`);
+      }
     }
     cartas.push(`comodin-1#${copia}`, `comodin-2#${copia}`);
   }
@@ -39,7 +49,7 @@ export function cartasRemigio(): CartaRemigio[] {
 
 export const esComodinRemigio = (c: CartaRemigio) => esComodin(baseRemigio(c));
 
-/** Número de la carta (1–7, 10–12); 0 para un comodín. */
+/** Número de la carta (1–7 y 10–12; en la francesa, 1–13); 0 para un comodín. */
 export const numeroRemigio = (c: CartaRemigio): number =>
   esComodinRemigio(c) ? 0 : cartaDeId(baseRemigio(c))!.valor;
 
@@ -51,10 +61,17 @@ export const posicionRemigio = (c: CartaRemigio): number =>
 export const paloRemigio = (c: CartaRemigio): PaloEspanol | null =>
   esComodinRemigio(c) ? null : (cartaDeId(baseRemigio(c))!.palo as PaloEspanol);
 
-/** Puntos de una carta en la mano al cerrar: su número, las figuras 10 y el comodín 25. */
+const esFrancesaRemigio = (c: CartaRemigio) =>
+  (PALOS_FRANCESES as readonly string[]).includes(cartaDeId(baseRemigio(c))?.palo ?? '');
+
+/**
+ * Puntos de una carta en la mano al cerrar: su número, las figuras 10 y el comodín 25. Con la
+ * baraja francesa, la J vale 10, la Q 11 y la K 12.
+ */
 export function puntosCartaRemigio(c: CartaRemigio): number {
   const n = numeroRemigio(c);
   if (n === 0) return 25;
+  if (esFrancesaRemigio(c)) return n >= 11 ? n - 1 : n;
   return n >= 10 ? 10 : n;
 }
 

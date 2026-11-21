@@ -55,6 +55,13 @@ test.describe('filtro por baraja', () => {
     await expect(page.getByTestId('filtro-espanola')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.getByTestId('familia-solitarios')).toHaveCount(0);
   });
+
+  test('el Remigio, que admite las dos barajas, sale también con la francesa', async ({ page }) => {
+    await page.getByTestId('filtro-francesa').click();
+    await page.getByTestId('familia-combinaciones').click();
+    await expect(page.getByTestId('juego-remigio')).toBeVisible();
+    await expect(page.getByTestId('juego-chinchon')).toHaveCount(0);
+  });
 });
 
 test.describe('buscador', () => {

@@ -12,6 +12,7 @@ import {
   puntosCartaRemigio,
   type CartaRemigio,
 } from '../../juegos/remigio-combinaciones';
+import { puntosSueltosRemigioDiez } from '../../juegos/remigio-diez';
 import type { Asiento } from '../../motor/contrato';
 import { descartesRemigio, utilidadRemigio } from '../remigio-basica';
 import type { Simulable } from '../niveles';
@@ -31,7 +32,7 @@ export function reconstruirRemigio(vista: VistaRemigio, azar: EstadoAzar): Estad
     ...vista.combinaciones.flatMap(cartasDeCombinacion),
   ]);
   const ocultas = new Ocultas(
-    cartasRemigio().filter((c) => !vistas.has(c)),
+    cartasRemigio(vista.config.diezCartas === true).filter((c) => !vistas.has(c)),
     azar,
   );
   const manos = manosOcultas(vista.cartasEnMano, vista.asiento, vista.miMano, ocultas);
@@ -63,11 +64,12 @@ const COSTE_POR_CARTA = 3;
 /**
  * Puntos de cada jugador en la mano: los del resultado si se cerró; si no, los de las cartas que
  * no le sirven (una carta útil, como un comodín que puede colocar, apenas cuenta) más un coste
- * por carta.
+ * por carta. Con diez cartas, los puntos sin ligar.
  */
 function puntosDeLaMano(inicio: EstadoRemigio, final: EstadoRemigio): readonly number[] {
   const cerrada = final.resultadosManos[inicio.resultadosManos.length];
   if (cerrada) return cerrada.puntosMano;
+  if (final.config.diezCartas) return final.manos.map((m) => puntosSueltosRemigioDiez(m));
   return final.manos.map((m) =>
     m.reduce(
       (s, c) =>
@@ -96,7 +98,8 @@ export const SIMULABLE_REMIGIO: Simulable<
     const media = rivales.reduce((s, p) => s + p, 0) / Math.max(1, rivales.length);
     return media - puntos[asiento]! + bonoPartida(remigio.resultado(final), asiento);
   },
-  // Solo se simula robar (mazo o montón) y qué descartar; lo que se baja lo decide la normal.
+  // Solo se simula robar (mazo o montón) y qué descartar; lo que se baja, y si cierra con diez
+  // cartas, lo decide la normal.
   candidatas(vista, acciones, deLaBase) {
     if (vista.fase === 'robar') return acciones;
     if (deLaBase.tipo === 'descartar') {

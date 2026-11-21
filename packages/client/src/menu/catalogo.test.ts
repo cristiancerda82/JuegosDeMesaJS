@@ -50,6 +50,9 @@ describe('catálogo del menú', () => {
     expect(pasaFiltro('skat', 'espanola')).toBe(false);
     expect(juegosDeFamilia('solitarios').some((id) => pasaFiltro(id, 'espanola'))).toBe(false);
     expect(pasaFiltro('tarot', 'francesa')).toBe(true);
+    // El Remigio admite las dos: la francesa con la opción «Diez cartas».
+    expect(pasaFiltro('remigio', 'espanola')).toBe(true);
+    expect(pasaFiltro('remigio', 'francesa')).toBe(true);
     for (const id of ID_JUEGOS) expect(pasaFiltro(id, 'todas')).toBe(true);
   });
 

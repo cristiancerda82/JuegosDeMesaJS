@@ -48,6 +48,8 @@ export const FAMILIAS: readonly Familia[] = (
 
 const E: readonly Baraja[] = ['espanola'];
 const F: readonly Baraja[] = ['francesa'];
+/** Juegos con las dos barajas, como el Remigio (francesa con la opción «Diez cartas»). */
+const EF: readonly Baraja[] = ['espanola', 'francesa'];
 
 const entrada = (
   familia: IdFamilia,
@@ -226,7 +228,7 @@ export const CATALOGO: Readonly<Record<IdJuego, EntradaCatalogo>> = {
 
   // ── Combinaciones ──
   chinchon: entrada('combinaciones', E, T.menu.chinchonDesc, ['copas-5', 'copas-6', 'comodin-1']),
-  remigio: entrada('combinaciones', E, T.menu.remigioDesc, ['copas-5', 'copas-6', 'comodin-1']),
+  remigio: entrada('combinaciones', EF, T.menu.remigioDesc, ['copas-5', 'copas-6', 'comodin-1']),
   ginRummy: entrada('combinaciones', F, T.menu.ginRummyDesc, ['picas-5', 'picas-6', 'picas-7']),
   rummy500: entrada('combinaciones', F, T.menu.rummy500Desc, [
     'diamantes-4',

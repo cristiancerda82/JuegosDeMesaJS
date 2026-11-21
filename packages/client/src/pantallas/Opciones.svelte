@@ -617,6 +617,13 @@
           <label><input type="radio" bind:group={remigioConfig.jugadores} value={n} /> {T.opciones.jugadoresN(n)}</label>
         {/each}
       </fieldset>
+      <fieldset>
+        <legend>{T.opciones.variantesRemigio}</legend>
+        <label class="casilla">
+          <input type="checkbox" bind:checked={remigioConfig.diezCartas} data-testid="remigio-diez" />
+          {T.opciones.diezCartasRemigioDesc}
+        </label>
+      </fieldset>
     {:else if juego === 'durak'}
       <fieldset>
         <legend>{T.opciones.jugadores}</legend>

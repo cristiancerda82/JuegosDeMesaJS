@@ -329,7 +329,12 @@ describe('partidas al azar', () => {
 // ── Contrato ─────────────────────────────────────────────────────────────────
 
 describirContrato(remigio, {
-  configs: [CONFIG_REMIGIO_POR_DEFECTO, { jugadores: 3 }, { jugadores: 5 }],
+  configs: [
+    CONFIG_REMIGIO_POR_DEFECTO,
+    { jugadores: 3 },
+    { jugadores: 5 },
+    { jugadores: 3, diezCartas: true },
+  ],
   // Las cartas que quedaron en las manos al cerrar se enseñan en el resultado.
   cartasOcultas: (e, asiento) => {
     const vistas = new Set<string>(e.resultadosManos.flatMap((r) => r.manos.flat()));

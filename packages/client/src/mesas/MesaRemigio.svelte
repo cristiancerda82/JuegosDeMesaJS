@@ -4,10 +4,13 @@
     claveRemigio,
     esComodinRemigio,
     igualesJSON,
+    numeroRemigio,
     PALOS_ESPANOLES,
+    PALOS_FRANCESES,
     paloRemigio,
     planesRemigio,
     posicionRemigio,
+    puntosSueltosRemigioDiez,
     type AccionRemigio,
     type Asiento,
     type CartaRemigio,
@@ -42,6 +45,8 @@
     nombreNumerado(asiento, n, yo, sesion.red, T.brisca.rivalN, T.brisca.rival);
 
   const miTurno = $derived(vista.turno === yo && sesion.fin === null);
+  /** Con la opción «Diez cartas»: baraja francesa, nadie baja y se cierra con todo ligado. */
+  const diez = $derived(vista.config.diezCartas === true);
   const nombreDe = (c: CartaRemigio) => nombreCarta(baseRemigio(c)).toLowerCase();
   const esLegal = (a: AccionRemigio) => legales.some((x) => igualesJSON(x, a));
 
@@ -182,13 +187,27 @@
     if (descarte) ejecutar([descarte]);
   }
 
+  /** Con diez cartas: cerrar soltando la carta elegida, si las otras diez ligan. */
+  const cierre = $derived(
+    seleccion.length === 1
+      ? legales.find(
+          (a) => a.tipo === 'cerrar' && claveRemigio(a.carta) === claveRemigio(seleccion[0]!),
+        )
+      : undefined,
+  );
+
+  function cerrar() {
+    if (cierre) ejecutar([cierre]);
+  }
+
   // ── Mano ordenada ──────────────────────────────────────────────────────────
 
   let orden: 'palo' | 'numero' = $state('palo');
   const mano = $derived(vista.miMano ?? []);
-  const paloDe = (c: CartaRemigio) =>
-    esComodinRemigio(c) ? 9 : PALOS_ESPANOLES.indexOf(paloRemigio(c)!);
-  const posicionDe = (c: CartaRemigio) => (esComodinRemigio(c) ? 99 : posicionRemigio(c));
+  const palos = $derived<readonly string[]>(diez ? PALOS_FRANCESES : PALOS_ESPANOLES);
+  const paloDe = (c: CartaRemigio) => (esComodinRemigio(c) ? 9 : palos.indexOf(paloRemigio(c)!));
+  const posicionDe = (c: CartaRemigio) =>
+    esComodinRemigio(c) ? 99 : diez ? numeroRemigio(c) : posicionRemigio(c);
   const manoOrdenada = $derived(
     [...mano].sort((a, b) =>
       orden === 'palo'
@@ -210,7 +229,8 @@
       return `${T.brisca.turnoDe(nombre(sesion.pensando))} · ${T.brisca.pensando}`;
     }
     if (vista.turno !== yo) return T.brisca.turnoDe(nombre(vista.turno));
-    return vista.fase === 'robar' ? T.remigio.faseRobar : T.remigio.faseBajar;
+    if (vista.fase === 'robar') return T.remigio.faseRobar;
+    return diez ? T.remigio.faseDescartarDiez : T.remigio.faseBajar;
   });
 
   const avisoRival = $derived.by(() => {
@@ -228,6 +248,8 @@
         return T.remigio.anade(quien);
       case 'cambiar':
         return T.remigio.cambia(quien);
+      case 'cerrar':
+        return T.remigio.cierraDiez(quien);
       default:
         return T.remigio.descarta(quien, u.carta ? nombreDe(u.carta) : '');
     }
@@ -266,6 +288,9 @@
   <div class="info">
     <span data-testid="puntos-propios">{T.brisca.tu}: {T.remigio.puntos(vista.puntos[yo] ?? 0)}</span>
     <span>{T.remigio.limite} · {T.remigio.mano(vista.numeroMano + 1)}</span>
+    {#if diez}
+      <span data-testid="sin-ligar">{T.remigio.sinLigar(puntosSueltosRemigioDiez(mano))}</span>
+    {/if}
   </div>
 
   {#each rivales as asiento (asiento)}
@@ -322,39 +347,41 @@
     {/if}
   </div>
 
-  <section class="mesa-combis" data-testid="mesa-combis">
-    {#each porJugador as { a, combis } (a)}
-      <div class="bloque" data-testid="combis-{a}">
-        <h3>{a === yo ? T.remigio.propias : T.remigio.de(nombre(a))}</h3>
-        {#each combis as c (c.id)}
-          <div
-            class="combi"
-            class:tocable={tocables}
-            data-testid="combi-{c.id}"
-            role="button"
-            tabindex="-1"
-            aria-label={describir(c)}
-            onclick={() => tocarCombinacion(c)}
-            onkeydown={() => {}}
-          >
-            {#each cartasDe(c) as carta, i (carta)}
-              {@const comodin = esComodinRemigio(carta)}
-              <div
-                class="mini"
-                data-testid={comodin ? `comodin-${c.id}-${i}` : undefined}
-                role="presentation"
-                onclick={(ev) => comodin && tocarComodin(c, ev)}
-              >
-                <Carta id={baseRemigio(carta)} />
-              </div>
-            {/each}
-          </div>
-        {:else}
-          <p class="vacio">{T.remigio.sinCombinaciones}</p>
-        {/each}
-      </div>
-    {/each}
-  </section>
+  {#if !diez}
+    <section class="mesa-combis" data-testid="mesa-combis">
+      {#each porJugador as { a, combis } (a)}
+        <div class="bloque" data-testid="combis-{a}">
+          <h3>{a === yo ? T.remigio.propias : T.remigio.de(nombre(a))}</h3>
+          {#each combis as c (c.id)}
+            <div
+              class="combi"
+              class:tocable={tocables}
+              data-testid="combi-{c.id}"
+              role="button"
+              tabindex="-1"
+              aria-label={describir(c)}
+              onclick={() => tocarCombinacion(c)}
+              onkeydown={() => {}}
+            >
+              {#each cartasDe(c) as carta, i (carta)}
+                {@const comodin = esComodinRemigio(carta)}
+                <div
+                  class="mini"
+                  data-testid={comodin ? `comodin-${c.id}-${i}` : undefined}
+                  role="presentation"
+                  onclick={(ev) => comodin && tocarComodin(c, ev)}
+                >
+                  <Carta id={baseRemigio(carta)} />
+                </div>
+              {/each}
+            </div>
+          {:else}
+            <p class="vacio">{T.remigio.sinCombinaciones}</p>
+          {/each}
+        </div>
+      {/each}
+    </section>
+  {/if}
 
   <div class="propio" class:activo={miTurno}>
     <div class="estado">
@@ -363,9 +390,15 @@
     </div>
     {#if miTurno && vista.fase === 'bajar'}
       <div class="botones">
-        <button class="principal" data-testid="bajar" disabled={planesNuevos.length === 0} onclick={bajar}>
-          {T.remigio.bajar}
-        </button>
+        {#if diez}
+          <button class="principal" data-testid="cerrar" disabled={!cierre} onclick={cerrar}>
+            {T.remigio.cerrar}
+          </button>
+        {:else}
+          <button class="principal" data-testid="bajar" disabled={planesNuevos.length === 0} onclick={bajar}>
+            {T.remigio.bajar}
+          </button>
+        {/if}
         <button data-testid="descartar" disabled={!descarte} onclick={descartar}>{T.remigio.descartar}</button>
         {#if seleccion.length > 0}
           <button data-testid="limpiar" onclick={() => (seleccion = [])}>{T.remigio.limpiar}</button>

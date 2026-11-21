@@ -15,12 +15,14 @@ import {
   type CombinacionRemigio,
   type JugadaRemigio,
 } from '../juegos/remigio-combinaciones';
+import { cierreRemigioDiez, puntosSueltosRemigioDiez } from '../juegos/remigio-diez';
 import type { Agente } from './agente';
 
 /**
  * IA básica del Remigio (spec ia-jugadores): roba del montón si le sirve, baja en cuanto puede
  * salvo que esté cerca del remigio, añade y cambia comodines, y descarta la carta que menos le
- * sirve y más puntos vale. Es determinista y solo usa su vista.
+ * sirve y más puntos vale. Con diez cartas, juega por los puntos sin ligar y cierra en cuanto
+ * puede. Es determinista y solo usa su vista.
  */
 export const iaRemigioBasica: Agente<VistaRemigio, AccionRemigio> = {
   id: 'remigio-basica',
@@ -115,7 +117,48 @@ function esperaRemigio(vista: VistaRemigio, mano: readonly CartaRemigio[]): bool
   return quedan > 1 && quedan <= QUEDAN_PARA_REMIGIO && !hayPrisa(vista);
 }
 
+/**
+ * Con diez cartas: cierra en cuanto puede, con el mayor premio; roba del montón si la carta le
+ * deja menos puntos sin ligar, y descarta la que menos puntos sin ligar le deja.
+ */
+function elegirDiez(vista: VistaRemigio, acciones: readonly AccionRemigio[]): AccionRemigio {
+  const mano = vista.miMano ?? [];
+  if (vista.fase === 'robar') {
+    const monton = acciones.find((a) => a.tipo === 'robarMonton');
+    const mazo = acciones.find((a) => a.tipo === 'robarMazo');
+    const arriba = vista.monton.at(-1);
+    if (!monton || !arriba) return mazo ?? acciones[0]!;
+    if (!mazo) return monton;
+    const ahora = puntosSueltosRemigioDiez(mano);
+    const conElla = Math.min(
+      ...mano.map((d) => puntosSueltosRemigioDiez([...mano.filter((c) => c !== d), arriba])),
+    );
+    return conElla < ahora ? monton : mazo;
+  }
+  const cierres = acciones.filter((a) => a.tipo === 'cerrar');
+  if (cierres.length > 0) {
+    const premio = (a: AccionRemigio) =>
+      a.tipo === 'cerrar'
+        ? (cierreRemigioDiez(mano.filter((c) => c !== a.carta))?.multiplicador ?? 0)
+        : 0;
+    return cierres.reduce((mejor, a) => (premio(a) > premio(mejor) ? a : mejor));
+  }
+  return descartesRemigio(vista, acciones)[0] ?? acciones[0]!;
+}
+
+/** Cartas de la mano del mismo número o a uno o dos puestos (el As, en las dos puntas). */
+function vecinasDiez(carta: CartaRemigio, mano: readonly CartaRemigio[]): number {
+  const n = numeroRemigio(carta);
+  const alto = (x: number) => (x === 1 ? 14 : x);
+  const distancia = (a: number, b: number) =>
+    Math.min(Math.abs(a - b), Math.abs(alto(a) - alto(b)));
+  return mano.filter(
+    (otra) => otra !== carta && !esComodinRemigio(otra) && distancia(numeroRemigio(otra), n) <= 2,
+  ).length;
+}
+
 function elegir(vista: VistaRemigio, acciones: readonly AccionRemigio[]): AccionRemigio {
+  if (vista.config.diezCartas) return elegirDiez(vista, acciones);
   const mano = vista.miMano ?? [];
   const asiento = vista.asiento!;
   const bajado = vista.bajado[asiento]!;
@@ -155,15 +198,23 @@ type Descarte = Extract<AccionRemigio, { tipo: 'descartar' }>;
 
 /**
  * Los descartes legales, del mejor al peor para la IA básica: primero los que menos le sirven y
- * más puntos valen; los comodines, al final. En un empate, el orden de las acciones.
+ * más puntos valen; los comodines, al final. Con diez cartas, primero los que dejan menos puntos
+ * sin ligar, después los que tienen menos vecinas y los que más valen. En un empate, el orden de
+ * las acciones.
  */
 export function descartesRemigio(
   vista: VistaRemigio,
   acciones: readonly AccionRemigio[],
 ): Descarte[] {
   const mano = vista.miMano ?? [];
-  const coste = (c: CartaRemigio) =>
-    utilidadRemigio(c, mano, vista.combinaciones) - puntosCartaRemigio(c) / 3;
+  const coste = vista.config.diezCartas
+    ? (c: CartaRemigio) =>
+        (esComodinRemigio(c) ? 1e6 : 0) +
+        puntosSueltosRemigioDiez(mano.filter((x) => x !== c)) * 1000 +
+        vecinasDiez(c, mano) * 30 -
+        puntosCartaRemigio(c)
+    : (c: CartaRemigio) =>
+        utilidadRemigio(c, mano, vista.combinaciones) - puntosCartaRemigio(c) / 3;
   return acciones
     .filter((a): a is Descarte => a.tipo === 'descartar')
     .map((a, i) => ({ a, i, coste: coste(a.carta) }))

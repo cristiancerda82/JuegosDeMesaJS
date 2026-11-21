@@ -1,6 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 import { abrirJuego } from './menu';
-import { bajadasRemigio, type CartaRemigio } from '@juegos/engine';
+import {
+  bajadasRemigio,
+  cartasDeCierreRemigioDiez,
+  puntosSueltosRemigioDiez,
+  type CartaRemigio,
+} from '@juegos/engine';
 
 async function empezarRemigio(page: Page, query: string, jugadores?: number) {
   await page.goto(`./?${query}`);
@@ -134,6 +139,76 @@ test('añadir a una combinación de la mesa tras haber bajado', async ({ page })
     }
   }
   expect(anadido).toBe(true);
+});
+
+// ── Diez cartas ──────────────────────────────────────────────────────────────
+
+test('con diez cartas: baraja francesa, sin bajar, y cerrar con todo ligado hasta el resumen', async ({
+  page,
+}) => {
+  test.setTimeout(180_000);
+  await page.goto('./?rapido&semilla=remigio-diez');
+  await abrirJuego(page, 'remigio');
+  await page.getByTestId('remigio-diez').check();
+  await page.getByTestId('empezar').click();
+  await expect(page.locator('[data-testid="mano"] .carta-mano')).toHaveCount(10);
+  expect((await manoActual(page)).every((c) => !/^(oros|copas|espadas|bastos)/.test(c))).toBe(true);
+  await expect(page.getByTestId('mesa-combis')).toHaveCount(0);
+  await expect(page.getByTestId('sin-ligar')).toBeVisible();
+
+  let cerreYo = false;
+  for (let t = 0; t < 100; t++) {
+    await page
+      .locator('[data-testid="mazo"].robable, [data-testid="fin"], [data-testid="panel-mano"]')
+      .first()
+      .waitFor({ timeout: 30_000 });
+    if (
+      (await page.getByTestId('fin').isVisible()) ||
+      (await page.getByTestId('panel-mano').isVisible())
+    )
+      break;
+    await page.getByTestId('mazo').click();
+    await expect(page.getByTestId('cerrar')).toBeVisible();
+    await expect(page.getByTestId('bajar')).toHaveCount(0);
+    const mano = await manoActual(page);
+    const cierres = cartasDeCierreRemigioDiez(mano, mano);
+    if (cierres.length > 0) {
+      await elegir(page, [cierres[0]!]);
+      await page.getByTestId('cerrar').click();
+      cerreYo = true;
+      break;
+    }
+    // Suelta la carta que menos puntos sin ligar le deja; con ella, «Cerrar» no se activa.
+    const peor = [...mano].sort(
+      (a, b) =>
+        puntosSueltosRemigioDiez(mano.filter((c) => c !== a)) -
+        puntosSueltosRemigioDiez(mano.filter((c) => c !== b)),
+    )[0]!;
+    await elegir(page, [peor]);
+    await expect(page.getByTestId('cerrar')).toBeDisabled();
+    await page.getByTestId('descartar').click();
+  }
+
+  const panel = page.getByTestId('panel-mano');
+  await expect(panel).toBeVisible();
+  await expect(panel.getByTestId('resumen-remigio')).toContainText('Sin ligar');
+  if (cerreYo) {
+    await expect(panel.getByTestId('cierre-diez')).toContainText('Has cerrado');
+    await expect(panel.locator('[data-testid="ligadas"] .mini')).toHaveCount(10);
+  }
+  await page.screenshot({ path: 'test-results/remigio-diez-resumen.png' });
+  await page.getByTestId('siguiente-mano').click();
+  await expect(page.locator('[data-testid="mano"] .carta-mano')).toHaveCount(10);
+});
+
+test('la guía del Remigio explica la variante de diez cartas', async ({ page }) => {
+  await page.goto('./?rapido');
+  await abrirJuego(page, 'remigio');
+  await page.getByTestId('ver-ayuda').click();
+  const guia = page.getByTestId('como-se-juega');
+  await expect(guia).toContainText('Variante: diez cartas');
+  await expect(guia).toContainText('Con la opción «Diez cartas»');
+  await expect(guia).not.toContainText('En otros sitios');
 });
 
 // ── 4 jugadores, retomar y móvil ─────────────────────────────────────────────
