@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { abrirJuego } from './menu';
+import { abrirJuego, elegirJuegoDeSala } from './menu';
 import type { IdJuego } from '../src/sesion/juegos';
 
 // Modo asistido (spec modo-asistido).
@@ -156,7 +156,7 @@ test('sin modo asistido por defecto, en los solitarios ni en red', async ({ page
   await page.getByTestId('jugar-en-red').click();
   await page.getByTestId('nombre').fill('Ana');
   await page.getByTestId('crear-sala').click();
-  await page.getByTestId('red-juego-brisca').click();
+  await elegirJuegoDeSala(page, 'brisca');
   await expect(page.getByTestId('nivel-ia')).toBeVisible();
   await expect(page.getByTestId('modo-asistido')).toHaveCount(0);
 });

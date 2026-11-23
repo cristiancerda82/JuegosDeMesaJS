@@ -21,6 +21,8 @@ export type MensajeCliente =
       readonly config: unknown;
       readonly nivel: NivelIA;
       readonly nombre: string;
+      /** El anfitrión permite el modo asistido; si falta (clientes anteriores), no. */
+      readonly asistido?: boolean;
     }
   | { readonly tipo: 'unirse'; readonly codigo: string; readonly nombre: string }
   | { readonly tipo: 'volver'; readonly codigo: string; readonly testigo: string }
@@ -74,6 +76,8 @@ export type MensajeServidor =
       readonly juego: IdJuegoRed;
       readonly config: unknown;
       readonly nivel: NivelIA;
+      /** Modo asistido permitido por el anfitrión (spec modo-asistido). */
+      readonly asistido: boolean;
       readonly anfitrion: Asiento;
       /** `null`: asiento libre (lo juega la IA). */
       readonly asientos: readonly (InfoAsiento | null)[];
@@ -154,12 +158,14 @@ export function leerMensajeCliente(texto: string): MensajeCliente | null {
     case 'crear':
       if (!esJuegoEnRed(m.juego) || !esObjeto(m.config) || !esNombre(m.nombre)) return null;
       if (!NIVELES_IA.includes(m.nivel as NivelIA)) return null;
+      if (m.asistido !== undefined && typeof m.asistido !== 'boolean') return null;
       return {
         tipo: 'crear',
         juego: m.juego,
         config: m.config,
         nivel: m.nivel as NivelIA,
         nombre: m.nombre.trim(),
+        asistido: m.asistido === true,
       };
     case 'unirse':
       if (!esCodigo(m.codigo) || !esNombre(m.nombre)) return null;

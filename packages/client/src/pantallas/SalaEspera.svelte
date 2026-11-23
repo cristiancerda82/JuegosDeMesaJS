@@ -74,6 +74,7 @@
         <button class="enlace" onclick={copiar}>{copiado ? T.red.copiado : T.red.copiar}</button>
       </p>
       <p class="nota">{T.red.nivel(T.opciones.nivel[sala.nivel])} · {T.red.libresIA}</p>
+      <p class="nota" data-testid="sala-asistido">{sala.asistido ? T.red.conAsistido : T.red.sinAsistido}</p>
     </header>
 
     <ol class="asientos">

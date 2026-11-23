@@ -1,7 +1,10 @@
 <script lang="ts">
-  import { IDS_JUEGOS_EN_RED, type IdJuegoRed } from '@juegos/engine';
+  import { esJuegoEnRed, type IdJuegoRed } from '@juegos/engine';
   import { LARGO_CODIGO, NOMBRE_MAXIMO, normalizarCodigo } from '@juegos/server/protocolo';
+  import Carta from '../cartas/Carta.svelte';
   import { abrirCapa } from '../interfaz/capas';
+  import { CATALOGO, FAMILIAS, juegosDeFamilia, normalizar, type IdFamilia } from '../menu/catalogo';
+  import TarjetaFamilia from '../menu/TarjetaFamilia.svelte';
   import { JUEGOS } from '../sesion/juegos';
   import {
     guardarNombre,
@@ -33,6 +36,30 @@
 
   // Eligiendo el juego de la sala, el botón atrás de Android vuelve a la pantalla de red.
   $effect(() => (eligiendo ? abrirCapa(() => (eligiendo = false)) : undefined));
+
+  // ── Elegir el juego por familias (spec partidas-en-red) ──
+  /** Las familias con juegos en red (todas menos los solitarios), con sus juegos en orden. */
+  const familias = FAMILIAS.map((familia) => ({
+    familia,
+    juegos: juegosDeFamilia(familia.id).filter(esJuegoEnRed),
+  })).filter((f) => f.juegos.length > 0);
+  let familia: IdFamilia | null = $state(null);
+  let buscar = $state('');
+  const abierta = $derived(familias.find((f) => f.familia.id === familia) ?? null);
+  const texto = $derived(normalizar(buscar));
+  const encontrados = $derived(
+    texto === ''
+      ? []
+      : familias.flatMap((f) => f.juegos).filter((id) => normalizar(JUEGOS[id].nombre).includes(texto)),
+  );
+  // Con una familia abierta, el botón atrás vuelve a las familias.
+  $effect(() => (eligiendo && familia !== null ? abrirCapa(() => (familia = null)) : undefined));
+
+  function volverAtras() {
+    if (!eligiendo) volver();
+    else if (familia !== null) familia = null;
+    else eligiendo = false;
+  }
 
   const nombreValido = $derived(nombre.trim().length >= 1 && nombre.trim().length <= NOMBRE_MAXIMO);
 
@@ -86,7 +113,16 @@
     <section>
       <h2>{T.red.crear}</h2>
       <p>{T.red.crearDesc}</p>
-      <button class="principal" data-testid="crear-sala" onclick={() => preparar() && (eligiendo = true)}>
+      <button
+        class="principal"
+        data-testid="crear-sala"
+        onclick={() => {
+          if (!preparar()) return;
+          familia = null;
+          buscar = '';
+          eligiendo = true;
+        }}
+      >
         {T.red.crear}
       </button>
     </section>
@@ -119,15 +155,56 @@
   {:else}
     <section>
       <h2>{T.red.elegirJuego}</h2>
-      <div class="juegos">
-        {#each IDS_JUEGOS_EN_RED as id (id)}
-          <button onclick={() => crear(id)} data-testid="red-juego-{id}">{JUEGOS[id].nombre}</button>
-        {/each}
-      </div>
+      <label class="campo buscar">
+        <span class="oculto-visual">{T.menu.buscar}</span>
+        <input
+          type="search"
+          placeholder={T.menu.buscarEjemplo}
+          bind:value={buscar}
+          autocomplete="off"
+          data-testid="red-buscar"
+        />
+      </label>
+      {#if texto !== ''}
+        {#if encontrados.length === 0}
+          <p data-testid="red-sin-resultados">{T.menu.sinResultados(buscar.trim())}</p>
+        {:else}
+          {@render juegos(encontrados)}
+        {/if}
+      {:else if abierta}
+        <div class="cabecera-familia">
+          <button type="button" class="volver" onclick={() => (familia = null)} data-testid="volver-familias">
+            ‹ {T.menu.volverFamilias}
+          </button>
+          <h3>{abierta.familia.nombre}</h3>
+        </div>
+        {@render juegos(abierta.juegos)}
+      {:else}
+        <div class="familias">
+          {#each familias as f (f.familia.id)}
+            <TarjetaFamilia familia={f.familia} juegos={f.juegos} abrir={() => (familia = f.familia.id)} />
+          {/each}
+        </div>
+      {/if}
     </section>
   {/if}
 
-  <button class="enlace" onclick={() => (eligiendo ? (eligiendo = false) : volver())} data-testid="volver">
+  {#snippet juegos(ids: readonly IdJuegoRed[])}
+    <div class="juegos">
+      {#each ids as id (id)}
+        <button class="juego" onclick={() => crear(id)} data-testid="red-juego-{id}">
+          <span class="abanico" aria-hidden="true">
+            {#each CATALOGO[id].cartas as carta (carta)}
+              <span class="hueco"><Carta id={carta} /></span>
+            {/each}
+          </span>
+          <span>{JUEGOS[id].nombre}</span>
+        </button>
+      {/each}
+    </div>
+  {/snippet}
+
+  <button class="enlace" onclick={volverAtras} data-testid="volver">
     {T.red.volver}
   </button>
 </main>
@@ -194,8 +271,61 @@
 
   .juegos {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 8px;
+  }
+
+  .juego {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 6px;
+  }
+
+  .abanico {
+    display: flex;
+    height: 56px;
+  }
+
+  .hueco {
+    width: 36px;
+    aspect-ratio: 100 / 140;
+    display: block;
+  }
+
+  .hueco + .hueco {
+    margin-left: -14px;
+  }
+
+  .hueco:nth-child(1) {
+    rotate: -10deg;
+  }
+
+  .hueco:nth-child(3) {
+    rotate: 10deg;
+  }
+
+  .familias {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .buscar {
+    margin-bottom: 10px;
+  }
+
+  .cabecera-familia {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 10px;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
   }
 
   .aviso {

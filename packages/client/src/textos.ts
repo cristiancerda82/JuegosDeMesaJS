@@ -3246,6 +3246,13 @@ export const T = {
     codigo: 'Código de la sala',
     entrar: 'Entrar',
     elegirJuego: 'Elige el juego',
+    empezarEnRed: 'Empezar en red',
+    nombreEnRed: 'Tu nombre en red',
+    permitirAsistido: 'Permitir el modo asistido',
+    permitirAsistidoDesc:
+      'Cada jugador podrá activarlo en la mesa para que le sugiera jugadas y le explique por qué.',
+    conAsistido: 'Modo asistido permitido: cada jugador puede activarlo en la mesa.',
+    sinAsistido: 'Sin modo asistido.',
     volver: '← Volver',
     conectando: 'Conectando…',
     reconectando: 'Se ha perdido la conexión. Reconectando…',
@@ -8118,7 +8125,15 @@ export const T = {
         titulo: 'Crear y unirse',
         texto: [
           'Quien crea la sala elige el juego, las opciones y el nivel de la IA, y recibe un código de 5 letras. Los demás eligen «Unirse» y escriben ese código y su nombre.',
+          'El camino más corto: en las opciones de cualquier juego con IA, escribe tu nombre en red y pulsa «Empezar en red». La sala se crea con esas opciones. También puedes ir a «Jugar en red», pulsar «Crear sala» y elegir el juego por familias o con el buscador.',
           'En la sala de espera cada uno puede cambiarse a un asiento libre. Cuando estéis todos, el anfitrión pulsa «Empezar».',
+        ],
+      },
+      {
+        titulo: 'El modo asistido en red',
+        texto: [
+          'Quien crea la sala decide si se permite el modo asistido, y la sala de espera lo dice a todos antes de empezar. Si está permitido, cada jugador lo activa o lo apaga desde la mesa: le sugiere jugadas, le comenta las suyas y le da consejos, sin que los demás lo vean.',
+          'En red no explica por qué juegan los rivales: para eso haría falta ver sus cartas.',
         ],
       },
       {

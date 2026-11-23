@@ -12,7 +12,12 @@ import { PAUSA_IA_MS, PAUSA_MAXIMA_MS, RELEVO_MS, Sala, type IdConexion } from '
 // ── Utilidades ───────────────────────────────────────────────────────────────
 
 /** Una sala de prueba con sus mensajes por conexión. */
-function nueva(juego: IdJuegoRed = 'brisca', config?: unknown, nivel: NivelIA = 'normal') {
+function nueva(
+  juego: IdJuegoRed = 'brisca',
+  config?: unknown,
+  nivel: NivelIA = 'normal',
+  asistido?: boolean,
+) {
   const recibidos = new Map<IdConexion, MensajeServidor[]>();
   let testigos = 0;
   const deps = {
@@ -30,6 +35,7 @@ function nueva(juego: IdJuegoRed = 'brisca', config?: unknown, nivel: NivelIA = 
       nivel,
       nombre: 'Ana',
       conexion: 1,
+      asistido,
     },
     deps,
   );
@@ -55,6 +61,13 @@ function correr(sala: Sala, desde: number, hasta: number): number {
 // ── Crear, unirse y asientos ─────────────────────────────────────────────────
 
 describe('crear una sala y unirse', () => {
+  it('la sala dice si el anfitrión permite el modo asistido (por defecto, no)', () => {
+    expect(nueva('tute').ultimo(1, 'sala')?.asistido).toBe(false);
+    const { sala, ultimo } = nueva('tute', undefined, 'normal', true);
+    expect(sala.asistido).toBe(true);
+    expect(ultimo(1, 'sala')?.asistido).toBe(true);
+  });
+
   it('el anfitrión ocupa el asiento 0 y recibe su testigo', () => {
     const { sala, ultimo } = nueva('mus');
     expect(ultimo(1, 'entrada')).toEqual({

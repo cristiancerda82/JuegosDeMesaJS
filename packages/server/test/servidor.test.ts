@@ -113,6 +113,25 @@ describe('servidor de salas', () => {
     expect(luis.ultimo('partida')!.fin).toEqual(ana.ultimo('partida')!.fin);
   });
 
+  it('el permiso del modo asistido llega a quien se une', async () => {
+    servidor = await crearServidor({ puerto: 0, origenes: '*' });
+    const ana = new Cliente(servidor.puerto);
+    const luis = new Cliente(servidor.puerto);
+    await Promise.all([ana.abierto(), luis.abierto()]);
+    ana.enviar({
+      tipo: 'crear',
+      juego: 'brisca',
+      config: { jugadores: 2, cambioMuestra: 'libre', arrastreFinal: false, manos: 1 },
+      nivel: 'normal',
+      nombre: 'Ana',
+      asistido: true,
+    });
+    await ana.esperar((c) => c.ultimo('entrada') !== undefined);
+    luis.enviar({ tipo: 'unirse', codigo: ana.ultimo('entrada')!.codigo, nombre: 'Luis' });
+    await luis.esperar((c) => c.ultimo('sala') !== undefined);
+    expect(luis.ultimo('sala')!.asistido).toBe(true);
+  });
+
   it('errores: código que no existe y mensaje malformado', async () => {
     servidor = await crearServidor({ puerto: 0, origenes: '*' });
     const c = new Cliente(servidor.puerto);

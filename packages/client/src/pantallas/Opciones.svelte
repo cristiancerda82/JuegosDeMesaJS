@@ -88,7 +88,9 @@
     ConfigSieteYMedia,
     ConfigTute,
   } from '@juegos/engine';
+  import { NOMBRE_MAXIMO } from '@juegos/server/protocolo';
   import { JUEGOS, type IdJuego } from '../sesion/juegos';
+  import { guardarNombre, nombreGuardado } from '../sesion/red.svelte';
   import type { ConfigJuego } from '../sesion/partida';
   import { T } from '../textos';
   import BotonFavorito from '../menu/BotonFavorito.svelte';
@@ -100,11 +102,19 @@
     juego: IdJuego;
     empezar: (config: ConfigJuego, nivel: NivelIA, asistido: boolean) => void;
     volver: () => void;
-    /** Opciones para crear una sala en red: el botón dice «Crear sala». */
+    /**
+     * Opciones para crear una sala en red: el botón dice «Crear sala» y `asistido` es el permiso
+     * del modo asistido para la sala.
+     */
     red?: boolean;
+    /**
+     * Crea una sala con estas opciones (spec partidas-en-red, «Empezar en red desde las opciones
+     * del juego»): solo en las opciones locales de los juegos en red.
+     */
+    empezarEnRed?: ((config: ConfigJuego, nivel: NivelIA, asistido: boolean) => void) | undefined;
   }
 
-  let { juego, empezar, volver, red = false }: Props = $props();
+  let { juego, empezar, volver, red = false, empezarEnRed }: Props = $props();
 
   type Editable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -220,6 +230,12 @@
   /** Modo asistido, recordado por juego: solo contra la IA en local, no en red. */
   // svelte-ignore state_referenced_locally
   let asistido = $state(leerAsistido(juego));
+  /** Permiso del modo asistido para la sala en red: desactivado por defecto. */
+  let permitirAsistido = $state(false);
+  let nombreRed = $state(nombreGuardado());
+  let avisoNombre = $state(false);
+  /** Se envía para crear la sala (botón «Empezar en red»), no para jugar en local. */
+  let enRed = false;
 
   const VUELTAS: readonly (number | null)[] = [null, 3, 1, 0];
 
@@ -315,9 +331,23 @@
       // Las parejas, solo con 4 jugadores.
       casino: { ...casinoConfig, parejas: casinoConfig.jugadores === 4 && casinoConfig.parejas },
     };
+    if (enRed && empezarEnRed) {
+      enRed = false;
+      const nombre = nombreRed.trim();
+      if (nombre.length < 1 || nombre.length > NOMBRE_MAXIMO) {
+        avisoNombre = true;
+        return;
+      }
+      avisoNombre = false;
+      guardarNombre(nombre);
+      guardarNivel(juego, nivel);
+      empezarEnRed({ ...configs[juego] }, nivel, permitirAsistido);
+      return;
+    }
     if (conIA) guardarNivel(juego, nivel);
     if (conIA && !red) guardarAsistido(juego, asistido);
-    empezar({ ...configs[juego] }, nivel, conIA && !red && asistido);
+    if (red) empezar({ ...configs[juego] }, nivel, conIA && permitirAsistido);
+    else empezar({ ...configs[juego] }, nivel, conIA && asistido);
   }
 </script>
 
@@ -349,6 +379,12 @@
         <label class="asistido">
           <input type="checkbox" bind:checked={asistido} data-testid="modo-asistido" />
           <span><b>{TEXTOS_ASISTENTE.opcion}</b> · {TEXTOS_ASISTENTE.opcionDesc}</span>
+        </label>
+      {/if}
+      {#if red || empezarEnRed}
+        <label class="asistido">
+          <input type="checkbox" bind:checked={permitirAsistido} data-testid="permitir-asistido" />
+          <span><b>{T.red.permitirAsistido}</b> · {T.red.permitirAsistidoDesc}</span>
         </label>
       {/if}
     {/if}
@@ -1113,9 +1149,25 @@
       </fieldset>
     {/if}
 
+    {#if empezarEnRed}
+      <label class="nombre-red">
+        {T.red.nombreEnRed}
+        <input bind:value={nombreRed} maxlength={NOMBRE_MAXIMO} autocomplete="nickname" data-testid="nombre-red" />
+      </label>
+      {#if avisoNombre}
+        <p class="aviso" role="alert" data-testid="aviso-nombre">{T.red.faltaNombre}</p>
+      {/if}
+    {/if}
+
     <div class="botones">
       <button type="button" onclick={volver}>{T.opciones.volver}</button>
-      <button type="submit" class="principal" data-testid="empezar">{red ? T.red.crear : T.opciones.empezar}</button>
+      <!-- «Empezar» va antes: es el botón que usa la tecla Intro. -->
+      <button type="submit" class="principal" onclick={() => (enRed = false)} data-testid="empezar"
+        >{red ? T.red.crear : T.opciones.empezar}</button
+      >
+      {#if empezarEnRed}
+        <button type="submit" onclick={() => (enRed = true)} data-testid="empezar-en-red">{T.red.empezarEnRed}</button>
+      {/if}
     </div>
   </form>
 </main>
@@ -1175,9 +1227,39 @@
 
   .botones {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     gap: 12px;
     margin-top: 18px;
+  }
+
+  .botones > :first-child {
+    margin-right: auto;
+  }
+
+  .nombre-red {
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    margin-top: 6px;
+  }
+
+  .nombre-red input {
+    flex: 1 1 180px;
+    width: auto;
+    height: auto;
+    min-height: 40px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid rgb(255 255 255 / 0.3);
+    background: rgb(0 0 0 / 0.3);
+    color: inherit;
+    font: inherit;
+  }
+
+  .aviso {
+    margin: 6px 0 0;
+    color: var(--acento);
+    font-weight: 600;
   }
 
   .nota-opciones {

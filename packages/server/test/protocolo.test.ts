@@ -13,6 +13,7 @@ describe('mensajes del cliente', () => {
       config: { reyes: 8 },
       nivel: 'normal',
       nombre: 'Ana',
+      asistido: false,
     });
     expect(leer({ tipo: 'unirse', codigo: 'ABCDE', nombre: 'Luis' })).toMatchObject({
       tipo: 'unirse',
@@ -52,6 +53,14 @@ describe('mensajes del cliente', () => {
     expect(leer({ tipo: 'jugar', accion: {}, n: 1.5 })).toBeNull();
     expect(leer({ tipo: 'pausa', activa: 'si' })).toBeNull();
     expect(leerMensajeCliente(' '.repeat(TAMANO_MAXIMO + 1))).toBeNull();
+  });
+
+  it('el permiso del modo asistido es opcional y booleano', () => {
+    const crear = { tipo: 'crear', juego: 'tute', config: {}, nivel: 'normal', nombre: 'A' };
+    expect(leer(crear)).toMatchObject({ asistido: false });
+    expect(leer({ ...crear, asistido: true })).toMatchObject({ asistido: true });
+    expect(leer({ ...crear, asistido: false })).toMatchObject({ asistido: false });
+    expect(leer({ ...crear, asistido: 'si' })).toBeNull();
   });
 
   it('normaliza el código escrito', () => {

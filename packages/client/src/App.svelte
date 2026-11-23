@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { IdJuegoRed, NivelIA } from '@juegos/engine';
+  import { esJuegoEnRed, type IdJuegoRed, type NivelIA } from '@juegos/engine';
   import type { MensajeCliente } from '@juegos/server/protocolo';
   import { onMount } from 'svelte';
   import { cerrarUltimaCapa } from './interfaz/capas';
@@ -137,9 +137,16 @@
     pantalla = { tipo: 'espera', cliente };
   }
 
-  function crearSala(juego: IdJuegoRed, config: ConfigJuego, nivel: NivelIA) {
+  function crearSala(juego: IdJuegoRed, config: ConfigJuego, nivel: NivelIA, asistido: boolean) {
     const nombre = nombreGuardado();
-    void entrarEnRed(new ClienteRed(servidorGuardado()), { tipo: 'crear', juego, config, nivel, nombre });
+    void entrarEnRed(new ClienteRed(servidorGuardado()), {
+      tipo: 'crear',
+      juego,
+      config,
+      nivel,
+      nombre,
+      asistido,
+    });
   }
 
   function unirseSala(codigo: string) {
@@ -301,12 +308,24 @@
   />
 {:else if pantalla.tipo === 'opcionesRed'}
   {@const juego = pantalla.juego}
-  <Opciones {juego} red empezar={(config, nivel) => crearSala(juego, config, nivel)} volver={() => (pantalla = { tipo: 'red' })} />
+  <Opciones
+    {juego}
+    red
+    empezar={(config, nivel, asistido) => crearSala(juego, config, nivel, asistido)}
+    volver={() => (pantalla = { tipo: 'red' })}
+  />
 {:else if pantalla.tipo === 'espera'}
   <SalaEspera cliente={pantalla.cliente} salir={irAlMenu} />
 {:else if pantalla.tipo === 'opciones'}
   {@const juego = pantalla.juego}
-  <Opciones {juego} empezar={(config, nivel, asistido) => empezar(juego, config, nivel, asistido)} volver={irAlMenu} />
+  <Opciones
+    {juego}
+    empezar={(config, nivel, asistido) => empezar(juego, config, nivel, asistido)}
+    empezarEnRed={esJuegoEnRed(juego)
+      ? (config, nivel, asistido) => crearSala(juego, config, nivel, asistido)
+      : undefined}
+    volver={irAlMenu}
+  />
 {:else if pantalla.tipo === 'partida'}
   {#key pantalla.partida}
     <PantallaPartida partida={pantalla.partida} menu={irAlMenu} {revancha} />

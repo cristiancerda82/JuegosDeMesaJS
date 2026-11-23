@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { abrirJuego } from './menu';
+import { abrirJuego, elegirJuegoDeSala } from './menu';
 
 // El botón atrás de Android, simulado en el navegador con `?atras` (spec app-android).
 const atras = (page: Page) => page.evaluate(() => window.dispatchEvent(new Event('atras')));
@@ -63,13 +63,18 @@ test('atrás en la sala de espera pide confirmación antes de salir', async ({ p
   await page.getByTestId('nombre').fill('Ana');
   await page.getByTestId('crear-sala').click();
 
-  // Eligiendo el juego, atrás vuelve a la pantalla de red.
+  // Eligiendo el juego, atrás vuelve de la familia a las familias y de ahí a la pantalla de red.
+  await page.getByTestId('familia-bazasPuntos').click();
   await expect(page.getByTestId('red-juego-brisca')).toBeVisible();
   await atras(page);
   await expect(page.getByTestId('red-juego-brisca')).toBeHidden();
+  await expect(page.getByTestId('familia-bazasPuntos')).toBeVisible();
+  await atras(page);
+  await expect(page.getByTestId('familia-bazasPuntos')).toBeHidden();
+  await expect(page.getByTestId('crear-sala')).toBeVisible();
 
   await page.getByTestId('crear-sala').click();
-  await page.getByTestId('red-juego-brisca').click();
+  await elegirJuegoDeSala(page, 'brisca');
   await page.getByTestId('empezar').click();
   await expect(page.getByTestId('codigo-sala')).toHaveText(/^[A-Z]{5}$/);
 

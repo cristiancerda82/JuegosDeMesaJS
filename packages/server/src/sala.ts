@@ -67,6 +67,8 @@ export class Sala {
   readonly juego: IdJuegoRed;
   readonly config: unknown;
   readonly nivel: NivelIA;
+  /** Modo asistido permitido: vale para toda la sala, revanchas incluidas. */
+  readonly asistido: boolean;
   readonly #def: JuegoEnRed;
   readonly #deps: Dependencias;
   readonly #jugadores: (Jugador | null)[];
@@ -84,6 +86,7 @@ export class Sala {
     juego: IdJuegoRed,
     config: unknown,
     nivel: NivelIA,
+    asistido: boolean,
     asientos: number,
     deps: Dependencias,
   ) {
@@ -91,6 +94,7 @@ export class Sala {
     this.juego = juego;
     this.config = config;
     this.nivel = nivel;
+    this.asistido = asistido;
     this.#def = JUEGOS_EN_RED[juego];
     this.#deps = deps;
     this.#jugadores = new Array<Jugador | null>(asientos).fill(null);
@@ -105,6 +109,7 @@ export class Sala {
       nivel: NivelIA;
       nombre: string;
       conexion: IdConexion;
+      asistido?: boolean;
     },
     deps: Dependencias,
   ): Respuesta<Sala> {
@@ -116,6 +121,7 @@ export class Sala {
       datos.juego,
       datos.config,
       datos.nivel,
+      datos.asistido === true,
       def.juego.asientos(prueba.valor),
       deps,
     );
@@ -417,6 +423,7 @@ export class Sala {
       juego: this.juego,
       config: this.config,
       nivel: this.nivel,
+      asistido: this.asistido,
       anfitrion: this.#anfitrion,
       asientos: this.#infoAsientos(ahora),
       empezada: this.empezada,

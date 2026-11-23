@@ -1,6 +1,6 @@
 import { expect, test, type Browser, type Page } from '@playwright/test';
 import { T } from '../src/textos';
-import { abrirJuego } from './menu';
+import { abrirJuego, elegirJuegoDeSala } from './menu';
 
 // Spec menu-juegos: familias, filtro, buscador, favoritos, últimos jugados y paneles flotantes.
 
@@ -136,7 +136,7 @@ test.describe('últimos jugados', () => {
     await ana.getByTestId('jugar-en-red').click();
     await ana.getByTestId('nombre').fill('Ana');
     await ana.getByTestId('crear-sala').click();
-    await ana.getByTestId('red-juego-tute').click();
+    await elegirJuegoDeSala(ana, 'tute');
     await ana.getByTestId('empezar').click();
     const codigo = ana.getByTestId('codigo-sala');
     await expect(codigo).toHaveText(/^[A-Z]{5}$/);

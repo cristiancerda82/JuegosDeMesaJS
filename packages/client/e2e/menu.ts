@@ -14,3 +14,9 @@ export async function abrirJuego(page: Page, juego: IdJuego): Promise<void> {
   await page.getByTestId(`familia-${CATALOGO[juego].familia}`).click();
   await page.getByTestId(`juego-${juego}`).click();
 }
+
+/** Elige el juego de una sala nueva en la pantalla de red, pasando por su familia. */
+export async function elegirJuegoDeSala(page: Page, juego: IdJuego): Promise<void> {
+  await page.getByTestId(`familia-${CATALOGO[juego].familia}`).click();
+  await page.getByTestId(`red-juego-${juego}`).click();
+}

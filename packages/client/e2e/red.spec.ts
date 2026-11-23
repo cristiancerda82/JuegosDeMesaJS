@@ -1,5 +1,7 @@
 import { expect, test, type Browser, type Page } from '@playwright/test';
 import { T } from '../src/textos';
+import type { IdJuego } from '../src/sesion/juegos';
+import { elegirJuegoDeSala } from './menu';
 
 /** Un jugador en su propio navegador (contexto aislado, con su almacenamiento). */
 async function jugador(browser: Browser): Promise<Page> {
@@ -17,7 +19,7 @@ async function abrirRed(page: Page, nombre: string) {
 async function crearSala(page: Page, juego: string, opciones?: (p: Page) => Promise<void>) {
   await abrirRed(page, 'Ana');
   await page.getByTestId('crear-sala').click();
-  await page.getByTestId(`red-juego-${juego}`).click();
+  await elegirJuegoDeSala(page, juego as IdJuego);
   await opciones?.(page);
   await page.getByTestId('empezar').click();
   const codigo = page.getByTestId('codigo-sala');
@@ -1667,7 +1669,7 @@ test('sin servidor, la pantalla de red lo dice', async ({ page }) => {
   await page.locator('summary').click();
   await page.getByTestId('servidor').fill('ws://localhost:9');
   await page.getByTestId('crear-sala').click();
-  await page.getByTestId('red-juego-brisca').click();
+  await elegirJuegoDeSala(page, 'brisca');
   await page.getByTestId('empezar').click();
   await expect(page.getByTestId('aviso-red')).toHaveText('No se puede conectar con el servidor');
 });

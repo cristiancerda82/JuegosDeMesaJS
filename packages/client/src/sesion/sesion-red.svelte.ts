@@ -1,6 +1,9 @@
-import type { Asiento, Fin, NivelIA } from '@juegos/engine';
+import type { Asiento, Asistencia, CodigoComentario, Fin, Motivo, NivelIA } from '@juegos/engine';
+import { contextoAsistente } from '../asistente/contexto';
+import { leerAsistido } from '../pantallas/nivel';
 import { ritmo } from '../ritmo/ritmo.svelte';
 import type { DefJuego } from './juegos';
+import { AsistenteSesion } from './asistencia.svelte';
 import type { ClienteRed, MensajePartida } from './red.svelte';
 import { bazaCerrada, type InfoRed, type SesionMesa } from './sesion-mesa';
 
@@ -16,14 +19,33 @@ export class SesionRed<C, E, A, V> implements SesionMesa<C, E, A, V> {
   readonly cliente: ClienteRed;
   readonly novedades = null;
   readonly pistas = 0;
-  // El modo asistido no se ofrece en red: daría ventaja a un jugador sobre los demás.
-  readonly puedeAsistir = false;
-  readonly asistido = false;
-  readonly asistencia = null;
-  readonly pensandoSugerencia = false;
-  readonly comentario = null;
-  readonly consejo = null;
+  /**
+   * Modo asistido (spec modo-asistido): solo si el anfitrión lo permitió en la sala, calculado
+   * en este dispositivo con la vista del asiento. Sin lecturas de los rivales, que necesitan
+   * su vista.
+   */
   readonly lecturas = [];
+  readonly #asistente: AsistenteSesion<C, A, V>;
+  get puedeAsistir(): boolean {
+    return this.#asistente.puede;
+  }
+  get asistido(): boolean {
+    return this.#asistente.activo;
+  }
+  get asistencia(): Asistencia<A> | null {
+    return this.#asistente.asistencia;
+  }
+  get pensandoSugerencia(): boolean {
+    return this.#asistente.pensando;
+  }
+  get comentario(): Motivo<CodigoComentario> | null {
+    return this.#asistente.comentario;
+  }
+  get consejo(): string | null {
+    return this.#asistente.consejo;
+  }
+  /** Momento de la partida de la última sugerencia pedida: no se repite para el mismo. */
+  #momentoAsistente = '';
 
   vista: V = $state.raw() as V;
   fin = $state.raw<Fin | null>(null);
@@ -59,6 +81,21 @@ export class SesionRed<C, E, A, V> implements SesionMesa<C, E, A, V> {
     const sala = cliente.sala!;
     this.config = sala.config as C;
     this.nivel = sala.nivel;
+    // Un servidor anterior no envía el permiso: sin modo asistido.
+    const permitido = sala.asistido === true;
+    this.#asistente = new AsistenteSesion(
+      def.id,
+      this.config,
+      permitido ? contextoAsistente(def, this.config) : null,
+      {
+        decision: () =>
+          this.fin !== null || this.legales.length === 0
+            ? null
+            : { vista: this.vista, legales: this.legales, azar: `${this.#azar()}/${this.#n}` },
+        cerrada: () => this.#cerrada,
+      },
+      permitido && leerAsistido(def.id),
+    );
     this.#mostrar(primera, false);
     cliente.alRecibirPartida = (m) => this.#recibir(m);
     // Errores del servidor (p. ej. una jugada sobre una vista vieja): se vuelve a poder jugar.
@@ -74,9 +111,11 @@ export class SesionRed<C, E, A, V> implements SesionMesa<C, E, A, V> {
 
   jugar(accion: A): boolean {
     if (this.bloqueada || this.#cerrada) return false;
+    const previa = this.#asistente.previa(this.vista);
     this.#esperando = true;
     this.#actualizarBloqueo();
     this.cliente.enviar({ tipo: 'jugar', accion, n: this.#n });
+    this.#asistente.alJugar(previa, accion, `${this.#azar()}/${this.#n}/comentario`);
     return true;
   }
 
@@ -84,11 +123,17 @@ export class SesionRed<C, E, A, V> implements SesionMesa<C, E, A, V> {
     return null;
   }
 
-  alternarAsistido(): void {}
+  alternarAsistido(): void {
+    this.#asistente.alternar();
+  }
 
-  cerrarConsejo(): void {}
+  cerrarConsejo(): void {
+    this.#asistente.cerrarConsejo();
+  }
 
-  cerrarComentario(): void {}
+  cerrarComentario(): void {
+    this.#asistente.cerrarComentario();
+  }
 
   seguir(): void {
     if (!this.retenida || this.#cerrada) return;
@@ -177,11 +222,27 @@ export class SesionRed<C, E, A, V> implements SesionMesa<C, E, A, V> {
       m.fin === null &&
       (this.def.bazaTerminada?.(antes, this.vista) ?? bazaCerrada(antes, this.vista));
     this.bloqueada = this.retenida || pausa > 0 || this.#cola.length > 0;
+    this.#asistir();
     return pausa;
   }
 
   #actualizarBloqueo() {
     this.bloqueada =
       this.retenida || this.#esperando || this.#temporizador !== null || this.#cola.length > 0;
+    this.#asistir();
+  }
+
+  /** Clave de azar propia del asistente en esta sala y esta partida. */
+  #azar(): string {
+    return `${this.cliente.sala?.codigo ?? ''}/${this.partida}/asistente`;
+  }
+
+  /** Pide la sugerencia cuando cambia el momento de la partida (vista o bloqueo). */
+  #asistir() {
+    if (!this.#asistente.activo) return;
+    const momento = `${this.partida}/${this.#n}/${this.bloqueada}`;
+    if (momento === this.#momentoAsistente) return;
+    this.#momentoAsistente = momento;
+    this.#asistente.actualizar();
   }
 }
