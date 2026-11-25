@@ -3253,6 +3253,14 @@ export const T = {
       'Cada jugador podrá activarlo en la mesa para que le sugiera jugadas y le explique por qué.',
     conAsistido: 'Modo asistido permitido: cada jugador puede activarlo en la mesa.',
     sinAsistido: 'Sin modo asistido.',
+    invitar: 'Invitar',
+    invitarTitulo: 'Invitar a la sala',
+    invitacion: (juego: string, codigo: string, enlace: string) =>
+      `¡Juega conmigo a ${juego}! Entra en la sala ${codigo}: ${enlace}`,
+    whatsapp: 'WhatsApp',
+    copiarEnlace: 'Copiar enlace',
+    enlaceCopiado: 'Enlace copiado',
+    cerrar: 'Cerrar',
     volver: '← Volver',
     conectando: 'Conectando…',
     reconectando: 'Se ha perdido la conexión. Reconectando…',
@@ -8126,6 +8134,7 @@ export const T = {
         texto: [
           'Quien crea la sala elige el juego, las opciones y el nivel de la IA, y recibe un código de 5 letras. Los demás eligen «Unirse» y escriben ese código y su nombre.',
           'El camino más corto: en las opciones de cualquier juego con IA, escribe tu nombre en red y pulsa «Empezar en red». La sala se crea con esas opciones. También puedes ir a «Jugar en red», pulsar «Crear sala» y elegir el juego por familias o con el buscador.',
+          'Para invitar, pulsa «Invitar» en la sala de espera y envía el enlace por WhatsApp o por donde quieras. Quien lo abre entra directamente en la sala (si es la primera vez que juega en red, solo tiene que escribir su nombre). Si tiene la app instalada, el enlace la abre.',
           'En la sala de espera cada uno puede cambiarse a un asiento libre. Cuando estéis todos, el anfitrión pulsa «Empezar».',
         ],
       },

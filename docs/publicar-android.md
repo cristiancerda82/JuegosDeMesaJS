@@ -144,6 +144,34 @@ simulado.
 - [ ] En horizontal y en vertical, nada queda tapado por la muesca ni por las barras del sistema.
 - [ ] El icono, el nombre y la pantalla de inicio se ven bien.
 
+## 5. Enlaces que abren la app (App Links)
+
+Los enlaces de invitación a una sala (`https://cristiancerda82.github.io/JuegosDeMesaJS/?sala=XXXXX`)
+abren la app, si está instalada, solo cuando Android puede verificar que el dominio es tuyo. Para
+eso busca `https://cristiancerda82.github.io/.well-known/assetlinks.json`, que está en la **raíz**
+del dominio. Una página de proyecto como `JuegosDeMesaJS` no puede publicar ese archivo. Hasta
+que lo publiques, el enlace abre la web, que también entra en la sala.
+
+1. En Play Console, _Prueba y publica → Integridad de la app → Firma de apps_, copia la huella
+   **SHA-256** de la clave de firma de apps. Copia también la de la clave de subida, para que
+   funcione con las versiones de la prueba interna. Su huella se obtiene con
+   `keytool -list -v -keystore subida-juegosdemesa.jks -alias subida`.
+2. En GitHub, crea un repositorio público llamado exactamente `cristiancerda82.github.io`, con
+   Pages activado desde la rama `main`.
+3. Añade al repositorio:
+   - un archivo vacío `.nojekyll`. Sin él, Jekyll no publica las carpetas que empiezan por punto;
+   - `.well-known/assetlinks.json`, copiado de `packages/movil/assetlinks.ejemplo.json` con tus
+     dos huellas.
+4. Comprueba que `https://cristiancerda82.github.io/.well-known/assetlinks.json` responde con el
+   JSON. Después, con la app instalada desde Play (o la de la prueba interna), ejecuta:
+
+   ```sh
+   adb shell pm verify-app-links --re-verify com.crissdeveloper.juegosdemesa
+   adb shell pm get-app-links com.crissdeveloper.juegosdemesa   # debe decir «verified»
+   ```
+
+Publicar el repositorio `cristiancerda82.github.io` no cambia la dirección de `JuegosDeMesaJS`.
+
 ## Lista de comprobación antes de cada versión de producción
 
 - [ ] `targetSdkVersion` es el que exige Google Play en la fecha de publicación.

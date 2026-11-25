@@ -23,13 +23,22 @@
     crear: (juego: IdJuegoRed) => void;
     unirse: (codigo: string) => void;
     volver: () => void;
+    /** Código de una invitación por enlace: ya escrito, solo falta el nombre. */
+    codigoInicial?: string;
   }
 
-  let { aviso, crear, unirse, volver }: Props = $props();
+  let { aviso, crear, unirse, volver, codigoInicial = '' }: Props = $props();
 
   let nombre = $state(nombreGuardado());
   let servidor = $state(servidorGuardado());
-  let codigo = $state('');
+  // Basta con el valor inicial: la pantalla se monta de nuevo con cada invitación.
+  // svelte-ignore state_referenced_locally
+  let codigo = $state(codigoInicial);
+  let campoNombre: HTMLInputElement | undefined = $state();
+  // Con una invitación y sin nombre, el cursor espera en el nombre.
+  $effect(() => {
+    if (codigoInicial !== '' && nombre.trim() === '') campoNombre?.focus();
+  });
   let eligiendo = $state(false);
   let error: string | null = $state(null);
   let verAyuda = $state(false);
@@ -106,7 +115,13 @@
 
   <label class="campo">
     {T.red.nombre}
-    <input bind:value={nombre} maxlength={NOMBRE_MAXIMO} autocomplete="nickname" data-testid="nombre" />
+    <input
+      bind:this={campoNombre}
+      bind:value={nombre}
+      maxlength={NOMBRE_MAXIMO}
+      autocomplete="nickname"
+      data-testid="nombre"
+    />
   </label>
 
   {#if !eligiendo}

@@ -64,6 +64,9 @@ function utilEnEstaPagina(url: string): boolean {
   }
 }
 
+/** Un servidor que se puede usar aquí: lo admite la plataforma y la página puede abrirlo. */
+export const servidorUsable = (url: string) => servidorAdmitido(url) && utilEnEstaPagina(url);
+
 export function servidorGuardado(): string {
   const guardado = leer(CLAVE_SERVIDOR);
   return guardado !== null && servidorAdmitido(guardado) && utilEnEstaPagina(guardado)

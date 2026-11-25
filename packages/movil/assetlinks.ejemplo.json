@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.crissdeveloper.juegosdemesa",
+      "sha256_cert_fingerprints": [
+        "AA:BB:...:FF (huella SHA-256 de la clave de firma de apps de Play)",
+        "AA:BB:...:FF (huella SHA-256 de la clave de subida)"
+      ]
+    }
+  }
+]

@@ -20,6 +20,7 @@
     servidorGuardado,
   } from './sesion/red.svelte';
   import { SesionRed } from './sesion/sesion-red.svelte';
+  import { leerInvitacion, sinInvitacion, type Invitacion } from './sesion/invitacion';
   import { pwa } from './pwa/registro.svelte';
   import { preferencias } from './menu/preferencias.svelte';
   import { borrarGuardado, leerGuardado, type Guardado } from './sesion/guardado';
@@ -122,6 +123,9 @@
 
   // ── Partidas en red ──────────────────────────────────────────────────────────
 
+  /** La invitación por enlace que se está atendiendo (su código y su servidor), o `null`. */
+  let invitacion: Invitacion | null = $state(null);
+
   /** Conecta con el servidor, envía el primer mensaje y pasa a la sala de espera. */
   async function entrarEnRed(cliente: ClienteRed, mensaje: MensajeCliente) {
     avisoRed = T.red.conectando;
@@ -151,8 +155,57 @@
 
   function unirseSala(codigo: string) {
     const nombre = nombreGuardado();
-    void entrarEnRed(new ClienteRed(servidorGuardado()), { tipo: 'unirse', codigo, nombre });
+    // El servidor de la invitación vale para su sala, sin guardarlo como preferencia.
+    const servidor = (invitacion?.codigo === codigo ? invitacion.servidor : null) ?? servidorGuardado();
+    void entrarEnRed(new ClienteRed(servidor), { tipo: 'unirse', codigo, nombre });
   }
+
+  /** Código de la sala en la que se está (sala de espera o partida en red), o `null`. */
+  function salaActual(): string | null {
+    if (pantalla.tipo === 'espera') return pantalla.cliente.sala?.codigo ?? null;
+    if (pantalla.tipo === 'partida' && pantalla.partida.sesion instanceof SesionRed)
+      return pantalla.partida.sesion.cliente.sala?.codigo ?? null;
+    return null;
+  }
+
+  /**
+   * Entra en la sala de un enlace de invitación (spec partidas-en-red, «Entrar en la sala desde
+   * el enlace»): directamente con el nombre guardado, o en la pantalla de red con el código
+   * escrito si falta el nombre. Desde otra sala, pregunta antes de salir.
+   */
+  function abrirInvitacion(nueva: Invitacion) {
+    const actual = salaActual();
+    if (actual === nueva.codigo) return;
+    if (actual !== null && !confirm(T.red.confirmarSalir)) return;
+    // Cierra lo que hubiera: la partida local queda guardada, la sala se abandona.
+    if (pantalla.tipo !== 'menu') irAlMenu();
+    invitacion = nueva;
+    avisoRed = null;
+    if (salaGuardada()?.codigo === nueva.codigo) {
+      volviendoPorInvitacion = true;
+      volverSala();
+    } else if (nombreGuardado() !== '') unirseSala(nueva.codigo);
+    else pantalla = { tipo: 'red' };
+  }
+
+  /**
+   * Volver con el testigo falla si el asiento se liberó (antes de empezar, el servidor lo libera
+   * al desconectarse): con la invitación, se entra de nuevo en la sala.
+   */
+  let volviendoPorInvitacion = false;
+  $effect(() => {
+    if (pantalla.tipo !== 'espera' || !volviendoPorInvitacion) return;
+    const { cliente } = pantalla;
+    if (cliente.entrada !== null) {
+      volviendoPorInvitacion = false;
+    } else if (cliente.error?.codigo === 'testigo' && invitacion !== null) {
+      volviendoPorInvitacion = false;
+      const { codigo } = invitacion;
+      cliente.cerrar();
+      if (nombreGuardado() !== '') unirseSala(codigo);
+      else pantalla = { tipo: 'red' };
+    }
+  });
 
   function volverSala() {
     const s = salaGuardada();
@@ -241,6 +294,17 @@
     }
   }
 
+  // ── Enlaces de invitación ──────────────────────────────────────────────────────
+
+  onMount(() => {
+    if (esNativa()) return;
+    const nueva = leerInvitacion(location.href);
+    if (nueva === null) return;
+    // Sin `?sala=` en la barra: al recargar ya se vuelve con la sala guardada.
+    history.replaceState(history.state, '', sinInvitacion(location.href));
+    abrirInvitacion(nueva);
+  });
+
   onMount(() => {
     if (SIMULAR_ATRAS && !esNativa()) {
       const alPulsarAtras = () => {
@@ -256,8 +320,23 @@
       const escucha = await Nativa.addListener('backButton', () => {
         if (!atras()) void Nativa.exitApp();
       });
-      if (desmontado) void escucha.remove();
-      else quitar = () => void escucha.remove();
+      // Enlaces de invitación: con la app abierta (appUrlOpen) y al abrirla con uno (en frío).
+      const enlaces = await Nativa.addListener('appUrlOpen', ({ url }) => {
+        const nueva = leerInvitacion(url);
+        if (nueva) abrirInvitacion(nueva);
+      });
+      const quitarTodo = () => {
+        void escucha.remove();
+        void enlaces.remove();
+      };
+      if (desmontado) {
+        quitarTodo();
+        return;
+      }
+      quitar = quitarTodo;
+      const inicio = await Nativa.getLaunchUrl();
+      const nueva = inicio ? leerInvitacion(inicio.url) : null;
+      if (nueva) abrirInvitacion(nueva);
     });
     return () => {
       desmontado = true;
@@ -302,6 +381,7 @@
 {:else if pantalla.tipo === 'red'}
   <PantallaRed
     aviso={avisoRed}
+    codigoInicial={invitacion?.codigo ?? ''}
     crear={(juego) => (pantalla = { tipo: 'opcionesRed', juego })}
     unirse={unirseSala}
     volver={irAlMenu}

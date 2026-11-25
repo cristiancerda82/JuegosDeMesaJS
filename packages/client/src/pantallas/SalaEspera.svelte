@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { abrirCapa } from '../interfaz/capas';
+  import { esNativa } from '../plataforma';
+  import { enlaceSala } from '../sesion/invitacion';
   import type { ClienteRed } from '../sesion/red.svelte';
   import { JUEGOS } from '../sesion/juegos';
   import { T } from '../textos';
@@ -44,6 +47,45 @@
     sala !== null && sala.asientos.length === 4 && PAREJAS.includes(sala.juego),
   );
 
+  // ── Invitar con un enlace (spec partidas-en-red, «Invitar con un enlace») ──
+  const enlace = $derived(sala ? enlaceSala(sala.codigo, cliente.servidor) : '');
+  const mensaje = $derived(sala ? T.red.invitacion(JUEGOS[sala.juego].nombre, sala.codigo, enlace) : '');
+  /** Panel con WhatsApp y «Copiar enlace», cuando no hay hoja de compartir. */
+  let panel = $state(false);
+  let enlaceCopiado = $state(false);
+  $effect(() => (panel ? abrirCapa(() => (panel = false)) : undefined));
+
+  async function invitar() {
+    if (!sala) return;
+    const titulo = T.red.invitarTitulo;
+    try {
+      if (esNativa()) {
+        const { Share } = await import('@capacitor/share');
+        await Share.share({ title: titulo, text: mensaje, dialogTitle: titulo });
+        return;
+      }
+      if (typeof navigator.share === 'function') {
+        // El enlace va dentro del texto: WhatsApp recibe un único mensaje.
+        await navigator.share({ title: titulo, text: mensaje });
+        return;
+      }
+    } catch (e) {
+      // Cancelar la hoja de compartir no es un error; si falla otra cosa, queda el panel.
+      if ((e as Error).name === 'AbortError' || /cancel/i.test((e as Error).message)) return;
+    }
+    panel = true;
+  }
+
+  async function copiarEnlace() {
+    try {
+      await navigator.clipboard.writeText(enlace);
+      enlaceCopiado = true;
+      setTimeout(() => (enlaceCopiado = false), 1500);
+    } catch {
+      // Sin portapapeles: el enlace se ve en el panel.
+    }
+  }
+
   let copiado = $state(false);
   async function copiar() {
     if (!sala) return;
@@ -73,6 +115,25 @@
         {T.red.sala('')}<b data-testid="codigo-sala">{sala.codigo}</b>
         <button class="enlace" onclick={copiar}>{copiado ? T.red.copiado : T.red.copiar}</button>
       </p>
+      <button class="principal invitar" onclick={invitar} data-testid="invitar">{T.red.invitar}</button>
+      {#if panel}
+        <div class="panel-invitar" role="dialog" aria-label={T.red.invitarTitulo} data-testid="panel-invitar">
+          <p class="enlace-sala" data-testid="enlace-sala">{enlace}</p>
+          <div class="acciones">
+            <a
+              class="boton whatsapp"
+              href={`https://wa.me/?text=${encodeURIComponent(mensaje)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="invitar-whatsapp">{T.red.whatsapp}</a
+            >
+            <button onclick={copiarEnlace} data-testid="copiar-enlace">
+              {enlaceCopiado ? T.red.enlaceCopiado : T.red.copiarEnlace}
+            </button>
+            <button class="enlace" onclick={() => (panel = false)}>{T.red.cerrar}</button>
+          </div>
+        </div>
+      {/if}
       <p class="nota">{T.red.nivel(T.opciones.nivel[sala.nivel])} · {T.red.libresIA}</p>
       <p class="nota" data-testid="sala-asistido">{sala.asistido ? T.red.conAsistido : T.red.sinAsistido}</p>
     </header>
@@ -137,6 +198,47 @@
   .codigo b {
     letter-spacing: 0.2em;
     color: var(--acento);
+  }
+
+  .invitar {
+    align-self: flex-start;
+    margin: 4px 0;
+  }
+
+  .panel-invitar {
+    margin-top: 8px;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgb(0 0 0 / 0.25);
+  }
+
+  .enlace-sala {
+    margin: 0 0 10px;
+    font-size: 0.85rem;
+    word-break: break-all;
+    color: var(--texto-suave);
+  }
+
+  .acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 6px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .whatsapp {
+    background: #25d366;
+    color: #0b2e17;
   }
 
   .nota {
