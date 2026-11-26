@@ -66,6 +66,7 @@
     ConfigCasitaRobada,
     ConfigBurroBazas,
     ConfigManilla,
+    ConfigTuteGanaPierde,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -190,6 +191,9 @@
   let casitaConfig: Editable<ConfigCasitaRobada> = $state({ ...JUEGOS.casitaRobada.configPorDefecto });
   let burroBazasConfig: Editable<ConfigBurroBazas> = $state({ ...JUEGOS.burroBazas.configPorDefecto });
   let manillaConfig: Editable<ConfigManilla> = $state({ ...JUEGOS.manilla.configPorDefecto });
+  let tuteGanaPierdeConfig: Editable<ConfigTuteGanaPierde> = $state({
+    ...JUEGOS.tuteGanaPierde.configPorDefecto,
+  });
   let ecarteConfig: Editable<ConfigEcarte> = $state({ ...JUEGOS.ecarte.configPorDefecto });
   let tysiachaConfig: Editable<ConfigTysiacha> = $state({ ...JUEGOS.tysiacha.configPorDefecto });
   let sheepsheadConfig: Editable<ConfigSheepshead> = $state({ ...JUEGOS.sheepshead.configPorDefecto });
@@ -319,6 +323,7 @@
       casitaRobada: casitaConfig,
       burroBazas: burroBazasConfig,
       manilla: manillaConfig,
+      tuteGanaPierde: tuteGanaPierdeConfig,
       ecarte: ecarteConfig,
       tysiacha: tysiachaConfig,
       sheepshead: sheepsheadConfig,
@@ -860,6 +865,21 @@
           <label
             ><input type="radio" bind:group={manillaConfig.objetivo} value={p} data-testid="manilla-objetivo-{p}" />
             {T.opciones.puntosN(p)}</label
+          >
+        {/each}
+      </fieldset>
+    {:else if juego === 'tuteGanaPierde'}
+      <fieldset>
+        <legend>{T.opciones.limiteBurroBazas}</legend>
+        {#each [6, 3] as const as l (l)}
+          <label
+            ><input
+              type="radio"
+              bind:group={tuteGanaPierdeConfig.limite}
+              value={l}
+              data-testid="tute-gana-pierde-limite-{l}"
+            />
+            {T.opciones.limiteBurroBazasN(l)}</label
           >
         {/each}
       </fieldset>

@@ -141,6 +141,12 @@ import {
   CONFIG_BURRO_BAZAS_POR_DEFECTO,
   manilla,
   CONFIG_MANILLA_POR_DEFECTO,
+  tuteGanaPierde,
+  CONFIG_TUTE_GANA_PIERDE_POR_DEFECTO,
+  type AccionTuteGanaPierde,
+  type ConfigTuteGanaPierde,
+  type EstadoTuteGanaPierde,
+  type VistaTuteGanaPierde,
   type AccionManilla,
   type ConfigManilla,
   type EstadoManilla,
@@ -648,7 +654,8 @@ export type IdJuego =
   | 'pokerCinco'
   | 'casitaRobada'
   | 'burroBazas'
-  | 'manilla';
+  | 'manilla'
+  | 'tuteGanaPierde';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -737,6 +744,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'casitaRobada',
   'burroBazas',
   'manilla',
+  'tuteGanaPierde',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2418,6 +2426,26 @@ export const DEF_MANILLA: DefManilla = {
   },
 };
 
+export type DefTuteGanaPierde = DefJuego<
+  ConfigTuteGanaPierde,
+  EstadoTuteGanaPierde,
+  AccionTuteGanaPierde,
+  VistaTuteGanaPierde
+>;
+
+export const DEF_TUTE_GANA_PIERDE: DefTuteGanaPierde = {
+  id: 'tuteGanaPierde',
+  nombre: T.menu.tuteGanaPierde,
+  juego: tuteGanaPierde,
+  configPorDefecto: CONFIG_TUTE_GANA_PIERDE_POR_DEFECTO,
+  ia: IAS.tuteGanaPierde,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2505,6 +2533,7 @@ export const JUEGOS = {
   casitaRobada: DEF_CASITA_ROBADA,
   burroBazas: DEF_BURRO_BAZAS,
   manilla: DEF_MANILLA,
+  tuteGanaPierde: DEF_TUTE_GANA_PIERDE,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

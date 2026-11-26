@@ -164,6 +164,14 @@ import { reconstruirBurroBazas } from '../../src/ia/reconstruir/burro-bazas';
 import { reconstruirManilla, topesManilla } from '../../src/ia/reconstruir/manilla';
 import { iaManillaBasica } from '../../src/ia/manilla-basica';
 import { CONFIG_MANILLA_POR_DEFECTO, manilla } from '../../src/juegos/manilla';
+import { reconstruirTuteGanaPierde } from '../../src/ia/reconstruir/tute-gana-pierde';
+import { iaTuteGanaPierdeBasica } from '../../src/ia/tute-gana-pierde-basica';
+import {
+  CONFIG_TUTE_GANA_PIERDE_POR_DEFECTO,
+  tuteGanaPierde,
+} from '../../src/juegos/tute-gana-pierde';
+import { topesPorObligaciones } from '../../src/ia/reconstruir/topes';
+import { VALORES_BRISCA } from '../../src/motor/bazas';
 import { iaBurroBazasBasica } from '../../src/ia/burro-bazas-basica';
 import {
   burroBazas,
@@ -2075,5 +2083,64 @@ describe('Reconstrucción de la Manilla', () => {
     expect(topes[3]!.get('copas')).toBe(0);
     expect(topes[3]!.get('oros')).toBe(10);
     expect(topes[2]!.get('oros')).toBe(Number.POSITIVE_INFINITY);
+  });
+});
+
+describirReconstruccion(tuteGanaPierde, reconstruirTuteGanaPierde, {
+  configs: [CONFIG_TUTE_GANA_PIERDE_POR_DEFECTO, { limite: 3 }],
+  base: iaTuteGanaPierdeBasica,
+});
+
+describe('Reconstrucción del Tute gana-pierde', () => {
+  it('sin triunfo, quien no sigue el palo no lo tiene, pero puede tener de cualquier otro', () => {
+    const topes = topesPorObligaciones(
+      [
+        {
+          cartas: [
+            { asiento: 0, carta: 'copas-11' },
+            { asiento: 1, carta: 'bastos-4' },
+            { asiento: 2, carta: 'copas-5' },
+          ],
+          triunfo: null,
+        },
+      ],
+      VALORES_BRISCA,
+      3,
+      (a, b) => a !== b,
+    );
+    expect(topes[1]!.get('copas')).toBe(0);
+    expect(topes[1]!.get('oros')).toBe(Number.POSITIVE_INFINITY);
+    // El 2 siguió con el 5 sin montar al Caballo: no tiene ninguna copa mayor.
+    expect(topes[2]!.get('copas')).toBe(7);
+  });
+
+  it('con triunfo, quien no sigue ni falla no tiene triunfos', () => {
+    const topes = topesPorObligaciones(
+      [
+        {
+          cartas: [
+            { asiento: 0, carta: 'copas-11' },
+            { asiento: 1, carta: 'bastos-4' },
+            { asiento: 2, carta: 'copas-5' },
+          ],
+          triunfo: 'oros',
+        },
+      ],
+      VALORES_BRISCA,
+      3,
+      (a, b) => a !== b,
+    );
+    expect(topes[1]!.get('oros')).toBe(0);
+  });
+
+  it('la reconstrucción respeta la vista', () => {
+    const r = tuteGanaPierde.crear(CONFIG_TUTE_GANA_PIERDE_POR_DEFECTO, 'rec');
+    if (!r.ok) throw new Error(r.error);
+    const vista = tuteGanaPierde.vistaDe(r.valor, 1);
+    for (let i = 0; i < 10; i++) {
+      expect(
+        tuteGanaPierde.vistaDe(reconstruirTuteGanaPierde(vista, crearAzar(`g${i}`)), 1),
+      ).toEqual(vista);
+    }
   });
 });

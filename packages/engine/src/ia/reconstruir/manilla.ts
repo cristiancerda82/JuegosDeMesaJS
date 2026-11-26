@@ -1,6 +1,6 @@
 import { Generador, type EstadoAzar } from '../../baraja/azar';
 import { barajar } from '../../baraja/barajar';
-import { cartasFuera, crearBaraja, PALOS_ESPANOLES, type PaloEspanol } from '../../baraja/cartas';
+import { cartasFuera, crearBaraja, type PaloEspanol } from '../../baraja/cartas';
 import {
   manilla,
   VALORES_MANILLA,
@@ -9,58 +9,29 @@ import {
   type EstadoManilla,
   type VistaManilla,
 } from '../../juegos/manilla';
-import { bandoDe, cartaGanadora, fuerza, paloDe, type CartaJugada } from '../../motor/bazas';
+import { bandoDe, fuerza, paloDe, type CartaJugada } from '../../motor/bazas';
 import type { Asiento } from '../../motor/contrato';
 import type { Simulable } from '../niveles';
 import { bonoPartida } from './comun';
 import { repartirConPermitidos } from './cuatrola';
+import { topesPorObligaciones } from './topes';
 
 const V = VALORES_MANILLA;
-const SIN_LIMITE = Number.POSITIVE_INFINITY;
 
 /**
  * La fuerza máxima que puede tener cada asiento en cada palo, por lo que jugó (0: no tiene ese
- * palo). Las obligaciones solo rigen cuando la baza la gana un rival:
- * - quien no siguió el palo de salida no lo tiene;
- * - quien siguió con una carta que no superaba a la ganadora de ese palo no tenía ninguna mayor;
- * - quien no siguió el palo ni echó triunfo no tenía triunfos (si ganaba un triunfo, ninguno
- *   mayor que él), y quien echó un triunfo menor que el que ganaba no tenía uno mayor.
+ * palo). Las obligaciones solo rigen cuando la baza la gana un rival (`topesPorObligaciones`).
  */
-export function topesManilla(
+export const topesManilla = (
   bazas: readonly (readonly CartaJugada[])[],
   triunfo: PaloEspanol,
-): Map<PaloEspanol, number>[] {
-  const topes = Array.from(
-    { length: 4 },
-    () => new Map<PaloEspanol, number>(PALOS_ESPANOLES.map((p) => [p, SIN_LIMITE])),
+): Map<PaloEspanol, number>[] =>
+  topesPorObligaciones(
+    bazas.map((cartas) => ({ cartas, triunfo })),
+    V,
+    4,
+    (a, b) => bandoDe(a) !== bandoDe(b),
   );
-  const bajar = (a: Asiento, palo: PaloEspanol, tope: number) =>
-    topes[a]!.set(palo, Math.min(topes[a]!.get(palo)!, tope));
-  for (const cartas of bazas) {
-    if (cartas.length === 0) continue;
-    const salida = paloDe(cartas[0]!.carta);
-    cartas.forEach((j, i) => {
-      if (i === 0) return;
-      const gana = cartaGanadora(cartas.slice(0, i), triunfo, V);
-      const rival = bandoDe(gana.asiento) !== bandoDe(j.asiento);
-      const palo = paloDe(j.carta);
-      const fuerzaGana = fuerza(gana.carta, V);
-      if (palo !== salida) bajar(j.asiento, salida, 0);
-      if (!rival) return;
-      const ganaTriunfo = paloDe(gana.carta) === triunfo;
-      if (palo === salida) {
-        if (!ganaTriunfo && fuerza(j.carta, V) < fuerzaGana) bajar(j.asiento, salida, fuerzaGana);
-        return;
-      }
-      if (palo === triunfo) {
-        if (ganaTriunfo && fuerza(j.carta, V) < fuerzaGana) bajar(j.asiento, triunfo, fuerzaGana);
-        return;
-      }
-      bajar(j.asiento, triunfo, ganaTriunfo ? fuerzaGana : 0);
-    });
-  }
-  return topes;
-}
 
 /**
  * Un estado de Manilla coherente con la vista (spec niveles-ia): las manos ajenas al azar entre

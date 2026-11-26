@@ -77,6 +77,7 @@ import { CONFIG_POKER_CINCO_POR_DEFECTO, pokerCinco } from './juegos/poker-cinco
 import { casitaRobada, CONFIG_CASITA_ROBADA_POR_DEFECTO } from './juegos/casita-robada';
 import { burroBazas, CONFIG_BURRO_BAZAS_POR_DEFECTO } from './juegos/burro-bazas';
 import { CONFIG_MANILLA_POR_DEFECTO, manilla } from './juegos/manilla';
+import { CONFIG_TUTE_GANA_PIERDE_POR_DEFECTO, tuteGanaPierde } from './juegos/tute-gana-pierde';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -159,6 +160,7 @@ export const IDS_JUEGOS_EN_RED = [
   'casitaRobada',
   'burroBazas',
   'manilla',
+  'tuteGanaPierde',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -270,6 +272,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   casitaRobada: entrada(casitaRobada, IAS.casitaRobada, CONFIG_CASITA_ROBADA_POR_DEFECTO),
   burroBazas: entrada(burroBazas, IAS.burroBazas, CONFIG_BURRO_BAZAS_POR_DEFECTO),
   manilla: entrada(manilla, IAS.manilla, CONFIG_MANILLA_POR_DEFECTO),
+  tuteGanaPierde: entrada(tuteGanaPierde, IAS.tuteGanaPierde, CONFIG_TUTE_GANA_PIERDE_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

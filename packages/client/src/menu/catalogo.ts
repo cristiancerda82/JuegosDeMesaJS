@@ -226,6 +226,11 @@ export const CATALOGO: Readonly<Record<IdJuego, EntradaCatalogo>> = {
     'corazones-11',
     'diamantes-1',
   ]),
+  tuteGanaPierde: entrada('bazasEvitar', E, T.menu.tuteGanaPierdeDesc, [
+    'espadas-12',
+    'espadas-11',
+    'oros-1',
+  ]),
 
   // ── Combinaciones ──
   chinchon: entrada('combinaciones', E, T.menu.chinchonDesc, ['copas-5', 'copas-6', 'comodin-1']),

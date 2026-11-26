@@ -1,7 +1,7 @@
 import type { IdJuego } from '../../sesion/juegos';
 import { T } from '../../textos';
 import type { EjemplosJuego } from '../tipos';
-import { baza, CUATRO } from './bazas-puntos';
+import { baza, CUATRO, TRES } from './bazas-puntos';
 
 /** Ejemplos de las guías de los juegos de bazas para evitar. */
 export const BAZAS_EVITAR: Partial<Record<IdJuego, EjemplosJuego>> = {
@@ -98,6 +98,29 @@ export const BAZAS_EVITAR: Partial<Record<IdJuego, EjemplosJuego>> = {
       ],
       resultado: '= −5',
       nota: 'Las demás cartas no restan nada.',
+    },
+  },
+
+  tuteGanaPierde: {
+    cuarenta: baza(
+      'Aún no hay triunfo. Sales con el Rey de espadas, la Derecha echa el Caballo de espadas y la Izquierda el As de espadas: gana el As y la Izquierda canta las cuarenta.',
+      TRES,
+      ['espadas-12', 'espadas-11', 'espadas-1'],
+      undefined,
+      2,
+      'Gana el As, la carta más fuerte del palo. Con el Rey y el Caballo en su baza, la Izquierda canta las cuarenta: 18 tantos de cartas y 40 del cante. Desde ahora, las espadas son triunfo.',
+    ),
+    penalizacion: {
+      tipo: 'tabla',
+      descripcion:
+        'Quién se lleva la penalización según los tantos de los tres: el del medio o, con empates, los que no tienen el mínimo.',
+      titulo: 'Tantos de los tres y quién se lleva la penalización',
+      filas: [
+        ['120, 10 y 0', 'El de 10'],
+        ['100, 15 y 15', 'El de 100'],
+        ['10, 60 y 60', 'Los dos de 60'],
+        ['130, 0 y 0', 'El de 130'],
+      ],
     },
   },
 };

@@ -29,7 +29,13 @@ describe('catálogo del menú', () => {
     expect(juegosDeFamilia('solitarios')).toHaveLength(11);
     expect(juegosDeFamilia('bazasPuntos')).toHaveLength(20);
     expect(juegosDeFamilia('bazasContrato')).toHaveLength(16);
-    expect(juegosDeFamilia('bazasEvitar')).toEqual(['corazones', 'barbu', 'rentz', 'polignac']);
+    expect(juegosDeFamilia('bazasEvitar')).toEqual([
+      'corazones',
+      'barbu',
+      'rentz',
+      'polignac',
+      'tuteGanaPierde',
+    ]);
     expect(juegosDeFamilia('combinaciones')).toHaveLength(9);
     expect(juegosDeFamilia('captura')).toHaveLength(7);
     expect(juegosDeFamilia('descarte')).toHaveLength(11);

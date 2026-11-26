@@ -1640,6 +1640,27 @@ test('Manilla en red: la carta con la que sale uno la ve el otro, y los dos ven 
   await expect(luis.locator(`[data-testid="mesa"] [data-carta="${carta}"]`)).toBeVisible();
 });
 
+test('Tute gana-pierde en red: la carta con la que sale uno la ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'tuteGanaPierde');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) {
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(12);
+    await expect(p.getByTestId('triunfo-gana-pierde')).toContainText('Sin triunfo');
+  }
+
+  // Reparte el asiento 2: sale Ana (asiento 0), que puede echar cualquiera de sus 12 cartas.
+  const jugables = ana.locator('[data-testid="mano"] .carta-mano.jugable');
+  await expect(jugables).toHaveCount(12);
+  const carta = await jugables.first().getAttribute('data-carta');
+  await jugables.first().click({ position: { x: 6, y: 6 } });
+  await ana.getByTestId('mesa').click();
+  await expect(luis.locator(`[data-testid="mesa"] [data-carta="${carta}"]`)).toBeVisible();
+});
+
 test('Remigio en red: dos humanos roban y descartan', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);

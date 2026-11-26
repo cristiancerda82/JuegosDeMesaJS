@@ -76,6 +76,10 @@ import { CONFIG_POKER_CINCO_POR_DEFECTO, pokerCinco } from '../../src/juegos/pok
 import { casitaRobada, CONFIG_CASITA_ROBADA_POR_DEFECTO } from '../../src/juegos/casita-robada';
 import { burroBazas, CONFIG_BURRO_BAZAS_POR_DEFECTO } from '../../src/juegos/burro-bazas';
 import { CONFIG_MANILLA_POR_DEFECTO, manilla } from '../../src/juegos/manilla';
+import {
+  CONFIG_TUTE_GANA_PIERDE_POR_DEFECTO,
+  tuteGanaPierde,
+} from '../../src/juegos/tute-gana-pierde';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -265,4 +269,11 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
   entrada('Casita robada', casitaRobada, CONFIG_CASITA_ROBADA_POR_DEFECTO, IAS.casitaRobada, 2),
   entrada('Burro de bazas', burroBazas, CONFIG_BURRO_BAZAS_POR_DEFECTO, IAS.burroBazas, 4),
   entrada('Manilla', manilla, CONFIG_MANILLA_POR_DEFECTO, IAS.manilla, 'bandos'),
+  entrada(
+    'Tute gana-pierde',
+    tuteGanaPierde,
+    CONFIG_TUTE_GANA_PIERDE_POR_DEFECTO,
+    IAS.tuteGanaPierde,
+    3,
+  ),
 ];

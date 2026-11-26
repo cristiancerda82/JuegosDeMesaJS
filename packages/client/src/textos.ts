@@ -141,6 +141,9 @@ export const T = {
     burroDesc: 'Junta cuatro iguales pasando cartas y que no te pillen el último en plantarte.',
     burroBazas: 'Burro de bazas',
     manilla: 'Manilla',
+    tuteGanaPierde: 'Tute gana-pierde',
+    tuteGanaPierdeDesc:
+      'El Tute para 3 al revés: haz más tantos que nadie o menos que nadie; quien se queda en medio, pierde.',
     manillaDesc:
       'La madre de la Butifarra, por parejas: la última carta del que reparte marca el triunfo, el 9 es la carta más fuerte y se juega a 40.',
     burroBazasDesc:
@@ -3418,6 +3421,32 @@ export const T = {
       `El pinte, ${carta}, no se anota: daría la partida a ${pareja}, que no ha llegado a 36.`,
   },
 
+  tuteGanaPierde: {
+    triunfo: 'Triunfo',
+    sinTriunfo: 'Sin triunfo',
+    tantosCortos: (n: number) => `${n} tantos`,
+    cantaCuarenta: (quien: string, palo: string) =>
+      quien === 'Tú'
+        ? `Cantas las cuarenta en ${palo}: ahora son triunfo`
+        : `${quien} canta las cuarenta en ${palo}: ahora son triunfo`,
+    cantaVeinte: (quien: string, palo: string) =>
+      quien === 'Tú' ? `Cantas las veinte en ${palo}` : `${quien} canta las veinte en ${palo}`,
+    penalizados: (quienes: readonly string[]) => {
+      if (quienes.length === 0) return 'Empate a tres: nadie se lleva la penalización';
+      if (quienes.length === 1) {
+        return quienes[0] === 'Tú'
+          ? 'Te quedas en medio: te llevas la penalización'
+          : `${quienes[0]} se queda en medio: se lleva la penalización`;
+      }
+      return `${quienes.join(' y ')} no tienen el mínimo: se llevan la penalización`;
+    },
+    cartasCol: 'Cartas',
+    cantesCol: 'Cantes',
+    ultimasCol: 'Últimas',
+    tantosCol: 'Tantos',
+    penasCol: 'Pen.',
+  },
+
   burroBazas: {
     reparte: 'Reparte',
     sinCartas: 'Sin cartas',
@@ -3650,6 +3679,7 @@ export const T = {
       burro: 'Cómo se juega al Burro',
       burroBazas: 'Cómo se juega al Burro de bazas',
       manilla: 'Cómo se juega a la Manilla',
+      tuteGanaPierde: 'Cómo se juega al Tute gana-pierde',
       pinacle: 'Cómo se juega al Pinacle',
       butifarra: 'Cómo se juega a la Butifarra',
       truc: 'Cómo se juega al Truc',
@@ -7973,6 +8003,66 @@ export const T = {
         plegada: true,
         texto: [
           'Se juega sobre todo en Cataluña, en la Comunidad Valenciana y en el sur de Francia. Los autores españoles dicen que viene de Francia, y los franceses, que viene de España; por lo extendida que está aquí, parece más probable lo segundo. De ella salió la Butifarra, en la que el triunfo ya no lo marca la carta vuelta, sino que lo elige quien reparte. El nombre viene de la «manilla», el 9, la carta más fuerte de cada palo.',
+        ],
+      },
+    ],
+
+    tuteGanaPierde: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega entre 3, cada uno por su cuenta, con la baraja española de 40 cartas sin los doses: 36 cartas, 12 para cada uno.',
+          'Al acabar cada mano hay que haber hecho más tantos que nadie o menos que nadie. Quien se queda en medio se lleva una penalización. La partida acaba cuando alguien llega a 6 penalizaciones (o a 3, si lo cambias en las opciones), y ganan los que tienen menos.',
+        ],
+      },
+      {
+        titulo: 'Lo que vale cada carta',
+        texto: [
+          'Como en el Tute: de la más fuerte a la más débil, el As, el Tres, el Rey, el Caballo, la Sota, y después el 7, 6, 5 y 4.',
+          'El As vale 11 tantos, el Tres 10, el Rey 4, el Caballo 3 y la Sota 2; las demás no valen nada. Quien gana la última baza suma 10 más, las 10 de últimas: 130 tantos por mano.',
+        ],
+      },
+      {
+        titulo: 'Cómo se juega una baza',
+        texto: [
+          'Sale el jugador siguiente al que reparte, y quien gana una baza sale en la siguiente. Gana el triunfo más alto o, si no hay triunfos, la carta más fuerte del palo que salió.',
+          'Hay que seguir el palo y superar la carta que va ganando si puedes. Sin el palo, si ya hay triunfo, hay que fallar con un triunfo y superar el triunfo más alto si puedes; si no puedes superarlo, puedes echar la carta que quieras. Mientras no hay triunfo, sin el palo se echa cualquiera. La mesa solo te deja jugar las cartas permitidas.',
+        ],
+      },
+      {
+        titulo: 'El triunfo y los cantes',
+        texto: [
+          'La mano empieza sin triunfo. Cuando en una baza caen el Rey y el Caballo del mismo palo, quien la gana canta a la fuerza las cuarenta: suma 40 tantos, y ese palo es triunfo desde la baza siguiente.',
+          'Después, cada vez que caen juntos el Rey y el Caballo de otro palo, quien gana la baza canta las veinte: 20 tantos más. Puede acabar la mano sin que haya nacido el triunfo.',
+        ],
+        ejemplo: 'cuarenta',
+      },
+      {
+        titulo: 'Quién se lleva la penalización',
+        texto: [
+          'Si los tres tienen tantos distintos, el del medio. Si dos empatan, los que no tienen el mínimo: el tercero si tiene más que ellos, o los dos si el tercero tiene menos.',
+        ],
+        ejemplo: 'penalizacion',
+      },
+      {
+        titulo: 'Cómo jugar una carta',
+        texto: [
+          'Arrastra la carta a la mesa, o tócala y toca la mesa. Con un doble toque también se juega.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Con las cartas en la mano, decide si vas a intentar hacer más tantos que nadie o menos, y cambia de idea si los demás te lo ponen fácil.',
+          'Si vas a por menos, nunca salgas con un Rey: alguien te echará el Caballo para que cantes. Y carga tus Ases y Treses en las bazas que se lleven otros.',
+          'Fíjate en quién quiere perder: si alguien no para de cargar Ases y Treses, mételo en baza en cuanto puedas.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Es una variante del Tute, el juego de bazas con cantes más popular de España, en la que se gana al revés de lo normal. La describe Núñez Elvira, que la tiene por uno de los pocos pasatiempos en los que, por su rapidez y lo cambiante de los planes, se juega entre risas. Su idea, ganar haciendo lo contrario, es la misma de otros juegos «gana-pierde», como el Burro gana-pierde.',
         ],
       },
     ],

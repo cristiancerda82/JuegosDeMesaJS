@@ -12,6 +12,10 @@ import {
   ganadoraRentz,
   ganadoraPolignac,
   penalizaPolignac,
+  parejaEnBaza,
+  penalizadosGanaPierde,
+  puntosDe,
+  cartaGanadora,
   PALOS_ESPANOLES,
   puntuarMano,
   puntosCorazones,
@@ -184,6 +188,26 @@ test('Pesca: el cuarteto es de cuatro cartas del mismo valor', () => {
   const cuarteto = zona(captura.ejemplo('pesca', 'pedir', 'antesDespues').despues, 'Tu cuarteto');
   expect(cuarteto).toHaveLength(4);
   expect(new Set(cuarteto.map(valorPesca)).size).toBe(1);
+});
+
+test('Tute gana-pierde: la baza de las cuarenta y quién se lleva la penalización', () => {
+  const b = evitar.ejemplo('tuteGanaPierde', 'cuarenta', 'baza');
+  const mesa = mesaDe(b);
+  expect(b.triunfo).toBeUndefined();
+  expect(cartaGanadora(mesa, null).asiento).toBe(b.gana);
+  expect(parejaEnBaza(mesa)).toBe('espadas');
+  expect(b.jugadas.reduce((s, j) => s + puntosDe(j.id), 0)).toBe(18);
+  const t = evitar.ejemplo('tuteGanaPierde', 'penalizacion', 'tabla');
+  for (const [tantos, quien] of t.filas) {
+    const valores = tantos.split(/, | y /).map(Number);
+    expect(
+      valores.reduce((s, v) => s + v, 0),
+      tantos,
+    ).toBe(130);
+    const pierden = penalizadosGanaPierde(valores).map((a) => valores[a]!);
+    const esperado = pierden.length === 1 ? `El de ${pierden[0]}` : `Los dos de ${pierden[0]}`;
+    expect(quien, tantos).toBe(esperado);
+  }
 });
 
 test('todos los ejemplos de las bazas para evitar y de captura están comprobados', () => {

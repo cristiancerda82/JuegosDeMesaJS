@@ -81,6 +81,7 @@ import { SIMULABLE_POLIGNAC } from './reconstruir/polignac';
 import { SIMULABLE_CASITA_ROBADA } from './reconstruir/casita-robada';
 import { SIMULABLE_BURRO_BAZAS } from './reconstruir/burro-bazas';
 import { SIMULABLE_MANILLA } from './reconstruir/manilla';
+import { SIMULABLE_TUTE_GANA_PIERDE } from './reconstruir/tute-gana-pierde';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -142,6 +143,7 @@ import { iaPolignacBasica } from './polignac-basica';
 import { iaCasitaRobadaBasica } from './casita-robada-basica';
 import { iaBurroBazasBasica } from './burro-bazas-basica';
 import { iaManillaBasica } from './manilla-basica';
+import { iaTuteGanaPierdeBasica } from './tute-gana-pierde-basica';
 import { iaPokerCincoBasica, iaPokerCincoExperta } from './poker-cinco-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
@@ -299,4 +301,5 @@ export const IAS = {
   casitaRobada: niveles(iaCasitaRobadaBasica, SIMULABLE_CASITA_ROBADA),
   burroBazas: niveles(iaBurroBazasBasica, SIMULABLE_BURRO_BAZAS),
   manilla: niveles(iaManillaBasica, SIMULABLE_MANILLA),
+  tuteGanaPierde: niveles(iaTuteGanaPierdeBasica, SIMULABLE_TUTE_GANA_PIERDE),
 } as const;
