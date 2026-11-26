@@ -92,6 +92,8 @@
   }
 
   .arriba-izquierda .nombre,
+  .arriba-centro-izquierda .nombre,
+  .arriba-centro-derecha .nombre,
   .arriba-derecha .nombre,
   :global(.muchos) .arriba .nombre {
     font-size: 0.8rem;
@@ -100,6 +102,8 @@
   }
 
   .arriba-izquierda .nombre small,
+  .arriba-centro-izquierda .nombre small,
+  .arriba-centro-derecha .nombre small,
   .arriba-derecha .nombre small,
   :global(.muchos) .arriba .nombre small {
     display: block;
@@ -141,6 +145,13 @@
   .derecha .nombre small {
     display: block;
     margin: 0;
+  }
+
+  /* Con 5 o más, los laterales dejan más sitio a la mesa del centro. */
+  :global(.muchos) .izquierda .nombre,
+  :global(.muchos) .derecha .nombre {
+    max-width: 18vw;
+    font-size: 0.8rem;
   }
 
   .activo .nombre {

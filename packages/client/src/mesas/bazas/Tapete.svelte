@@ -20,7 +20,7 @@
     seguir?: (() => void) | undefined;
     /** Nombre de cada asiento: la última carta de un rival se marca con el suyo. */
     nombre?: ((asiento: number) => string) | undefined;
-    /** Repaso de una baza: cada carta lleva el nombre de quien la jugó. */
+    /** Repaso de una baza: cada carta lleva el nombre de quien la jugó (con 3 o más, siempre). */
     conNombres?: boolean;
   }
 
@@ -42,6 +42,16 @@
     return () => untrack(() => ritmo.tapetes--);
   });
 
+  /**
+   * Con 5 o más las cartas son pequeñas: «Rival 3» pasa a «R3» para que se lea entero. Los
+   * nombres sin número (los de las partidas en red) se quedan como están.
+   */
+  const etiqueta = (asiento: number) => {
+    const completo = nombre!(asiento);
+    const numero = /\d+$/.exec(completo);
+    return jugadores >= 5 && numero ? `${completo[0]}${numero[0]}` : completo;
+  };
+
   /** La carta que acaba de llegar, si es de un rival: queda marcada hasta la siguiente. */
   const ultima = $derived.by(() => {
     const j = jugadas.at(-1);
@@ -53,7 +63,8 @@
   class="tapete"
   class:cuatro={jugadores >= 4}
   class:muchos={jugadores >= 5}
-  data-jugadores={Math.min(Math.max(jugadores, 2), 6)}
+  class:siete={jugadores >= 7}
+  data-jugadores={Math.min(Math.max(jugadores, 2), 7)}
   class:legal={interaccion.resaltados.has('mesa')}
   data-destino="mesa"
   data-testid="mesa"
@@ -71,10 +82,12 @@
       data-desde="mano-{jugada.asiento}"
     >
       <Carta id={jugada.carta} />
-      {#if conNombres && nombre}
-        <span class="autor">{nombre(jugada.asiento)}</span>
-      {:else if jugada === ultima}
-        <span class="autor" data-testid="ultima-jugada">{nombre!(jugada.asiento)}</span>
+      {#if jugada === ultima}
+        <span class="autor" data-testid="ultima-jugada" title={nombre!(jugada.asiento)}
+          >{etiqueta(jugada.asiento)}</span
+        >
+      {:else if nombre && (conNombres || jugadores >= 3)}
+        <span class="autor otra" title={nombre(jugada.asiento)}>{etiqueta(jugada.asiento)}</span>
       {/if}
     </div>
   {/each}
@@ -130,6 +143,11 @@
 
   .tapete.cuatro {
     --carta-mesa: calc(var(--ancho-carta) * 0.75);
+  }
+
+  /* Con 7, en tres filas: algo más pequeñas para que quepan a lo alto. */
+  .tapete.siete {
+    --carta-mesa: calc(var(--ancho-carta) * 0.66);
   }
 
   .jugada {
@@ -193,6 +211,38 @@
     translate: 104% -52%;
   }
 
+  /*
+   * Con 7, en anillo y en tres filas: abajo el jugador y los laterales; en medio, a los lados,
+   * los de las esquinas de arriba; arriba, los dos del centro.
+   */
+  [data-jugadores='7'] .jugada.abajo {
+    translate: 0 104%;
+  }
+
+  [data-jugadores='7'] .jugada.derecha {
+    translate: 104% 104%;
+  }
+
+  [data-jugadores='7'] .jugada.izquierda {
+    translate: -104% 104%;
+  }
+
+  [data-jugadores='7'] .jugada.arriba-derecha {
+    translate: 104% 0;
+  }
+
+  [data-jugadores='7'] .jugada.arriba-izquierda {
+    translate: -104% 0;
+  }
+
+  [data-jugadores='7'] .jugada.arriba-centro-derecha {
+    translate: 52% -104%;
+  }
+
+  [data-jugadores='7'] .jugada.arriba-centro-izquierda {
+    translate: -52% -104%;
+  }
+
   /* La carta que acaba de llegar va delante y resaltada, con el nombre de quien la jugó. */
   .jugada.ultima {
     z-index: 2;
@@ -223,6 +273,12 @@
 
   .cuatro .autor {
     font-size: 0.6rem;
+  }
+
+  /* Las demás cartas de la baza llevan también el nombre, más discreto que la última. */
+  .autor.otra {
+    background: rgb(0 0 0 / 0.65);
+    color: #fff;
   }
 
   .seguir {

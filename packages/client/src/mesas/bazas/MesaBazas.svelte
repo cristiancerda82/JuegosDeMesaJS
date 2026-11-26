@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Asiento, IdCarta } from '@juegos/engine';
   import type { Snippet } from 'svelte';
+  import Carta from '../../cartas/Carta.svelte';
   import { animar, medir, type Posiciones } from '../../interaccion/flip';
   import { Interaccion } from '../../interaccion/interaccion.svelte';
   import { porBando } from '../../sesion/sesion-mesa';
@@ -103,6 +104,13 @@
   const viendoUltima = $derived(viendoBaza || (repasando && puedeRepasar));
   const enMesa = $derived(viendoUltima ? vista.ultimaBaza!.cartas : vista.mesa);
 
+  /**
+   * La baza en curso en un panel, carta a carta y con quién la echó (spec mesa-cliente, «Ver la
+   * baza en curso»). Se cierra sola al recogerse la baza.
+   */
+  let viendoBazaEnCurso = $state(false);
+  const puedeVerBaza = $derived(vista.mesa.length > 0 && sesion.fin === null);
+
   const avisoBaza = $derived.by(() => {
     if (sesion.fin !== null) return null;
     if (viendoUltima) return T.brisca.ganaBaza(nombre(vista.ultimaBaza!.ganador));
@@ -150,7 +158,13 @@
   });
 </script>
 
-<div class="mesa-bazas" class:cuatro={n >= 3} class:muchos={n >= 5} bind:this={raiz}>
+<div
+  class="mesa-bazas"
+  class:cuatro={n >= 3}
+  class:muchos={n >= 5}
+  class:siete={n >= 7}
+  bind:this={raiz}
+>
   <div class="info">{@render info()}</div>
 
   {#snippet rival(asiento: number)}
@@ -197,6 +211,11 @@
         {nombre(yo)} <small data-testid="detalle-propio">{detalle(yo)}</small>
       </span>
       <span class="turno" role="status" data-testid="turno">{turno}</span>
+      {#if puedeVerBaza}
+        <button class="repaso" onclick={() => (viendoBazaEnCurso = true)} data-testid="ver-baza">
+          {T.partida.verBaza}
+        </button>
+      {/if}
       {#if puedeRepasar}
         <button
           class="repaso"
@@ -212,6 +231,31 @@
     <ManoPropia cartas={vista.miMano ?? []} {jugable} {interaccion} {marcadas} />
   </div>
 </div>
+
+{#if viendoBazaEnCurso && puedeVerBaza}
+  <div class="velo-baza">
+    <div
+      class="panel-baza"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="titulo-baza"
+      data-testid="panel-baza"
+    >
+      <h2 id="titulo-baza">{T.partida.bazaEnCurso}</h2>
+      <ol>
+        {#each vista.mesa as jugada, i (`${jugada.asiento}-${jugada.carta}`)}
+          <li data-testid="baza-carta-{i}" data-carta={jugada.carta}>
+            <span class="carta-baza"><Carta id={jugada.carta} /></span>
+            <span>{nombre(jugada.asiento)}</span>
+          </li>
+        {/each}
+      </ol>
+      <button class="principal" onclick={() => (viendoBazaEnCurso = false)} data-testid="cerrar-baza">
+        {T.partida.cerrarBaza}
+      </button>
+    </div>
+  </div>
+{/if}
 
 <style>
   .mesa-bazas {
@@ -247,6 +291,11 @@
   .mesa-bazas.muchos {
     --ancho-carta: min(15vw, 10dvh, 90px);
     --ancho-rival: min(6vw, 5dvh, 40px);
+  }
+
+  /* Con 7, cuatro: sus cartas, más pequeñas, para que no se pisen. */
+  .mesa-bazas.siete {
+    --ancho-rival: min(4.5vw, 4dvh, 34px);
   }
 
   .fila-arriba {
@@ -324,5 +373,60 @@
     min-height: 36px;
     padding: 0.2rem 0.8rem;
     font-size: 0.85rem;
+  }
+
+  .velo-baza {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    background: rgb(0 0 0 / 0.5);
+    z-index: 1500;
+  }
+
+  .panel-baza {
+    width: min(100%, 420px);
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    padding: 14px;
+    border-radius: 16px;
+    text-align: center;
+    background: var(--tapete-oscuro);
+    border: 1px solid rgb(255 255 255 / 0.2);
+    box-shadow: var(--sombra-alta);
+  }
+
+  .panel-baza h2 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+
+  .panel-baza ol {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 0 10px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .panel-baza li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .carta-baza {
+    width: 64px;
+    aspect-ratio: 100 / 140;
+  }
+
+  .panel-baza > button {
+    width: 100%;
   }
 </style>

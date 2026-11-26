@@ -6,10 +6,23 @@ export type { EstadoSesion } from '../../sesion/sesion-mesa';
 
 /** Lado de la mesa donde se dibuja cada asiento. */
 export type Lado =
-  'abajo' | 'derecha' | 'arriba-derecha' | 'arriba' | 'arriba-izquierda' | 'izquierda';
+  | 'abajo'
+  | 'derecha'
+  | 'arriba-derecha'
+  | 'arriba-centro-derecha'
+  | 'arriba'
+  | 'arriba-centro-izquierda'
+  | 'arriba-izquierda'
+  | 'izquierda';
 
 /** Los lados de la fila de arriba, en orden visual de izquierda a derecha. */
-export const LADOS_ARRIBA: readonly Lado[] = ['arriba-izquierda', 'arriba', 'arriba-derecha'];
+export const LADOS_ARRIBA: readonly Lado[] = [
+  'arriba-izquierda',
+  'arriba-centro-izquierda',
+  'arriba',
+  'arriba-centro-derecha',
+  'arriba-derecha',
+];
 
 /** Posición de un asiento contando desde el del jugador (0 es él). */
 export const relativo = (asiento: Asiento, jugadores: number, yo: Asiento) =>
@@ -17,7 +30,7 @@ export const relativo = (asiento: Asiento, jugadores: number, yo: Asiento) =>
 
 /**
  * El jugador (`yo`) abajo; con 3 o más, el turno avanza en sentido antihorario: derecha, la
- * fila de arriba de derecha a izquierda, e izquierda.
+ * fila de arriba de derecha a izquierda (hasta 4 rivales, con 7), e izquierda.
  */
 export function lado(asiento: Asiento, jugadores: number, yo: Asiento = 0): Lado {
   const r = relativo(asiento, jugadores, yo);
@@ -29,6 +42,18 @@ export function lado(asiento: Asiento, jugadores: number, yo: Asiento = 0): Lado
   if (jugadores === 6) {
     const lados = ['abajo', 'derecha', 'arriba-derecha', 'arriba', 'arriba-izquierda', 'izquierda'];
     return lados[r] as Lado;
+  }
+  if (jugadores === 7) {
+    const lados: readonly Lado[] = [
+      'abajo',
+      'derecha',
+      'arriba-derecha',
+      'arriba-centro-derecha',
+      'arriba-centro-izquierda',
+      'arriba-izquierda',
+      'izquierda',
+    ];
+    return lados[r]!;
   }
   return (['abajo', 'derecha', 'arriba', 'izquierda'] as const)[r]!;
 }
