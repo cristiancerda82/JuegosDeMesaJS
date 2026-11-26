@@ -627,6 +627,8 @@ export const CONSEJOS_JUEGO: Readonly<Partial<Record<IdJuego, string>>> = {
     'Préférence: el que gana la subasta juega solo. Puja según tus bazas seguras y defiende con cuidado si juegas en contra.',
   cuarenta:
     'Cuarenta: recoge la carta igual o las que siguen en escalera. Busca las caídas y la limpia, y no dejes cartas fáciles al rival.',
+  manilla:
+    'Manilla: el 9 es la carta más fuerte y vale 5. Sal con la manilla de un palo que no sea triunfo y, cuando la baza ya sea de tu compañero, cárgale puntos. Contra los rivales hay que montar y fallar; si gana tu compañero, basta con seguir el palo.',
   burroBazas:
     'Burro de bazas: lleva la cuenta de lo que ha salido y juega tus cartas más altas de cada palo cuando salgas. Sal por un palo que les falte a los demás, para que roben, y no te quedes sin un palo del que aún quedan cartas.',
   casitaRobada:

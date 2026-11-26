@@ -49,6 +49,7 @@
   import MesaPokerCinco from '../mesas/MesaPokerCinco.svelte';
   import MesaCasitaRobada from '../mesas/MesaCasitaRobada.svelte';
   import MesaBurroBazas from '../mesas/MesaBurroBazas.svelte';
+  import MesaManilla from '../mesas/MesaManilla.svelte';
   import MesaBourre from '../mesas/MesaBourre.svelte';
   import MesaTresillo from '../mesas/MesaTresillo.svelte';
   import MesaConquian from '../mesas/MesaConquian.svelte';
@@ -246,6 +247,8 @@
     <MesaCasitaRobada sesion={partida.sesion} />
   {:else if partida.id === 'burroBazas'}
     <MesaBurroBazas sesion={partida.sesion} />
+  {:else if partida.id === 'manilla'}
+    <MesaManilla sesion={partida.sesion} />
   {:else if partida.id === 'bourre'}
     <MesaBourre sesion={partida.sesion} />
   {:else if partida.id === 'tresillo'}

@@ -1,4 +1,5 @@
 import {
+  anotarManilla,
   cartaDeId,
   cartaGanadora,
   fuerza,
@@ -97,6 +98,7 @@ describe.each([
   ['tute', VALORES_BRISCA, 'valores'],
   ['guinote', VALORES_GUINOTE, 'valoresGuinote'],
   ['butifarra', VALORES_BUTIFARRA, 'valoresButifarra'],
+  ['manilla', VALORES_BUTIFARRA, 'valoresManilla'],
 ] as [IdJuego, ValoresBazas, string][])('%s', (juego, tabla, clave) => {
   test('valores y baza', () => {
     valores(
@@ -276,6 +278,21 @@ test('Écarté: el orden y la baza', () => {
   gana(v.ejemplo('ecarte', 'baza', 'baza'), (e) =>
     ganaSegundaEcarte(e.jugadas[0]!.id, e.jugadas[1]!.id, triunfoDe(e) as PaloFrances) ? 1 : 0,
   );
+});
+
+test('Manilla: la puntuación del ejemplo, como la anota el motor', () => {
+  const e = v.ejemplo('manilla', 'puntuacion', 'tabla');
+  const fila = (nombre: string) => Number(e.filas.find(([n]) => n === nombre)![1]);
+  const { anotados, pinteAnotado } = anotarManilla(
+    [fila('Cartas y bazas'), 72 - fila('Cartas y bazas')],
+    [0, 0],
+    0,
+    'oros-9',
+    40,
+  );
+  expect(pinteAnotado).toBe(true);
+  expect(fila('Lo que pasa de 36') + fila('El pinte, la manilla')).toBe(anotados[0]);
+  expect(fila('Se anota')).toBe(anotados[0]);
 });
 
 test('todos los ejemplos de las bazas por puntos están comprobados', () => {

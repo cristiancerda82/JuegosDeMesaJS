@@ -104,18 +104,35 @@ function elegir(vista: VistaButifarra, acciones: readonly AccionButifarra[]): Ac
     }
     case 'jugar': {
       const cartas = acciones.flatMap((a) => (a.tipo === 'jugar' ? [a.carta] : []));
-      return { tipo: 'jugar', carta: cartaParaJugar(vista, cartas) };
+      return { tipo: 'jugar', carta: cartaEnPareja(datosDeVista(vista), cartas) };
     }
   }
 }
 
 const BARAJA = crearBaraja('espanola48');
 
+/** Lo que necesita el juego de cartas en pareja (Butifarra y Manilla) de la vista. */
+export interface DatosBazaEnPareja {
+  readonly asiento: number;
+  readonly triunfo: PaloEspanol | null;
+  readonly miMano: readonly IdCarta[] | null;
+  readonly mesa: VistaButifarra['mesa'];
+  readonly bazasJugadas: VistaButifarra['bazasJugadas'];
+}
+
+const datosDeVista = (vista: VistaButifarra): DatosBazaEnPareja => ({
+  asiento: vista.asiento!,
+  triunfo: vista.eleccion!.triunfo,
+  miMano: vista.miMano,
+  mesa: vista.mesa,
+  bazasJugadas: vista.bazasJugadas,
+});
+
 /**
  * Lo que queda por salir en manos de los demás: la fuerza de la carta más alta de cada palo
  * (0 si no queda ninguna).
  */
-function masAltasPorSalir(vista: VistaButifarra): Map<PaloEspanol, number> {
+function masAltasPorSalir(vista: DatosBazaEnPareja): Map<PaloEspanol, number> {
   const vistas = new Set<IdCarta>(vista.miMano ?? []);
   for (const j of vista.mesa) vistas.add(j.carta);
   for (const b of vista.bazasJugadas) for (const j of b.cartas) vistas.add(j.carta);
@@ -132,9 +149,14 @@ function masAltasPorSalir(vista: VistaButifarra): Map<PaloEspanol, number> {
 const esLaMasAlta = (carta: IdCarta, altas: Map<PaloEspanol, number>) =>
   fuerza(carta, V) > altas.get(paloDe(carta))!;
 
-function cartaParaJugar(vista: VistaButifarra, cartas: readonly IdCarta[]): IdCarta {
-  const triunfo = vista.eleccion!.triunfo;
-  const asiento = vista.asiento!;
+/**
+ * La carta en una baza con el orden y los puntos de la Butifarra (spec ia-jugadores): sale con
+ * la carta que gana seguro su palo, carga puntos al compañero cuando la baza ya es suya y, si
+ * no, responde con la heurística de bazas.
+ */
+export function cartaEnPareja(vista: DatosBazaEnPareja, cartas: readonly IdCarta[]): IdCarta {
+  const triunfo = vista.triunfo;
+  const asiento = vista.asiento;
 
   if (vista.mesa.length === 0) {
     const porSalir = masAltasPorSalir(vista);

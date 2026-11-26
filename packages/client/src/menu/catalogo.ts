@@ -157,6 +157,7 @@ export const CATALOGO: Readonly<Record<IdJuego, EntradaCatalogo>> = {
     'picas-11',
   ]),
   butifarra: entrada('bazasPuntos', E, T.menu.butifarraDesc, ['oros-9', 'oros-1', 'copas-9']),
+  manilla: entrada('bazasPuntos', E, T.menu.manillaDesc, ['copas-9', 'copas-1', 'espadas-9']),
 
   // ── Bazas con contrato o subasta ──
   bridge: entrada('bazasContrato', F, T.menu.bridgeDesc, [

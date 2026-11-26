@@ -140,6 +140,9 @@ export const T = {
     burro: 'Burro',
     burroDesc: 'Junta cuatro iguales pasando cartas y que no te pillen el último en plantarte.',
     burroBazas: 'Burro de bazas',
+    manilla: 'Manilla',
+    manillaDesc:
+      'La madre de la Butifarra, por parejas: la última carta del que reparte marca el triunfo, el 9 es la carta más fuerte y se juega a 40.',
     burroBazasDesc:
       'De 3 a 6 y sin triunfo: sigue el palo o roba hasta tenerlo, y no seas el último con cartas en la mano.',
     cinquillo: 'Cinquillo',
@@ -3403,6 +3406,18 @@ export const T = {
     esBurro: (quien: string) => `${quien} es el burro.`,
   },
 
+  manilla: {
+    triunfo: 'Triunfo',
+    pinte: (carta: string) => `pinte: ${carta}`,
+    mano: (nuestros: number, suyos: number) => `Mano: ${nuestros} – ${suyos}`,
+    pinteFila: 'Pinte',
+    pinteAnotado: (carta: string, valor: number, pareja: string) =>
+      `El pinte, ${carta}, vale ${valor} para ${pareja}.`,
+    pinteSinValor: (carta: string) => `El pinte, ${carta}, no vale nada.`,
+    pinteDecisivo: (carta: string, pareja: string) =>
+      `El pinte, ${carta}, no se anota: daría la partida a ${pareja}, que no ha llegado a 36.`,
+  },
+
   burroBazas: {
     reparte: 'Reparte',
     sinCartas: 'Sin cartas',
@@ -3634,6 +3649,7 @@ export const T = {
       mus: 'Cómo se juega al Mus',
       burro: 'Cómo se juega al Burro',
       burroBazas: 'Cómo se juega al Burro de bazas',
+      manilla: 'Cómo se juega a la Manilla',
       pinacle: 'Cómo se juega al Pinacle',
       butifarra: 'Cómo se juega a la Butifarra',
       truc: 'Cómo se juega al Truc',
@@ -7889,6 +7905,74 @@ export const T = {
         plegada: true,
         texto: [
           'Es un juego familiar muy extendido, de juntar cuatro cartas iguales y estar atento a la mesa. Juegos parecidos se conocen en otros países con nombres como «Spoons» o «Pig», y en todos pierde el último en darse cuenta, que es «el burro».',
+        ],
+      },
+    ],
+
+    manilla: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega con la baraja española de 48 cartas (con ochos y nueves), 4 jugadores en dos parejas: tu compañero es el de enfrente. Cada uno recibe 12 cartas y se reparte toda la baraja.',
+          'Gana la partida la pareja que antes llega a 40 puntos (o a 20, si lo cambias en las opciones).',
+        ],
+      },
+      {
+        titulo: 'El triunfo: el pinte',
+        texto: [
+          'Quien reparte da las cartas de cuatro en cuatro y vuelve la última, la suya: es el pinte, y su palo es el triunfo de la mano.',
+          'El pinte se queda en la mano de quien reparte, a la vista de todos, hasta que lo juega.',
+        ],
+      },
+      {
+        titulo: 'Lo que vale cada carta',
+        texto: [
+          'De la más fuerte a la más débil: el 9 (la manilla), el As, el Rey, el Caballo, la Sota, y después el 8, 7, 6, 5, 4, 3 y 2.',
+          'La manilla vale 5 puntos, el As 4, el Rey 3, el Caballo 2 y la Sota 1; las demás no valen nada. Además, cada baza vale 1 punto: en total, cada mano reparte 72 puntos.',
+        ],
+        ejemplo: 'valoresManilla',
+      },
+      {
+        titulo: 'Cómo se juega una baza',
+        texto: [
+          'Sale el jugador siguiente al que reparte. Gana la baza el triunfo más alto o, si no hay triunfos, la carta más fuerte del palo que salió. Quien la gana sale en la siguiente.',
+          'Si la baza la va ganando un rival, hay que seguir el palo y superar su carta si puedes; si no tienes el palo, fallar con triunfo, y superar el triunfo más alto si puedes. Si no puedes superarlo, puedes echar la carta que quieras.',
+          'Si la baza la va ganando tu compañero, solo tienes que seguir el palo: no hace falta superarle ni fallar. La mesa solo te deja jugar las cartas permitidas.',
+        ],
+        ejemplo: 'baza',
+      },
+      {
+        titulo: 'La puntuación',
+        texto: [
+          'Al acabar las 12 bazas, cada pareja cuenta sus puntos de cartas y bazas y se anota lo que pasa de 36. Con 36 a 36 nadie se anota nada por las cartas.',
+          'Además, la pareja que reparte se anota lo que vale el pinte: 5 si es la manilla, 4 si es el As, y así.',
+        ],
+        ejemplo: 'puntuacion',
+      },
+      {
+        titulo: 'Cuando el pinte da la partida',
+        texto: [
+          'Si con el pinte la pareja que reparte llegaría a los puntos de la partida, solo se lo anota si ha hecho al menos 36 en la mano. Si no, no lo anota y la partida sigue.',
+        ],
+      },
+      {
+        titulo: 'Cómo jugar una carta',
+        texto: [
+          'Arrastra la carta a la mesa, o tócala y toca la mesa. Con un doble toque también se juega.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Juega como en el Tute por parejas, salvo cuando la baza ya es de tu compañero: entonces no tienes que montar, y es el momento de cargarle puntos, como el As o el Rey.',
+          'Sal con la manilla de un palo que no sea triunfo: gana seguro. Y lleva la cuenta de las manillas y los ases que han salido.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Se juega sobre todo en Cataluña, en la Comunidad Valenciana y en el sur de Francia. Los autores españoles dicen que viene de Francia, y los franceses, que viene de España; por lo extendida que está aquí, parece más probable lo segundo. De ella salió la Butifarra, en la que el triunfo ya no lo marca la carta vuelta, sino que lo elige quien reparte. El nombre viene de la «manilla», el 9, la carta más fuerte de cada palo.',
         ],
       },
     ],

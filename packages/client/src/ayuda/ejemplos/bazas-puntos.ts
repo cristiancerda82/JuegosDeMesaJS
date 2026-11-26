@@ -562,4 +562,37 @@ export const BAZAS_PUNTOS: Partial<Record<IdJuego, EjemplosJuego>> = {
       'La manilla, el 9, es la carta más fuerte de cada palo: gana al As.',
     ),
   },
+
+  manilla: {
+    valoresManilla: valores(
+      'Las cartas que dan puntos, de la más fuerte a la más débil: la manilla (el 9), el As, el Rey, el Caballo y la Sota.',
+      [
+        ['copas-9', 5],
+        ['copas-1', 4],
+        ['copas-12', 3],
+        ['copas-11', 2],
+        ['copas-10', 1],
+      ],
+    ),
+    baza: baza(
+      'El pinte es el 4 de copas. Sales con el As de oros, la Derecha echa el 9 de oros, tu compañero no tiene oros y falla con el 2 de copas, y la Izquierda echa el 3 de oros: gana el 2 de copas.',
+      PAREJAS,
+      ['oros-1', 'oros-9', 'copas-2', 'oros-3'],
+      'copas-4',
+      2,
+      'El 2 de copas es triunfo y gana al 9 de oros: tu pareja se lleva la manilla y el As, 10 puntos con la baza.',
+    ),
+    puntuacion: {
+      tipo: 'tabla',
+      descripcion:
+        'Tu pareja reparte, vuelve el 9 de oros y hace 40 puntos entre cartas y bazas: se anota 4 por pasar de 36 y 5 por el pinte, 9 en total.',
+      titulo: 'Tu pareja reparte con el 9 de oros de pinte',
+      filas: [
+        ['Cartas y bazas', '40'],
+        ['Lo que pasa de 36', '4'],
+        ['El pinte, la manilla', '5'],
+        ['Se anota', '9'],
+      ],
+    },
+  },
 };

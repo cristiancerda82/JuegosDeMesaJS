@@ -161,6 +161,9 @@ import { reconstruirCasitaRobada } from '../../src/ia/reconstruir/casita-robada'
 import { iaCasitaRobadaBasica } from '../../src/ia/casita-robada-basica';
 import { casitaRobada, CONFIG_CASITA_ROBADA_POR_DEFECTO } from '../../src/juegos/casita-robada';
 import { reconstruirBurroBazas } from '../../src/ia/reconstruir/burro-bazas';
+import { reconstruirManilla, topesManilla } from '../../src/ia/reconstruir/manilla';
+import { iaManillaBasica } from '../../src/ia/manilla-basica';
+import { CONFIG_MANILLA_POR_DEFECTO, manilla } from '../../src/juegos/manilla';
 import { iaBurroBazasBasica } from '../../src/ia/burro-bazas-basica';
 import {
   burroBazas,
@@ -2034,5 +2037,43 @@ describe('Reconstrucción del Burro de bazas', () => {
       mazos.add(rec.mazo.join());
     }
     expect(mazos.size).toBeGreaterThan(1);
+  });
+});
+
+describirReconstruccion(manilla, reconstruirManilla, {
+  configs: [CONFIG_MANILLA_POR_DEFECTO, { objetivo: 20 }],
+  base: iaManillaBasica,
+});
+
+describe('Reconstrucción de la Manilla', () => {
+  it('el pinte sigue en la mano del que reparte mientras no lo juegue', () => {
+    const r = manilla.crear(CONFIG_MANILLA_POR_DEFECTO, 'pinte');
+    if (!r.ok) throw new Error(r.error);
+    const vista = manilla.vistaDe(r.valor, 0);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirManilla(vista, crearAzar(`m${i}`));
+      expect(rec.manos[3]).toContain(vista.pinte);
+      expect(manilla.vistaDe(rec, 0)).toEqual(vista);
+    }
+  });
+
+  it('quien no falla contra un rival no tiene triunfos; quien no sobrefalla, ninguno mayor', () => {
+    const topes = topesManilla(
+      [
+        [
+          { asiento: 0, carta: 'copas-11' },
+          { asiento: 1, carta: 'bastos-2' },
+          { asiento: 2, carta: 'oros-12' },
+          { asiento: 3, carta: 'espadas-4' },
+        ],
+      ],
+      'oros',
+    );
+    // El 1 no tenía copas ni triunfos; el 3, contra el Rey de oros del 2, ningún oro mayor.
+    expect(topes[1]!.get('copas')).toBe(0);
+    expect(topes[1]!.get('oros')).toBe(0);
+    expect(topes[3]!.get('copas')).toBe(0);
+    expect(topes[3]!.get('oros')).toBe(10);
+    expect(topes[2]!.get('oros')).toBe(Number.POSITIVE_INFINITY);
   });
 });

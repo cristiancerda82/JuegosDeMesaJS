@@ -139,6 +139,12 @@ import {
   CONFIG_CASITA_ROBADA_POR_DEFECTO,
   burroBazas,
   CONFIG_BURRO_BAZAS_POR_DEFECTO,
+  manilla,
+  CONFIG_MANILLA_POR_DEFECTO,
+  type AccionManilla,
+  type ConfigManilla,
+  type EstadoManilla,
+  type VistaManilla,
   type AccionBurroBazas,
   type ConfigBurroBazas,
   type EstadoBurroBazas,
@@ -641,7 +647,8 @@ export type IdJuego =
   | 'polignac'
   | 'pokerCinco'
   | 'casitaRobada'
-  | 'burroBazas';
+  | 'burroBazas'
+  | 'manilla';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -729,6 +736,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'pokerCinco',
   'casitaRobada',
   'burroBazas',
+  'manilla',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2395,6 +2403,21 @@ export const DEF_BURRO_BAZAS: DefBurroBazas = {
   },
 };
 
+export type DefManilla = DefJuego<ConfigManilla, EstadoManilla, AccionManilla, VistaManilla>;
+
+export const DEF_MANILLA: DefManilla = {
+  id: 'manilla',
+  nombre: T.menu.manilla,
+  juego: manilla,
+  configPorDefecto: CONFIG_MANILLA_POR_DEFECTO,
+  ia: IAS.manilla,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2481,6 +2504,7 @@ export const JUEGOS = {
   pokerCinco: DEF_POKER_CINCO,
   casitaRobada: DEF_CASITA_ROBADA,
   burroBazas: DEF_BURRO_BAZAS,
+  manilla: DEF_MANILLA,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

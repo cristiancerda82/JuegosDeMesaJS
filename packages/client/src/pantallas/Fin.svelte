@@ -37,6 +37,7 @@
   import ResumenRentz from '../mesas/ResumenRentz.svelte';
   import ResumenPolignac from '../mesas/ResumenPolignac.svelte';
   import ResumenBurroBazas from '../mesas/ResumenBurroBazas.svelte';
+  import ResumenManilla from '../mesas/ResumenManilla.svelte';
   import ResumenBourre from '../mesas/ResumenBourre.svelte';
   import ResumenTresillo from '../mesas/ResumenTresillo.svelte';
   import ResumenConquian from '../mesas/ResumenConquian.svelte';
@@ -1252,6 +1253,13 @@
         <ResumenButifarra resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} {yo} red={partida.sesion.red} />
       {/if}
       <p class="nota" data-testid="fin-butifarra">{T.fin.manosJugadas(vista.resultadosManos.length)}</p>
+    {:else if partida.id === 'manilla'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenManilla resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} />
+      {/if}
+      <p class="nota" data-testid="fin-manilla">{T.fin.manosJugadas(vista.resultadosManos.length)}</p>
     {:else if partida.id === 'pinacle'}
       {@const vista = partida.sesion.vista}
       {#if vista.ultimaMano}
