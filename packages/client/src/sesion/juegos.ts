@@ -137,6 +137,12 @@ import {
   CONFIG_POKER_CINCO_POR_DEFECTO,
   casitaRobada,
   CONFIG_CASITA_ROBADA_POR_DEFECTO,
+  burroBazas,
+  CONFIG_BURRO_BAZAS_POR_DEFECTO,
+  type AccionBurroBazas,
+  type ConfigBurroBazas,
+  type EstadoBurroBazas,
+  type VistaBurroBazas,
   type AccionCasitaRobada,
   type ConfigCasitaRobada,
   type EstadoCasitaRobada,
@@ -634,7 +640,8 @@ export type IdJuego =
   | 'handAndFoot'
   | 'polignac'
   | 'pokerCinco'
-  | 'casitaRobada';
+  | 'casitaRobada'
+  | 'burroBazas';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -721,6 +728,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'polignac',
   'pokerCinco',
   'casitaRobada',
+  'burroBazas',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2360,6 +2368,33 @@ export const DEF_CASITA_ROBADA: DefCasitaRobada = {
   },
 };
 
+export type DefBurroBazas = DefJuego<
+  ConfigBurroBazas,
+  EstadoBurroBazas,
+  AccionBurroBazas,
+  VistaBurroBazas
+>;
+
+/** Tiempo para ver que un rival roba o pasa en el Burro de bazas. */
+const PAUSA_ROBO_MS = 900;
+
+export const DEF_BURRO_BAZAS: DefBurroBazas = {
+  id: 'burroBazas',
+  nombre: T.menu.burroBazas,
+  juego: burroBazas,
+  configPorDefecto: CONFIG_BURRO_BAZAS_POR_DEFECTO,
+  ia: IAS.burroBazas,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada baza y cada robo ajeno.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    if (despues.bazasJugadas > antes.bazasJugadas) return PAUSA_BAZA_MS;
+    const otro = (a: number) => a !== despues.asiento;
+    const robo = despues.robadas.some((r, a) => otro(a) && r > (antes.robadas[a] ?? 0));
+    const paso = despues.pasaron.some((a) => otro(a) && !antes.pasaron.includes(a));
+    return robo || paso ? PAUSA_ROBO_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2445,6 +2480,7 @@ export const JUEGOS = {
   polignac: DEF_POLIGNAC,
   pokerCinco: DEF_POKER_CINCO,
   casitaRobada: DEF_CASITA_ROBADA,
+  burroBazas: DEF_BURRO_BAZAS,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

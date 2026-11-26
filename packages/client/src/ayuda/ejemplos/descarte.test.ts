@@ -1,5 +1,8 @@
 import {
+  burroBazas,
   casaOchoLoco,
+  CONFIG_BURRO_BAZAS_POR_DEFECTO,
+  ganadoraBurroBazas,
   descartePokerCinco,
   encajaEnMesa,
   encajaKings,
@@ -135,6 +138,34 @@ test('Burro: después de pasar, cuatro cartas iguales', () => {
   const e = descarte.ejemplo('burro', 'pasar', 'antesDespues');
   expect(sonCuatroIguales(zona(e.antes, 'Tu mano'))).toBe(false);
   expect(sonCuatroIguales(zona(e.despues, 'Tu mano'))).toBe(true);
+});
+
+test('Burro de bazas: la baza sin triunfo y robar hasta tener el palo, como lo hace el motor', () => {
+  const b = descarte.ejemplo('burroBazas', 'baza', 'baza');
+  const mesa = b.jugadas.map((j, asiento) => ({ asiento, carta: j.id }));
+  expect(ganadoraBurroBazas(mesa).asiento).toBe(b.gana);
+  const e = descarte.ejemplo('burroBazas', 'robar', 'antesDespues');
+  const inicio = burroBazas.crear(CONFIG_BURRO_BAZAS_POR_DEFECTO, 'ejemplo');
+  if (!inicio.ok) throw new Error(inicio.error);
+  const [salida] = zona(e.antes, 'Mesa');
+  const estado = {
+    ...inicio.valor,
+    manos: [
+      ['oros-1' as IdCarta],
+      zona(e.antes, 'Tu mano'),
+      ['oros-2' as IdCarta],
+      ['oros-3' as IdCarta],
+    ],
+    mazo: zona(e.antes, 'Mazo'),
+    mesa: [{ asiento: 0, carta: salida! }],
+    salida: 0,
+    turno: 1,
+  };
+  expect(burroBazas.accionesLegales(estado, 1)).toEqual([{ tipo: 'robar' }]);
+  const tras = burroBazas.transicion(estado, 1, { tipo: 'robar' });
+  expect(tras.mesa.map((j) => j.carta)).toEqual(zona(e.despues, 'Mesa'));
+  expect(tras.manos[1]).toEqual(zona(e.despues, 'Tu mano'));
+  expect(tras.mazo).toEqual(zona(e.despues, 'Mazo'));
 });
 
 test('Kings Corner: la carta encaja en la pila y la K abre la esquina', () => {

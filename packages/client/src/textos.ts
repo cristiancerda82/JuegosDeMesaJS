@@ -139,6 +139,9 @@ export const T = {
     corazonesDesc: 'Bazas con baraja francesa: evita los corazones y la Q de picas.',
     burro: 'Burro',
     burroDesc: 'Junta cuatro iguales pasando cartas y que no te pillen el último en plantarte.',
+    burroBazas: 'Burro de bazas',
+    burroBazasDesc:
+      'De 3 a 6 y sin triunfo: sigue el palo o roba hasta tenerlo, y no seas el último con cartas en la mano.',
     cinquillo: 'Cinquillo',
     cinquilloDesc: 'Coloca tus cartas en escalera a partir de los cincos y quédate sin ninguna.',
     mus: 'Mus',
@@ -514,6 +517,8 @@ export const T = {
     ordenAntiguoPolignacDesc:
       'El As va por debajo de la J (K, Q, J, A, 10, 9, 8, 7) y, sin el palo, hay que soltar una J: la de picas primero.',
     sietesPolignac: 'Con 3, 5 o 6 jugadores se quitan el 7 de picas y el de tréboles.',
+    limiteBurroBazas: 'Fin de la partida',
+    limiteBurroBazasN: (n: number) => `Al llegar a ${n} penalizaciones`,
     duracionPocha: 'Duración',
     duracionCorta: 'Corta: de 1 a 5 cartas y vuelta (9 manos)',
     duracionCompleta: 'Completa: hasta repartir toda la baraja y vuelta',
@@ -3395,6 +3400,35 @@ export const T = {
     esBurro: (quien: string) => `${quien} es el burro.`,
   },
 
+  burroBazas: {
+    reparte: 'Reparte',
+    sinCartas: 'Sin cartas',
+    robo: (n: number) => `Robó ${n}`,
+    pasa: 'Pasa',
+    penalizacionesCortas: (n: number) => `Pen. ${n}`,
+    manoN: (n: number) => `Mano ${n}`,
+    tusPenalizaciones: (n: number, limite: number) =>
+      `Tú: ${n === 1 ? '1 penalización' : `${n} penalizaciones`} (a ${limite})`,
+    robar: 'Robar',
+    pasar: 'Pasar',
+    debesRobar: 'No tienes el palo: roba hasta sacar una carta de ese palo',
+    debesPasar: 'No tienes el palo y ya no queda mazo: pasas',
+    teHasLibrado: 'Te has quedado sin cartas: espera a que acabe la mano',
+    finMano: (n: number) => `Fin de la mano ${n}`,
+    esBurro: (quien: string, cartas: number) => {
+      const resto = cartas === 1 ? '1 carta' : `${cartas} cartas`;
+      return quien === 'Tú'
+        ? `Eres el burro: te quedas con ${resto}`
+        : `${quien} es el burro: se queda con ${resto}`;
+    },
+    sinBurro: 'Los últimos se quedan sin cartas a la vez: no hay burro',
+    orden: 'Se quedaron sin cartas, por orden',
+    jugadorCol: 'Jugador',
+    penalizacionesCol: 'Penalizaciones',
+    siguienteMano: 'Siguiente mano',
+    clasificacion: 'Penalizaciones',
+  },
+
   cinquillo: {
     mesa: 'Mesa',
     paso: 'Paso',
@@ -3596,6 +3630,7 @@ export const T = {
       pocha: 'Cómo se juega a la Pocha',
       mus: 'Cómo se juega al Mus',
       burro: 'Cómo se juega al Burro',
+      burroBazas: 'Cómo se juega al Burro de bazas',
       pinacle: 'Cómo se juega al Pinacle',
       butifarra: 'Cómo se juega a la Butifarra',
       truc: 'Cómo se juega al Truc',
@@ -7807,7 +7842,7 @@ export const T = {
         texto: [
           'Se juega con la baraja española, de 3 a 5 jugadores, contra la máquina. Cada uno recibe 4 cartas, y entre todas hay exactamente 4 de cada número en juego (por ejemplo, los cuatro reyes, los cuatro sietes…).',
           'Hay que juntar las 4 cartas de un mismo número. Pero lo importante es no ser el último en darse cuenta de que alguien lo ha conseguido.',
-          'En otros sitios se llama Burro a un juego distinto, de bazas, en el que hay que deshacerse de las cartas: el último que se queda con ellas es el burro.',
+          'En muchos sitios se llama Burro a otro juego, de bazas, en el que hay que deshacerse de las cartas: también lo tienes en el menú, como «Burro de bazas».',
         ],
       },
       {
@@ -7851,6 +7886,56 @@ export const T = {
         plegada: true,
         texto: [
           'Es un juego familiar muy extendido, de juntar cuatro cartas iguales y estar atento a la mesa. Juegos parecidos se conocen en otros países con nombres como «Spoons» o «Pig», y en todos pierde el último en darse cuenta, que es «el burro».',
+        ],
+      },
+    ],
+
+    burroBazas: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Un juego de bazas sin triunfo para 3 a 6 jugadores, con la baraja española de 48 cartas (con ochos y nueves). Hay que quedarse sin cartas: el último que se queda con alguna es el burro y suma una penalización.',
+          'La partida acaba cuando alguien llega a 3 penalizaciones (o a 5, si lo eliges en las opciones), y ganan los que tienen menos.',
+        ],
+      },
+      {
+        titulo: 'El reparto',
+        texto: [
+          'Cada uno recibe 4 cartas y el resto queda boca abajo en el mazo. Sale el jugador siguiente al que reparte, y en cada mano reparte el siguiente.',
+        ],
+      },
+      {
+        titulo: 'Las bazas',
+        texto: [
+          'Quien sale echa la carta que quiera. Los demás tienen que seguir el palo, pero no hace falta echar una más alta. Gana la carta más alta del palo de salida, del Rey al As: aquí el As es la más baja. Quien gana sale en la siguiente.',
+        ],
+        ejemplo: 'baza',
+      },
+      {
+        titulo: 'Sin el palo',
+        texto: [
+          'Si no tienes el palo, robas del mazo hasta sacar una carta de ese palo y la echas; las demás que robas se quedan en tu mano. Cuando el mazo se acaba, quien no tiene el palo pasa sin echar carta.',
+        ],
+        ejemplo: 'robar',
+      },
+      {
+        titulo: 'El burro',
+        texto: [
+          'Quien se queda sin cartas deja de jugar, y los demás siguen hasta que solo a uno le quedan cartas: ese es el burro. Si los últimos se quedan sin cartas en la misma baza, no hay burro.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Lleva la cuenta de las cartas que han salido para saber cuáles de las tuyas son ya las más altas de su palo, las «puntas». Cuando salgas, juégalas: ganas la baza y vuelves a salir.',
+          'Al salir, elige un palo del que los demás tengan pocas cartas: quien no lo tenga tendrá que robar. Y procura no quedarte sin un palo del que aún quedan cartas, o te tocará robar a ti.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Con el nombre de Burro se juegan varios juegos distintos en España y en América. Este, de bazas y sin triunfo, se juega en varias regiones españolas, aunque no se sabe bien de dónde viene. Se parece a juegos de otros países en los que también hay que deshacerse de las cartas siguiendo el palo, como el «Getaway» inglés o el «Bhabhi» de la India, y como en ellos el que pierde es «el burro».',
         ],
       },
     ],

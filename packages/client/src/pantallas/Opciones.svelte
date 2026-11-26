@@ -64,6 +64,7 @@
     ConfigPolignac,
     ConfigPokerCinco,
     ConfigCasitaRobada,
+    ConfigBurroBazas,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -186,6 +187,7 @@
   let cuarentaConfig: Editable<ConfigCuarenta> = $state({ ...JUEGOS.cuarenta.configPorDefecto });
   let pishtiConfig: Editable<ConfigPishti> = $state({ ...JUEGOS.pishti.configPorDefecto });
   let casitaConfig: Editable<ConfigCasitaRobada> = $state({ ...JUEGOS.casitaRobada.configPorDefecto });
+  let burroBazasConfig: Editable<ConfigBurroBazas> = $state({ ...JUEGOS.burroBazas.configPorDefecto });
   let ecarteConfig: Editable<ConfigEcarte> = $state({ ...JUEGOS.ecarte.configPorDefecto });
   let tysiachaConfig: Editable<ConfigTysiacha> = $state({ ...JUEGOS.tysiacha.configPorDefecto });
   let sheepsheadConfig: Editable<ConfigSheepshead> = $state({ ...JUEGOS.sheepshead.configPorDefecto });
@@ -313,6 +315,7 @@
       cuarenta: cuarentaConfig,
       pishti: pishtiConfig,
       casitaRobada: casitaConfig,
+      burroBazas: burroBazasConfig,
       ecarte: ecarteConfig,
       tysiacha: tysiachaConfig,
       sheepshead: sheepsheadConfig,
@@ -518,6 +521,35 @@
           <label
             ><input type="radio" bind:group={casitaConfig.jugadores} value={n} data-testid="casita-jugadores-{n}" />
             {T.opciones.jugadoresN(n)}</label
+          >
+        {/each}
+      </fieldset>
+    {:else if juego === 'burroBazas'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each [3, 4, 5, 6] as const as n (n)}
+          <label
+            ><input
+              type="radio"
+              bind:group={burroBazasConfig.jugadores}
+              value={n}
+              data-testid="burro-bazas-jugadores-{n}"
+            />
+            {T.opciones.jugadoresN(n)}</label
+          >
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.limiteBurroBazas}</legend>
+        {#each [3, 5] as const as l (l)}
+          <label
+            ><input
+              type="radio"
+              bind:group={burroBazasConfig.limite}
+              value={l}
+              data-testid="burro-bazas-limite-{l}"
+            />
+            {T.opciones.limiteBurroBazasN(l)}</label
           >
         {/each}
       </fieldset>

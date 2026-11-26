@@ -36,6 +36,7 @@
   import ResumenSheepshead from '../mesas/ResumenSheepshead.svelte';
   import ResumenRentz from '../mesas/ResumenRentz.svelte';
   import ResumenPolignac from '../mesas/ResumenPolignac.svelte';
+  import ResumenBurroBazas from '../mesas/ResumenBurroBazas.svelte';
   import ResumenBourre from '../mesas/ResumenBourre.svelte';
   import ResumenTresillo from '../mesas/ResumenTresillo.svelte';
   import ResumenConquian from '../mesas/ResumenConquian.svelte';
@@ -100,6 +101,11 @@
     if (partida.id === 'burro') {
       return fin.ganadores.includes(yo) ? T.burro.librado : T.burro.eresBurro;
     }
+    if (partida.id === 'burroBazas') {
+      const vista = partida.sesion.vista;
+      if ((vista.penalizaciones[yo] ?? 0) >= vista.config.limite) return T.burro.eresBurro;
+      return fin.ganadores.includes(yo) ? T.fin.victoria : T.burro.librado;
+    }
     if (fin.empate) return T.fin.empate;
     return fin.ganadores.includes(yo) ? T.fin.victoria : T.fin.derrota;
   });
@@ -152,6 +158,7 @@
       partida.id !== 'mus' &&
       partida.id !== 'corazones' &&
       partida.id !== 'burro' &&
+      partida.id !== 'burroBazas' &&
       partida.id !== 'julepe' &&
       partida.id !== 'remigio' &&
       partida.id !== 'tuteSubastado' &&
@@ -310,6 +317,24 @@
               <th scope="row">{nombreChinchon(a, n)}</th>
               <td class="letras" data-testid="letras-{a}">{T.burro.letras(vista.letras[a]!)}</td>
             </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else if partida.id === 'burroBazas'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const n = vista.config.jugadores}
+      {@const nombre = (a: number) => nombreNumerado(a, n, yo, partida.sesion.red, T.brisca.rivalN)}
+      {#if ultima}
+        <ResumenBurroBazas resultado={ultima} {yo} {nombre} />
+      {/if}
+      <table data-testid="penalizaciones-burro-bazas">
+        <caption>{T.burroBazas.clasificacion}</caption>
+        <tbody>
+          {#each Array.from({ length: n }, (_, a) => a).sort((a, b) => vista.penalizaciones[a]! - vista.penalizaciones[b]!) as a, i (a)}
+            <tr
+              ><th scope="row">{nombre(a)}</th><td data-testid="penalizaciones-fin-{i}">{vista.penalizaciones[a]}</td></tr
+            >
           {/each}
         </tbody>
       </table>

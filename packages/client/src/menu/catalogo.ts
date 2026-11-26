@@ -275,6 +275,7 @@ export const CATALOGO: Readonly<Record<IdJuego, EntradaCatalogo>> = {
     'treboles-5',
   ]),
   burro: entrada('descarte', E, T.menu.burroDesc, ['oros-12', 'copas-12', 'espadas-12']),
+  burroBazas: entrada('descarte', E, T.menu.burroBazasDesc, ['bastos-12', 'bastos-9', 'bastos-1']),
   kingsCorner: entrada('descarte', F, T.menu.kingsCornerDesc, [
     'picas-13',
     'corazones-12',

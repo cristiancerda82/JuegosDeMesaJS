@@ -165,6 +165,10 @@ const RAZONES_JUEGO: Partial<Record<IdJuego, Readonly<Record<string, string>>>> 
   pesca: { pedir: 'es probable que tenga cartas de ese número y completes un grupo' },
   corazones: { pasar: 'te quitas una carta peligrosa o difícil de jugar' },
   burro: { pasar: 'no te sirve para juntar cuatro iguales' },
+  burroBazas: {
+    robar: 'no tienes el palo: hay que robar hasta sacar una carta de ese palo',
+    pasar: 'no tienes el palo y ya no queda mazo',
+  },
   cinquillo: { jugar: 'abre el paso a tus cartas de ese palo antes que a las de los rivales' },
   sevens: { jugar: 'abre el paso a tus cartas de ese palo antes que a las de los rivales' },
   spiteMalice: { jugar: 'te acerca a vaciar tu montón, que es lo que gana la partida' },
@@ -404,6 +408,10 @@ const ACCIONES_RIVAL_JUEGO: Partial<
   pesca: { pedir: ['pide cartas a otro jugador', 'busca completar un grupo'] },
   corazones: { pasar: ['pasa', 'se quita una carta peligrosa o difícil de jugar'] },
   burro: { pasar: ['pasa', 'no le sirve para juntar cuatro iguales'] },
+  burroBazas: {
+    robar: ['roba hasta sacar una carta del palo', 'no tenía el palo'],
+    pasar: ['pasa', 'no tiene el palo y no queda mazo'],
+  },
 };
 
 /** «Rival 1 juega el As de copas», «Rival se planta (prefiere…)». */
@@ -619,6 +627,8 @@ export const CONSEJOS_JUEGO: Readonly<Partial<Record<IdJuego, string>>> = {
     'Préférence: el que gana la subasta juega solo. Puja según tus bazas seguras y defiende con cuidado si juegas en contra.',
   cuarenta:
     'Cuarenta: recoge la carta igual o las que siguen en escalera. Busca las caídas y la limpia, y no dejes cartas fáciles al rival.',
+  burroBazas:
+    'Burro de bazas: lleva la cuenta de lo que ha salido y juega tus cartas más altas de cada palo cuando salgas. Sal por un palo que les falte a los demás, para que roben, y no te quedes sin un palo del que aún quedan cartas.',
   casitaRobada:
     'Casita robada: llévate las cartas del mismo número y, si puedes, roba la casita más grande. Cuidado con la carta que dejas arriba: si un rival tiene otra igual, te la roba.',
   pishti:

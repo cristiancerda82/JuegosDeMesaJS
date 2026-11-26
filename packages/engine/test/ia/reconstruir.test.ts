@@ -160,6 +160,13 @@ import {
 import { reconstruirCasitaRobada } from '../../src/ia/reconstruir/casita-robada';
 import { iaCasitaRobadaBasica } from '../../src/ia/casita-robada-basica';
 import { casitaRobada, CONFIG_CASITA_ROBADA_POR_DEFECTO } from '../../src/juegos/casita-robada';
+import { reconstruirBurroBazas } from '../../src/ia/reconstruir/burro-bazas';
+import { iaBurroBazasBasica } from '../../src/ia/burro-bazas-basica';
+import {
+  burroBazas,
+  CONFIG_BURRO_BAZAS_POR_DEFECTO,
+  type VistaBurroBazas,
+} from '../../src/juegos/burro-bazas';
 import { iaBriscolaChiamataBasica } from '../../src/ia/briscola-chiamata-basica';
 import {
   briscolaChiamata,
@@ -2000,4 +2007,32 @@ describe('Reconstrucción del Polignac', () => {
 describirReconstruccion(casitaRobada, reconstruirCasitaRobada, {
   configs: [CONFIG_CASITA_ROBADA_POR_DEFECTO, { jugadores: 4 }],
   base: iaCasitaRobadaBasica,
+});
+
+describirReconstruccion(burroBazas, reconstruirBurroBazas, {
+  configs: [CONFIG_BURRO_BAZAS_POR_DEFECTO, { jugadores: 6, limite: 5 }],
+  base: iaBurroBazasBasica,
+});
+
+describe('Reconstrucción del Burro de bazas', () => {
+  it('reparte el mazo y las manos ajenas sin los palos que se sabe que no tienen', () => {
+    const r = burroBazas.crear(CONFIG_BURRO_BAZAS_POR_DEFECTO, 'bb');
+    if (!r.ok) throw new Error(r.error);
+    const vista: VistaBurroBazas = {
+      ...burroBazas.vistaDe(r.valor, 0),
+      sinPalo: [[], ['oros', 'copas'], [], ['espadas']],
+    };
+    const mazos = new Set<string>();
+    for (let i = 0; i < 20; i++) {
+      const rec = reconstruirBurroBazas(vista, crearAzar(`b${i}`));
+      expect(rec.manos.map((m) => m.length)).toEqual([4, 4, 4, 4]);
+      expect(rec.mazo).toHaveLength(32);
+      expect(rec.manos[1]!.filter((x) => x.startsWith('oros') || x.startsWith('copas'))).toEqual(
+        [],
+      );
+      expect(rec.manos[3]!.filter((x) => x.startsWith('espadas'))).toEqual([]);
+      mazos.add(rec.mazo.join());
+    }
+    expect(mazos.size).toBeGreaterThan(1);
+  });
 });

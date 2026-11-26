@@ -1,6 +1,6 @@
 import type { IdJuego } from '../../sesion/juegos';
 import type { EjemplosJuego } from '../tipos';
-import { valores } from './bazas-puntos';
+import { baza, CUATRO, valores } from './bazas-puntos';
 
 /** Ejemplos de las guías de los juegos de descarte. */
 export const DESCARTE: Partial<Record<IdJuego, EjemplosJuego>> = {
@@ -195,6 +195,35 @@ export const DESCARTE: Partial<Record<IdJuego, EjemplosJuego>> = {
       ],
       resaltadas: ['bastos-7'],
       explicacion: 'Con 4 cartas iguales, ¡plántate!',
+    },
+  },
+
+  burroBazas: {
+    baza: baza(
+      'Sales con el 9 de copas; el de tu derecha echa el As de copas, el de enfrente el Rey de copas y el de tu izquierda el 4 de copas: gana el Rey.',
+      CUATRO,
+      ['copas-9', 'copas-1', 'copas-12', 'copas-4'],
+      undefined,
+      2,
+      'No hay triunfo: gana el Rey, la más alta del palo de salida. El As es la carta más baja.',
+    ),
+    robar: {
+      tipo: 'antesDespues',
+      descripcion:
+        'Sale el 5 de oros y no tienes oros: robas el 2 de bastos, la Sota de copas y el Caballo de oros, y echas el Caballo.',
+      antes: [
+        { nombre: 'Mesa', cartas: ['oros-5'] },
+        { nombre: 'Tu mano', cartas: ['copas-3', 'espadas-7'] },
+        { nombre: 'Mazo', cartas: ['bastos-2', 'copas-10', 'oros-11'] },
+      ],
+      despues: [
+        { nombre: 'Mesa', cartas: ['oros-5', 'oros-11'] },
+        { nombre: 'Tu mano', cartas: ['copas-3', 'espadas-7', 'bastos-2', 'copas-10'] },
+        { nombre: 'Mazo', cartas: [] },
+      ],
+      resaltadas: ['bastos-2', 'copas-10', 'oros-11'],
+      explicacion:
+        'Robas hasta sacar una carta del palo de salida y la echas; las otras que has robado se quedan en tu mano.',
     },
   },
 

@@ -1597,6 +1597,26 @@ test('Casita robada en red: la carta que juega uno la ve el otro', async ({ brow
   await expect(ana.getByTestId('puesto-1')).toContainText('Luis');
 });
 
+test('Burro de bazas en red: la carta con la que sale uno la ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'burroBazas');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis])
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(4);
+
+  // Reparte Ana (asiento 0): sale Luis, que puede echar cualquiera de sus 4 cartas.
+  const jugables = luis.locator('[data-testid="mano"] .carta-mano.jugable');
+  await expect(jugables).toHaveCount(4);
+  const carta = await jugables.first().getAttribute('data-carta');
+  await jugables.first().click({ position: { x: 6, y: 6 } });
+  await luis.getByTestId('mesa').click();
+  await expect(ana.locator(`[data-testid="mesa"] [data-carta="${carta}"]`)).toBeVisible();
+  await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
+});
+
 test('Remigio en red: dos humanos roban y descartan', async ({ browser }) => {
   test.setTimeout(120_000);
   const ana = await jugador(browser);
