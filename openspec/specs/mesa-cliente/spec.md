@@ -2875,8 +2875,9 @@ La guía MUST incluir una línea que empiece por «En otros sitios» para cada v
 - el Polignac con el orden antiguo (el As por debajo de la J);
 - el Treinta y uno con viuda;
 - el Oh Hell que sube de 1 carta al máximo;
-- el Barbu cuyo dominó empieza por el número que elige quien reparte;
-- el Burro, que en algunas zonas es otro juego, de bazas.
+- el Barbu cuyo dominó empieza por el número que elige quien reparte.
+
+La guía del Burro MUST decir que en muchos sitios se llama Burro a otro juego, de bazas, y que también está en la suite como «Burro de bazas».
 
 La guía del Chinchón MUST incluir un ejemplo visual que coloca una carta suelta en una combinación a la vista. La guía de la Escoba MUST incluir un ejemplo con los 10 oros y los 4 sietes y su premio. Los dos ejemplos MUST cumplir las reglas tal como las aplica el motor con la variante activada.
 
@@ -2899,6 +2900,10 @@ La guía del Chinchón MUST incluir un ejemplo visual que coloca una carta suelt
 #### Scenario: El ejemplo de colocar una carta suelta
 - **WHEN** el jugador abre la guía del Chinchón
 - **THEN** ve un antes y un después en el que una carta suelta pasa a una combinación a la vista, resaltada
+
+#### Scenario: El otro Burro
+- **WHEN** el jugador abre la guía del Burro
+- **THEN** lee que el Burro de bazas, el otro juego con ese nombre, también está en el menú
 
 ### Requirement: Póker de cinco cartas en la suite
 El menú MUST incluir el Póker de cinco cartas junto al resto de juegos. Antes de empezar, sus opciones MUST permitir elegir el nivel de la IA, el modo asistido y el número de jugadores (de 2 a 6). Como el resto de juegos con IA, MUST poder jugarse en red.
@@ -3132,3 +3137,76 @@ La guía de la Brisca MUST explicar la variante (qué cartas se señalan, que so
 #### Scenario: La variante en la guía
 - **WHEN** el jugador abre la guía de la Brisca
 - **THEN** lee cómo se juega con señas y en qué opción se activa
+
+### Requirement: Burro de bazas en la suite
+El menú MUST incluir el Burro de bazas junto al resto de juegos. Antes de empezar, sus opciones MUST permitir elegir el nivel de la IA, el modo asistido, el número de jugadores (de 3 a 6) y el límite de la partida (3 o 5 penalizaciones). Como el resto de juegos con IA, MUST poder jugarse en red.
+
+#### Scenario: Empezar una partida de Burro de bazas
+- **WHEN** el jugador elige el Burro de bazas con 4 jugadores y empieza
+- **THEN** se abre su mesa con sus 4 cartas, los tres rivales y el mazo con 32 cartas
+
+### Requirement: Mesa del Burro de bazas
+La mesa del Burro de bazas MUST mostrar:
+- la mano del jugador, ordenada por palos y del Rey al As, y las de los rivales boca abajo;
+- cuántas cartas quedan en el mazo;
+- la baza en curso y a quién le toca;
+- junto a cada jugador:
+  - quién reparte;
+  - quién se ha quedado sin cartas;
+  - quién ha robado en la baza (y cuántas) o ha pasado;
+  - sus penalizaciones;
+- las penalizaciones del jugador y el límite.
+
+Si al jugador le toca y no tiene el palo de salida, la mesa MUST decírselo y ofrecerle «Robar» o, sin mazo, «Pasar».
+
+Al terminar cada mano, la mesa MUST mostrar un resumen con:
+- quién es el burro y cuántas cartas le quedaban, o que no lo hubo;
+- el orden en que se quedaron sin cartas;
+- las penalizaciones de cada uno.
+
+La pantalla de fin MUST mostrar el resumen de la última mano y las penalizaciones de cada jugador.
+
+#### Scenario: Robar sin el palo
+- **WHEN** le toca al jugador, no tiene el palo de salida y queda mazo
+- **THEN** la mesa le dice que no tiene el palo y, al tocar «Robar», roba hasta sacar una carta de ese palo y la echa
+
+#### Scenario: Resumen de la mano
+- **WHEN** termina una mano
+- **THEN** sale el resumen con el burro y las penalizaciones, y con «Siguiente mano» empieza la siguiente
+
+### Requirement: Mesa de bazas sin solapes con muchos jugadores
+En los juegos de bazas, con cualquier número de jugadores que admita el juego (hasta 7 en el Oh Hell), la mesa MUST dar a cada rival un sitio propio por encima del jugador. Los rivales van a la derecha, en la fila de arriba (de derecha a izquierda) y a la izquierda, siguiendo el orden de juego. Con 7, MUST haber cuatro rivales en la fila de arriba.
+
+A cualquier ancho desde 360 px, MUST NOT solaparse:
+- el nombre ni las cartas de ningún rival con los de otro;
+- ningún rival con la mesa del centro, el mazo ni la mano y el nombre del jugador;
+- las cartas de la baza entre sí.
+
+Cada carta de la baza MUST ir hacia el lado de quien la echó.
+
+#### Scenario: Oh Hell con 7
+- **WHEN** el jugador empieza un Oh Hell con 7 jugadores en un móvil y se hacen las apuestas
+- **THEN** ve a los 6 rivales por encima de su mano, sin que se pisen entre ellos ni con la mesa o el mazo
+
+#### Scenario: La baza con 7
+- **WHEN** en un Oh Hell con 7 hay varias cartas en la mesa
+- **THEN** cada carta está hacia su jugador, ninguna pisa a otra y cada una lleva quién la echó
+
+### Requirement: Autor de cada carta de la baza
+Con 3 o más jugadores, cada carta de la baza en curso MUST llevar el nombre de quien la echó, y la última que ha llegado MUST seguir resaltada. Con 5 o más jugadores, un nombre que termina en número (los rivales numerados) MUST abreviarse a su inicial y su número («R3»), para que quepa entero en la carta; el nombre completo MUST seguir disponible en la etiqueta.
+
+#### Scenario: Saber quién echó cada carta
+- **WHEN** en un juego de bazas de 4 jugadores hay tres cartas en la mesa
+- **THEN** cada una lleva el nombre del rival que la echó
+
+### Requirement: Ver la baza en curso
+En los juegos de bazas, mientras haya cartas en la baza en curso, la mesa MUST ofrecer «Ver baza». Al pulsarlo, MUST abrirse un panel con:
+- las cartas de la baza en el orden en que se echaron, en grande;
+- debajo de cada carta, el nombre completo de quien la echó;
+- un botón para cerrarlo.
+
+Ver la baza MUST NOT cambiar el estado del juego, y el panel MUST cerrarse solo al recogerse la baza.
+
+#### Scenario: Ver la baza
+- **WHEN** en un Oh Hell con 7 le toca al jugador con cuatro cartas en la mesa y pulsa «Ver baza»
+- **THEN** ve las cuatro cartas en orden con el nombre de quien echó cada una, y al cerrar el panel sigue su turno
