@@ -1,5 +1,8 @@
 import {
   burroBazas,
+  cuatroSeises,
+  encajaCuatroSeises,
+  posicionCuatroSeises,
   casaOchoLoco,
   CONFIG_BURRO_BAZAS_POR_DEFECTO,
   ganadoraBurroBazas,
@@ -126,6 +129,41 @@ test('Cinquillo y Sevens: la carta encaja en la escalera y las demás no', () =>
   };
   expect(encajaSevens(mesaS, sevens.resaltadas[0]!)).toBe(true);
   for (const c of zona(sevens.despues, 'Tu mano')) expect(encajaSevens(mesaS, c), c).toBe(false);
+});
+
+test('Cuatro seises: la escalera con la baraja de 48 y la cuenta del fondo', () => {
+  const e = descarte.ejemplo('cuatroSeises', 'escalera', 'antesDespues');
+  const oros = zona(e.antes, 'Oros').map((c) => posicionCuatroSeises(c, 48));
+  const mesa: MesaCinquillo = {
+    oros: { bajo: Math.min(...oros), alto: Math.max(...oros) },
+    copas: null,
+    espadas: null,
+    bastos: null,
+  };
+  expect(encajaCuatroSeises(mesa, e.resaltadas[0]!, 48)).toBe(true);
+  for (const c of zona(e.despues, 'Tu mano'))
+    expect(encajaCuatroSeises(mesa, c, 48), c).toBe(false);
+
+  // El motor cierra una mano de 4 en la que el asiento 0 pone su última carta con esos pases.
+  const t = descarte.ejemplo('cuatroSeises', 'fondo', 'tabla');
+  const pases = t.filas.map(([quien]) => Number(/(\d+) pases/.exec(quien)?.[1] ?? 0));
+  const r = cuatroSeises.crear({ baraja: 40, jugadores: 4, manos: 3 }, 'guia');
+  if (!r.ok) throw new Error(r.error);
+  const fondo = 4 + pases.reduce((s, p) => s + p, 0);
+  const final = cuatroSeises.transicion(
+    {
+      ...r.valor,
+      manos: [['oros-6'], ['copas-1'], ['copas-2'], ['copas-3']],
+      turno: 0,
+      pases,
+      fondo,
+    },
+    0,
+    { tipo: 'jugar', carta: 'oros-6' },
+  );
+  const signo = (n: number) => (n > 0 ? `+${n}` : `−${-n}`);
+  expect(t.filas.map(([, f]) => f)).toEqual(final.resultadosManos[0]!.fichas.map(signo));
+  expect(t.descripcion).toContain(`${fondo} fichas`);
 });
 
 test('Mentiroso: las cartas que no son del valor dicho son mentira', () => {

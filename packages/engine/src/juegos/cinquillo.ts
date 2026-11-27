@@ -73,7 +73,6 @@ export interface VistaCinquillo {
 
 /** Orden de las cartas de cada palo en la escalera: As, 2… 7, Sota, Caballo, Rey. */
 export const ORDEN_CINQUILLO = [1, 2, 3, 4, 5, 6, 7, 10, 11, 12] as const;
-const CINCO = ORDEN_CINQUILLO.indexOf(5);
 
 const paloDe = (id: IdCarta) => cartaDeId(id)!.palo as PaloEspanol;
 /** Posición de la carta en la escalera de su palo. */
@@ -84,13 +83,25 @@ const siguiente = (a: Asiento, n: number) => (a + 1) % n;
 
 const MESA_VACIA: MesaCinquillo = { oros: null, copas: null, espadas: null, bastos: null };
 
-/** La carta se puede poner en la mesa: abre su palo con el 5 o alarga un extremo. */
-export function encajaEnMesa(mesa: MesaCinquillo, carta: IdCarta): boolean {
+/**
+ * La carta se puede poner en unas escaleras con este orden: abre su palo si es la carta de la que
+ * nacen (`inicial`) o alarga uno de sus extremos. Común al Cinquillo y al Cuatro seises.
+ */
+export function encajaEnEscaleras(
+  mesa: MesaCinquillo,
+  carta: IdCarta,
+  orden: readonly number[],
+  inicial: number,
+): boolean {
   const escalera = mesa[paloDe(carta)];
-  const pos = posicionCinquillo(carta);
-  if (escalera === null) return pos === CINCO;
+  const pos = orden.indexOf(cartaDeId(carta)!.valor);
+  if (escalera === null) return pos === orden.indexOf(inicial);
   return pos === escalera.bajo - 1 || pos === escalera.alto + 1;
 }
+
+/** La carta se puede poner en la mesa: abre su palo con el 5 o alarga un extremo. */
+export const encajaEnMesa = (mesa: MesaCinquillo, carta: IdCarta) =>
+  encajaEnEscaleras(mesa, carta, ORDEN_CINQUILLO, 5);
 
 const mesaVacia = (mesa: MesaCinquillo) => PALOS_ESPANOLES.every((p) => mesa[p] === null);
 

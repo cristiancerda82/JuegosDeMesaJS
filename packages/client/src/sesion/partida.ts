@@ -151,6 +151,10 @@ import {
   type ConfigCuarentaYTres,
   type EstadoCuarentaYTres,
   type VistaCuarentaYTres,
+  type AccionCuatroSeises,
+  type ConfigCuatroSeises,
+  type EstadoCuatroSeises,
+  type VistaCuatroSeises,
   type ConfigBurroBazas,
   type EstadoBurroBazas,
   type VistaBurroBazas,
@@ -427,6 +431,7 @@ import {
   DEF_MANILLA,
   DEF_TUTE_GANA_PIERDE,
   DEF_CUARENTA_Y_TRES,
+  DEF_CUATRO_SEISES,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -599,6 +604,12 @@ export type SesionCuarentaYTres = SesionMesa<
   EstadoCuarentaYTres,
   AccionCuarentaYTres,
   VistaCuarentaYTres
+>;
+export type SesionCuatroSeises = SesionMesa<
+  ConfigCuatroSeises,
+  EstadoCuatroSeises,
+  AccionCuatroSeises,
+  VistaCuatroSeises
 >;
 export type SesionBurroBazas = SesionMesa<
   ConfigBurroBazas,
@@ -853,7 +864,8 @@ export type Partida =
   | { readonly id: 'burroBazas'; readonly sesion: SesionBurroBazas }
   | { readonly id: 'manilla'; readonly sesion: SesionManilla }
   | { readonly id: 'tuteGanaPierde'; readonly sesion: SesionTuteGanaPierde }
-  | { readonly id: 'cuarentaYTres'; readonly sesion: SesionCuarentaYTres };
+  | { readonly id: 'cuarentaYTres'; readonly sesion: SesionCuarentaYTres }
+  | { readonly id: 'cuatroSeises'; readonly sesion: SesionCuatroSeises };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -942,7 +954,8 @@ export type ConfigJuego =
   | ConfigBurroBazas
   | ConfigManilla
   | ConfigTuteGanaPierde
-  | ConfigCuarentaYTres;
+  | ConfigCuarentaYTres
+  | ConfigCuatroSeises;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -1123,6 +1136,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_TUTE_GANA_PIERDE);
     case 'cuarentaYTres':
       return hacer(DEF_CUARENTA_Y_TRES);
+    case 'cuatroSeises':
+      return hacer(DEF_CUATRO_SEISES);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':

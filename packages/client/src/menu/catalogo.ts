@@ -279,6 +279,7 @@ export const CATALOGO: Readonly<Record<IdJuego, EntradaCatalogo>> = {
   bigTwo: entrada('descarte', F, T.menu.bigTwoDesc, ['picas-2', 'corazones-2', 'diamantes-3']),
   durak: entrada('descarte', F, T.menu.durakDesc, ['picas-6', 'picas-1', 'corazones-13']),
   cinquillo: entrada('descarte', E, T.menu.cinquilloDesc, ['oros-5', 'oros-6', 'copas-5']),
+  cuatroSeises: entrada('descarte', E, T.menu.cuatroSeisesDesc, ['oros-6', 'copas-6', 'espadas-6']),
   sevens: entrada('descarte', F, T.menu.sevensDesc, ['diamantes-7', 'diamantes-8', 'diamantes-6']),
   mentiroso: entrada('descarte', F, T.menu.mentirosoDesc, [
     'picas-13',

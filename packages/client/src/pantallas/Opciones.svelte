@@ -1,5 +1,6 @@
 <script lang="ts">
   import {
+    JUGADORES_CUATRO_SEISES,
     NIVELES_IA,
     type NivelIA,
   } from '@juegos/engine';
@@ -68,6 +69,7 @@
     ConfigManilla,
     ConfigTuteGanaPierde,
     ConfigCuarentaYTres,
+    ConfigCuatroSeises,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -197,6 +199,9 @@
   });
   let cuarentaYTresConfig: Editable<ConfigCuarentaYTres> = $state({
     ...JUEGOS.cuarentaYTres.configPorDefecto,
+  });
+  let cuatroSeisesConfig: Editable<ConfigCuatroSeises> = $state({
+    ...JUEGOS.cuatroSeises.configPorDefecto,
   });
   let ecarteConfig: Editable<ConfigEcarte> = $state({ ...JUEGOS.ecarte.configPorDefecto });
   let tysiachaConfig: Editable<ConfigTysiacha> = $state({ ...JUEGOS.tysiacha.configPorDefecto });
@@ -329,6 +334,7 @@
       manilla: manillaConfig,
       tuteGanaPierde: tuteGanaPierdeConfig,
       cuarentaYTres: cuarentaYTresConfig,
+      cuatroSeises: cuatroSeisesConfig,
       ecarte: ecarteConfig,
       tysiacha: tysiachaConfig,
       sheepshead: sheepsheadConfig,
@@ -899,6 +905,48 @@
               value={m}
               data-testid="cuarenta-y-tres-manos-{m}"
             />
+            {T.opciones.manosPartidaN(m)}</label
+          >
+        {/each}
+      </fieldset>
+    {:else if juego === 'cuatroSeises'}
+      <fieldset>
+        <legend>{T.opciones.baraja}</legend>
+        {#each [40, 48] as const as b (b)}
+          <label
+            ><input
+              type="radio"
+              bind:group={cuatroSeisesConfig.baraja}
+              value={b}
+              data-testid="cuatro-seises-baraja-{b}"
+              onchange={() => {
+                const posibles: readonly number[] = JUGADORES_CUATRO_SEISES[b];
+                if (!posibles.includes(cuatroSeisesConfig.jugadores)) cuatroSeisesConfig.jugadores = 4;
+              }}
+            />
+            {b === 40 ? T.opciones.baraja40 : T.opciones.baraja48}</label
+          >
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        {#each JUGADORES_CUATRO_SEISES[cuatroSeisesConfig.baraja] as n (n)}
+          <label
+            ><input
+              type="radio"
+              bind:group={cuatroSeisesConfig.jugadores}
+              value={n}
+              data-testid="cuatro-seises-jugadores-{n}"
+            />
+            {T.opciones.jugadoresN(n)}</label
+          >
+        {/each}
+      </fieldset>
+      <fieldset>
+        <legend>{T.opciones.manosPartida}</legend>
+        {#each [3, 1, 5] as const as m (m)}
+          <label
+            ><input type="radio" bind:group={cuatroSeisesConfig.manos} value={m} data-testid="cuatro-seises-manos-{m}" />
             {T.opciones.manosPartidaN(m)}</label
           >
         {/each}

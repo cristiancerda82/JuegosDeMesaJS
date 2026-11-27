@@ -153,6 +153,9 @@ export const T = {
       'De 3 a 6 y sin triunfo: sigue el palo o roba hasta tenerlo, y no seas el último con cartas en la mano.',
     cinquillo: 'Cinquillo',
     cinquilloDesc: 'Coloca tus cartas en escalera a partir de los cincos y quédate sin ninguna.',
+    cuatroSeises: 'Cuatro seises',
+    cuatroSeisesDesc:
+      'De 4 a 8: forma escaleras desde los seises, paga una ficha cada vez que pases y llévate el fondo si te quedas antes sin cartas.',
     mus: 'Mus',
     musDesc: 'En parejas: grande, chica, pares y juego, con envites y órdagos.',
     pocha: 'Pocha',
@@ -3523,6 +3526,29 @@ export const T = {
     clasificacion: 'Puntos (menos es mejor)',
   },
 
+  cuatroSeises: {
+    salidaOros: 'Sale el 6 de oros',
+    pasa: (quien: string) =>
+      quien === 'Tú' ? 'Pasas y pones una ficha' : `${quien} pasa y pone una ficha`,
+    signo: (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0'),
+    fondo: (n: number) => `Fondo: ${n} fichas`,
+    manoDe: (n: number, total: number) => `Mano ${n} de ${total}`,
+    tusFichas: (n: number) => `Tus fichas: ${n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0'}`,
+    fichasDe: (n: number) => `${n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0'} fichas`,
+    seLleva: (quien: string, fondo: number) =>
+      quien === 'Tú'
+        ? `¡Te quedas sin cartas y te llevas el fondo: ${fondo} fichas!`
+        : `${quien} se queda sin cartas y se lleva el fondo: ${fondo} fichas`,
+    pasesCol: 'Pases',
+    manoCol: 'Mano',
+    saldoCol: 'Fichas',
+    clasificacion: 'Fichas',
+    manosJugadas: (n: number) =>
+      n === 1
+        ? 'Se ha jugado la única mano de la partida.'
+        : `Se han jugado las ${n} manos de la partida.`,
+  },
+
   sieteYMedia: {
     banca: 'Banca',
     fichas: (n: number) => (n === 1 ? '1 ficha' : `${n} fichas`),
@@ -3691,6 +3717,7 @@ export const T = {
       sieteYMedia: 'Cómo se juega a la Siete y media',
       freecell: 'Cómo se juega al FreeCell',
       cinquillo: 'Cómo se juega al Cinquillo',
+      cuatroSeises: 'Cómo se juega al Cuatro seises',
       spider: 'Cómo se juega al Spider',
       piramide: 'Cómo se juega a la Pirámide',
       golf: 'Cómo se juega al Golf',
@@ -7843,6 +7870,57 @@ export const T = {
         plegada: true,
         texto: [
           'Es un juego español muy familiar, de una familia que en otros países se llama «Domino» o «Sevens», porque las cartas se colocan en fila como fichas de dominó. Se llama así porque se empieza por los cincos, y es de los primeros juegos que se aprenden de niño.',
+        ],
+      },
+    ],
+
+    cuatroSeises: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega de 4 a 8 jugadores, cada uno por su cuenta, con la baraja española de 40 cartas o con la de 48, que tiene también los ochos y los nueves. Se reparte toda la baraja, de una en una, y todos tienen las mismas cartas: por eso con la de 40 se juega entre 4, 5 u 8, y con la de 48, entre 4, 6 u 8.',
+          'Gana la mano el primero que se queda sin cartas, y se lleva el fondo. La partida dura 3 manos (o 1 o 5, si lo cambias en las opciones) y gana quien acaba con más fichas.',
+        ],
+      },
+      {
+        titulo: 'Las escaleras',
+        texto: [
+          'Empieza quien tiene el 6 de oros, y tiene que jugarlo. En la mesa se forma una escalera por palo, que empieza siempre por el 6: en tu turno puedes poner el 6 de un palo que aún no esté en la mesa, o alargar una escalera por uno de sus extremos.',
+          'Por arriba va el 7 y, con la baraja de 48, el 8 y el 9; después, la Sota, el Caballo y el Rey. Por abajo, el 5, el 4, el 3, el 2 y el As. Siempre la carta justo siguiente.',
+        ],
+        ejemplo: 'escalera',
+      },
+      {
+        titulo: 'Jugar o pasar',
+        texto: [
+          'Si tienes alguna carta que se pueda poner, estás obligado a jugarla. Si no tienes ninguna, pasas y pones una ficha en el fondo.',
+        ],
+      },
+      {
+        titulo: 'El fondo',
+        texto: [
+          'Al empezar cada mano, cada jugador pone 1 ficha en el fondo, y cada vez que alguien pasa pone otra. Quien se queda antes sin cartas se lleva todas. Las cartas que les quedan a los demás no cuentan.',
+        ],
+        ejemplo: 'fondo',
+      },
+      {
+        titulo: 'En la mesa',
+        texto: [
+          'Tus cartas jugables se iluminan. Arrastra una a la mesa, o tócala y toca la mesa; con un doble toque también se juega. Cuando no tengas jugada, pulsa «Paso».',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Si tienes seises en la mano, no los sueltes: mientras no estén en la mesa, nadie puede jugar las cartas de ese palo. Pero cuidado con atraparte en tus propias redes: si con ese 6 tienes el As o el Rey del palo, no podrás librarte de ellos hasta que lo pongas.',
+          'Guarda también dos cartas seguidas que cierran el paso a las de los demás, hasta que no tengas otra salida. Cada vez que pasan, ponen una ficha en el fondo que te puedes llevar.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Núñez Elvira lo cuenta entre los juegos «simples», sin jugadas intrincadas, muy jugado en familia por quienes buscan un entretenimiento más que un quebradero de cabeza. Es pariente cercano del Cinquillo, que empieza por los cincos, y de los juegos que en otros países se llaman «Domino» o «Sevens». Se jugaba con un plato en el centro de la mesa, donde iba el fondo.',
         ],
       },
     ],

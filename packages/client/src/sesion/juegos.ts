@@ -153,6 +153,12 @@ import {
   type ConfigCuarentaYTres,
   type EstadoCuarentaYTres,
   type VistaCuarentaYTres,
+  cuatroSeises,
+  CONFIG_CUATRO_SEISES_POR_DEFECTO,
+  type AccionCuatroSeises,
+  type ConfigCuatroSeises,
+  type EstadoCuatroSeises,
+  type VistaCuatroSeises,
   type AccionManilla,
   type ConfigManilla,
   type EstadoManilla,
@@ -662,7 +668,8 @@ export type IdJuego =
   | 'burroBazas'
   | 'manilla'
   | 'tuteGanaPierde'
-  | 'cuarentaYTres';
+  | 'cuarentaYTres'
+  | 'cuatroSeises';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -753,6 +760,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'manilla',
   'tuteGanaPierde',
   'cuarentaYTres',
+  'cuatroSeises',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2474,6 +2482,27 @@ export const DEF_CUARENTA_Y_TRES: DefCuarentaYTres = {
   },
 };
 
+export type DefCuatroSeises = DefJuego<
+  ConfigCuatroSeises,
+  EstadoCuatroSeises,
+  AccionCuatroSeises,
+  VistaCuatroSeises
+>;
+
+export const DEF_CUATRO_SEISES: DefCuatroSeises = {
+  id: 'cuatroSeises',
+  nombre: T.menu.cuatroSeises,
+  juego: cuatroSeises,
+  configPorDefecto: CONFIG_CUATRO_SEISES_POR_DEFECTO,
+  ia: IAS.cuatroSeises,
+  // Como en el Cinquillo: el cierre de la mano lo detiene la mesa con el resumen.
+  pausaTras(antes, despues) {
+    const accion = despues.ultimaAccion;
+    if (accion === null || accion === antes.ultimaAccion) return 0;
+    return PAUSA_CINQUILLO_MS;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2563,6 +2592,7 @@ export const JUEGOS = {
   manilla: DEF_MANILLA,
   tuteGanaPierde: DEF_TUTE_GANA_PIERDE,
   cuarentaYTres: DEF_CUARENTA_Y_TRES,
+  cuatroSeises: DEF_CUATRO_SEISES,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

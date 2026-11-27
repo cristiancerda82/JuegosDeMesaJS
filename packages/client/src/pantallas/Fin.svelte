@@ -40,6 +40,7 @@
   import ResumenManilla from '../mesas/ResumenManilla.svelte';
   import ResumenTuteGanaPierde from '../mesas/ResumenTuteGanaPierde.svelte';
   import ResumenCuarentaYTres from '../mesas/ResumenCuarentaYTres.svelte';
+  import ResumenCuatroSeises from '../mesas/ResumenCuatroSeises.svelte';
   import ResumenBourre from '../mesas/ResumenBourre.svelte';
   import ResumenTresillo from '../mesas/ResumenTresillo.svelte';
   import ResumenConquian from '../mesas/ResumenConquian.svelte';
@@ -164,6 +165,7 @@
       partida.id !== 'burroBazas' &&
       partida.id !== 'tuteGanaPierde' &&
       partida.id !== 'cuarentaYTres' &&
+      partida.id !== 'cuatroSeises' &&
       partida.id !== 'julepe' &&
       partida.id !== 'remigio' &&
       partida.id !== 'tuteSubastado' &&
@@ -379,6 +381,25 @@
         </tbody>
       </table>
       <p class="nota" data-testid="fin-cuarenta-y-tres">{T.cuarentaYTres.manosJugadas(vista.resultadosManos.length)}</p>
+    {:else if partida.id === 'cuatroSeises'}
+      {@const vista = partida.sesion.vista}
+      {@const n = vista.config.jugadores}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const nombre = (a: number) => nombreNumerado(a, n, yo, partida.sesion.red, T.brisca.rivalN, T.brisca.rival)}
+      {#if ultima}
+        <ResumenCuatroSeises resultado={ultima} {yo} {nombre} />
+      {/if}
+      <table data-testid="fichas-cuatro-seises">
+        <caption>{T.cuatroSeises.clasificacion}</caption>
+        <tbody>
+          {#each Array.from({ length: n }, (_, a) => a).sort((a, b) => vista.saldos[b]! - vista.saldos[a]!) as a, i (a)}
+            <tr
+              ><th scope="row">{nombre(a)}</th><td data-testid="fichas-fin-{i}">{T.cuatroSeises.signo(vista.saldos[a]!)}</td></tr
+            >
+          {/each}
+        </tbody>
+      </table>
+      <p class="nota" data-testid="fin-cuatro-seises">{T.cuatroSeises.manosJugadas(vista.resultadosManos.length)}</p>
     {:else if partida.id === 'cinquillo'}
       {@const vista = partida.sesion.vista}
       {@const n = vista.config.jugadores}

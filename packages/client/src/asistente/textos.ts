@@ -533,6 +533,8 @@ export const CONSEJOS_JUEGO: Readonly<Partial<Record<IdJuego, string>>> = {
     'Siete y media: acércate a 7,5 sin pasarte. Las figuras valen medio punto; plántate cuando el riesgo de pasarte sea mayor que lo que ganas pidiendo.',
   cinquillo:
     'Cinquillo: sigue las escaleras desde los cincos. Juega primero las cartas que bloquean a los rivales y guarda las que solo tú puedes continuar.',
+  cuatroSeises:
+    'Cuatro seises: guarda los seises que no te hacen falta, porque bloquean a los demás y cada pase suyo es una ficha más en el fondo. Suelta antes las cartas que te abren camino a ti.',
   pocha:
     'Pocha: acierta exactamente las bazas que pides. Cuenta las cartas que seguro ganan y, una vez cumplido, evita ganar bazas de más.',
   mus: 'Mus: cada lance (grande, chica, pares y juego) se apuesta por separado. Envida en los lances en los que tu mano es buena y no tengas miedo a pasar en los demás.',

@@ -2047,3 +2047,31 @@ test('Cuarenta y tres en red: los dos ven la misma muestra y la carta con la que
   await ana.getByTestId('mesa').click();
   await expect(luis.locator(`[data-testid="mesa"] [data-carta="${carta}"]`)).toBeVisible();
 });
+
+test('Cuatro seises en red: la carta que pone uno la ve el otro en su fila', async ({
+  browser,
+}) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'cuatroSeises');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) {
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(10);
+    await expect(p.getByTestId('fondo-cuatro-seises')).toHaveText('Fondo: 4 fichas');
+  }
+  // Abre quien tiene el 6 de oros: si es uno de los dos, lo juega; los dos lo ven en su fila.
+  for (const p of [ana, luis]) {
+    const seis = p.locator('.carta-mano.jugable[data-carta="oros-6"]');
+    if ((await seis.count()) > 0) {
+      await seis.click({ position: { x: 6, y: 8 } });
+      await p.getByTestId('mesa').click();
+    }
+  }
+  for (const p of [ana, luis]) {
+    await expect(p.getByTestId('fila-oros').locator('[data-carta="oros-6"]')).toBeVisible({
+      timeout: 30_000,
+    });
+  }
+});

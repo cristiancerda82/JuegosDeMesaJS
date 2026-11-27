@@ -176,6 +176,9 @@ import {
   CONFIG_CUARENTA_Y_TRES_POR_DEFECTO,
   cuarentaYTres,
 } from '../../src/juegos/cuarenta-y-tres';
+import { reconstruirCuatroSeises } from '../../src/ia/reconstruir/cuatro-seises';
+import { iaCuatroSeisesBasica } from '../../src/ia/cuatro-seises-basica';
+import { cuatroSeises } from '../../src/juegos/cuatro-seises';
 import { topesPorObligaciones } from '../../src/ia/reconstruir/topes';
 import { VALORES_BRISCA } from '../../src/motor/bazas';
 import { iaBurroBazasBasica } from '../../src/ia/burro-bazas-basica';
@@ -2180,6 +2183,36 @@ describe('Reconstrucción del Cuarenta y tres', () => {
       expect(rec.manos[0]).toContain(muestra);
       expect(rec.manos.flat()).not.toContain('oros-7');
       expect(cuarentaYTres.vistaDe(rec, 1)).toEqual(vista);
+    }
+  });
+});
+
+describirReconstruccion(cuatroSeises, reconstruirCuatroSeises, {
+  configs: [
+    { baraja: 40, jugadores: 4, manos: 3 },
+    { baraja: 48, jugadores: 6, manos: 1 },
+    { baraja: 40, jugadores: 8, manos: 1 },
+  ],
+  base: iaCuatroSeisesBasica,
+});
+
+describe('Reconstrucción del Cuatro seises', () => {
+  it('quien pasó no tiene las cartas que encajaban entonces', () => {
+    const r = cuatroSeises.crear({ baraja: 40, jugadores: 4, manos: 1 }, 'rec-seises');
+    if (!r.ok) throw new Error(r.error);
+    let e = r.valor;
+    // Se juega hasta que alguien pasa.
+    while (!e.pases.some((p) => p > 0)) {
+      e = cuatroSeises.transicion(e, e.turno, cuatroSeises.accionesLegales(e, e.turno)[0]!);
+    }
+    const quien = e.pases.findIndex((p) => p > 0);
+    const yo = (quien + 1) % 4;
+    const vista = cuatroSeises.vistaDe(e, yo);
+    expect(vista.noTiene[quien]!.length).toBeGreaterThan(0);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirCuatroSeises(vista, crearAzar(`s${i}`));
+      for (const c of vista.noTiene[quien]!) expect(rec.manos[quien]).not.toContain(c);
+      expect(cuatroSeises.vistaDe(rec, yo)).toEqual(vista);
     }
   });
 });

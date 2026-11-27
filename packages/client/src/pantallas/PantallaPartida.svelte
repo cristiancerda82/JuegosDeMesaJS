@@ -52,6 +52,7 @@
   import MesaManilla from '../mesas/MesaManilla.svelte';
   import MesaTuteGanaPierde from '../mesas/MesaTuteGanaPierde.svelte';
   import MesaCuarentaYTres from '../mesas/MesaCuarentaYTres.svelte';
+  import MesaCuatroSeises from '../mesas/MesaCuatroSeises.svelte';
   import MesaBourre from '../mesas/MesaBourre.svelte';
   import MesaTresillo from '../mesas/MesaTresillo.svelte';
   import MesaConquian from '../mesas/MesaConquian.svelte';
@@ -255,6 +256,8 @@
     <MesaTuteGanaPierde sesion={partida.sesion} />
   {:else if partida.id === 'cuarentaYTres'}
     <MesaCuarentaYTres sesion={partida.sesion} />
+  {:else if partida.id === 'cuatroSeises'}
+    <MesaCuatroSeises sesion={partida.sesion} />
   {:else if partida.id === 'bourre'}
     <MesaBourre sesion={partida.sesion} />
   {:else if partida.id === 'tresillo'}

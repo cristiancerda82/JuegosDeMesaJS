@@ -147,6 +147,37 @@ export const DESCARTE: Partial<Record<IdJuego, EjemplosJuego>> = {
     },
   },
 
+  cuatroSeises: {
+    escalera: {
+      tipo: 'antesDespues',
+      descripcion:
+        'Con la baraja de 48, la escalera de oros va del 5 al 7: pones el 8 de oros por arriba.',
+      antes: [
+        { nombre: 'Oros', cartas: ['oros-5', 'oros-6', 'oros-7'] },
+        { nombre: 'Tu mano', cartas: ['oros-8', 'oros-10', 'copas-3'] },
+      ],
+      despues: [
+        { nombre: 'Oros', cartas: ['oros-5', 'oros-6', 'oros-7', 'oros-8'] },
+        { nombre: 'Tu mano', cartas: ['oros-10', 'copas-3'] },
+      ],
+      resaltadas: ['oros-8'],
+      explicacion:
+        'Con la baraja de 48, después del 7 van el 8 y el 9, y luego la Sota: la Sota de oros espera al 9. El 3 de copas no entra hasta que alguien abra las copas con su 6.',
+    },
+    fondo: {
+      tipo: 'tabla',
+      descripcion:
+        'Una mano de 4: cada uno puso 1 ficha al empezar y otra cada vez que pasó. Te quedas sin cartas sin haber pasado y te llevas las 9 fichas del fondo.',
+      titulo: 'Lo que pasó cada uno y lo que gana o paga',
+      filas: [
+        ['Tú: sin cartas, ningún pase', '+8'],
+        ['Derecha: 2 pases', '−3'],
+        ['Enfrente: ningún pase', '−1'],
+        ['Izquierda: 3 pases', '−4'],
+      ],
+    },
+  },
+
   sevens: {
     escalera: {
       tipo: 'antesDespues',

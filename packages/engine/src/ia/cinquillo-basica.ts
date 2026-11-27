@@ -24,34 +24,55 @@ const CINCO = (ORDEN_CINQUILLO as readonly number[]).indexOf(5);
 const ULTIMA = ORDEN_CINQUILLO.length - 1;
 
 function elegir(vista: VistaCinquillo, acciones: readonly AccionCinquillo[]): AccionCinquillo {
-  const jugadas = acciones.flatMap((a) => (a.tipo === 'jugar' ? [a.carta] : []));
-  if (jugadas.length === 0) return acciones[0]!;
-  const mano = vista.miMano ?? [];
-  let mejor = jugadas[0]!;
+  return elegirEnEscaleras(vista.miMano ?? [], acciones, posicionCinquillo, CINCO, ULTIMA);
+}
+
+/**
+ * La jugada que más vale según `valorarEnEscalera`, o la única acción si no hay ninguna jugada.
+ * Común al Cinquillo y al Cuatro seises.
+ */
+export function elegirEnEscaleras<
+  A extends { readonly tipo: 'jugar'; readonly carta: IdCarta } | { readonly tipo: 'pasar' },
+>(
+  mano: readonly IdCarta[],
+  acciones: readonly A[],
+  posicion: (c: IdCarta) => number,
+  centro: number,
+  ultima: number,
+): A {
+  let mejor: A | null = null;
   let mejorValor = -Infinity;
-  for (const carta of jugadas) {
-    const v = valorar(carta, mano);
+  for (const accion of acciones) {
+    if (accion.tipo !== 'jugar') continue;
+    const v = valorarEnEscalera(accion.carta, mano, posicion, centro, ultima);
     if (v > mejorValor) {
-      mejor = carta;
+      mejor = accion;
       mejorValor = v;
     }
   }
-  return { tipo: 'jugar', carta: mejor };
+  return mejor ?? acciones[0]!;
 }
 
-/** Cartas propias que la jugada acerca, menos los huecos que abre a los rivales. */
-function valorar(carta: IdCarta, mano: readonly IdCarta[]): number {
+/**
+ * Cartas propias que la jugada acerca, menos los huecos que abre a los rivales, en escaleras que
+ * nacen de la posición `centro` y llegan hasta `ultima`.
+ */
+export function valorarEnEscalera(
+  carta: IdCarta,
+  mano: readonly IdCarta[],
+  posicion: (c: IdCarta) => number,
+  centro: number,
+  ultima: number,
+): number {
   const palo = cartaDeId(carta)!.palo;
-  const pos = posicionCinquillo(carta);
-  const propias = mano
-    .filter((c) => c !== carta && cartaDeId(c)!.palo === palo)
-    .map(posicionCinquillo);
-  const direcciones = pos === CINCO ? [1, -1] : [pos > CINCO ? 1 : -1];
-  let valor = pos === 0 || pos === ULTIMA ? 1 : 0;
+  const pos = posicion(carta);
+  const propias = mano.filter((c) => c !== carta && cartaDeId(c)!.palo === palo).map(posicion);
+  const direcciones = pos === centro ? [1, -1] : [pos > centro ? 1 : -1];
+  let valor = pos === 0 || pos === ultima ? 1 : 0;
   for (const d of direcciones) {
     valor += 2 * propias.filter((p) => (p - pos) * d > 0).length;
     const siguiente = pos + d;
-    if (siguiente >= 0 && siguiente <= ULTIMA && !propias.includes(siguiente)) valor -= 1;
+    if (siguiente >= 0 && siguiente <= ultima && !propias.includes(siguiente)) valor -= 1;
   }
   return valor;
 }
