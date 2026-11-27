@@ -156,6 +156,9 @@ export const T = {
     cuatroSeises: 'Cuatro seises',
     cuatroSeisesDesc:
       'De 4 a 8: forma escaleras desde los seises, paga una ficha cada vez que pases y llévate el fondo si te quedas antes sin cartas.',
+    cirulla: 'Cirulla',
+    cirullaDesc:
+      'La Escoba de Liguria: captura también sumando 15, barre la mesa con un As y anótate escobas al enseñar tres cartas iguales o bajas.',
     mus: 'Mus',
     musDesc: 'En parejas: grande, chica, pares y juego, con envites y órdagos.',
     pocha: 'Pocha',
@@ -405,6 +408,7 @@ export const T = {
     vueltasN: (n: number) => (n === 0 ? 'Ninguna' : n === 1 ? '1 vuelta' : `${n} vueltas`),
     jugadores: 'Jugadores',
     dosJugadores: '2 jugadores',
+    cuatroParejas: '4 en parejas',
     enParejas: 'En parejas (tu compañero, enfrente)',
     manosJulepe: 'Duración',
     manosJulepeN: (n: number) => `${n} manos`,
@@ -2341,6 +2345,20 @@ export const T = {
     totalPartida: 'Total de la partida',
   },
 
+  cirulla: {
+    escobas: 'Escobas',
+    escobaDe: (quien: string) => (quien === 'Tú' ? '¡Escoba!' : `¡Escoba de ${quien}!`),
+    montonEscobas: (n: number) => (n === 1 ? '1 escoba' : `${n} escobas`),
+    suma: (n: number, valor: number) => `${n} / ${valor} o ${15 - valor}`,
+    acuse: (quien: string, escobas: number, iguales: boolean) =>
+      `${quien}: ${iguales ? 'tres iguales' : 'menos de 10'}, ${escobas} escobas`,
+    mesaInicial: (quien: string, suma: number, escobas: number) =>
+      `La mesa suma ${suma}: ${escobas === 1 ? '1 escoba' : `${escobas} escobas`} para ${quien === 'Tú' ? 'ti' : quien}`,
+    grande: 'Cirulla grande',
+    pequena: 'Cirulla pequeña',
+    todosLosOros: (lado: string) => `${lado}: los diez oros dan la partida.`,
+  },
+
   fiveHundred: {
     reparte: 'Reparte',
     juega: 'Juega',
@@ -3718,6 +3736,7 @@ export const T = {
       freecell: 'Cómo se juega al FreeCell',
       cinquillo: 'Cómo se juega al Cinquillo',
       cuatroSeises: 'Cómo se juega al Cuatro seises',
+      cirulla: 'Cómo se juega a la Cirulla',
       spider: 'Cómo se juega al Spider',
       piramide: 'Cómo se juega a la Pirámide',
       golf: 'Cómo se juega al Golf',
@@ -7921,6 +7940,73 @@ export const T = {
         plegada: true,
         texto: [
           'Núñez Elvira lo cuenta entre los juegos «simples», sin jugadas intrincadas, muy jugado en familia por quienes buscan un entretenimiento más que un quebradero de cabeza. Es pariente cercano del Cinquillo, que empieza por los cincos, y de los juegos que en otros países se llaman «Domino» o «Sevens». Se jugaba con un plato en el centro de la mesa, donde iba el fondo.',
+        ],
+      },
+    ],
+
+    cirulla: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Es la variante de la Escoba típica de Liguria, en Italia. Se juega entre 2 o entre 4 en parejas con la baraja española de 40 cartas: cada carta vale su número, la Sota 8, el Caballo 9 y el Rey 10.',
+          'Hay que llevarse cartas de la mesa. Al acabar cada mano se cuentan los puntos, y la partida es a 51; quien se lleva los diez oros en una mano gana en el acto.',
+        ],
+      },
+      {
+        titulo: 'El reparto',
+        texto: [
+          'Se ponen 4 cartas boca arriba en la mesa y se dan 3 a cada uno; cuando todos las han jugado, otras 3, hasta acabar el mazo. Si en la mesa salen dos Ases, se vuelve a repartir.',
+          'Si las cartas de la mesa suman 15, el que reparte se las lleva y se anota una escoba; si suman 30, dos. El 7 de copas vale lo que haga falta para llegar.',
+        ],
+      },
+      {
+        titulo: 'Cómo se captura',
+        texto: [
+          'Como en la Scopa, con tu carta te llevas una de la mesa del mismo valor o, si no hay ninguna, varias que sumen lo mismo. En la Cirulla, además, puedes llevarte las cartas que, sumadas a la tuya, dan 15. Si puedes capturar, tienes que hacerlo.',
+          'Si dejas la mesa vacía, es escoba, salvo en la última jugada de la mano. Las cartas que quedan al final son para el último que capturó.',
+        ],
+        ejemplo: 'quince',
+      },
+      {
+        titulo: 'El As',
+        texto: [
+          'Si en la mesa no hay ningún As, el As se la lleva entera y es escoba. Si hay un As, el tuyo captura como cualquier otra carta.',
+        ],
+        ejemplo: 'as',
+      },
+      {
+        titulo: 'Los acuses',
+        texto: [
+          'Al recibir tus 3 cartas, si son iguales las enseñas y te anotas 10 escobas; si suman menos de 10, te anotas 3. El 7 de copas vale lo que haga falta. Las cartas enseñadas quedan a la vista de todos hasta que se juegan, y el acuse es automático.',
+        ],
+        ejemplo: 'acuses',
+      },
+      {
+        titulo: 'Los puntos de cada mano',
+        texto: [
+          'Como en la Scopa: 1 punto por tener más cartas, 1 por más oros, 1 por el 7 de oros, 1 por la mejor primera y 1 por cada escoba.',
+          'Además, la cirulla grande, la Sota, el Caballo y el Rey de oros juntos, vale 5 puntos, y la pequeña, el As, el 2 y el 3 de oros, vale 3 y uno más por cada oro seguido, del 4 al 6.',
+        ],
+        ejemplo: 'pequena',
+      },
+      {
+        titulo: 'En la mesa',
+        texto: [
+          'Arrastra una carta a la mesa, o tócala y toca la mesa. Si puede capturar de varias formas, eliges cuál; también puedes tocar las cartas de la mesa que quieres llevarte y pulsar «Capturar». La suma te dice el valor de tu carta y lo que le falta para 15.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Guarda los Ases: con la mesa sin Ases, se la llevan entera. Y no dejes en la mesa cartas que sumen 15 con algo, ni una sola carta que se pueda igualar.',
+          'Los oros valen el doble que en la Scopa: el 7 de oros, la grande y la pequeña. Llévatelos en cuanto puedas.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'La Cirulla es la variante de la Scopa típica de Liguria, en el noroeste de Italia, aunque se juega también fuera de allí. El libro la explica con la baraja francesa, en la que el comodín es el 7 de corazones y la cirulla grande son la Jota, la Reina y el Rey de diamantes; con la española, son el 7 de copas y la Sota, el Caballo y el Rey de oros.',
         ],
       },
     ],

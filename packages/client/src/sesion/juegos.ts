@@ -159,6 +159,12 @@ import {
   type ConfigCuatroSeises,
   type EstadoCuatroSeises,
   type VistaCuatroSeises,
+  cirulla,
+  CONFIG_CIRULLA_POR_DEFECTO,
+  type AccionCirulla,
+  type ConfigCirulla,
+  type EstadoCirulla,
+  type VistaCirulla,
   type AccionManilla,
   type ConfigManilla,
   type EstadoManilla,
@@ -669,7 +675,8 @@ export type IdJuego =
   | 'manilla'
   | 'tuteGanaPierde'
   | 'cuarentaYTres'
-  | 'cuatroSeises';
+  | 'cuatroSeises'
+  | 'cirulla';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -761,6 +768,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'tuteGanaPierde',
   'cuarentaYTres',
   'cuatroSeises',
+  'cirulla',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2503,6 +2511,23 @@ export const DEF_CUATRO_SEISES: DefCuatroSeises = {
   },
 };
 
+export type DefCirulla = DefJuego<ConfigCirulla, EstadoCirulla, AccionCirulla, VistaCirulla>;
+
+export const DEF_CIRULLA: DefCirulla = {
+  id: 'cirulla',
+  nombre: T.menu.cirulla,
+  juego: cirulla,
+  configPorDefecto: CONFIG_CIRULLA_POR_DEFECTO,
+  ia: IAS.cirulla,
+  // Como en la Scopa: el cierre de la mano lo detiene la propia mesa con el resumen.
+  pausaTras(antes, despues) {
+    const jugada = despues.ultimaJugada;
+    if (jugada === null || jugada === antes.ultimaJugada) return 0;
+    if (jugada.scopa) return PAUSA_ESCOBA_MS;
+    return jugada.captura.length > 0 ? PAUSA_JUGADA_MS : 0;
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2593,6 +2618,7 @@ export const JUEGOS = {
   tuteGanaPierde: DEF_TUTE_GANA_PIERDE,
   cuarentaYTres: DEF_CUARENTA_Y_TRES,
   cuatroSeises: DEF_CUATRO_SEISES,
+  cirulla: DEF_CIRULLA,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

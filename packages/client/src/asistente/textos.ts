@@ -619,6 +619,8 @@ export const CONSEJOS_JUEGO: Readonly<Partial<Record<IdJuego, string>>> = {
     'Five Hundred: puja un número de bazas con un triunfo. El comodín y las jotas son las cartas más fuertes: cuéntalas antes de pujar.',
   scopa:
     'Scopa: recoge cartas que sumen tu carta. Busca la scopa, los sietes (sobre todo el de oros) y los oros.',
+  cirulla:
+    'Cirulla: además de lo que suma tu carta, puedes llevarte lo que sume 15 con ella. Guarda los Ases para barrer una mesa sin Ases, y no dejes en la mesa cartas que sumen 15 con algo.',
   tressette:
     'Tressette: los treses, los doses y los ases son las cartas más fuertes. Gana bazas con tu pareja y avísale de tus palos.',
   schafkopf:

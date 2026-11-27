@@ -179,6 +179,9 @@ import {
 import { reconstruirCuatroSeises } from '../../src/ia/reconstruir/cuatro-seises';
 import { iaCuatroSeisesBasica } from '../../src/ia/cuatro-seises-basica';
 import { cuatroSeises } from '../../src/juegos/cuatro-seises';
+import { reconstruirCirulla } from '../../src/ia/reconstruir/cirulla';
+import { iaCirullaBasica } from '../../src/ia/cirulla-basica';
+import { cirulla } from '../../src/juegos/cirulla';
 import { topesPorObligaciones } from '../../src/ia/reconstruir/topes';
 import { VALORES_BRISCA } from '../../src/motor/bazas';
 import { iaBurroBazasBasica } from '../../src/ia/burro-bazas-basica';
@@ -2213,6 +2216,33 @@ describe('Reconstrucción del Cuatro seises', () => {
       const rec = reconstruirCuatroSeises(vista, crearAzar(`s${i}`));
       for (const c of vista.noTiene[quien]!) expect(rec.manos[quien]).not.toContain(c);
       expect(cuatroSeises.vistaDe(rec, yo)).toEqual(vista);
+    }
+  });
+});
+
+describirReconstruccion(cirulla, reconstruirCirulla, {
+  configs: [
+    { jugadores: 2, meta: 51 },
+    { jugadores: 4, meta: 51 },
+  ],
+  base: iaCirullaBasica,
+});
+
+describe('Reconstrucción de la Cirulla', () => {
+  it('las cartas acusadas siguen en la mano de quien las enseñó', () => {
+    const r = cirulla.crear({ jugadores: 2, meta: 51 }, 'rec-cirulla');
+    if (!r.ok) throw new Error(r.error);
+    const e = {
+      ...r.valor,
+      manos: [r.valor.manos[0]!, ['oros-5', 'copas-5'] as const],
+      acusadas: [[], ['oros-5', 'copas-5'] as const],
+      turno: 0,
+    };
+    const vista = cirulla.vistaDe(e, 0);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirCirulla(vista, crearAzar(`c${i}`));
+      expect([...rec.manos[1]!].sort()).toEqual(['copas-5', 'oros-5']);
+      expect(cirulla.vistaDe(rec, 0)).toEqual(vista);
     }
   });
 });

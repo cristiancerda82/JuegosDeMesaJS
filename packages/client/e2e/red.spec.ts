@@ -2075,3 +2075,28 @@ test('Cuatro seises en red: la carta que pone uno la ve el otro en su fila', asy
     });
   }
 });
+
+test('Cirulla en red: la carta que juega uno la ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'cirulla');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) {
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(3);
+    await expect(p.getByTestId('puntos-partida')).toContainText('a 51');
+  }
+  // Sale Ana (asiento 0): suelta su primera carta en la mesa y elige la primera captura, si hay.
+  const carta = ana.locator('[data-testid="mano"] .carta-mano.jugable').first();
+  const id = await carta.getAttribute('data-carta');
+  await carta.click({ position: { x: 8, y: 8 } });
+  const mesa = ana.getByTestId('mesa');
+  const caja = (await mesa.boundingBox())!;
+  await mesa.click({ position: { x: caja.width / 2, y: 4 } });
+  const selector = ana.getByTestId('opciones-captura');
+  if (await selector.isVisible()) await selector.getByTestId('opcion-0').click();
+  await expect(luis.locator('[data-testid="mano"] .carta-mano')).toHaveCount(3);
+  await expect(ana.locator(`[data-testid="mano"] [data-carta="${id}"]`)).toHaveCount(0);
+  await expect(luis.getByTestId('turno')).toContainText('Tu turno');
+});

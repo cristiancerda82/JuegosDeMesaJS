@@ -1,3 +1,12 @@
+<script module lang="ts">
+  /** Un concepto del resumen: lo que tiene cada bando y los puntos que le da. */
+  export interface FilaResumen {
+    readonly concepto: string;
+    readonly detalle: (b: 0 | 1) => string;
+    readonly puntos: (b: 0 | 1) => number;
+  }
+</script>
+
 <script lang="ts">
   import type { ResultadoManoScopa } from '@juegos/engine';
   import { T } from '../textos';
@@ -8,16 +17,28 @@
     lados: readonly [string, string];
     /** Bando del jugador: sus valores van en la primera columna. */
     bando?: 0 | 1;
+    /** Nombre de las escobas (la Cirulla las llama así). */
+    nombreScopas?: string;
+    /** Conceptos propios del juego, tras los de la Scopa (la cirulla grande y la pequeña). */
+    extras?: readonly FilaResumen[];
+    testid?: string;
   }
 
-  let { resultado, lados, bando = 0 }: Props = $props();
+  let {
+    resultado,
+    lados,
+    bando = 0,
+    nombreScopas = T.scopa.scopas,
+    extras = [],
+    testid = 'resumen-scopa',
+  }: Props = $props();
 
   /** Bandos en el orden de las columnas. */
   const orden = $derived(bando === 0 ? ([0, 1] as const) : ([1, 0] as const));
 
   const filas = $derived([
     {
-      concepto: T.scopa.scopas,
+      concepto: nombreScopas,
       detalle: (b: 0 | 1) => String(resultado.recuento[b].scopas),
       puntos: (b: 0 | 1) => resultado.puntos[b].scopas,
     },
@@ -41,10 +62,11 @@
       detalle: (b: 0 | 1) => String(resultado.recuento[b].primiera),
       puntos: (b: 0 | 1) => resultado.puntos[b].primiera,
     },
+    ...extras,
   ]);
 </script>
 
-<table class="desglose" data-testid="resumen-scopa">
+<table class="desglose" data-testid={testid}>
   <thead>
     <tr>
       <th scope="col">{T.scopa.concepto}</th>

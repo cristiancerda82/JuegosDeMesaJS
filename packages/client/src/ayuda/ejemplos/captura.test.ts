@@ -1,4 +1,7 @@
 import {
+  acuseCirulla,
+  capturasCirulla,
+  pequenaCirulla,
   casitaRobada,
   capturasCuarenta,
   capturasScopa,
@@ -155,6 +158,37 @@ test('Scopa: con una carta igual en la mesa, solo vale llevarse esa', () => {
   const e = captura.ejemplo('scopa', 'captura', 'antesDespues');
   const [carta] = zona(e.antes, 'Tu carta');
   expect(capturasScopa(zona(e.antes, 'Mesa'), carta!)).toEqual([e.resaltadas.slice(1)]);
+});
+
+test('Cirulla: el 15, el As que barre, los acuses y la pequeña', () => {
+  const quince = captura.ejemplo('cirulla', 'quince', 'antesDespues');
+  const [carta] = zona(quince.antes, 'Tu carta');
+  expect(capturasCirulla(zona(quince.antes, 'Mesa'), carta!)).toEqual([quince.resaltadas.slice(1)]);
+  const as = captura.ejemplo('cirulla', 'as', 'antesDespues');
+  const [conAs] = zona(as.antes, 'Tu carta');
+  expect(capturasCirulla(zona(as.antes, 'Mesa'), conAs!)).toEqual([as.resaltadas.slice(1)]);
+
+  const palos: Record<string, string> = {
+    oros: 'oros',
+    copas: 'copas',
+    espadas: 'espadas',
+    bastos: 'bastos',
+  };
+  const valores: Record<string, number> = { As: 1, Sota: 10, Caballo: 11, Rey: 12 };
+  const cartas = (texto: string) =>
+    texto.split(', ').map((t) => {
+      const [, valor, palo] = /^(\S+) de (\S+)$/.exec(t)!;
+      return `${palos[palo!]}-${valores[valor!] ?? Number(valor)}` as IdCarta;
+    });
+  for (const [mano, escobas] of captura.ejemplo('cirulla', 'acuses', 'tabla').filas) {
+    const acuse = acuseCirulla(cartas(mano));
+    expect(acuse === null ? 'Ninguna' : `${acuse.escobas} escobas`, mano).toBe(escobas);
+  }
+  for (const [oros, puntos] of captura.ejemplo('cirulla', 'pequena', 'tabla').filas) {
+    const numeros = oros.replace(' de oros', '').split(/, | y /);
+    const ids = numeros.map((n) => `oros-${valores[n] ?? Number(n)}` as IdCarta);
+    expect(`${pequenaCirulla(ids)} puntos`, oros).toBe(puntos);
+  }
 });
 
 test('Casino: la captura suma el valor de la carta jugada', () => {

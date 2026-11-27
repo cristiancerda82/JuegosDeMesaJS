@@ -67,7 +67,7 @@ test('el juego de la sala se elige por familias o con el buscador', async ({ pag
   await expect(page.getByTestId('familia-solitarios')).toHaveCount(0);
 
   await page.getByTestId('familia-captura').click();
-  await expect(page.locator('[data-testid^="red-juego-"]')).toHaveCount(7);
+  await expect(page.locator('[data-testid^="red-juego-"]')).toHaveCount(8);
   await page.getByTestId('volver-familias').click();
   await expect(page.locator('[data-testid^="familia-"]')).toHaveCount(7);
 

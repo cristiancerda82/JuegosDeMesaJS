@@ -79,6 +79,65 @@ export const CAPTURA: Partial<Record<IdJuego, EjemplosJuego>> = {
     },
   },
 
+  cirulla: {
+    quince: {
+      tipo: 'antesDespues',
+      descripcion:
+        'Juegas el Caballo de espadas, que vale 9: te llevas el 6 de copas, porque los dos suman 15.',
+      antes: [
+        { nombre: 'Tu carta', cartas: ['espadas-11'] },
+        { nombre: 'Mesa', cartas: ['copas-6', 'bastos-5', 'oros-12'] },
+      ],
+      despues: [
+        { nombre: 'Mesa', cartas: ['bastos-5', 'oros-12'] },
+        { nombre: 'Tus cartas', cartas: ['espadas-11', 'copas-6'] },
+      ],
+      resaltadas: ['espadas-11', 'copas-6'],
+      explicacion:
+        'En la mesa no hay ningún 9 ni cartas que sumen 9, así que la única captura es la del 15.',
+    },
+    as: {
+      tipo: 'antesDespues',
+      descripcion: 'En la mesa no hay ningún As: juegas el As de bastos y te la llevas entera.',
+      antes: [
+        { nombre: 'Tu carta', cartas: ['bastos-1'] },
+        { nombre: 'Mesa', cartas: ['oros-12', 'copas-5', 'espadas-2'] },
+      ],
+      despues: [
+        { nombre: 'Mesa', cartas: [] },
+        { nombre: 'Tus cartas', cartas: ['bastos-1', 'oros-12', 'copas-5', 'espadas-2'] },
+      ],
+      resaltadas: ['bastos-1', 'oros-12', 'copas-5', 'espadas-2'],
+      explicacion:
+        'Dejas la mesa vacía, así que es escoba. Si hubiera un As en la mesa, solo podrías llevarte ese As (o sumar 15).',
+    },
+    acuses: {
+      tipo: 'tabla',
+      descripcion:
+        'Las tres cartas que recibes y las escobas que te anotas al enseñarlas. El 7 de copas vale lo que haga falta.',
+      titulo: 'Acuses',
+      filas: [
+        ['5 de oros, 5 de copas, 5 de bastos', '10 escobas'],
+        ['7 de copas, Sota de oros, Sota de bastos', '10 escobas'],
+        ['As de bastos, 2 de copas, 4 de oros', '3 escobas'],
+        ['7 de copas, 2 de oros, 6 de bastos', '3 escobas'],
+        ['As de bastos, 2 de copas, 7 de oros', 'Ninguna'],
+      ],
+    },
+    pequena: {
+      tipo: 'tabla',
+      descripcion:
+        'Lo que vale la cirulla pequeña según los oros bajos que te has llevado: hacen falta el As, el 2 y el 3.',
+      titulo: 'Cirulla pequeña',
+      filas: [
+        ['As, 2 y 3 de oros', '3 puntos'],
+        ['As, 2, 3 y 4 de oros', '4 puntos'],
+        ['As, 2, 3, 4, 5 y 6 de oros', '6 puntos'],
+        ['As, 3, 4 y 5 de oros', '0 puntos'],
+      ],
+    },
+  },
+
   casino: {
     captura: {
       tipo: 'antesDespues',

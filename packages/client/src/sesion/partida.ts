@@ -155,6 +155,10 @@ import {
   type ConfigCuatroSeises,
   type EstadoCuatroSeises,
   type VistaCuatroSeises,
+  type AccionCirulla,
+  type ConfigCirulla,
+  type EstadoCirulla,
+  type VistaCirulla,
   type ConfigBurroBazas,
   type EstadoBurroBazas,
   type VistaBurroBazas,
@@ -432,6 +436,7 @@ import {
   DEF_TUTE_GANA_PIERDE,
   DEF_CUARENTA_Y_TRES,
   DEF_CUATRO_SEISES,
+  DEF_CIRULLA,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -611,6 +616,7 @@ export type SesionCuatroSeises = SesionMesa<
   AccionCuatroSeises,
   VistaCuatroSeises
 >;
+export type SesionCirulla = SesionMesa<ConfigCirulla, EstadoCirulla, AccionCirulla, VistaCirulla>;
 export type SesionBurroBazas = SesionMesa<
   ConfigBurroBazas,
   EstadoBurroBazas,
@@ -865,7 +871,8 @@ export type Partida =
   | { readonly id: 'manilla'; readonly sesion: SesionManilla }
   | { readonly id: 'tuteGanaPierde'; readonly sesion: SesionTuteGanaPierde }
   | { readonly id: 'cuarentaYTres'; readonly sesion: SesionCuarentaYTres }
-  | { readonly id: 'cuatroSeises'; readonly sesion: SesionCuatroSeises };
+  | { readonly id: 'cuatroSeises'; readonly sesion: SesionCuatroSeises }
+  | { readonly id: 'cirulla'; readonly sesion: SesionCirulla };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -955,7 +962,8 @@ export type ConfigJuego =
   | ConfigManilla
   | ConfigTuteGanaPierde
   | ConfigCuarentaYTres
-  | ConfigCuatroSeises;
+  | ConfigCuatroSeises
+  | ConfigCirulla;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -1138,6 +1146,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_CUARENTA_Y_TRES);
     case 'cuatroSeises':
       return hacer(DEF_CUATRO_SEISES);
+    case 'cirulla':
+      return hacer(DEF_CIRULLA);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':

@@ -37,7 +37,7 @@ describe('catálogo del menú', () => {
       'tuteGanaPierde',
     ]);
     expect(juegosDeFamilia('combinaciones')).toHaveLength(9);
-    expect(juegosDeFamilia('captura')).toHaveLength(7);
+    expect(juegosDeFamilia('captura')).toHaveLength(8);
     expect(juegosDeFamilia('descarte')).toHaveLength(12);
     expect(juegosDeFamilia('envite')).toHaveLength(8);
   });

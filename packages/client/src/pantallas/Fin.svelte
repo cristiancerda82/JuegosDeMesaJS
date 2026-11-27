@@ -41,6 +41,7 @@
   import ResumenTuteGanaPierde from '../mesas/ResumenTuteGanaPierde.svelte';
   import ResumenCuarentaYTres from '../mesas/ResumenCuarentaYTres.svelte';
   import ResumenCuatroSeises from '../mesas/ResumenCuatroSeises.svelte';
+  import ResumenCirulla from '../mesas/ResumenCirulla.svelte';
   import ResumenBourre from '../mesas/ResumenBourre.svelte';
   import ResumenTresillo from '../mesas/ResumenTresillo.svelte';
   import ResumenConquian from '../mesas/ResumenConquian.svelte';
@@ -244,6 +245,11 @@
       {@const ultima = partida.sesion.vista.resultadosManos.at(-1)}
       {#if ultima}
         <ResumenScopa resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} />
+      {/if}
+    {:else if partida.id === 'cirulla'}
+      {@const ultima = partida.sesion.vista.resultadosManos.at(-1)}
+      {#if ultima}
+        <ResumenCirulla resultado={ultima} lados={[lados[0]!, lados[1]!]} bando={mio} />
       {/if}
     {:else if partida.id === 'cuarenta'}
       {@const ultima = partida.sesion.vista.resultadosManos.at(-1)}

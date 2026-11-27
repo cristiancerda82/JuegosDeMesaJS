@@ -85,6 +85,7 @@ import {
   cuarentaYTres,
 } from '../../src/juegos/cuarenta-y-tres';
 import { CONFIG_CUATRO_SEISES_POR_DEFECTO, cuatroSeises } from '../../src/juegos/cuatro-seises';
+import { cirulla, CONFIG_CIRULLA_POR_DEFECTO } from '../../src/juegos/cirulla';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -289,4 +290,5 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
     3,
   ),
   entrada('Cuatro seises', cuatroSeises, CONFIG_CUATRO_SEISES_POR_DEFECTO, IAS.cuatroSeises, 4),
+  entrada('Cirulla', cirulla, CONFIG_CIRULLA_POR_DEFECTO, IAS.cirulla, 'bandos'),
 ];

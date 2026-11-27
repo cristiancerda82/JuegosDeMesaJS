@@ -70,6 +70,7 @@
     ConfigTuteGanaPierde,
     ConfigCuarentaYTres,
     ConfigCuatroSeises,
+    ConfigCirulla,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -203,6 +204,7 @@
   let cuatroSeisesConfig: Editable<ConfigCuatroSeises> = $state({
     ...JUEGOS.cuatroSeises.configPorDefecto,
   });
+  let cirullaConfig: Editable<ConfigCirulla> = $state({ ...JUEGOS.cirulla.configPorDefecto });
   let ecarteConfig: Editable<ConfigEcarte> = $state({ ...JUEGOS.ecarte.configPorDefecto });
   let tysiachaConfig: Editable<ConfigTysiacha> = $state({ ...JUEGOS.tysiacha.configPorDefecto });
   let sheepsheadConfig: Editable<ConfigSheepshead> = $state({ ...JUEGOS.sheepshead.configPorDefecto });
@@ -335,6 +337,7 @@
       tuteGanaPierde: tuteGanaPierdeConfig,
       cuarentaYTres: cuarentaYTresConfig,
       cuatroSeises: cuatroSeisesConfig,
+      cirulla: cirullaConfig,
       ecarte: ecarteConfig,
       tysiacha: tysiachaConfig,
       sheepshead: sheepsheadConfig,
@@ -522,6 +525,18 @@
         <label
           ><input type="radio" bind:group={scopaConfig.jugadores} value={4} data-testid="scopa-cuatro" />
           {T.opciones.scopone}</label
+        >
+      </fieldset>
+    {:else if juego === 'cirulla'}
+      <fieldset>
+        <legend>{T.opciones.jugadores}</legend>
+        <label
+          ><input type="radio" bind:group={cirullaConfig.jugadores} value={2} data-testid="cirulla-dos" />
+          {T.opciones.dosJugadores}</label
+        >
+        <label
+          ><input type="radio" bind:group={cirullaConfig.jugadores} value={4} data-testid="cirulla-cuatro" />
+          {T.opciones.cuatroParejas}</label
         >
       </fieldset>
     {:else if juego === 'cuarenta'}
