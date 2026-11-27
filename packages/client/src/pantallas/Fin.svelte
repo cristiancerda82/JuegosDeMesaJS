@@ -39,6 +39,7 @@
   import ResumenBurroBazas from '../mesas/ResumenBurroBazas.svelte';
   import ResumenManilla from '../mesas/ResumenManilla.svelte';
   import ResumenTuteGanaPierde from '../mesas/ResumenTuteGanaPierde.svelte';
+  import ResumenCuarentaYTres from '../mesas/ResumenCuarentaYTres.svelte';
   import ResumenBourre from '../mesas/ResumenBourre.svelte';
   import ResumenTresillo from '../mesas/ResumenTresillo.svelte';
   import ResumenConquian from '../mesas/ResumenConquian.svelte';
@@ -162,6 +163,7 @@
       partida.id !== 'burro' &&
       partida.id !== 'burroBazas' &&
       partida.id !== 'tuteGanaPierde' &&
+      partida.id !== 'cuarentaYTres' &&
       partida.id !== 'julepe' &&
       partida.id !== 'remigio' &&
       partida.id !== 'tuteSubastado' &&
@@ -359,6 +361,24 @@
         </tbody>
       </table>
       <p class="nota" data-testid="fin-tute-gana-pierde">{T.fin.manosJugadas(vista.resultadosManos.length)}</p>
+    {:else if partida.id === 'cuarentaYTres'}
+      {@const vista = partida.sesion.vista}
+      {@const ultima = vista.resultadosManos.at(-1)}
+      {@const nombre = (a: number) => nombreNumerado(a, 3, yo, partida.sesion.red, T.brisca.rivalN)}
+      {#if ultima}
+        <ResumenCuarentaYTres resultado={ultima} {yo} {nombre} />
+      {/if}
+      <table data-testid="saldos-cuarenta-y-tres">
+        <caption>{T.cuarentaYTres.clasificacion}</caption>
+        <tbody>
+          {#each [0, 1, 2].sort((a, b) => vista.saldos[b]! - vista.saldos[a]!) as a, i (a)}
+            <tr
+              ><th scope="row">{nombre(a)}</th><td data-testid="saldo-fin-{i}">{T.cuarentaYTres.saldo(vista.saldos[a]!)}</td></tr
+            >
+          {/each}
+        </tbody>
+      </table>
+      <p class="nota" data-testid="fin-cuarenta-y-tres">{T.cuarentaYTres.manosJugadas(vista.resultadosManos.length)}</p>
     {:else if partida.id === 'cinquillo'}
       {@const vista = partida.sesion.vista}
       {@const n = vista.config.jugadores}

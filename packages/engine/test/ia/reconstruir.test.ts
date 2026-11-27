@@ -170,6 +170,12 @@ import {
   CONFIG_TUTE_GANA_PIERDE_POR_DEFECTO,
   tuteGanaPierde,
 } from '../../src/juegos/tute-gana-pierde';
+import { reconstruirCuarentaYTres } from '../../src/ia/reconstruir/cuarenta-y-tres';
+import { iaCuarentaYTresBasica } from '../../src/ia/cuarenta-y-tres-basica';
+import {
+  CONFIG_CUARENTA_Y_TRES_POR_DEFECTO,
+  cuarentaYTres,
+} from '../../src/juegos/cuarenta-y-tres';
 import { topesPorObligaciones } from '../../src/ia/reconstruir/topes';
 import { VALORES_BRISCA } from '../../src/motor/bazas';
 import { iaBurroBazasBasica } from '../../src/ia/burro-bazas-basica';
@@ -2141,6 +2147,39 @@ describe('Reconstrucción del Tute gana-pierde', () => {
       expect(
         tuteGanaPierde.vistaDe(reconstruirTuteGanaPierde(vista, crearAzar(`g${i}`)), 1),
       ).toEqual(vista);
+    }
+  });
+});
+
+describirReconstruccion(cuarentaYTres, reconstruirCuarentaYTres, {
+  configs: [CONFIG_CUARENTA_Y_TRES_POR_DEFECTO, { manos: 3 }],
+  base: iaCuarentaYTresBasica,
+});
+
+describe('Reconstrucción del Cuarenta y tres', () => {
+  it('la muestra cambiada sigue en la mano de quien la cogió y la entregada, en la mesa', () => {
+    const r = cuarentaYTres.crear(CONFIG_CUARENTA_Y_TRES_POR_DEFECTO, 'rec');
+    if (!r.ok) throw new Error(r.error);
+    const muestra = 'oros-1' as const;
+    const base = r.valor;
+    // El asiento 0 tiene el 7 de oros y la muestra es el As de oros.
+    const todas = [...base.manos.flat(), base.muestra].filter(
+      (c) => c !== muestra && c !== 'oros-7',
+    );
+    const manos: IdCarta[][] = [
+      ['oros-7', ...todas.slice(0, 12)],
+      todas.slice(12, 25),
+      todas.slice(25, 38),
+    ];
+    const inicial: typeof base = { ...base, manos, muestra, triunfo: 'oros' };
+    const e = cuarentaYTres.transicion(inicial, 0, { tipo: 'cambiarSiete' });
+    expect(e.muestra).toBe('oros-7');
+    const vista = cuarentaYTres.vistaDe(e, 1);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirCuarentaYTres(vista, crearAzar(`c${i}`));
+      expect(rec.manos[0]).toContain(muestra);
+      expect(rec.manos.flat()).not.toContain('oros-7');
+      expect(cuarentaYTres.vistaDe(rec, 1)).toEqual(vista);
     }
   });
 });

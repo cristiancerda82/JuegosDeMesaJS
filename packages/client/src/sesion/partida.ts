@@ -147,6 +147,10 @@ import {
   type ConfigTuteGanaPierde,
   type EstadoTuteGanaPierde,
   type VistaTuteGanaPierde,
+  type AccionCuarentaYTres,
+  type ConfigCuarentaYTres,
+  type EstadoCuarentaYTres,
+  type VistaCuarentaYTres,
   type ConfigBurroBazas,
   type EstadoBurroBazas,
   type VistaBurroBazas,
@@ -422,6 +426,7 @@ import {
   DEF_BURRO_BAZAS,
   DEF_MANILLA,
   DEF_TUTE_GANA_PIERDE,
+  DEF_CUARENTA_Y_TRES,
   DEF_KINGS_CORNER,
   DEF_OH_HELL,
   DEF_SPITE_MALICE,
@@ -588,6 +593,12 @@ export type SesionTuteGanaPierde = SesionMesa<
   EstadoTuteGanaPierde,
   AccionTuteGanaPierde,
   VistaTuteGanaPierde
+>;
+export type SesionCuarentaYTres = SesionMesa<
+  ConfigCuarentaYTres,
+  EstadoCuarentaYTres,
+  AccionCuarentaYTres,
+  VistaCuarentaYTres
 >;
 export type SesionBurroBazas = SesionMesa<
   ConfigBurroBazas,
@@ -841,7 +852,8 @@ export type Partida =
   | { readonly id: 'casitaRobada'; readonly sesion: SesionCasitaRobada }
   | { readonly id: 'burroBazas'; readonly sesion: SesionBurroBazas }
   | { readonly id: 'manilla'; readonly sesion: SesionManilla }
-  | { readonly id: 'tuteGanaPierde'; readonly sesion: SesionTuteGanaPierde };
+  | { readonly id: 'tuteGanaPierde'; readonly sesion: SesionTuteGanaPierde }
+  | { readonly id: 'cuarentaYTres'; readonly sesion: SesionCuarentaYTres };
 
 export type ConfigJuego =
   | ConfigKlondike
@@ -929,7 +941,8 @@ export type ConfigJuego =
   | ConfigCasitaRobada
   | ConfigBurroBazas
   | ConfigManilla
-  | ConfigTuteGanaPierde;
+  | ConfigTuteGanaPierde
+  | ConfigCuarentaYTres;
 
 function etiquetar<T>(id: IdJuego, r: Resultado<T>): Resultado<Partida> {
   return r.ok ? { ok: true, valor: { id, sesion: r.valor } as Partida } : r;
@@ -1108,6 +1121,8 @@ function conDef<R>(id: IdJuego, hacer: <C, E, A, V>(def: DefJuego<C, E, A, V>) =
       return hacer(DEF_MANILLA);
     case 'tuteGanaPierde':
       return hacer(DEF_TUTE_GANA_PIERDE);
+    case 'cuarentaYTres':
+      return hacer(DEF_CUARENTA_Y_TRES);
     case 'ohHell':
       return hacer(DEF_OH_HELL);
     case 'spiteMalice':

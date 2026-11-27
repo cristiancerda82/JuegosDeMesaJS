@@ -80,6 +80,10 @@ import {
   CONFIG_TUTE_GANA_PIERDE_POR_DEFECTO,
   tuteGanaPierde,
 } from '../../src/juegos/tute-gana-pierde';
+import {
+  CONFIG_CUARENTA_Y_TRES_POR_DEFECTO,
+  cuarentaYTres,
+} from '../../src/juegos/cuarenta-y-tres';
 import { CONFIG_TUTE_SUBASTADO_POR_DEFECTO, tuteSubastado } from '../../src/juegos/tute-subastado';
 import type { Asiento, Juego } from '../../src/motor/contrato';
 import { porBandos, unoContraTodos } from './duelo';
@@ -274,6 +278,13 @@ export const JUEGOS_CON_NIVELES: readonly JuegoConNiveles[] = [
     tuteGanaPierde,
     CONFIG_TUTE_GANA_PIERDE_POR_DEFECTO,
     IAS.tuteGanaPierde,
+    3,
+  ),
+  entrada(
+    'Cuarenta y tres',
+    cuarentaYTres,
+    CONFIG_CUARENTA_Y_TRES_POR_DEFECTO,
+    IAS.cuarentaYTres,
     3,
   ),
 ];

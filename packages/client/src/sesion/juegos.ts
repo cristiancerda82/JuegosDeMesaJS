@@ -147,6 +147,12 @@ import {
   type ConfigTuteGanaPierde,
   type EstadoTuteGanaPierde,
   type VistaTuteGanaPierde,
+  cuarentaYTres,
+  CONFIG_CUARENTA_Y_TRES_POR_DEFECTO,
+  type AccionCuarentaYTres,
+  type ConfigCuarentaYTres,
+  type EstadoCuarentaYTres,
+  type VistaCuarentaYTres,
   type AccionManilla,
   type ConfigManilla,
   type EstadoManilla,
@@ -655,7 +661,8 @@ export type IdJuego =
   | 'casitaRobada'
   | 'burroBazas'
   | 'manilla'
-  | 'tuteGanaPierde';
+  | 'tuteGanaPierde'
+  | 'cuarentaYTres';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -745,6 +752,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'burroBazas',
   'manilla',
   'tuteGanaPierde',
+  'cuarentaYTres',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2446,6 +2454,26 @@ export const DEF_TUTE_GANA_PIERDE: DefTuteGanaPierde = {
   },
 };
 
+export type DefCuarentaYTres = DefJuego<
+  ConfigCuarentaYTres,
+  EstadoCuarentaYTres,
+  AccionCuarentaYTres,
+  VistaCuarentaYTres
+>;
+
+export const DEF_CUARENTA_Y_TRES: DefCuarentaYTres = {
+  id: 'cuarentaYTres',
+  nombre: T.menu.cuarentaYTres,
+  juego: cuarentaYTres,
+  configPorDefecto: CONFIG_CUARENTA_Y_TRES_POR_DEFECTO,
+  ia: IAS.cuarentaYTres,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2534,6 +2562,7 @@ export const JUEGOS = {
   burroBazas: DEF_BURRO_BAZAS,
   manilla: DEF_MANILLA,
   tuteGanaPierde: DEF_TUTE_GANA_PIERDE,
+  cuarentaYTres: DEF_CUARENTA_Y_TRES,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

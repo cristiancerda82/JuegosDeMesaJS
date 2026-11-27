@@ -144,6 +144,9 @@ export const T = {
     tuteGanaPierde: 'Tute gana-pierde',
     tuteGanaPierdeDesc:
       'El Tute para 3 al revés: haz más tantos que nadie o menos que nadie; quien se queda en medio, pierde.',
+    cuarentaYTres: 'Cuarenta y tres',
+    cuarentaYTresDesc:
+      'El Tute para 3 sin cantes: la muestra marca el triunfo y cada uno cobra lo que pase de 43 tantos.',
     manillaDesc:
       'La madre de la Butifarra, por parejas: la última carta del que reparte marca el triunfo, el 9 es la carta más fuerte y se juega a 40.',
     burroBazasDesc:
@@ -3447,6 +3450,30 @@ export const T = {
     penasCol: 'Pen.',
   },
 
+  cuarentaYTres: {
+    triunfo: 'Triunfo',
+    muestra: 'Muestra',
+    tantosCortos: (n: number) => `${n} tantos`,
+    saldo: (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0'),
+    manoDe: (n: number, total: number) => `Mano ${n} de ${total}`,
+    saldoCorto: (n: number) => `saldo ${n > 0 ? `+${n}` : `−${-n}`}`,
+    manosJugadas: (n: number) => `Se han jugado las ${n} manos de la partida.`,
+    tuSaldo: (n: number) => `Tu saldo: ${n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0'}`,
+    cambiar: (carta: string) => `Cambiar la muestra por tu ${carta}`,
+    cambia: (quien: string, muestra: string, entregada: string) =>
+      quien === 'Tú'
+        ? `Cambias la muestra: te llevas ${muestra} y dejas ${entregada}`
+        : `${quien} cambia la muestra: se lleva ${muestra} y deja ${entregada}`,
+    muestraSinCambiar: (carta: string) => `La muestra, ${carta}, se quedó sin cambiar.`,
+    muestraCambiada: (carta: string, quien: string) =>
+      quien === 'Tú' ? `Cambiaste la muestra, ${carta}.` : `${quien} cambió la muestra, ${carta}.`,
+    tantosCol: 'Tantos',
+    ultimasCol: 'Últimas',
+    cobraCol: '± 43',
+    saldoCol: 'Saldo',
+    clasificacion: 'Saldo',
+  },
+
   burroBazas: {
     reparte: 'Reparte',
     sinCartas: 'Sin cartas',
@@ -3680,6 +3707,7 @@ export const T = {
       burroBazas: 'Cómo se juega al Burro de bazas',
       manilla: 'Cómo se juega a la Manilla',
       tuteGanaPierde: 'Cómo se juega al Tute gana-pierde',
+      cuarentaYTres: 'Cómo se juega al Cuarenta y tres',
       pinacle: 'Cómo se juega al Pinacle',
       butifarra: 'Cómo se juega a la Butifarra',
       truc: 'Cómo se juega al Truc',
@@ -8003,6 +8031,67 @@ export const T = {
         plegada: true,
         texto: [
           'Se juega sobre todo en Cataluña, en la Comunidad Valenciana y en el sur de Francia. Los autores españoles dicen que viene de Francia, y los franceses, que viene de España; por lo extendida que está aquí, parece más probable lo segundo. De ella salió la Butifarra, en la que el triunfo ya no lo marca la carta vuelta, sino que lo elige quien reparte. El nombre viene de la «manilla», el 9, la carta más fuerte de cada palo.',
+        ],
+      },
+    ],
+
+    cuarentaYTres: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega entre 3, cada uno por su cuenta, con la baraja española de 40 cartas. Se dan 13 cartas a cada uno, de una en una, y la que sobra, la muestra, se queda boca arriba en la mesa: su palo es el triunfo.',
+          'Las cartas de una mano suman, con las últimas, 129 tantos, y su tercio es 43: de ahí el nombre. Al acabar cada mano, cada uno cobra lo que pasa de 43 tantos y paga lo que le falta. La partida dura 6 manos (o 3, si lo cambias en las opciones) y gana quien acaba con más saldo.',
+        ],
+      },
+      {
+        titulo: 'Lo que vale cada carta',
+        texto: [
+          'Como en el Tute: de la más fuerte a la más débil, el As, el Tres, el Rey, el Caballo, la Sota, y después el 7, 6, 5, 4 y 2.',
+          'El As vale 11 tantos, el Tres 10, el Rey 4, el Caballo 3 y la Sota 2; las demás no valen nada. Quien gana la última baza suma 9 más, las 9 de últimas, en lugar de las 10 del Tute. No hay cantes.',
+        ],
+      },
+      {
+        titulo: 'Cómo se juega una baza',
+        texto: [
+          'Sale el jugador siguiente al que reparte, y quien gana una baza sale en la siguiente. Gana el triunfo más alto o, si no hay triunfos, la carta más fuerte del palo que salió.',
+          'Como en el Tute por parejas, hay que seguir el palo y superar la carta que va ganando si puedes. Sin el palo, hay que fallar con un triunfo y superar el triunfo más alto si puedes; si no puedes superarlo, puedes echar la carta que quieras. La mesa solo te deja jugar las cartas permitidas.',
+        ],
+        ejemplo: 'baza',
+      },
+      {
+        titulo: 'El cambio de la muestra',
+        texto: [
+          'Una vez por mano, quien tenga el 7 de triunfo puede cambiarlo por la muestra si es mayor que el 7; si la muestra es el 7 o menor, se cambia por el 2. No hace falta haber ganado ninguna baza: se puede en cualquier turno tuyo, antes de jugar tu carta, con el botón que aparece junto a tu mano.',
+          'La carta que entregas se queda en la mesa y no se juega. Si nadie cambia la muestra, sus tantos no son de nadie.',
+        ],
+        ejemplo: 'cambio',
+      },
+      {
+        titulo: 'La cuenta de cada mano',
+        texto: [
+          'Cada uno suma los tantos de sus bazas y, quien ganó la última, las 9 de últimas. A tu saldo se suma lo que pasas de 43, o se resta lo que te falta.',
+        ],
+        ejemplo: 'liquidacion',
+      },
+      {
+        titulo: 'Cómo jugar una carta',
+        texto: [
+          'Arrastra la carta a la mesa, o tócala y toca la mesa. Con un doble toque también se juega.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Sin cantes, no hay nada que guardar: juega los Ases en el momento oportuno, porque casi siempre sirven para arañar tantos a los demás.',
+          'Si tienes un palo largo de triunfo, arrastra cuanto antes para quitar los triunfos a los demás y que no te fallen tus cartas buenas.',
+          'Con 13 cartas cada uno es raro que alguien se quede sin un palo: si juegas el último y puedes llevarte la baza con puntos, llévatela. Y si tienes un Tres sin su As, intenta salvarlo jugando antes una carta alta del mismo palo, mejor el Rey que el Caballo.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Núñez Elvira lo presenta como una «variación sobre un mismo tema», el del Tute, igual que en algunas composiciones musicales. Se juega con las cartas y las obligaciones del Tute, pero sin cantes, y su nombre sale de la cuenta: 129 tantos en cada mano entre tres jugadores tocan a 43. Tradicionalmente se jugaba con dinero, cobrando y pagando cada tanto, y la partida duraba lo que los jugadores acordaban.',
         ],
       },
     ],

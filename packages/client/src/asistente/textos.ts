@@ -631,6 +631,8 @@ export const CONSEJOS_JUEGO: Readonly<Partial<Record<IdJuego, string>>> = {
     'Manilla: el 9 es la carta más fuerte y vale 5. Sal con la manilla de un palo que no sea triunfo y, cuando la baza ya sea de tu compañero, cárgale puntos. Contra los rivales hay que montar y fallar; si gana tu compañero, basta con seguir el palo.',
   tuteGanaPierde:
     'Tute gana-pierde: haz más tantos que nadie o menos que nadie, nunca en medio. Si vas a por el mínimo, carga tus Ases y Treses en las bazas de otros y no salgas con un Rey; si te ves con muchos tantos, cambia y gánalas con puntos.',
+  cuarentaYTres:
+    'Cuarenta y tres: cambia la muestra en cuanto puedas, arrastra si tienes muchos triunfos y sal con los Ases de los otros palos para arañar tantos. Siendo el último, llévate las bazas con puntos.',
   burroBazas:
     'Burro de bazas: lleva la cuenta de lo que ha salido y juega tus cartas más altas de cada palo cuando salgas. Sal por un palo que les falte a los demás, para que roben, y no te quedes sin un palo del que aún quedan cartas.',
   casitaRobada:

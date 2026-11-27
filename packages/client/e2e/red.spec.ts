@@ -2023,3 +2023,27 @@ test('Hand and Foot en red: dos humanos roban 2 y descartan', async ({ browser }
   await expect(ana.getByTestId('asiento-1')).toContainText('Luis');
   await expect(ana.getByTestId('asiento-1')).toContainText('pie de 11');
 });
+
+test('Cuarenta y tres en red: los dos ven la misma muestra y la carta con la que se sale', async ({
+  browser,
+}) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'cuarentaYTres');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) {
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(13);
+  }
+  const muestra = await ana.getByTestId('muestra').getAttribute('data-carta');
+  await expect(luis.getByTestId('muestra')).toHaveAttribute('data-carta', muestra!);
+
+  // Reparte el asiento 2: sale Ana (asiento 0), que puede echar cualquiera de sus 13 cartas.
+  const jugables = ana.locator('[data-testid="mano"] .carta-mano.jugable');
+  await expect(jugables).toHaveCount(13);
+  const carta = await jugables.first().getAttribute('data-carta');
+  await jugables.first().click({ position: { x: 6, y: 6 } });
+  await ana.getByTestId('mesa').click();
+  await expect(luis.locator(`[data-testid="mesa"] [data-carta="${carta}"]`)).toBeVisible();
+});

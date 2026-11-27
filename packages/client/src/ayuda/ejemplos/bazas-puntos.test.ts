@@ -1,5 +1,7 @@
 import {
   anotarManilla,
+  cartaDeCambio,
+  liquidacion,
   cartaDeId,
   cartaGanadora,
   fuerza,
@@ -293,6 +295,35 @@ test('Manilla: la puntuación del ejemplo, como la anota el motor', () => {
   expect(pinteAnotado).toBe(true);
   expect(fila('Lo que pasa de 36') + fila('El pinte, la manilla')).toBe(anotados[0]);
   expect(fila('Se anota')).toBe(anotados[0]);
+});
+
+test('Cuarenta y tres: la baza, el cambio de la muestra y la liquidación', () => {
+  const b = v.ejemplo('cuarentaYTres', 'baza', 'baza');
+  gana(b, (e) => {
+    const triunfo = triunfoDe(e) as Parameters<typeof cartaGanadora>[1];
+    return cartaGanadora(mesaDe(e), triunfo).asiento;
+  });
+  expect(b.jugadas.reduce((s, j) => s + puntosDe(j.id), 0)).toBe(21);
+  const palabras: Record<string, number> = { As: 1, Sota: 10 };
+  const carta = (texto: string) => {
+    const [, valor, palo] = /^(\S+) de (\S+)$/.exec(texto)!;
+    return `${palo}-${palabras[valor!] ?? Number(valor)}` as IdCarta;
+  };
+  for (const [muestra, con] of v.ejemplo('cuarentaYTres', 'cambio', 'tabla').filas) {
+    const cambio = cartaDeCambio(carta(muestra));
+    expect(cambio === carta(muestra) ? 'No se puede cambiar' : con, muestra).toBe(con);
+    if (con !== 'No se puede cambiar') expect(cambio, muestra).toBe(carta(con));
+  }
+  for (const [tantos, cuentas] of v.ejemplo('cuarentaYTres', 'liquidacion', 'tabla').filas) {
+    const valores = tantos.split(/, | y /).map(Number);
+    expect(
+      valores.reduce((s, x) => s + x, 0),
+      tantos,
+    ).toBe(129);
+    const signo = (n: number) => (n > 0 ? `+${n}` : `−${-n}`);
+    const [x, y, z] = valores.map(liquidacion).map(signo);
+    expect(cuentas, tantos).toBe(`${x}, ${y} y ${z}`);
+  }
 });
 
 test('todos los ejemplos de las bazas por puntos están comprobados', () => {

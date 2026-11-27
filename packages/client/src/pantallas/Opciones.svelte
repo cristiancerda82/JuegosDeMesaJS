@@ -67,6 +67,7 @@
     ConfigBurroBazas,
     ConfigManilla,
     ConfigTuteGanaPierde,
+    ConfigCuarentaYTres,
     ConfigOhHell,
     ConfigSpiteMalice,
     ConfigPiramide,
@@ -193,6 +194,9 @@
   let manillaConfig: Editable<ConfigManilla> = $state({ ...JUEGOS.manilla.configPorDefecto });
   let tuteGanaPierdeConfig: Editable<ConfigTuteGanaPierde> = $state({
     ...JUEGOS.tuteGanaPierde.configPorDefecto,
+  });
+  let cuarentaYTresConfig: Editable<ConfigCuarentaYTres> = $state({
+    ...JUEGOS.cuarentaYTres.configPorDefecto,
   });
   let ecarteConfig: Editable<ConfigEcarte> = $state({ ...JUEGOS.ecarte.configPorDefecto });
   let tysiachaConfig: Editable<ConfigTysiacha> = $state({ ...JUEGOS.tysiacha.configPorDefecto });
@@ -324,6 +328,7 @@
       burroBazas: burroBazasConfig,
       manilla: manillaConfig,
       tuteGanaPierde: tuteGanaPierdeConfig,
+      cuarentaYTres: cuarentaYTresConfig,
       ecarte: ecarteConfig,
       tysiacha: tysiachaConfig,
       sheepshead: sheepsheadConfig,
@@ -880,6 +885,21 @@
               data-testid="tute-gana-pierde-limite-{l}"
             />
             {T.opciones.limiteBurroBazasN(l)}</label
+          >
+        {/each}
+      </fieldset>
+    {:else if juego === 'cuarentaYTres'}
+      <fieldset>
+        <legend>{T.opciones.manosPartida}</legend>
+        {#each [6, 3] as const as m (m)}
+          <label
+            ><input
+              type="radio"
+              bind:group={cuarentaYTresConfig.manos}
+              value={m}
+              data-testid="cuarenta-y-tres-manos-{m}"
+            />
+            {T.opciones.manosPartidaN(m)}</label
           >
         {/each}
       </fieldset>

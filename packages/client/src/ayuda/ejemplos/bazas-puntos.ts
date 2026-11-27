@@ -595,4 +595,37 @@ export const BAZAS_PUNTOS: Partial<Record<IdJuego, EjemplosJuego>> = {
       ],
     },
   },
+  cuarentaYTres: {
+    baza: baza(
+      'La muestra es el 4 de espadas. Sales con el As de copas, la Derecha no tiene copas y falla con el 2 de espadas, y la Izquierda, que no puede superar el fallo, echa el Tres de copas: gana el 2 de espadas.',
+      TRES,
+      ['copas-1', 'espadas-2', 'copas-3'],
+      'espadas-4',
+      1,
+      'El 2 de espadas es triunfo y gana a las copas: la Derecha se lleva 21 tantos con la carta más baja de la baraja.',
+    ),
+    cambio: {
+      tipo: 'tabla',
+      descripcion:
+        'Con qué carta se cambia la muestra: si es mayor que el 7, con el 7 de su palo; si es el 7 o menor, con el 2.',
+      titulo: 'La muestra y la carta con la que se cambia',
+      filas: [
+        ['As de oros', '7 de oros'],
+        ['Sota de oros', '7 de oros'],
+        ['7 de oros', '2 de oros'],
+        ['5 de oros', '2 de oros'],
+        ['2 de oros', 'No se puede cambiar'],
+      ],
+    },
+    liquidacion: {
+      tipo: 'tabla',
+      descripcion:
+        'Los dos ejemplos del libro: cada uno cobra lo que pasa de 43 tantos y paga lo que le falta.',
+      titulo: 'Tantos de los tres y lo que cobra (+) o paga (−) cada uno',
+      filas: [
+        ['50, 55 y 24', '+7, +12 y −19'],
+        ['100, 10 y 19', '+57, −33 y −24'],
+      ],
+    },
+  },
 };
