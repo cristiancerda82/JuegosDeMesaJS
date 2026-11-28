@@ -81,6 +81,7 @@ import { CONFIG_TUTE_GANA_PIERDE_POR_DEFECTO, tuteGanaPierde } from './juegos/tu
 import { CONFIG_CUARENTA_Y_TRES_POR_DEFECTO, cuarentaYTres } from './juegos/cuarenta-y-tres';
 import { CONFIG_CUATRO_SEISES_POR_DEFECTO, cuatroSeises } from './juegos/cuatro-seises';
 import { cirulla, CONFIG_CIRULLA_POR_DEFECTO } from './juegos/cirulla';
+import { CONFIG_RAMS_POR_DEFECTO, rams } from './juegos/rams';
 import type { Juego } from './motor/contrato';
 
 /**
@@ -167,6 +168,7 @@ export const IDS_JUEGOS_EN_RED = [
   'cuarentaYTres',
   'cuatroSeises',
   'cirulla',
+  'rams',
 ] as const;
 
 export type IdJuegoRed = (typeof IDS_JUEGOS_EN_RED)[number];
@@ -282,6 +284,7 @@ export const JUEGOS_EN_RED: Readonly<Record<IdJuegoRed, JuegoEnRed>> = {
   cuarentaYTres: entrada(cuarentaYTres, IAS.cuarentaYTres, CONFIG_CUARENTA_Y_TRES_POR_DEFECTO),
   cuatroSeises: entrada(cuatroSeises, IAS.cuatroSeises, CONFIG_CUATRO_SEISES_POR_DEFECTO),
   cirulla: entrada(cirulla, IAS.cirulla, CONFIG_CIRULLA_POR_DEFECTO),
+  rams: entrada(rams, IAS.rams, CONFIG_RAMS_POR_DEFECTO),
 };
 
 export const esJuegoEnRed = (id: unknown): id is IdJuegoRed =>

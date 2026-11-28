@@ -165,6 +165,12 @@ import {
   type ConfigCirulla,
   type EstadoCirulla,
   type VistaCirulla,
+  rams,
+  CONFIG_RAMS_POR_DEFECTO,
+  type AccionRams,
+  type ConfigRams,
+  type EstadoRams,
+  type VistaRams,
   type AccionManilla,
   type ConfigManilla,
   type EstadoManilla,
@@ -676,7 +682,8 @@ export type IdJuego =
   | 'tuteGanaPierde'
   | 'cuarentaYTres'
   | 'cuatroSeises'
-  | 'cirulla';
+  | 'cirulla'
+  | 'rams';
 
 export const ID_JUEGOS: readonly IdJuego[] = [
   'klondike',
@@ -769,6 +776,7 @@ export const ID_JUEGOS: readonly IdJuego[] = [
   'cuarentaYTres',
   'cuatroSeises',
   'cirulla',
+  'rams',
 ];
 
 export type DefKlondike = DefJuego<ConfigKlondike, EstadoKlondike, AccionKlondike, VistaKlondike>;
@@ -2528,6 +2536,21 @@ export const DEF_CIRULLA: DefCirulla = {
   },
 };
 
+export type DefRams = DefJuego<ConfigRams, EstadoRams, AccionRams, VistaRams>;
+
+export const DEF_RAMS: DefRams = {
+  id: 'rams',
+  nombre: T.menu.rams,
+  juego: rams,
+  configPorDefecto: CONFIG_RAMS_POR_DEFECTO,
+  ia: IAS.rams,
+  // El cierre de la mano lo detiene la propia mesa con el resumen; aquí, cada baza.
+  pausaTras(antes, despues) {
+    if (despues.resultadosManos.length > antes.resultadosManos.length) return PAUSA_BAZA_MS;
+    return pausaBazas(antes, despues);
+  },
+};
+
 export const JUEGOS = {
   klondike: DEF_KLONDIKE,
   brisca: DEF_BRISCA,
@@ -2619,6 +2642,7 @@ export const JUEGOS = {
   cuarentaYTres: DEF_CUARENTA_Y_TRES,
   cuatroSeises: DEF_CUATRO_SEISES,
   cirulla: DEF_CIRULLA,
+  rams: DEF_RAMS,
 } as const;
 
 /** Semilla nueva para una partida; el cliente sí puede usar azar del sistema. */

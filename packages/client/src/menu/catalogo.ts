@@ -317,6 +317,7 @@ export const CATALOGO: Readonly<Record<IdJuego, EntradaCatalogo>> = {
     'treboles-13',
     'treboles-10',
   ]),
+  rams: entrada('envite', F, T.menu.ramsDesc, ['picas-1', 'picas-13', 'corazones-7']),
 };
 
 /** Juegos de una familia, en el orden del catálogo. */

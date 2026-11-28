@@ -54,6 +54,7 @@
   import MesaCuarentaYTres from '../mesas/MesaCuarentaYTres.svelte';
   import MesaCuatroSeises from '../mesas/MesaCuatroSeises.svelte';
   import MesaCirulla from '../mesas/MesaCirulla.svelte';
+  import MesaRams from '../mesas/MesaRams.svelte';
   import MesaBourre from '../mesas/MesaBourre.svelte';
   import MesaTresillo from '../mesas/MesaTresillo.svelte';
   import MesaConquian from '../mesas/MesaConquian.svelte';
@@ -261,6 +262,8 @@
     <MesaCuatroSeises sesion={partida.sesion} />
   {:else if partida.id === 'cirulla'}
     <MesaCirulla sesion={partida.sesion} />
+  {:else if partida.id === 'rams'}
+    <MesaRams sesion={partida.sesion} />
   {:else if partida.id === 'bourre'}
     <MesaBourre sesion={partida.sesion} />
   {:else if partida.id === 'tresillo'}

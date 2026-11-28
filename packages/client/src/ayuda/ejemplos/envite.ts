@@ -2,6 +2,7 @@ import { NOMBRES_MANO_POKER, valorCarta, type IdCarta } from '@juegos/engine';
 import type { IdJuego } from '../../sesion/juegos';
 import { T } from '../../textos';
 import type { EjemploCartas, EjemploJugadas, EjemplosJuego } from '../tipos';
+import { baza, CUATRO } from './bazas-puntos';
 
 /** Las cartas de mayor a menor, con su puesto debajo. */
 const jerarquia = (
@@ -210,6 +211,28 @@ export const ENVITE: Partial<Record<IdJuego, EjemplosJuego>> = {
       ],
       resaltadas: ['corazones-1', 'picas-2'],
       explicacion: 'La carta que dejas queda en la viuda, a la vista de todos.',
+    },
+  },
+  rams: {
+    baza: baza(
+      'El triunfo es picas. Sales con la Jota de corazones, la Derecha no tiene corazones y falla con el Rey de picas, y Enfrente tampoco tiene corazones: solo tiene el 8 de picas y diamantes, así que tiene que echar el 8 de picas aunque no supere al Rey. La Izquierda sube con la Dama de corazones.',
+      CUATRO,
+      ['corazones-11', 'picas-13', 'picas-8', 'corazones-12'],
+      'picas-9',
+      1,
+      'Gana el Rey de picas, el triunfo más alto. En el Rams, sin el palo y sin poder superar el fallo, hay que echar triunfo igualmente.',
+    ),
+    fichas: {
+      tipo: 'tabla',
+      descripcion:
+        'Una mano de 4 con la canasta llena: cada uno empieza con 3 fichas. La Izquierda pasa y no juega la mano.',
+      titulo: 'Bazas y fichas',
+      filas: [
+        ['Tú: 3 bazas', '0 fichas: te retiras'],
+        ['Derecha: 2 bazas', '1 ficha'],
+        ['Enfrente: ninguna baza', '8 fichas: ramsé'],
+        ['Izquierda: pasa', '3 fichas'],
+      ],
     },
   },
 };

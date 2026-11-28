@@ -1,5 +1,8 @@
 import {
   burroBazas,
+  cartasLegalesRams,
+  ganadoraRams,
+  rams,
   cuatroSeises,
   encajaCuatroSeises,
   posicionCuatroSeises,
@@ -164,6 +167,42 @@ test('Cuatro seises: la escalera con la baraja de 48 y la cuenta del fondo', () 
   const signo = (n: number) => (n > 0 ? `+${n}` : `−${-n}`);
   expect(t.filas.map(([, f]) => f)).toEqual(final.resultadosManos[0]!.fichas.map(signo));
   expect(t.descripcion).toContain(`${fondo} fichas`);
+});
+
+test('Rams: echar triunfo sin poder superar el fallo, y la cuenta de las fichas', () => {
+  const b = envite.ejemplo('rams', 'baza', 'baza');
+  const mesa = b.jugadas.map((j, i) => ({ asiento: i, carta: j.id }));
+  expect(ganadoraRams(mesa, 'picas').asiento).toBe(b.gana);
+  // Enfrente (asiento 2) tenía el 8 de picas y diamantes: solo podía echar el 8.
+  expect(
+    cartasLegalesRams(['picas-8', 'diamantes-7', 'diamantes-13'], mesa.slice(0, 2), 'picas', 2),
+  ).toEqual(['picas-8']);
+
+  const t = envite.ejemplo('rams', 'fichas', 'tabla');
+  const r = rams.crear({ jugadores: 4 }, 'guia');
+  if (!r.ok) throw new Error(r.error);
+  const bazas = t.filas.map(([quien]) => Number(/(\d+) baza/.exec(quien)?.[1] ?? 0));
+  // La última baza de la mano: la gana el asiento 0 con el As de triunfo.
+  let e: Parameters<typeof rams.transicion>[0] = {
+    ...r.valor,
+    repartidor: 0,
+    fase: 'jugar',
+    triunfo: 'picas',
+    pinte: 'picas-9',
+    pinteCogido: true,
+    manos: [['picas-1'], ['corazones-7'], ['corazones-8'], []],
+    dichos: t.filas.map(([quien]) => (quien.includes('pasa') ? 'paso' : 'rams')),
+    bazas: bazas.map((x, a) => (a === 0 ? x - 1 : x)),
+    fichas: [3, 3, 3, 3],
+    mesa: [],
+    turno: 0,
+  };
+  for (const carta of ['picas-1', 'corazones-7', 'corazones-8'] as const) {
+    e = rams.transicion(e, e.turno, { tipo: 'jugar', carta });
+  }
+  const fichas = t.filas.map(([, f]) => Number(/^(\d+)/.exec(f)![1]));
+  expect(e.resultadosManos[0]!.fichasTras).toEqual(fichas);
+  expect(e.resultadosManos[0]!.ramses).toEqual([2]);
 });
 
 test('Mentiroso: las cartas que no son del valor dicho son mentira', () => {

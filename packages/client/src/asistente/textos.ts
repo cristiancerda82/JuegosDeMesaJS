@@ -671,6 +671,7 @@ export const CONSEJOS_JUEGO: Readonly<Partial<Record<IdJuego, string>>> = {
     'Briscola Chiamata: puja con un palo largo y llama una carta que no tengas. Hasta que salga la carta llamada nadie sabe quién va con quién: carga puntos solo cuando sepas que la baza es de tu bando.',
   treintaYUno:
     'Treinta y uno: acércate a 31 con cartas del mismo palo. Llama cuando tu mano sea buena y no esperes demasiado.',
+  rams: 'Rams: juega la mano solo si esperas hacer al menos una baza (un As, triunfos altos); si no, pasa o coge la niña. Cada baza te quita una ficha, y jugar sin hacer ninguna te carga cinco.',
 };
 
 /** Lo que se añade al consejo de un juego cuando una variante de reglas está activa. */

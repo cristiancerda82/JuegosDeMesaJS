@@ -25,7 +25,7 @@ const V = VALORES_MANILLA;
 export const topesManilla = (
   bazas: readonly (readonly CartaJugada[])[],
   triunfo: PaloEspanol,
-): Map<PaloEspanol, number>[] =>
+): Map<string, number>[] =>
   topesPorObligaciones(
     bazas.map((cartas) => ({ cartas, triunfo })),
     V,

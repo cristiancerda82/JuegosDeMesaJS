@@ -2100,3 +2100,20 @@ test('Cirulla en red: la carta que juega uno la ve el otro', async ({ browser })
   await expect(ana.locator(`[data-testid="mano"] [data-carta="${id}"]`)).toHaveCount(0);
   await expect(luis.getByTestId('turno')).toContainText('Tu turno');
 });
+
+test('Rams en red: lo que dice uno lo ve el otro', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const ana = await jugador(browser);
+  const luis = await jugador(browser);
+  const codigo = await crearSala(ana, 'rams');
+  await unirse(luis, codigo, 'Luis');
+  await ana.getByTestId('empezar-red').click();
+  for (const p of [ana, luis]) {
+    await expect(p.locator('[data-testid="mano"] .carta-mano')).toHaveCount(5);
+    await expect(p.getByTestId('fichas-propias')).toHaveText('Tienes 5 fichas');
+  }
+  // Reparte el asiento 3: habla primero Ana (asiento 0), que dice «Paso».
+  await ana.getByTestId('hablar-paso').click();
+  await expect(luis.getByTestId('asiento-0')).toContainText('Pasa');
+  await expect(luis.getByTestId('hablar-rams')).toBeVisible();
+});

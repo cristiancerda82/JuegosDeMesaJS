@@ -1,4 +1,4 @@
-import { PALOS_ESPANOLES, type PaloEspanol } from '../../baraja/cartas';
+import { PALOS_ESPANOLES, PALOS_FRANCESES, type PaloEspanol } from '../../baraja/cartas';
 import {
   cartaGanadora,
   fuerza,
@@ -30,12 +30,14 @@ export function topesPorObligaciones(
   valores: ValoresBazas,
   jugadores: number,
   rivales: (a: Asiento, b: Asiento) => boolean,
-): Map<PaloEspanol, number>[] {
+): Map<string, number>[] {
+  // Con los palos de las dos barajas: el Rams se juega con la francesa.
+  const palos = [...PALOS_ESPANOLES, ...PALOS_FRANCESES];
   const topes = Array.from(
     { length: jugadores },
-    () => new Map<PaloEspanol, number>(PALOS_ESPANOLES.map((p) => [p, SIN_LIMITE])),
+    () => new Map<string, number>(palos.map((p) => [p, SIN_LIMITE])),
   );
-  const bajar = (a: Asiento, palo: PaloEspanol, tope: number) =>
+  const bajar = (a: Asiento, palo: string, tope: number) =>
     topes[a]!.set(palo, Math.min(topes[a]!.get(palo)!, tope));
   for (const { cartas, triunfo } of bazas) {
     if (cartas.length === 0) continue;

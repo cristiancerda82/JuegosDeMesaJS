@@ -85,6 +85,7 @@ import { SIMULABLE_TUTE_GANA_PIERDE } from './reconstruir/tute-gana-pierde';
 import { SIMULABLE_CUARENTA_Y_TRES } from './reconstruir/cuarenta-y-tres';
 import { SIMULABLE_CUATRO_SEISES } from './reconstruir/cuatro-seises';
 import { SIMULABLE_CIRULLA } from './reconstruir/cirulla';
+import { SIMULABLE_RAMS } from './reconstruir/rams';
 import { SIMULABLE_TRUC } from './reconstruir/truc';
 import { SIMULABLE_TUTE } from './reconstruir/tute';
 import { iaSieteYMediaBasica } from './siete-y-media-basica';
@@ -150,6 +151,7 @@ import { iaTuteGanaPierdeBasica } from './tute-gana-pierde-basica';
 import { iaCuarentaYTresBasica } from './cuarenta-y-tres-basica';
 import { iaCuatroSeisesBasica } from './cuatro-seises-basica';
 import { iaCirullaBasica } from './cirulla-basica';
+import { iaRamsBasica } from './rams-basica';
 import { iaPokerCincoBasica, iaPokerCincoExperta } from './poker-cinco-basica';
 import { iaHoldemBasica, iaHoldemExperta } from './holdem-basica';
 import { iaTrucBasica } from './truc-basica';
@@ -311,4 +313,5 @@ export const IAS = {
   cuarentaYTres: niveles(iaCuarentaYTresBasica, SIMULABLE_CUARENTA_Y_TRES),
   cuatroSeises: niveles(iaCuatroSeisesBasica, SIMULABLE_CUATRO_SEISES),
   cirulla: niveles(iaCirullaBasica, SIMULABLE_CIRULLA),
+  rams: niveles(iaRamsBasica, SIMULABLE_RAMS),
 } as const;

@@ -159,6 +159,9 @@ export const T = {
     cirulla: 'Cirulla',
     cirullaDesc:
       'La Escoba de Liguria: captura también sumando 15, barre la mesa con un As y anótate escobas al enseñar tres cartas iguales o bajas.',
+    rams: 'Rams',
+    ramsDesc:
+      'De 3 a 6: decide en cada mano si juegas, quítate una ficha por baza y no te quedes sin ninguna, o te cargas cinco.',
     mus: 'Mus',
     musDesc: 'En parejas: grande, chica, pares y juego, con envites y órdagos.',
     pocha: 'Pocha',
@@ -2359,6 +2362,52 @@ export const T = {
     todosLosOros: (lado: string) => `${lado}: los diez oros dan la partida.`,
   },
 
+  rams: {
+    triunfo: 'Triunfo',
+    pinte: 'Pinte',
+    fichas: (n: number) => (n === 1 ? '1 ficha' : `${n} fichas`),
+    tusFichas: (n: number) => (n === 1 ? 'Tienes 1 ficha' : `Tienes ${n} fichas`),
+    canasta: (n: number) => `Canasta: ${n}`,
+    manoN: (n: number) => `Mano ${n}`,
+    sinFichas: 'Sin fichas',
+    reparte: 'Reparte',
+    juega: 'Juega',
+    pasa: 'Pasa',
+    nina: 'Niña',
+    bazas: (n: number) => (n === 1 ? '1 baza' : `${n} bazas`),
+    rams: '¡Rams!',
+    paso: 'Paso',
+    cogerNina: 'Coger la niña',
+    habla: 'Tu turno: ¿juegas esta mano?',
+    descarta: 'Repartes: deja una carta y quédate el pinte',
+    dice: (quien: string, dicho: string) =>
+      quien === 'Tú'
+        ? dicho === 'nina'
+          ? 'Coges la niña'
+          : dicho === 'rams'
+            ? 'Juegas'
+            : 'Pasas'
+        : dicho === 'nina'
+          ? `${quien} coge la niña`
+          : dicho === 'rams'
+            ? `${quien} juega`
+            : `${quien} pasa`,
+    sinJugar: (quien: string) =>
+      quien === 'Tú'
+        ? 'Todos pasan: ganas la mano sin jugarla'
+        : `Todos pasan: ${quien} gana la mano sin jugarla`,
+    ramse: (quienes: readonly string[]) =>
+      quienes.length === 1 && quienes[0] === 'Tú'
+        ? 'Te quedas ramsé: tomas fichas de la canasta'
+        : `Ramsé: ${quienes.join(', ')}`,
+    retira: (quienes: readonly string[]) => `Sin fichas: ${quienes.join(', ')}`,
+    bazasCol: 'Bazas',
+    fichasCol: 'Fichas',
+    dichoCol: 'Dijo',
+    clasificacion: 'Se quedaron sin fichas',
+    manoFin: (n: number | null) => (n === null ? 'Pierde' : `En la mano ${n}`),
+  },
+
   fiveHundred: {
     reparte: 'Reparte',
     juega: 'Juega',
@@ -3737,6 +3786,7 @@ export const T = {
       cinquillo: 'Cómo se juega al Cinquillo',
       cuatroSeises: 'Cómo se juega al Cuatro seises',
       cirulla: 'Cómo se juega a la Cirulla',
+      rams: 'Cómo se juega al Rams',
       spider: 'Cómo se juega al Spider',
       piramide: 'Cómo se juega a la Pirámide',
       golf: 'Cómo se juega al Golf',
@@ -8007,6 +8057,63 @@ export const T = {
         plegada: true,
         texto: [
           'La Cirulla es la variante de la Scopa típica de Liguria, en el noroeste de Italia, aunque se juega también fuera de allí. El libro la explica con la baraja francesa, en la que el comodín es el 7 de corazones y la cirulla grande son la Jota, la Reina y el Rey de diamantes; con la española, son el 7 de copas y la Sota, el Caballo y el Rey de oros.',
+        ],
+      },
+    ],
+
+    rams: [
+      {
+        titulo: 'El objetivo',
+        texto: [
+          'Se juega de 3 a 6, cada uno por su cuenta, con la baraja francesa de 32 cartas: del As al 7 de cada palo. Cada uno empieza con 5 fichas y se quita una por cada baza que hace.',
+          'Quien se queda sin fichas se retira, porque ya ha ganado. La partida acaba cuando solo uno conserva fichas: ese pierde. Gana el primero que se quedó sin ellas.',
+        ],
+      },
+      {
+        titulo: 'El reparto',
+        texto: [
+          'Reciben cartas solo los que aún tienen fichas: 5 cada uno o, si son 6, 4. Se dejan aparte otras tantas boca abajo, la niña, y la siguiente se vuelve: es el pinte, y su palo es el triunfo.',
+        ],
+      },
+      {
+        titulo: 'Jugar o pasar',
+        texto: [
+          'Empezando por el siguiente al que reparte, cada uno dice si juega («¡Rams!») o pasa. Quien pasa no juega la mano y se queda con sus fichas. Mientras nadie la haya cogido, puedes cambiar tu mano por la niña, y entonces juegas.',
+          'El que reparte juega siempre: deja una carta y se queda el pinte, que todos ven hasta que lo juega. Si todos pasan, gana la mano sin jugarla y se quita una ficha por cada baza.',
+        ],
+      },
+      {
+        titulo: 'Cómo se juega una baza',
+        texto: [
+          'Las cartas van de la más fuerte a la más débil: As, Rey, Dama, Jota, 10, 9, 8 y 7. Hay que seguir el palo y subir si se puede. Sin el palo, hay que fallar con un triunfo y, si ya han fallado, subir el triunfo; si no puedes, echas triunfo igualmente. Sin triunfos, cualquiera.',
+        ],
+        ejemplo: 'baza',
+      },
+      {
+        titulo: 'Las fichas',
+        texto: [
+          'Al acabar la mano, cada uno que jugó se quita una ficha por baza. Quien jugó y no hizo ninguna queda «ramsé»: toma 5 fichas de la canasta, que empieza con 5 por jugador; cuando se vacía, ya no se toma nada.',
+        ],
+        ejemplo: 'fichas',
+      },
+      {
+        titulo: 'En la mesa',
+        texto: [
+          'Para hablar, usa los botones «¡Rams!», «Paso» o «Coger la niña». Si repartes, toca la carta que dejas por el pinte. Para jugar, arrastra la carta a la mesa, o tócala y toca la mesa.',
+        ],
+      },
+      {
+        titulo: 'Consejos',
+        texto: [
+          'Juega cuando tengas Ases o triunfos altos: con una sola baza ya te quitas una ficha. Con una mano sin nada, pasa o coge la niña.',
+          'Como en el Tute, lleva la cuenta de los triunfos que han salido. Aquí las cartas no valen puntos: solo cuenta hacer bazas.',
+        ],
+      },
+      {
+        titulo: 'Un poco de historia',
+        plegada: true,
+        texto: [
+          'Núñez Elvira lo presenta como un juego de Francia y Bélgica, sin reglas fijas, que cambia de una región a otra; su nombre vendría de «recoger». Se jugaba con dinero: cada uno ponía sus fichas en una canasta y, al final, el gran ganador cobraba del gran perdedor, o se repartía el bote entre los que se habían quedado sin fichas.',
         ],
       },
     ],

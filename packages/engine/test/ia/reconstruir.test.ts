@@ -182,6 +182,9 @@ import { cuatroSeises } from '../../src/juegos/cuatro-seises';
 import { reconstruirCirulla } from '../../src/ia/reconstruir/cirulla';
 import { iaCirullaBasica } from '../../src/ia/cirulla-basica';
 import { cirulla } from '../../src/juegos/cirulla';
+import { reconstruirRams } from '../../src/ia/reconstruir/rams';
+import { iaRamsBasica } from '../../src/ia/rams-basica';
+import { rams } from '../../src/juegos/rams';
 import { topesPorObligaciones } from '../../src/ia/reconstruir/topes';
 import { VALORES_BRISCA } from '../../src/motor/bazas';
 import { iaBurroBazasBasica } from '../../src/ia/burro-bazas-basica';
@@ -2243,6 +2246,30 @@ describe('Reconstrucción de la Cirulla', () => {
       const rec = reconstruirCirulla(vista, crearAzar(`c${i}`));
       expect([...rec.manos[1]!].sort()).toEqual(['copas-5', 'oros-5']);
       expect(cirulla.vistaDe(rec, 0)).toEqual(vista);
+    }
+  });
+});
+
+describirReconstruccion(rams, reconstruirRams, {
+  configs: [{ jugadores: 3 }, { jugadores: 4 }, { jugadores: 6 }],
+  base: iaRamsBasica,
+});
+
+describe('Reconstrucción del Rams', () => {
+  it('el pinte sigue en la mano del que reparte mientras no lo juega', () => {
+    const r = rams.crear({ jugadores: 4 }, 'rec-rams');
+    if (!r.ok) throw new Error(r.error);
+    let e = r.valor;
+    // Todos juegan, y el que reparte descarta su primera carta.
+    while (e.fase === 'hablar') e = rams.transicion(e, e.turno, { tipo: 'rams' });
+    e = rams.transicion(e, e.turno, rams.accionesLegales(e, e.turno)[0]!);
+    expect(e.pinteCogido).toBe(true);
+    const yo = (e.repartidor + 1) % 4;
+    const vista = rams.vistaDe(e, yo);
+    for (let i = 0; i < 10; i++) {
+      const rec = reconstruirRams(vista, crearAzar(`r${i}`));
+      expect(rec.manos[e.repartidor]).toContain(e.pinte);
+      expect(rams.vistaDe(rec, yo)).toEqual(vista);
     }
   });
 });
